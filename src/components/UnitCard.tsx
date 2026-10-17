@@ -17,17 +17,27 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
   const lines = text.split("\n");
   if (/^\s*Line number/i.test(lines[0] ?? "")) {
     const rows = lines.slice(1).filter((l) => l.trim());
+    const paras: { n: string; t: string }[][] = [];
+    for (const l of rows) {
+      const m = l.match(/^\s*(\d+)\s*\.(\s*)(.*)$/);
+      const n = m?.[1] ?? "";
+      const t = (m ? m[3] : l).trim();
+      const newPara = !!m && (m[2]?.length ?? 0) >= 3;
+      if (newPara || paras.length === 0) paras.push([]);
+      paras[paras.length - 1]!.push({ n, t });
+    }
     return (
-      <div className="passage rounded-xl bg-muted/60 p-4 sm:p-6">
-        {rows.map((l, i) => {
-          const m = l.match(/^\s*(\d+)\.\s*(.*)$/);
-          return (
-            <div key={i} className="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-2">
-              <span className="select-none pt-0.5 text-right font-mono text-xs text-muted-foreground">{m?.[1] ?? ""}</span>
-              <span>{m ? m[2] : l.trim()}</span>
-            </div>
-          );
-        })}
+      <div className="passage space-y-3 rounded-xl bg-muted/60 p-4 sm:p-6">
+        {paras.map((p, i) => (
+          <p key={i}>
+            {p.map((r, j) => (
+              <span key={j}>
+                {r.n && <sup className="mr-0.5 select-none font-mono text-[0.6rem] font-semibold text-primary/70">{r.n}</sup>}
+                {r.t}{" "}
+              </span>
+            ))}
+          </p>
+        ))}
       </div>
     );
   }
@@ -303,7 +313,7 @@ export function UnitCard(props: {
           );
         return (
           <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
-            <div className="sticky top-[var(--sticky-top,4.5rem)] z-10 max-h-[38vh] overflow-y-auto rounded-xl bg-card shadow-card ring-1 ring-border lg:max-h-[calc(100vh-var(--sticky-top,4.5rem)-1.5rem)]">
+            <div className="sticky top-[var(--sticky-top,4.5rem)] z-10 max-h-[34vh] overflow-y-auto rounded-xl bg-card shadow-card ring-1 ring-border lg:max-h-[calc(100vh-var(--sticky-top,4.5rem)-1.5rem)]">
               <Passage text={u.passage} kind={u.kind} />
             </div>
             {qs}
