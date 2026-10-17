@@ -376,3 +376,30 @@ function NumPicker(p: { label: string; count: number; selected: number[]; disabl
     </div>
   );
 }
+
+/** Split a two-column "match" block (A–D on the left, 1–6 on the right) into lists. */
+function splitColumns(lines: string[]) {
+  let col = Infinity;
+  for (const l of lines) {
+    const m = /\s{2,}(\d\s?[.)])\s/.exec(l);
+    if (m && m.index > 4) col = Math.min(col, m.index + m[0].indexOf(m[1]!));
+    const lead = /^(\s{8,})(\d\s?[.)])\s/.exec(l);
+    if (lead) col = Math.min(col, lead[1]!.length);
+  }
+  if (!isFinite(col)) return null;
+  const left: { mark: string; text: string }[] = [];
+  const right: { mark: string; text: string }[] = [];
+  const push = (arr: typeof left, chunk: string, re: RegExp) => {
+    const s = chunk.trim();
+    if (!s) return;
+    const m = re.exec(s);
+    if (m) arr.push({ mark: m[1]!, text: s.slice(m[0].length).trim() });
+    else if (arr.length) arr[arr.length - 1]!.text += " " + s;
+  };
+  for (const l of lines) {
+    push(left, l.slice(0, col), /^([A-E])\s?[.)]\s*/);
+    push(right, l.slice(col), /^(\d)\s?[.)]\s*/);
+  }
+  if (left.length < 3 || right.length < 3) return null;
+  return { left, right };
+}

@@ -25,6 +25,17 @@ function Index() {
   return (
     <div className="space-y-10">
       <section className="bg-hero relative overflow-hidden rounded-3xl p-6 text-primary-foreground sm:p-10 lg:p-12">
+        <div className="pointer-events-none absolute -right-6 top-1/2 hidden -translate-y-1/2 lg:flex">
+          {BOOKS.map((b, i) => (
+            <img
+              key={b.id}
+              src={b.cover}
+              alt=""
+              className="shadow-card -ml-16 w-44 rounded-xl border-4 border-primary-foreground/30 object-cover xl:w-52"
+              style={{ transform: `rotate(${(i - 1) * 8}deg) translateY(${i === 1 ? -12 : 10}px)` }}
+            />
+          ))}
+        </div>
         <div className="relative z-10 max-w-2xl space-y-4">
           <p className="inline-block rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">Միասնական քննություն · Անգլերեն</p>
           <h1 className="text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">Պատրաստվիր քննությանը խաղալով</h1>
@@ -55,7 +66,7 @@ function Index() {
                 className="shadow-card group overflow-hidden rounded-2xl border bg-card transition-transform hover:-translate-y-1"
               >
                 <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 p-4 sm:grid-cols-1 sm:p-0">
-                  <img src={b.cover} alt={`${b.title} շապիկ`} loading="lazy" className="aspect-[3/4] w-full rounded-lg object-cover sm:rounded-none" />
+                  <img src={b.cover} alt={`${b.title} շապիկ`} loading="lazy" className="aspect-[3/4] w-full rounded-lg object-cover sm:aspect-[16/10] sm:rounded-none sm:object-top" />
                   <div className="min-w-0 space-y-2 sm:p-5">
                     <h3 className="text-lg font-bold">{b.title}</h3>
                     <p className="text-sm text-muted-foreground">{b.sub} · {COUNTS[b.id]} հարց</p>
