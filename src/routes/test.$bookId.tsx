@@ -154,8 +154,8 @@ function Runner({ book, items, kind, bookId, onExit }: { book: { id: number; sec
     setFinished(true);
     items.forEach(({ unit: u }) => {
       const r = scoreUnit(u, answers[u.id]);
-      if (u.kind === "mc") u.questions.forEach((q, i) => recordAnswer(`${u.id}:${q.n}`, r.per[i], 5));
-      else recordAnswer(u.id, r.per[0], 5);
+      if (u.kind === "mc") u.questions.forEach((q, i) => recordAnswer(`${u.id}:${q.n}`, !!r.per[i], 5));
+      else recordAnswer(u.id, !!r.per[0], 5);
     });
     update((p) => ({ ...p, exams: [...p.exams, { date: new Date().toISOString(), book: book.id, score, total }].slice(-50) }));
     window.scrollTo({ top: 0, behavior: "smooth" });
