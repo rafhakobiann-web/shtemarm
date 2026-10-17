@@ -205,7 +205,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
   let qNo = 0;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="mx-auto max-w-3xl space-y-5 lg:max-w-6xl [--sticky-top:9.5rem]">
       <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border bg-card/95 p-3 backdrop-blur">
         <div className="min-w-0">
           <p className="truncate font-display text-sm font-bold">{kind === "exam" ? "Քննություն" : "Թեստ"} · {bookName(bookId)}</p>

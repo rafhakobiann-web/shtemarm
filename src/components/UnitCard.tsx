@@ -236,43 +236,8 @@ export function UnitCard(props: {
 
   const show = revealed("unit");
   const res = scoreUnit(u, a);
-  const correctText =
-    u.kind === "match"
-      ? Object.entries(u.answer).map(([k, v]) => `${k}${v}`).join(" ")
-      : u.kind !== "mc"
-        ? u.answer.join(", ")
-        : "";
-  const chosenText =
-    u.kind === "match"
-      ? Object.entries(a?.match ?? {}).map(([k, v]) => `${k}${v}`).join(" ")
-      : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
-
-  return (
-    <article className="shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
-      {props.header}
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-primary">{props.instruction}</p>
-        {props.instructionEn && <p className="text-xs italic text-muted-foreground">{props.instructionEn}</p>}
-      </div>
-      <Passage text={u.passage} kind={u.kind} />
-
-      {u.kind === "mc" && <div className="space-y-3">{u.questions.map(mcBlock)}</div>}
-
-      {u.kind === "set" && (
-        <NumPicker
-          label="Ընտրեք ճիշտ համարները"
-          count={5}
-          selected={(a?.nums ?? []).filter((x): x is number => x != null)}
-          disabled={show}
-          correct={show ? u.answer : undefined}
-          onToggle={(n) => {
-            const cur = (a?.nums ?? []).filter((x): x is number => x != null);
-            onChange({ ...a, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
-          }}
-        />
-      )}
-
-      {u.kind === "seq" && (
+  const seqBlock =
+    u.kind === "seq" ? (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Յուրաքանչյուր բացթողման համար ընտրեք բառի համարը</p>
           <div className="grid gap-2">
@@ -302,6 +267,62 @@ export function UnitCard(props: {
             })}
           </div>
         </div>
+      ) : null;
+  const correctText =
+    u.kind === "match"
+      ? Object.entries(u.answer).map(([k, v]) => `${k}${v}`).join(" ")
+      : u.kind !== "mc"
+        ? u.answer.join(", ")
+        : "";
+  const chosenText =
+    u.kind === "match"
+      ? Object.entries(a?.match ?? {}).map(([k, v]) => `${k}${v}`).join(" ")
+      : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
+
+  return (
+    <article className="shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
+      {props.header}
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-primary">{props.instruction}</p>
+        {props.instructionEn && <p className="text-xs italic text-muted-foreground">{props.instructionEn}</p>}
+      </div>
+      {(() => {
+        const split = !!u.passage.trim() && (u.kind === "mc" || u.kind === "seq");
+        const qs = (
+          <div className="min-w-0 space-y-4">
+            {u.kind === "mc" && <div className="space-y-3">{u.questions.map(mcBlock)}</div>}
+            {u.kind === "seq" && seqBlock}
+          </div>
+        );
+        if (!split)
+          return (
+            <>
+              <Passage text={u.passage} kind={u.kind} />
+              {qs}
+            </>
+          );
+        return (
+          <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
+            <div className="sticky top-[var(--sticky-top,4.5rem)] z-10 max-h-[38vh] overflow-y-auto rounded-xl bg-card shadow-card ring-1 ring-border lg:max-h-[calc(100vh-var(--sticky-top,4.5rem)-1.5rem)]">
+              <Passage text={u.passage} kind={u.kind} />
+            </div>
+            {qs}
+          </div>
+        );
+      })()}
+
+      {u.kind === "set" && (
+        <NumPicker
+          label="Ընտրեք ճիշտ համարները"
+          count={5}
+          selected={(a?.nums ?? []).filter((x): x is number => x != null)}
+          disabled={show}
+          correct={show ? u.answer : undefined}
+          onToggle={(n) => {
+            const cur = (a?.nums ?? []).filter((x): x is number => x != null);
+            onChange({ ...a, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
+          }}
+        />
       )}
 
       {u.kind === "match" && (

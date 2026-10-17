@@ -31,7 +31,7 @@ function StudyPage() {
   useEffect(() => update((p) => (p.mode === mode ? p : { ...p, mode })), [mode]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">Շտեմարան {bookId} · Բաժին {sectionId}</span>

@@ -76,17 +76,17 @@ function BookPage() {
                   {done}/{ids.length} արված · {right} ճիշտ
                 </p>
                 <div className="mt-auto grid grid-cols-3 gap-2">
-                  <Button variant="game" asChild>
+                  <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> Խաղալ
                     </Link>
                   </Button>
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
                       <BookText /> Դասական
                     </Link>
                   </Button>
-                  <Button variant="sun" asChild>
+                  <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
                       <ClipboardCheck /> Թեստ
                     </Link>
