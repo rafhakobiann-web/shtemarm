@@ -62,9 +62,3 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
     }
     return { text: text.trim() || "Բացատրություն չկա։" };
   });
-    if (res.status === 429) return { text: "Շատ հարցումներ․ փորձեք մի փոքր ուշ։" };
-    if (res.status === 402) return { text: "Բացատրությունների սահմանաչափը սպառվել է։" };
-    if (!res.ok) return { text: "Չհաջողվեց ստանալ բացատրությունը։" };
-    const j = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    return { text: j.choices?.[0]?.message?.content?.trim() || "Բացատրություն չկա։" };
-  });
