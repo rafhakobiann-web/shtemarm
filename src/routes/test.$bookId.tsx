@@ -1,0 +1,295 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Loader2, Timer, Trophy, Shuffle, ListChecks } from "lucide-react";
+import { z } from "zod";
+import { useBook } from "@/lib/useBook";
+import { buildCustom, buildExam, secTitle, shuffle, unitPoints, type Unit } from "@/lib/books";
+import { recordAnswer, update } from "@/lib/progress";
+import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/test/$bookId")({
+  validateSearch: z.object({
+    mode: z.enum(["exam", "custom"]).catch("custom"),
+    section: z.number().int().optional().catch(undefined),
+    style: z.enum(["game", "classic"]).catch("classic"),
+  }),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${bookName(params.bookId)} · Թեստ և քննություն` },
+      { name: "description", content: "80 հարցանոց քննություն կամ ձեր ընտրած բաժիններից կազմված թեստ։" },
+      { property: "og:title", content: `${bookName(params.bookId)} · Թեստ` },
+      { property: "og:description", content: "Ստուգեք ձեր գիտելիքները իրական քննության կառուցվածքով։" },
+    ],
+  }),
+  component: TestPage,
+});
+
+type Item = { section: number; unit: Unit };
+type Style = "game" | "classic";
+const bookName = (id: string) => (id === "all" ? "Բոլոր շտեմարանները" : `Շտեմարան ${id}`);
+
+function TestPage() {
+  const { bookId } = Route.useParams();
+  const { mode, section, style: initStyle } = Route.useSearch();
+  const { data: book } = useBook(bookId === "all" ? 0 : Number(bookId));
+  const [style, setStyle] = useState<Style>(initStyle);
+  const [items, setItems] = useState<Item[] | null>(null);
+  const [kind, setKind] = useState<"exam" | "custom">(mode);
+
+  if (!book) return <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
+  if (items) return <Runner book={book} items={items} kind={kind} bookId={bookId} style={style} onExit={() => setItems(null)} />;
+  return (
+    <Setup
+      bookId={bookId}
+      sections={book.sections.map((s) => ({ n: s.n, title: secTitle(s), label: s.instr_hy, count: s.units.reduce((a, u) => a + unitPoints(u), 0) }))}
+      initial={mode}
+      section={section}
+      style={style}
+      onStyle={setStyle}
+      onStart={(k, secs, count) => {
+        setKind(k);
+        setItems(k === "exam" ? buildExam(book) : buildCustom(book, secs, count));
+      }}
+    />
+  );
+}
+
+function Setup(p: {
+  bookId: string;
+  sections: { n: number; title: string; label: string; count: number }[];
+  initial: "exam" | "custom";
+  section: number | undefined;
+  style: Style;
+  onStyle: (s: Style) => void;
+  onStart: (k: "exam" | "custom", secs: number[], count: number) => void;
+}) {
+  const [tab, setTab] = useState<"exam" | "custom" | "random">(p.initial);
+  const [secs, setSecs] = useState<number[]>(p.section ? [p.section] : [1, 2, 3]);
+  const [count, setCount] = useState(p.section ? 10 : 20);
+  const [randomN, setRandomN] = useState(3);
+  return (
+    <div className="mx-auto max-w-3xl space-y-6">
+      <Link to="/book/$bookId" params={{ bookId: p.bookId }} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="size-4" /> {bookName(p.bookId)}
+      </Link>
+      <h1 className="text-2xl font-black sm:text-3xl">Ընտրիր թեստի տեսակը</h1>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {([
+          ["exam", <Trophy key="t" />, "Քննություն", "80 հարց, իրական կառուցվածք"],
+          ["custom", <ListChecks key="l" />, "Ըստ բաժինների", "Ընտրիր բաժիններն ու քանակը"],
+          ["random", <Shuffle key="s" />, "Պատահական բաժիններ", "Համակարգը կընտրի"],
+        ] as const).map(([k, icon, t, d]) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setTab(k)}
+            className={cn("flex flex-col items-start gap-1 rounded-2xl border-2 bg-card p-4 text-left", tab === k ? "border-primary" : "border-border hover:border-primary/40")}
+          >
+            <span className="text-primary">{icon}</span>
+            <span className="font-bold">{t}</span>
+            <span className="text-xs text-muted-foreground">{d}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5 sm:p-6">
+        {tab === "exam" && (
+          <div className="space-y-2 text-sm leading-relaxed">
+            <p>Քննությունը կազմված է 80 առաջադրանքից՝ շտեմարանի 13 բաժինների հերթականությամբ, ինչպես միասնական քննության թեստում։</p>
+            <p className="text-muted-foreground">Ժամանակը՝ 3 ժամ։ Պատասխաններն ու բացատրությունները կերևան ավարտելուց հետո։</p>
+          </div>
+        )}
+        {tab === "custom" && (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {p.sections.map((s) => (
+              <label key={s.n} className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 hover:bg-muted/50">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-primary"
+                  checked={secs.includes(s.n)}
+                  onChange={() => setSecs((x) => (x.includes(s.n) ? x.filter((y) => y !== s.n) : [...x, s.n]))}
+                />
+                <span className="min-w-0 text-sm">
+                  <b>{s.title}</b> <span className="text-muted-foreground">· {s.count}</span>
+                  <span className="block text-xs leading-snug text-muted-foreground">{s.label}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+        {tab === "random" && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Բաժինների քանակը՝ {randomN}</p>
+            <Slider min={1} max={13} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0] ?? 3)} />
+          </div>
+        )}
+        {tab !== "exam" && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Հարցերի քանակը՝ {count}</p>
+            <Slider min={5} max={120} step={5} value={[count]} onValueChange={(v) => setCount(v[0] ?? 20)} />
+          </div>
+        )}
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Ռեժիմ</p>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              ["game", "🎮 Խաղային", "Մեկ առ մեկ, միավորներով"],
+              ["classic", "📄 Դասական", "Բոլորը միասին, ինչպես քննությունում"],
+            ] as const).map(([k, t, d]) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => p.onStyle(k)}
+                className={cn("rounded-xl border-2 p-3 text-left", p.style === k ? "border-primary bg-secondary" : "border-border hover:border-primary/40")}
+              >
+                <span className="block font-bold">{t}</span>
+                <span className="text-xs text-muted-foreground">{d}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <Button
+          variant="game"
+          size="lg"
+          className="w-full"
+          disabled={tab === "custom" && secs.length === 0}
+          onClick={() => {
+            if (tab === "exam") p.onStart("exam", [], 80);
+            else if (tab === "custom") p.onStart("custom", secs, count);
+            else p.onStart("custom", shuffle(p.sections.map((s) => s.n)).slice(0, randomN), count);
+          }}
+        >
+          Սկսել
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: number; sections: { n: number; title?: string; instr_hy: string; instr_en: string }[] }; items: Item[]; kind: "exam" | "custom"; bookId: string; style: Style; onExit: () => void }) {
+  const [cur, setCur] = useState(0);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [combo, setCombo] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, UnitAnswer>>({});
+  const [finished, setFinished] = useState(false);
+  const [secs, setSecs] = useState(0);
+  const limit = kind === "exam" ? 180 * 60 : 0;
+  useEffect(() => {
+    if (finished) return;
+    const t = setInterval(() => setSecs((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [finished]);
+  const total = useMemo(() => items.reduce((a, it) => a + unitPoints(it.unit), 0), [items]);
+  const score = items.reduce((a, it) => a + scoreUnit(it.unit, answers[it.unit.id]).got, 0);
+
+  const finish = () => {
+    setFinished(true);
+    items.forEach(({ unit: u }) => {
+      const r = scoreUnit(u, answers[u.id]);
+      if (u.kind === "mc") u.questions.forEach((q, i) => recordAnswer(`${u.id}:${q.n}`, !!r.per[i], 5));
+      else recordAnswer(u.id, !!r.per[0], 5);
+    });
+    update((p) => ({ ...p, exams: [...p.exams, { date: new Date().toISOString(), book: book.id, score, total }].slice(-50) }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  useEffect(() => {
+    if (limit && secs >= limit && !finished) finish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [secs]);
+
+  const shown = limit ? Math.max(0, limit - secs) : secs;
+  const time = `${Math.floor(shown / 3600)}:${String(Math.floor((shown % 3600) / 60)).padStart(2, "0")}:${String(shown % 60).padStart(2, "0")}`;
+  let qNo = 0;
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-5 lg:max-w-6xl [--sticky-top:9.5rem]">
+      <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border bg-card/95 p-3 backdrop-blur">
+        <div className="min-w-0">
+          <p className="truncate font-display text-sm font-bold">{kind === "exam" ? "Քննություն" : "Թեստ"} · {bookName(bookId)}</p>
+          <p className="text-xs text-muted-foreground">
+            {finished ? `Արդյունք՝ ${score} / ${total}` : `${Object.keys(answers).length} / ${items.length} առաջադրանք`}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1 font-mono text-sm"><Timer className="size-4" />{time}</span>
+          {finished ? (
+            <Button variant="outline" size="sm" onClick={onExit}>Նոր թեստ</Button>
+          ) : (
+            <Button variant="success" size="sm" onClick={finish}>Ավարտել</Button>
+          )}
+        </div>
+      </div>
+
+      {finished && (
+        <div className="bg-hero animate-pop rounded-3xl p-6 text-center text-primary-foreground">
+          <Trophy className="mx-auto size-10 text-sun" />
+          <p className="mt-2 font-display text-4xl font-black">{score} / {total}</p>
+          <p className="opacity-90">{Math.round((score / Math.max(1, total)) * 100)}% · Ստորև տեսեք ճիշտ պատասխաններն ու բացատրությունները</p>
+        </div>
+      )}
+
+      {style === "game" && !finished && (
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <div className="h-3 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-success transition-all" style={{ width: `${(cur / items.length) * 100}%` }} />
+          </div>
+          <span className={cn("font-display text-sm font-bold", combo >= 2 ? "text-sun" : "text-muted-foreground")}>⚡×{combo}</span>
+        </div>
+      )}
+      {items.map(({ section, unit }, idx) => {
+        const sec = book.sections.find((s) => s.n === section)!;
+        const from = qNo + 1;
+        qNo += unitPoints(unit);
+        if (style === "game" && !finished && idx !== cur) return null;
+        const isChecked = !!checked[unit.id];
+        return (
+          <div key={unit.id} className="space-y-3">
+          <UnitCard
+            key={unit.id}
+            unit={unit}
+            instruction={sec.instr_hy}
+            instructionEn={sec.instr_en}
+            value={answers[unit.id]}
+            onChange={(v) => setAnswers((s) => ({ ...s, [unit.id]: v }))}
+            revealed={() => finished || isChecked}
+            header={
+              <p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                {secTitle(sec)} · {from === qNo ? `Հարց ${from}` : `Հարցեր ${from}–${qNo}`}
+              </p>
+            }
+          />
+          {style === "game" && !finished && (
+            <div className="sticky bottom-4 z-20 flex justify-end">
+              {!isChecked ? (
+                <Button
+                  variant="game"
+                  size="lg"
+                  onClick={() => {
+                    setChecked((c) => ({ ...c, [unit.id]: true }));
+                    const r = scoreUnit(unit, answers[unit.id]);
+                    setCombo((c) => (r.got === r.total ? c + 1 : 0));
+                  }}
+                >
+                  Ստուգել
+                </Button>
+              ) : idx < items.length - 1 ? (
+                <Button variant="game" size="lg" onClick={() => { setCur(idx + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                  Հաջորդը →
+                </Button>
+              ) : (
+                <Button variant="success" size="lg" onClick={finish}>Ավարտել</Button>
+              )}
+            </div>
+          )}
+          </div>
+        );
+      })}
+      {!finished && style === "classic" && (
+        <Button variant="game" size="lg" className="w-full" onClick={finish}>Ավարտել և տեսնել արդյունքը</Button>
+      )}
+    </div>
+  );
+}

@@ -10,33 +10,89 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
+import { Route as TestBookIdRouteImport } from './routes/test.$bookId'
+import { Route as StudyBookIdSectionIdRouteImport } from './routes/study.$bookId.$sectionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookBookIdRoute = BookBookIdRouteImport.update({
+  id: '/book/$bookId',
+  path: '/book/$bookId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestBookIdRoute = TestBookIdRouteImport.update({
+  id: '/test/$bookId',
+  path: '/test/$bookId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
+  id: '/study/$bookId/$sectionId',
+  path: '/study/$bookId/$sectionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/book/$bookId': typeof BookBookIdRoute
+  '/test/$bookId': typeof TestBookIdRoute
+  '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/book/$bookId': typeof BookBookIdRoute
+  '/test/$bookId': typeof TestBookIdRoute
+  '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/book/$bookId': typeof BookBookIdRoute
+  '/test/$bookId': typeof TestBookIdRoute
+  '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/book/$bookId'
+    | '/test/$bookId'
+    | '/study/$bookId/$sectionId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/book/$bookId'
+    | '/test/$bookId'
+    | '/study/$bookId/$sectionId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/book/$bookId'
+    | '/test/$bookId'
+    | '/study/$bookId/$sectionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  BookBookIdRoute: typeof BookBookIdRoute
+  TestBookIdRoute: typeof TestBookIdRoute
+  StudyBookIdSectionIdRoute: typeof StudyBookIdSectionIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +104,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book/$bookId': {
+      id: '/book/$bookId'
+      path: '/book/$bookId'
+      fullPath: '/book/$bookId'
+      preLoaderRoute: typeof BookBookIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test/$bookId': {
+      id: '/test/$bookId'
+      path: '/test/$bookId'
+      fullPath: '/test/$bookId'
+      preLoaderRoute: typeof TestBookIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/study/$bookId/$sectionId': {
+      id: '/study/$bookId/$sectionId'
+      path: '/study/$bookId/$sectionId'
+      fullPath: '/study/$bookId/$sectionId'
+      preLoaderRoute: typeof StudyBookIdSectionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  BookBookIdRoute: BookBookIdRoute,
+  TestBookIdRoute: TestBookIdRoute,
+  StudyBookIdSectionIdRoute: StudyBookIdSectionIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
