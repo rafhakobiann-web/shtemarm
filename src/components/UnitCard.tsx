@@ -21,7 +21,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
     for (const l of rows) {
       const m = l.match(/^\s*(\d+)\s*\.(\s*)(.*)$/);
       const n = m?.[1] ?? "";
-      const t = (m ? m[3] : l).trim();
+      const t = (m ? (m[3] ?? "") : l).trim();
       const newPara = !!m && (m[2]?.length ?? 0) >= 3;
       if (newPara || paras.length === 0) paras.push([]);
       paras[paras.length - 1]!.push({ n, t });
@@ -93,7 +93,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
     const l = raw.replace(/\s+$/, "");
     const indented = /^\s{3,}\S/.test(l);
     const isList = /^\s*\d+\s*\.\s*\S/.test(l) && /^\s*\d+\s*\.\s*[a-z]/i.test(l) && l.length < 60;
-    const isDialog = /^\s*[-–]/.test(l);
+    const isDialog = /^\s*[-–]/.test(l) || /^\s*\d\s?[.)]\s/.test(l) || /^\s*[A-Z][a-z]*:/.test(l);
     if (!l.trim()) {
       if (cur) paras.push(cur);
       cur = "";
@@ -253,7 +253,7 @@ export function UnitCard(props: {
           <div className="grid gap-2">
             {u.answer.map((ans, i) => {
               const v = a?.nums?.[i] ?? null;
-              const max = Math.max(7, ...u.answer);
+              const max = Math.max(/(^|\s)8\s?[.)]/.test(u.passage) ? 8 : 7, ...u.answer);
               return (
                 <div key={i} className="flex flex-wrap items-center gap-1.5">
                   <span className="w-16 shrink-0 text-xs font-bold text-muted-foreground">Բաց {i + 1}</span>

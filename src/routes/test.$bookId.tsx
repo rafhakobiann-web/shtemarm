@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Loader2, Timer, Trophy, Shuffle, ListChecks } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { buildCustom, buildExam, shuffle, unitPoints, type Unit } from "@/lib/books";
+import { buildCustom, buildExam, secTitle, shuffle, unitPoints, type Unit } from "@/lib/books";
 import { recordAnswer, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ function TestPage() {
   return (
     <Setup
       bookId={bookId}
-      sections={book.sections.map((s) => ({ n: s.n, label: s.instr_hy, count: s.units.reduce((a, u) => a + unitPoints(u), 0) }))}
+      sections={book.sections.map((s) => ({ n: s.n, title: secTitle(s), label: s.instr_hy, count: s.units.reduce((a, u) => a + unitPoints(u), 0) }))}
       initial={mode}
       section={section}
       style={style}
@@ -59,7 +59,7 @@ function TestPage() {
 
 function Setup(p: {
   bookId: string;
-  sections: { n: number; label: string; count: number }[];
+  sections: { n: number; title: string; label: string; count: number }[];
   initial: "exam" | "custom";
   section: number | undefined;
   style: Style;
@@ -113,7 +113,7 @@ function Setup(p: {
                   onChange={() => setSecs((x) => (x.includes(s.n) ? x.filter((y) => y !== s.n) : [...x, s.n]))}
                 />
                 <span className="min-w-0 text-sm">
-                  <b>Բաժին {s.n}</b> <span className="text-muted-foreground">· {s.count}</span>
+                  <b>{s.title}</b> <span className="text-muted-foreground">· {s.count}</span>
                   <span className="block text-xs leading-snug text-muted-foreground">{s.label}</span>
                 </span>
               </label>
@@ -169,7 +169,7 @@ function Setup(p: {
   );
 }
 
-function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: number; sections: { n: number; instr_hy: string; instr_en: string }[] }; items: Item[]; kind: "exam" | "custom"; bookId: string; style: Style; onExit: () => void }) {
+function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: number; sections: { n: number; title?: string; instr_hy: string; instr_en: string }[] }; items: Item[]; kind: "exam" | "custom"; bookId: string; style: Style; onExit: () => void }) {
   const [cur, setCur] = useState(0);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [combo, setCombo] = useState(0);
@@ -257,7 +257,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
             revealed={() => finished || isChecked}
             header={
               <p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Բաժին {section} · {from === qNo ? `Հարց ${from}` : `Հարցեր ${from}–${qNo}`}
+                {secTitle(sec)} · {from === qNo ? `Հարց ${from}` : `Հարցեր ${from}–${qNo}`}
               </p>
             }
           />

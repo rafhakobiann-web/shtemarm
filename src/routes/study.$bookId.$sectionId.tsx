@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Heart, Zap, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { shuffle, type Unit } from "@/lib/books";
+import { secTitle, shuffle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ function StudyPage() {
     <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">Շտեմարան {bookId} · Բաժին {sectionId}</span>
+          <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">Շտեմարան {bookId} · {section ? secTitle(section) : `Բաժին ${sectionId}`}</span>
         </Link>
         <div className="flex rounded-xl bg-muted p-1 text-sm font-semibold">
           {(["game", "classic"] as const).map((m) => (

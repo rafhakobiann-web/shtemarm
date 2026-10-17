@@ -7,7 +7,9 @@ export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[] }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> };
-export type Section = { n: number; instr_en: string; instr_hy: string; units: Unit[] };
+export type Section = { n: number; title?: string; instr_en: string; instr_hy: string; units: Unit[] };
+export const secNum = (n: number) => (n > 70 ? 7 : n);
+export const secTitle = (s: { n: number; title?: string }) => (s.title ? `Բաժին ${s.title}` : `Բաժին ${s.n}`);
 export type Book = { id: number; sections: Section[] };
 
 export const BOOKS = [
@@ -83,7 +85,7 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
 
 /** Exam blueprint: 80 tasks following the book's 13 task types, in the same order as the real exam. */
 export const EXAM_BLUEPRINT: [number, number][] = [
-  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 2], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
+  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 1], [72, 1], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
 ];
 
 export function buildExam(book: Book) {

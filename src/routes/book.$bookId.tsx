@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
-import { BOOKS, KIND_HY } from "@/lib/books";
+import { BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
@@ -63,9 +63,9 @@ function BookPage() {
             return (
               <div key={s.n} className="shadow-card flex flex-col gap-3 rounded-2xl border bg-card p-5">
                 <div className="flex items-start gap-3">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{s.n}</span>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{secNum(s.n)}</span>
                   <div className="min-w-0">
-                    <h2 className="text-base font-bold">Բաժին {s.n}</h2>
+                    <h2 className="text-base font-bold">{secTitle(s)}</h2>
                     <p className="text-sm leading-snug text-muted-foreground">{s.instr_hy || KIND_HY[s.units[0]?.kind ?? "mc"]}</p>
                   </div>
                 </div>
