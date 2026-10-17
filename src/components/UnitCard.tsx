@@ -32,7 +32,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
           <p key={i}>
             {p.map((r, j) => (
               <span key={j}>
-                {r.n && <span className="mr-1 select-none whitespace-nowrap font-mono text-[0.75rem] font-semibold text-primary/80">{r.n}. –</span>}
+                {r.n && <span className="mr-1 select-none whitespace-nowrap font-mono text-[0.75rem] font-semibold text-primary/80">{r.n}.</span>}
                 {r.t}{" "}
               </span>
             ))}
