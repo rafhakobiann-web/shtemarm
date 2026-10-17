@@ -6,3 +6,4 @@
 - [ ] Separate gamified / traditional mode buttons for tests too
 - [ ] Keep the reading text visible while scrolling through its questions (side-by-side on desktop, pinned on phone)
 - [ ] More thorough, accurate explanations for every answer
+- [ ] Section 7: split dialogues into their own section (each book)
