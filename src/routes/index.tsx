@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const COUNTS: Record<number, number> & Record<1 | 2 | 3, number> = { 1: 1601, 2: 1501, 3: 1251 };
+const COUNTS: Record<number, number> & Record<1 | 2 | 3, number> = { 1: 1601, 2: 1509, 3: 1271 };
 
 function Index() {
   const p = useProgress();

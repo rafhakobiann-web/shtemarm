@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Heart, Zap, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { secTitle, shuffle, type Unit } from "@/lib/books";
+import { secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -125,8 +125,10 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
       if (ids.some((i) => progress.answers[i] === 0)) return 1;
       return 2;
     };
-    const s = shuffle(units);
-    return s.sort((a, b) => score(a) - score(b)).slice(0, ROUND);
+    // book order: continue from the first unit not yet answered correctly
+    const start = units.findIndex((u) => score(u) !== 2);
+    const from = start === -1 ? (seed * ROUND) % units.length : start;
+    return units.slice(from, from + ROUND);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [units, seed]);
   const [idx, setIdx] = useState(0);

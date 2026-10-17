@@ -88,6 +88,14 @@ export const EXAM_BLUEPRINT: [number, number][] = [
   [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 1], [72, 1], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
 ];
 
+/** Sort picked items into the order they appear in the book. */
+function inBookOrder(book: Book, items: { section: number; unit: Unit }[]) {
+  const pos = new Map<string, number>();
+  let i = 0;
+  for (const s of book.sections) for (const u of s.units) pos.set(u.id, i++);
+  return [...items].sort((a, b) => (pos.get(a.unit.id) ?? 0) - (pos.get(b.unit.id) ?? 0));
+}
+
 export function buildExam(book: Book) {
   const items: { section: number; unit: Unit }[] = [];
   for (const [n, pts] of EXAM_BLUEPRINT) {
@@ -102,7 +110,7 @@ export function buildExam(book: Book) {
     }
     pickPoints(sec, pts, filter).forEach((unit) => items.push({ section: n, unit }));
   }
-  return items;
+  return inBookOrder(book, items);
 }
 
 export function buildCustom(book: Book, sections: number[], count: number) {
@@ -115,5 +123,5 @@ export function buildCustom(book: Book, sections: number[], count: number) {
     out.push(it);
     pts += unitPoints(it.unit);
   }
-  return out.sort((a, b) => a.section - b.section);
+  return inBookOrder(book, out);
 }
