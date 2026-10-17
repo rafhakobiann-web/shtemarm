@@ -28,7 +28,9 @@ function StudyPage() {
   const { data: book } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
 
-  useEffect(() => update((p) => (p.mode === mode ? p : { ...p, mode })), [mode]);
+  useEffect(() => {
+    update((p) => (p.mode === mode ? p : { ...p, mode }));
+  }, [mode]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
@@ -87,7 +89,9 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
   const { answers, setAnswers, revealed, check } = useRevealer();
   const pages = Math.ceil(units.length / PER);
   const slice = units.slice(page * PER, page * PER + PER);
-  useEffect(() => window.scrollTo({ top: 0 }), [page]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [page]);
   return (
     <div className="space-y-5">
       {slice.map((u) => (
