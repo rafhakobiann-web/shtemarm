@@ -85,7 +85,7 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
 
 /** Exam blueprint: 80 tasks following the book's 13 task types, in the same order as the real exam. */
 export const EXAM_BLUEPRINT: [number, number][] = [
-  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 1], [72, 1], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
+  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 2], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
 ];
 
 /** Sort picked items into the order they appear in the book. */
