@@ -25,13 +25,13 @@ function Index() {
   return (
     <div className="space-y-10">
       <section className="bg-hero relative overflow-hidden rounded-3xl p-6 text-primary-foreground sm:p-10 lg:p-12">
-        <div className="pointer-events-none absolute -right-6 top-1/2 hidden -translate-y-1/2 lg:flex">
+        <div className="pointer-events-none absolute -right-10 top-1/2 hidden -translate-y-1/2 xl:flex">
           {BOOKS.map((b, i) => (
             <img
               key={b.id}
               src={b.cover}
               alt=""
-              className="shadow-card -ml-16 w-44 rounded-xl border-4 border-primary-foreground/30 object-cover xl:w-52"
+              className="shadow-card -ml-16 w-40 rounded-xl border-4 border-primary-foreground/30 object-cover"
               style={{ transform: `rotate(${(i - 1) * 8}deg) translateY(${i === 1 ? -12 : 10}px)` }}
             />
           ))}
