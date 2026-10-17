@@ -32,9 +32,26 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
     );
   }
   if (kind === "match") {
+    const cols = splitColumns(lines);
+    if (!cols) {
+      return (
+        <div className="overflow-x-auto rounded-xl bg-muted/60 p-4 sm:p-6">
+          <pre className="min-w-max font-mono text-[13px] leading-relaxed sm:text-sm">{text}</pre>
+        </div>
+      );
+    }
     return (
-      <div className="overflow-x-auto rounded-xl bg-muted/60 p-4 sm:p-6">
-        <pre className="min-w-max font-mono text-[13px] leading-relaxed sm:text-sm">{text}</pre>
+      <div className="grid gap-3 md:grid-cols-2">
+        {[cols.left, cols.right].map((items, ci) => (
+          <ul key={ci} className="space-y-2 rounded-xl bg-muted/60 p-3 sm:p-4">
+            {items.map((it, i) => (
+              <li key={i} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 text-[0.95rem] leading-snug">
+                <span className={cn("font-display text-sm font-bold", ci === 0 ? "text-primary" : "text-accent-foreground")}>{it.mark}</span>
+                <span>{it.text}</span>
+              </li>
+            ))}
+          </ul>
+        ))}
       </div>
     );
   }
