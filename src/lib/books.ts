@@ -1,0 +1,101 @@
+import cover1 from "@/assets/cover-1.webp.asset.json";
+import cover2 from "@/assets/cover-2.webp.asset.json";
+import cover3 from "@/assets/cover-3.webp.asset.json";
+
+export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string };
+export type Unit =
+  | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
+  | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[] }
+  | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> };
+export type Section = { n: number; instr_en: string; instr_hy: string; units: Unit[] };
+export type Book = { id: number; sections: Section[] };
+
+export const BOOKS = [
+  { id: 1, title: "Շտեմարան 1", sub: "Մաս I · 2017", cover: cover1.url },
+  { id: 2, title: "Շտեմարան 2", sub: "Մաս II · 2017", cover: cover2.url },
+  { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: cover3.url },
+] as const;
+
+const cache = new Map<number, Promise<Book>>();
+export function loadBook(id: number): Promise<Book> {
+  if (!cache.has(id)) {
+    cache.set(
+      id,
+      fetch(`/data/book${id}.json`).then((r) => {
+        if (!r.ok) throw new Error("Չհաջողվեց բեռնել գիրքը");
+        return r.json();
+      }),
+    );
+  }
+  return cache.get(id)!;
+}
+
+export function unitPoints(u: Unit) {
+  return u.kind === "mc" ? u.questions.length : 1;
+}
+
+export const KIND_HY: Record<Unit["kind"], string> = {
+  mc: "Ընտրել ճիշտ տարբերակը",
+  set: "Ընտրել ճիշտ համարները",
+  seq: "Տեղադրել համարները ըստ բացթողումների",
+  match: "Համապատասխանեցնել",
+};
+
+export function shuffle<T>(a: T[]): T[] {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+/** Pick units from a section until reaching `points` (each MC sub-question = 1 point). */
+function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit) => boolean): Unit[] {
+  if (!sec) return [];
+  const out: Unit[] = [];
+  let total = 0;
+  for (const u of shuffle(sec.units.filter(filter ?? (() => true)))) {
+    const p = unitPoints(u);
+    if (total + p > points && total > 0) continue;
+    out.push(u);
+    total += p;
+    if (total >= points) break;
+  }
+  return out;
+}
+
+/** Exam blueprint: 80 tasks following the book's 13 task types, in the same order as the real exam. */
+export const EXAM_BLUEPRINT: [number, number][] = [
+  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 2], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
+];
+
+export function buildExam(book: Book) {
+  const items: { section: number; unit: Unit }[] = [];
+  for (const [n, pts] of EXAM_BLUEPRINT) {
+    const sec = book.sections.find((s) => s.n === n);
+    let filter: ((u: Unit) => boolean) | undefined;
+    if (n === 1) {
+      // one long (10-question) text + one short (5-question) text
+      const long = pickPoints(sec, 10, (u) => u.kind === "mc" && u.questions.length >= 10);
+      const short = pickPoints(sec, 5, (u) => u.kind === "mc" && u.questions.length <= 5);
+      [...long, ...short].forEach((unit) => items.push({ section: n, unit }));
+      continue;
+    }
+    pickPoints(sec, pts, filter).forEach((unit) => items.push({ section: n, unit }));
+  }
+  return items;
+}
+
+export function buildCustom(book: Book, sections: number[], count: number) {
+  const pool = book.sections.filter((s) => sections.includes(s.n));
+  const all = shuffle(pool.flatMap((s) => s.units.map((unit) => ({ section: s.n, unit }))));
+  const out: { section: number; unit: Unit }[] = [];
+  let pts = 0;
+  for (const it of all) {
+    if (pts >= count) break;
+    out.push(it);
+    pts += unitPoints(it.unit);
+  }
+  return out.sort((a, b) => a.section - b.section);
+}
