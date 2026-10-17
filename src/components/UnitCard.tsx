@@ -345,7 +345,7 @@ function numCls(sel: boolean, show: boolean, correct: boolean) {
   );
 }
 
-function NumPicker(p: { label: string; count: number; selected: number[]; disabled: boolean; correct?: number[]; onToggle: (n: number) => void }) {
+function NumPicker(p: { label: string; count: number; selected: number[]; disabled: boolean; correct?: number[] | undefined; onToggle: (n: number) => void }) {
   return (
     <div>
       <p className="mb-2 text-sm font-semibold">{p.label}</p>

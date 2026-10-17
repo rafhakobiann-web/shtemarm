@@ -12,7 +12,7 @@ const Input = z.object({
 export const explainAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
+    const key = process.env["LOVABLE_API_KEY"];
     if (!key) return { text: "Բացատրությունը հիմա հասանելի չէ։" };
     const wrong = data.chosen && data.chosen !== data.correct;
     const prompt = `Դու անգլերենի փորձառու ուսուցիչ ես, որը պատրաստում է հայ աշակերտներին միասնական քննությանը։

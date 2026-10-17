@@ -62,8 +62,14 @@ function AuthPage() {
         ? await supabase.auth.signInWithPassword({ email, password: pw })
         : await supabase.auth.signUp({ email, password: pw, options: { emailRedirectTo: window.location.origin } });
     setBusy(false);
-    if (error) return toast.error(error.message);
-    if (mode === "up" && !data.session) return toast.success("Ստուգեք ձեր էլ. փոստը՝ հաշիվը հաստատելու համար։");
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (mode === "up" && !data.session) {
+      toast.success("Ստուգեք ձեր էլ. փոստը՝ հաշիվը հաստատելու համար։");
+      return;
+    }
     nav({ to: "/" });
   };
 

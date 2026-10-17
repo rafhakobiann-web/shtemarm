@@ -176,7 +176,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     );
   }
 
-  const u = round[idx];
+  const u = round[idx]!;
   const keys = u.kind === "mc" ? u.questions.map((q) => q.n) : ["unit"];
   const allRevealed = keys.every((k) => revealed[qKey(u, k)]);
   return (

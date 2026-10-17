@@ -110,13 +110,13 @@ function Setup(p: {
         {tab === "random" && (
           <div className="space-y-3">
             <p className="text-sm font-semibold">Բաժինների քանակը՝ {randomN}</p>
-            <Slider min={1} max={13} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0])} />
+            <Slider min={1} max={13} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0] ?? 3)} />
           </div>
         )}
         {tab !== "exam" && (
           <div className="space-y-3">
             <p className="text-sm font-semibold">Հարցերի քանակը՝ {count}</p>
-            <Slider min={5} max={120} step={5} value={[count]} onValueChange={(v) => setCount(v[0])} />
+            <Slider min={5} max={120} step={5} value={[count]} onValueChange={(v) => setCount(v[0] ?? 20)} />
           </div>
         )}
         <Button
