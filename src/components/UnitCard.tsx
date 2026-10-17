@@ -110,7 +110,9 @@ function Explain(props: { instruction: string; passage: string; question: string
   if (text)
     return (
       <div className="animate-pop mt-3 whitespace-pre-line rounded-xl border-l-4 border-sky bg-secondary/60 p-4 text-sm leading-relaxed">
-        {text}
+        {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+          part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>,
+        )}
       </div>
     );
   return (
@@ -182,7 +184,7 @@ export function UnitCard(props: {
     return (
       <div key={q.n} className={cn("rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
         <div className="mb-3 flex gap-2">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground">
+          <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
           <p className="min-w-0 pt-0.5 font-medium leading-relaxed">{q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"}</p>

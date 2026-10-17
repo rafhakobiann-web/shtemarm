@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { loadBook } from "./books";
+import { loadAny } from "./books";
 
 export function useBook(id: number) {
-  return useQuery({ queryKey: ["book", id], queryFn: () => loadBook(id), staleTime: Infinity });
+  return useQuery({ queryKey: ["book", id], queryFn: () => loadAny(id), staleTime: Infinity });
 }

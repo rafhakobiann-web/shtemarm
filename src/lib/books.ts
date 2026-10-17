@@ -17,6 +17,20 @@ export const BOOKS = [
 ] as const;
 
 const cache = new Map<number, Promise<Book>>();
+/** id 0 = all books merged section-by-section */
+export function loadAny(id: number): Promise<Book> {
+  if (id !== 0) return loadBook(id);
+  return Promise.all([1, 2, 3].map(loadBook)).then((bs) => {
+    const map = new Map<number, Section>();
+    for (const b of bs)
+      for (const s of b.sections) {
+        const cur = map.get(s.n);
+        if (cur) cur.units = [...cur.units, ...s.units];
+        else map.set(s.n, { ...s, units: [...s.units] });
+      }
+    return { id: 0, sections: [...map.values()].sort((a, b) => a.n - b.n) };
+  });
+}
 export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
