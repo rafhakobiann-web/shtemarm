@@ -4,3 +4,5 @@
 - [ ] Tests across all books combined ("all" book option)
 - [ ] Per-section test button on each section card
 - [ ] Separate gamified / traditional mode buttons for tests too
+- [ ] Keep the reading text visible while scrolling through its questions (side-by-side on desktop, pinned on phone)
+- [ ] More thorough, accurate explanations for every answer
