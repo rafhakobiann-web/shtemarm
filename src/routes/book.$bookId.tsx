@@ -39,12 +39,12 @@ function BookPage() {
           <p className="text-muted-foreground">{meta.sub}</p>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
-              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam" }}>
+              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
                 <Trophy /> 80 հարցանոց քննություն
               </Link>
             </Button>
             <Button variant="sun" size="lg" asChild>
-              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom" }}>
+              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
                 <ClipboardCheck /> Կազմել թեստ
               </Link>
             </Button>
@@ -75,7 +75,7 @@ function BookPage() {
                 <p className="text-xs text-muted-foreground">
                   {done}/{ids.length} արված · {right} ճիշտ
                 </p>
-                <div className="mt-auto grid grid-cols-2 gap-2">
+                <div className="mt-auto grid grid-cols-3 gap-2">
                   <Button variant="game" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> Խաղալ
@@ -84,6 +84,11 @@ function BookPage() {
                   <Button variant="outline" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
                       <BookText /> Դասական
+                    </Link>
+                  </Button>
+                  <Button variant="sun" asChild>
+                    <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
+                      <ClipboardCheck /> Թեստ
                     </Link>
                   </Button>
                 </div>

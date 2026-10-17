@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookOpen, GraduationCap, Trophy } from "lucide-react";
 import { BOOKS } from "@/lib/books";
+import { Button } from "@/components/ui/button";
 import { useProgress, level, levelFloor } from "@/lib/progress";
 
 export const Route = createFileRoute("/")({
@@ -79,6 +80,25 @@ function Index() {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold">Թեստ բոլոր շտեմարաններից</h2>
+          <p className="text-sm text-muted-foreground">Հարցեր երեք գրքերից միասին՝ քննություն կամ ըստ բաժինների։</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="game" size="lg" asChild>
+            <Link to="/test/$bookId" params={{ bookId: "all" }} search={{ mode: "exam", style: "classic" }}>
+              <Trophy /> Քննություն (80)
+            </Link>
+          </Button>
+          <Button variant="sun" size="lg" asChild>
+            <Link to="/test/$bookId" params={{ bookId: "all" }} search={{ mode: "custom", style: "game" }}>
+              <GraduationCap /> Կազմել թեստ
+            </Link>
+          </Button>
         </div>
       </section>
 
