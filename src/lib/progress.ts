@@ -29,7 +29,11 @@ function load() {
 
 let syncTimer: ReturnType<typeof setTimeout> | undefined;
 function persist() {
-  localStorage.setItem(KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    /* storage full or unavailable (e.g. private mode): keep in-memory state */
+  }
   subs.forEach((f) => f());
   clearTimeout(syncTimer);
   syncTimer = setTimeout(pushRemote, 1500);
@@ -41,14 +45,16 @@ export function update(fn: (p: Progress) => Progress) {
   persist();
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+// Local calendar day (not UTC), so streaks roll over at local midnight.
+const dayKey = (t: number) => new Date(t).toLocaleDateString("en-CA");
+const today = () => dayKey(Date.now());
 
 export function recordAnswer(id: string, correct: boolean, xp = 10) {
   update((p) => {
     const d = today();
     let streak = p.streak;
     if (p.lastDay !== d) {
-      const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+      const y = dayKey(Date.now() - 864e5);
       streak = p.lastDay === y ? p.streak + 1 : 1;
     }
     return { ...p, answers: { ...p.answers, [id]: correct ? 1 : 0 }, xp: p.xp + (correct ? xp : 0), streak, lastDay: d };

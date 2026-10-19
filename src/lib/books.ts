@@ -71,9 +71,35 @@ export function shuffle<T>(a: T[]): T[] {
 /** Pick units from a section until reaching `points` (each MC sub-question = 1 point). */
 function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit) => boolean): Unit[] {
   if (!sec) return [];
+  const pool = shuffle(sec.units.filter(filter ?? (() => true)));
+  // Prefer an exact total (subset-sum over the shuffled pool) so exams always hit their point target.
+  const sizes = pool.map(unitPoints);
+  const memo = new Map<number, boolean>();
+  const can = (i: number, rem: number): boolean => {
+    if (rem === 0) return true;
+    if (rem < 0 || i >= pool.length) return false;
+    const key = i * (points + 1) + rem;
+    const hit = memo.get(key);
+    if (hit !== undefined) return hit;
+    const r = can(i + 1, rem - sizes[i]!) || can(i + 1, rem);
+    memo.set(key, r);
+    return r;
+  };
+  if (can(0, points)) {
+    const exact: Unit[] = [];
+    let rem = points;
+    for (let i = 0; i < pool.length && rem > 0; i++) {
+      if (sizes[i]! <= rem && can(i + 1, rem - sizes[i]!)) {
+        exact.push(pool[i]!);
+        rem -= sizes[i]!;
+      }
+    }
+    return exact;
+  }
+  // No exact combination exists: fall back to the closest greedy fill.
   const out: Unit[] = [];
   let total = 0;
-  for (const u of shuffle(sec.units.filter(filter ?? (() => true)))) {
+  for (const u of pool) {
     const p = unitPoints(u);
     if (total + p > points && total > 0) continue;
     out.push(u);

@@ -65,7 +65,7 @@ function StudyPage() {
 
 const qKey = (u: Unit, k: string) => (u.kind === "mc" ? `${u.id}:${k}` : u.id);
 
-function useRevealer(onResult?: (correct: boolean) => void) {
+function useRevealer(onResult?: (correct: boolean) => void, xpFor?: () => number) {
   const [answers, setAnswers] = useState<Record<string, UnitAnswer>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const check = (u: Unit, key: string) => {
@@ -76,7 +76,7 @@ function useRevealer(onResult?: (correct: boolean) => void) {
     let ok: boolean;
     if (u.kind === "mc") ok = a?.mc?.[key] === u.questions.find((q) => q.n === key)?.answer;
     else ok = scoreUnit(u, a).got === 1;
-    recordAnswer(id, ok);
+    recordAnswer(id, ok, xpFor?.() ?? 10);
     onResult?.(ok);
   };
   return { answers, setAnswers, revealed, check };
@@ -141,17 +141,19 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
   const [earned, setEarned] = useState(0);
   const [right, setRight] = useState(0);
   const [total, setTotal] = useState(0);
+  // Same value is shown in the summary and saved to the profile.
+  const xpForAnswer = () => 10 + Math.min(combo, 5) * 2;
   const { answers, setAnswers, revealed, check } = useRevealer((ok) => {
     setTotal((t) => t + 1);
     if (ok) {
       setRight((r) => r + 1);
       setCombo((c) => c + 1);
-      setEarned((e) => e + 10 + Math.min(combo, 5) * 2);
+      setEarned((e) => e + xpForAnswer());
     } else {
       setCombo(0);
       setHearts((h) => h - 1);
     }
-  });
+  }, xpForAnswer);
 
   const restart = () => {
     setSeed((s) => s + 1);
