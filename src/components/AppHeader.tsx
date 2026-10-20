@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User } from "lucide-react";
+import { Flame, Star, User, ChevronDown, BookOpen } from "lucide-react";
 import { useProgress, level } from "@/lib/progress";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 
 export function AppHeader() {
   const p = useProgress();
@@ -17,9 +19,24 @@ export function AppHeader() {
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-display text-lg font-black text-accent-foreground">Շ</span>
-          <span className="truncate font-display text-base font-bold sm:text-lg">Շտեմարան · English</span>
+          <span className="truncate font-display text-base font-bold sm:text-lg">Շտեմարան</span>
         </Link>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" aria-label="Ընտրել առարկան" className="gap-1">
+                <BookOpen /><span className="hidden sm:inline">Առարկա</span><ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-56">
+              <DropdownMenuLabel>Առարկաներ</DropdownMenuLabel>
+              <DropdownMenuItem asChild><Link to="/">Անգլերեն</Link></DropdownMenuItem>
+              <DropdownMenuItem disabled>Մաթեմատիկա <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
+              <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
+              <DropdownMenuItem disabled>Կենսաբանություն <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to="/history">Հայոց պատմություն <span className="ml-auto text-xs">Շուտով</span></Link></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <span className="flex items-center gap-1" title="Օրեր անընդմեջ">
             <Flame className="size-4 text-destructive" />
             {p.streak}
