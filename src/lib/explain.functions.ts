@@ -1,54 +1,102 @@
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-import { explanationError, explanationKey, readGeminiStream } from "./explanation";
+export type ExplanationInput = { instruction: string; passage: string; question: string; correct: string; chosen: string | null };
 
-const Input = z.object({
-  instruction: z.string().max(500),
-  passage: z.string().max(6000),
-  question: z.string().max(2000),
-  correct: z.string().max(500),
-  chosen: z.string().max(500).nullable(),
-});
+export async function explanationKey(input: ExplanationInput) {
+  const bytes = new TextEncoder().encode(JSON.stringify(["gemini-v1", input.instruction, input.passage, input.question, input.correct, input.chosen]));
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
-export const explainAnswer = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => Input.parse(d))
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const cacheKey = await explanationKey(data);
-    const { data: cached } = await supabaseAdmin.from("explanation_cache").select("explanation").eq("cache_key", cacheKey).maybeSingle();
-    if (cached) return { text: cached.explanation, cached: true, error: false };
-    const key = process.env["GEMINI_API_KEY"];
-    if (!key) return { text: "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Gemini-ի բանալին։", error: true };
-    const wrong = data.chosen && data.chosen !== data.correct;
-    const prompt = `Դու անգլերենի փորձառու ուսուցիչ ես, որը հայ աշակերտներին պատրաստում է միասնական քննությանը։
-Ճիշտ պատասխանը վերցված է շտեմարանի պաշտոնական պատասխաններից և ՃԻՇՏ Է․ մի վիճարկիր այն։
-Գրիր ՀԱՅԵՐԵՆՈՎ, մանրամասն և ճշգրիտ (150–280 բառ)։ Անգլերեն բառերը, կանոնների անվանումներն ու օրինակները թող մնան անգլերեն։
-Կառուցվածքը (առանց վերնագրերի, կարճ պարբերություններով).
-1. Ինչու է ճիշտ պատասխանը ճիշտ՝ նշիր կոնկրետ քերականական կանոնը կամ բառի իմաստը, կամ մեջբերիր տեքստի այն հատվածը (տողը), որտեղ է պատասխանը։
-${wrong ? "2. Ինչու է աշակերտի ընտրածը սխալ՝ կոնկրետ պատճառով։" : "2. Աշակերտը ճիշտ է պատասխանել․ հաստատիր դա։"}
-3. Յուրաքանչյուր մյուս տարբերակի համար մեկ նախադասությամբ՝ ինչու այն չի համապատասխանում։ Եթե առաջադրանքը համարակալված նախադասություններով է, համառոտ գնահատիր յուրաքանչյուր համարը։ Եթե համապատասխանեցում կամ բացթողումների լրացում է, բացատրիր յուրաքանչյուր զույգը։
-4. Մեկ կարճ «Հիշիր»՝ օգտակար խորհուրդ։
-Ընդգծումների համար օգտագործիր **բառ**։ Մի կրկնիր հարցն ամբողջությամբ։
+export function explanationError(status: number) {
+  if (status === 429) return "Արհեստական բանականության սահմանաչափը ժամանակավորապես սպառվել է․ փորձեք ավելի ուշ։ Պահված բացատրությունները հասանելի են։";
+  if (status === 400 || status === 401 || status === 403) return "ԱԲ բանալին կամ հասանելիությունը պետք է ստուգի կայքի պատասխանատուն։";
+  if (status === 404) return "Բացատրությունների ընտրված ծառայությունը հասանելի չէ կամ բացատրությունը դեռևս ավելացված չէ բազայում։";
+  return "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։";
+}
 
-Առաջադրանք: ${data.instruction}
-${data.passage ? `Տեքստ:\n${data.passage}\n` : ""}Հարց:\n${data.question}
-Ճիշտ պատասխան: ${data.correct}
-${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշակերտը չի պատասխանել։"}`;
+export async function readGeminiStream(body: ReadableStream<Uint8Array>) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+  let blocked = false;
+  
+  const consume = (line: string) => {
+    if (!line.startsWith("data:")) return;
+    const payload = line.slice(5).trim();
+    if (!payload || payload === "[DONE]") return;
+    
     try {
-    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse", {
-      method: "POST",
-      headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-      }),
-    });
-    if (!res.ok || !res.body) return { text: explanationError(res.status), error: true };
-    const result = await readGeminiStream(res.body);
-    if (result.blocked) return { text: "Ծառայությունը մերժեց այս բացատրության ստեղծումը։", error: true };
-    if (!result.text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։", error: true };
-    await supabaseAdmin.from("explanation_cache").upsert({ cache_key: cacheKey, explanation: result.text }, { onConflict: "cache_key" });
-    return { text: result.text, cached: false, error: false };
-    } catch {
-      return { text: "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։", error: true };
+      const event = JSON.parse(payload) as { 
+        promptFeedback?: { blockReason?: string }; 
+        candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[]; 
+        error?: unknown 
+      };
+      
+      if (event.error) throw new Error("Gemini stream failed");
+      if (event.promptFeedback?.blockReason) blocked = true;
+      
+      for (const candidate of event.candidates ?? []) {
+        if (["SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT"].includes(candidate.finishReason ?? "")) {
+          blocked = true;
+        }
+        for (const part of candidate.content?.parts ?? []) {
+          if (!part.thought && part.text) text += part.text;
+        }
+      }
+    } catch {}
+  };
+
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      lines.forEach(consume);
     }
-  });
+    buffer += decoder.decode();
+    if (buffer.trim()) consume(buffer);
+  } finally { 
+    reader.releaseLock(); 
+  }
+  
+  return { text: text.trim(), blocked };
+}
+
+export async function readGroqStream(body: ReadableStream<Uint8Array>) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+  
+  const consume = (line: string) => {
+    if (!line.startsWith("data:")) return;
+    const payload = line.slice(5).trim();
+    if (!payload || payload === "[DONE]") return;
+    
+    try {
+      const event = JSON.parse(payload) as { choices?: { delta?: { content?: string } }[] };
+      for (const choice of event.choices ?? []) {
+        if (choice.delta?.content) text += choice.delta.content;
+      }
+    } catch {}
+  };
+
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      lines.forEach(consume);
+    }
+    buffer += decoder.decode();
+    if (buffer.trim()) consume(buffer);
+  } finally {
+    reader.releaseLock();
+  }
+
+  return { text: text.trim(), blocked: false };
+}
