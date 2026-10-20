@@ -14,6 +14,7 @@
 - [ ] Mathematics: integrate both complete parts and verified official answers
 - [ ] Armenian language: integrate four books, official answers, exact topic/subtopic headings and official exam structure
 - [ ] Armenian book section counts: I 103/111/212/200/27/10/16/204; II 122/127/62/304/15/34/217; III 157/148/157/230/22/26/246; IV 190/172/117/176/4/14/137 (in supplied topic order)
-- [ ] Biology and Armenian history: locked “Շուտով” entries with supplied covers
-- [ ] Optional/deferred: English interface and website changelog only if within the requested five-credit budget (exact cost cannot be guaranteed)
+- [ ] Biology and Armenian history: entries with supplied covers and question books (Biology has 4 and Armenian history has 3)
+- [ ] Optional/deferred: English interface and website changelog with update dates and details in emojis at the start of every point
 - [ ] Official English Tests 1–4 and Armenian official exams: verified question-by-question answer mapping
+- [ ] Math questions improvement by thorughly looking at the book (not too necessary)
