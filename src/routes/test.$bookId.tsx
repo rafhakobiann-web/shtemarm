@@ -9,6 +9,7 @@ import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/test/$bookId")({
   validateSearch: z.object({
@@ -50,8 +51,13 @@ function TestPage() {
       style={style}
       onStyle={setStyle}
       onStart={(k, secs, count) => {
-        setKind(k);
-        setItems(k === "exam" ? buildExam(book) : buildCustom(book, secs, count));
+        try {
+          const selected = k === "exam" ? buildExam(book) : buildCustom(book, secs, count);
+          setKind(k);
+          setItems(selected);
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Չհաջողվեց կազմել թեստը։");
+        }
       }}
     />
   );
@@ -72,7 +78,7 @@ function Setup(p: {
   const [randomN, setRandomN] = useState(3);
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Link to="/book/$bookId" params={{ bookId: p.bookId }} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+      <Link to={p.bookId === "all" ? "/" : "/book/$bookId"} params={{ bookId: p.bookId }} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> {bookName(p.bookId)}
       </Link>
       <h1 className="text-2xl font-black sm:text-3xl">Ընտրիր թեստի տեսակը</h1>
@@ -123,7 +129,7 @@ function Setup(p: {
         {tab === "random" && (
           <div className="space-y-3">
             <p className="text-sm font-semibold">Բաժինների քանակը՝ {randomN}</p>
-            <Slider min={1} max={13} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0] ?? 3)} />
+            <Slider min={1} max={p.sections.length} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0] ?? 3)} />
           </div>
         )}
         {tab !== "exam" && (
@@ -240,7 +246,8 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
         </div>
       )}
       {items.map(({ section, unit }, idx) => {
-        const sec = book.sections.find((s) => s.n === section)!;
+        const sec = book.sections.find((s) => s.n === section);
+        if (!sec) return null;
         const from = qNo + 1;
         qNo += unitPoints(unit);
         if (style === "game" && !finished && idx !== cur) return null;
