@@ -68,16 +68,22 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
 
       if ((!groqKey || !res!.ok) && geminiKey) {
         isGroq = false;
-        res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?key=${geminiKey}&alt=sse`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: prompt }] }],
-            }),
-          }
-        );
+        const callGemini = (model: string) =>
+          fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${geminiKey}&alt=sse`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+              }),
+            }
+          );
+
+        res = await callGemini("gemini-3.5-flash");
+        if (!res.ok && (res.status === 503 || res.status === 429)) {
+          res = await callGemini("gemini-3.5-flash-lite");
+        }
       }
 
       if (!res! || !res.ok || !res.body) {
