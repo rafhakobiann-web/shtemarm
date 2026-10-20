@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      explanation_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          explanation: string
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          explanation: string
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          explanation?: string
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           data: Json
