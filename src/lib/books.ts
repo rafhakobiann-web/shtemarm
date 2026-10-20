@@ -43,7 +43,9 @@ export function loadBook(id: number): Promise<Book> {
       }),
     );
   }
-  return cache.get(id)!;
+  const pending = cache.get(id);
+  if (!pending) throw new Error("Չհաջողվեց բեռնել գիրքը");
+  return pending;
 }
 
 export function unitPoints(u: Unit) {
@@ -61,8 +63,10 @@ export function shuffle<T>(a: T[]): T[] {
   const b = [...a];
   for (let i = b.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    const t = b[i]!;
-    b[i] = b[j]!;
+    const t = b[i];
+    const other = b[j];
+    if (t === undefined || other === undefined) continue;
+    b[i] = other;
     b[j] = t;
   }
   return b;
@@ -70,22 +74,23 @@ export function shuffle<T>(a: T[]): T[] {
 
 /** Pick units from a section until reaching `points` (each MC sub-question = 1 point). */
 function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit) => boolean): Unit[] {
-  if (!sec) return [];
-  const out: Unit[] = [];
-  let total = 0;
-  for (const u of shuffle(sec.units.filter(filter ?? (() => true)))) {
-    const p = unitPoints(u);
-    if (total + p > points && total > 0) continue;
-    out.push(u);
-    total += p;
-    if (total >= points) break;
+  // Exact subset selection keeps passages intact and never silently overshoots.
+  const sums = new Map<number, Unit[]>([[0, []]]);
+  for (const unit of shuffle(sec?.units.filter(filter ?? (() => true)) ?? [])) {
+    const weight = unitPoints(unit);
+    for (const [sum, picked] of [...sums.entries()]) {
+      const next = sum + weight;
+      if (next <= points && !sums.has(next)) sums.set(next, [...picked, unit]);
+    }
+    const result = sums.get(points);
+    if (result) return result;
   }
-  return out;
+  throw new Error(`Բաժին ${sec?.n ?? ""}․ բավարար ամբողջական առաջադրանքներ չկան ${points} հարց կազմելու համար։`);
 }
 
 /** Exam blueprint: 80 tasks following the book's 13 task types, in the same order as the real exam. */
 export const EXAM_BLUEPRINT: [number, number][] = [
-  [1, 15], [2, 10], [3, 18], [4, 5], [5, 10], [6, 3], [7, 2], [8, 3], [9, 2], [10, 3], [11, 3], [12, 3], [13, 3],
+  [1, 10], [2, 16], [3, 11], [4, 5], [5, 8], [6, 5], [7, 1], [8, 5], [9, 1], [10, 5], [11, 5], [12, 4], [13, 4],
 ];
 
 /** Sort picked items into the order they appear in the book. */
@@ -100,16 +105,14 @@ export function buildExam(book: Book) {
   const items: { section: number; unit: Unit }[] = [];
   for (const [n, pts] of EXAM_BLUEPRINT) {
     const sec = book.sections.find((s) => s.n === n);
-    let filter: ((u: Unit) => boolean) | undefined;
     if (n === 1) {
-      // one long (10-question) text + one short (5-question) text
-      const long = pickPoints(sec, 10, (u) => u.kind === "mc" && u.questions.length >= 10);
-      const short = pickPoints(sec, 5, (u) => u.kind === "mc" && u.questions.length <= 5);
-      [...long, ...short].forEach((unit) => items.push({ section: n, unit }));
+      // Official 2026 exam: one complete reading passage, exactly ten questions.
+      pickPoints(sec, 10, (u) => u.kind === "mc" && u.questions.length === 10).forEach((unit) => items.push({ section: n, unit }));
       continue;
     }
-    pickPoints(sec, pts, filter).forEach((unit) => items.push({ section: n, unit }));
+    pickPoints(sec, pts, n === 7 ? (u) => u.kind === "seq" && u.answer.length === 5 && !/^\s*[-–]/m.test(u.passage) : undefined).forEach((unit) => items.push({ section: n, unit }));
   }
+  if (items.reduce((sum, item) => sum + unitPoints(item.unit), 0) !== 80) throw new Error("Քննությունը պետք է պարունակի ճիշտ 80 հարց։");
   return inBookOrder(book, items);
 }
 
@@ -120,8 +123,12 @@ export function buildCustom(book: Book, sections: number[], count: number) {
   let pts = 0;
   for (const it of all) {
     if (pts >= count) break;
-    out.push(it);
-    pts += unitPoints(it.unit);
+    const remaining = count - pts;
+    const unit = it.unit.kind === "mc" && it.unit.questions.length > remaining
+      ? { ...it.unit, questions: it.unit.questions.slice(0, remaining) }
+      : it.unit;
+    out.push({ ...it, unit });
+    pts += unitPoints(unit);
   }
   return inBookOrder(book, out);
 }
