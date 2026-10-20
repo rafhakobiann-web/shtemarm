@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { explanationError, explanationKey, readGeminiStream } from "./explanation";
 
 const Input = z.object({
   instruction: z.string().max(500),
@@ -12,8 +13,12 @@ const Input = z.object({
 export const explainAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) return { text: "Բացատրությունը հիմա հասանելի չէ։" };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const cacheKey = await explanationKey(data);
+    const { data: cached } = await supabaseAdmin.from("explanation_cache").select("explanation").eq("cache_key", cacheKey).maybeSingle();
+    if (cached) return { text: cached.explanation, cached: true, error: false };
+    const key = process.env["GEMINI_API_KEY"];
+    if (!key) return { text: "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Gemini-ի բանալին։", error: true };
     const wrong = data.chosen && data.chosen !== data.correct;
     const prompt = `Դու անգլերենի փորձառու ուսուցիչ ես, որը հայ աշակերտներին պատրաստում է միասնական քննությանը։
 Ճիշտ պատասխանը վերցված է շտեմարանի պաշտոնական պատասխաններից և ՃԻՇՏ Է․ մի վիճարկիր այն։
@@ -29,41 +34,21 @@ ${wrong ? "2. Ինչու է աշակերտի ընտրածը սխալ՝ կոնկ�
 ${data.passage ? `Տեքստ:\n${data.passage}\n` : ""}Հարց:\n${data.question}
 Ճիշտ պատասխան: ${data.correct}
 ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշակերտը չի պատասխանել։"}`;
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+    try {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse", {
       method: "POST",
-      headers: { "Lovable-API-Key": key, "Content-Type": "application/json", "X-Lovable-AIG-SDK": "fetch" },
+      headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "openai/gpt-6-astra",
-        input: [{ role: "user", content: prompt }],
-        reasoning: { effort: "medium" },
-        store: false,
-        stream: true,
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
       }),
     });
-    if (res.status === 429) return { text: "Շատ հարցումներ․ փորձեք մի փոքր ուշ։" };
-    if (res.status === 402) return { text: "Բացատրությունների սահմանաչափը սպառվել է։" };
-    if (!res.ok || !res.body) return { text: "Չհաջողվեց ստանալ բացատրությունը։" };
-    const reader = res.body.getReader();
-    const dec = new TextDecoder();
-    let buf = "";
-    let text = "";
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buf += dec.decode(value, { stream: true });
-      const lines = buf.split("\n");
-      buf = lines.pop() ?? "";
-      for (const line of lines) {
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const ev = JSON.parse(payload) as { type?: string; delta?: string };
-          if (ev.type === "response.output_text.delta" && ev.delta) text += ev.delta;
-        } catch {
-          /* partial */
-        }
-      }
+    if (!res.ok || !res.body) return { text: explanationError(res.status), error: true };
+    const result = await readGeminiStream(res.body);
+    if (result.blocked) return { text: "Ծառայությունը մերժեց այս բացատրության ստեղծումը։", error: true };
+    if (!result.text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։", error: true };
+    await supabaseAdmin.from("explanation_cache").upsert({ cache_key: cacheKey, explanation: result.text }, { onConflict: "cache_key" });
+    return { text: result.text, cached: false, error: false };
+    } catch {
+      return { text: "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։", error: true };
     }
-    return { text: text.trim() || "Բացատրություն չկա։" };
   });
