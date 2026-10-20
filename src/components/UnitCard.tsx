@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 import type { Unit, MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
+import { Button } from "@/components/ui/button";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -117,16 +118,14 @@ function Explain(props: { instruction: string; passage: string; question: string
   const fn = useServerFn(explainAnswer);
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  if (text)
-    return (
-      <div className="animate-pop mt-3 whitespace-pre-line rounded-xl border-l-4 border-sky bg-secondary/60 p-4 text-sm leading-relaxed">
-        {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-          part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>,
-        )}
-      </div>
-    );
+  const [failed, setFailed] = useState(false);
   return (
-    <button
+    <div>
+    {text && <div role={failed ? "alert" : "status"} className="animate-pop mt-3 whitespace-pre-line rounded-xl border-l-4 border-sky bg-secondary/60 p-4 text-sm leading-relaxed">
+      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>)}
+    </div>}
+    {(!text || failed) && <Button
+      variant="secondary"
       type="button"
       disabled={loading}
       onClick={async () => {
@@ -134,17 +133,20 @@ function Explain(props: { instruction: string; passage: string; question: string
         try {
           const r = await fn({ data: { ...props, passage: props.passage.slice(0, 5800) } });
           setText(r.text);
+          setFailed(r.error);
         } catch {
           setText("Չհաջողվեց ստանալ բացատրությունը։");
+          setFailed(true);
         } finally {
           setLoading(false);
         }
       }}
-      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground hover:bg-secondary/70"
+      className="mt-3 h-auto min-h-10 whitespace-normal text-left"
     >
       {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-      {loading ? "Բացատրությունը պատրաստվում է…" : "Բացատրել"}
-    </button>
+      {loading ? "Բացատրությունը պատրաստվում է…" : failed ? "Կրկին փորձել" : "Բացատրել"}
+    </Button>}
+    </div>
   );
 }
 
@@ -161,7 +163,7 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   const given = (a?.nums ?? []).filter((x): x is number => x != null);
   const ok =
     u.kind === "set"
-      ? JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify(u.answer)
+      ? JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify([...u.answer].sort((x, y) => x - y))
       : JSON.stringify(a?.nums ?? []) === JSON.stringify(u.answer);
   return { got: ok ? 1 : 0, total: 1, per: [ok] };
 }

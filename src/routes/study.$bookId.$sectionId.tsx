@@ -57,7 +57,7 @@ function StudyPage() {
       ) : mode === "game" ? (
         <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       ) : (
-        <Classic units={section.units} instr={section.instr_hy} instrEn={section.instr_en} />
+        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} />
       )}
     </div>
   );
@@ -79,7 +79,7 @@ function useRevealer(onResult?: (correct: boolean) => void) {
     recordAnswer(id, ok);
     onResult?.(ok);
   };
-  return { answers, setAnswers, revealed, check };
+  return { answers, setAnswers, revealed, setRevealed, check };
 }
 
 /* ---------------- Classic ---------------- */
@@ -141,7 +141,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
   const [earned, setEarned] = useState(0);
   const [right, setRight] = useState(0);
   const [total, setTotal] = useState(0);
-  const { answers, setAnswers, revealed, check } = useRevealer((ok) => {
+  const { answers, setAnswers, revealed, setRevealed, check } = useRevealer((ok) => {
     setTotal((t) => t + 1);
     if (ok) {
       setRight((r) => r + 1);
@@ -162,6 +162,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     setRight(0);
     setTotal(0);
     setAnswers({});
+    setRevealed({});
   };
 
   const done = hearts <= 0 || idx >= round.length;
@@ -182,7 +183,8 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     );
   }
 
-  const u = round[idx]!;
+  const u = round[idx];
+  if (!u) return null;
   const keys = u.kind === "mc" ? u.questions.map((q) => q.n) : ["unit"];
   const allRevealed = keys.every((k) => revealed[qKey(u, k)]);
   return (
