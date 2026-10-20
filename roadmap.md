@@ -7,3 +7,13 @@
 - [x] Thorough explanations
 - [x] Section 7 split: texts, dialogues, part Բ
 - [x] Questions in book order
+- [ ] Current priority: direct Gemini explanations with durable cache; verify saved key (never promise unlimited usage)
+- [ ] Current priority: 2026 English exam blueprint, one passage with exactly 10 questions, selection and scoring regression tests
+- [ ] Current priority: English question/answer integrity audit and study/test bug fixes
+- [ ] Subject menu at the upper right; tests and Armenian explanations for every available subject/section
+- [ ] Mathematics: integrate both complete parts and verified official answers
+- [ ] Armenian language: integrate four books, official answers, exact topic/subtopic headings and official exam structure
+- [ ] Armenian book section counts: I 103/111/212/200/27/10/16/204; II 122/127/62/304/15/34/217; III 157/148/157/230/22/26/246; IV 190/172/117/176/4/14/137 (in supplied topic order)
+- [ ] Biology and Armenian history: locked “Շուտով” entries with supplied covers
+- [ ] Optional/deferred: English interface and website changelog only if within the requested five-credit budget (exact cost cannot be guaranteed)
+- [ ] Official English Tests 1–4 and Armenian official exams: verified question-by-question answer mapping
