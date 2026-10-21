@@ -114,6 +114,7 @@ function LevelTestPage() {
                 <div className="min-w-0 flex-1 space-y-2">
                   <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">{skillLabel(question.skill)}</span>
                   {question.passage && <p className="whitespace-pre-line rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><EnglishText text={question.passage} /></p>}
+                  {question.passage && <PassageTranslation text={question.passage} />}
                   <h2 className="text-base font-semibold leading-relaxed"><EnglishText text={question.prompt} /></h2>
                 </div>
               </div>
@@ -125,16 +126,16 @@ function LevelTestPage() {
                     <div
                       key={`${question.id}-${optionIndex}`}
                       onClick={() => { if (!submitted) setAnswers((current) => ({ ...current, [question.id]: optionIndex })); }}
-                      className={`flex min-h-12 items-center gap-3 rounded-xl border p-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default ${isCorrect ? "border-green-600 bg-green-500/10" : isWrongSelected ? "border-destructive bg-destructive/10" : selected === optionIndex ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-accent/50"}`}
+                      className={`flex min-h-12 items-center gap-3 rounded-xl border p-3 text-left text-sm transition-colors ${isCorrect ? "border-success bg-success/10" : isWrongSelected ? "border-destructive bg-destructive/10" : selected === optionIndex ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-accent/50"}`}
                     >
                       <Button variant="outline" size="icon" className="size-8 shrink-0" disabled={submitted} aria-label={`Հարց ${index + 1}, տարբերակ ${String.fromCharCode(65 + optionIndex)}`} aria-pressed={selected === optionIndex}>{String.fromCharCode(65 + optionIndex)}</Button>
                       <span className="min-w-0 flex-1"><EnglishText text={option} context={`${question.prompt} ${option}`} /></span>
-                      {isCorrect && <CheckCircle2 className="size-4 shrink-0 text-green-600" />}
+                      {isCorrect && <CheckCircle2 className="size-4 shrink-0 text-success" />}
                     </div>
                   );
                 })}
               </div>
-              {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong>{selected === question.answerIndex ? "Ճիշտ է։ " : `Ճիշտ պատասխանը՝ ${String.fromCharCode(65 + question.answerIndex)}. ${question.options[question.answerIndex]}. `}</strong>{question.explanation}</p>}
+              {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong><EnglishText text={selected === question.answerIndex ? "Ճիշտ է։ " : `Ճիշտ պատասխանը՝ ${String.fromCharCode(65 + question.answerIndex)}. ${question.options[question.answerIndex]}. `} /></strong><EnglishText text={question.explanation} /></p>}
             </section>
           );
         })}
