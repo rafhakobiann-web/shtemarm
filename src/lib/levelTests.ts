@@ -20,7 +20,7 @@ export const ENGLISH_LEVELS: LevelConfig[] = [
   { id: "b2", title: "B2", subtitle: "Upper-intermediate", description: "Միջինից բարձր մակարդակ" },
   { id: "c1", title: "C1", subtitle: "Advanced", description: "Բարձր մակարդակ" },
 ];
-const q = (id: string, skill: LevelQuestion["skill"], prompt: string, options: LevelQuestion["options"], answerIndex: number, explanation: string, passage?: string): LevelQuestion => ({ id, type: "choice", skill, prompt, options, answerIndex, explanation, passage });
+const q = (id: string, skill: LevelQuestion["skill"], prompt: string, options: LevelQuestion["options"], answerIndex: number, explanation: string, passage?: string): LevelQuestion => ({ id, type: "choice", skill, prompt, options, answerIndex, explanation, ...(passage ? { passage } : {}) });
 export const LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = {
   a1: [
     q("a1-01","grammar","My sister ___ a student.",["am","is","are","be"],1,"Use ‘is’ with he, she, or it."),
@@ -76,4 +76,10 @@ export const LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = {
 
 export function getLevel(levelId: string) {
   return ENGLISH_LEVELS.find((level) => level.id === levelId.toLowerCase());
+}
+
+export function selectLevelQuestions(levelId: string, count: number) {
+  const bank = LEVEL_TEST_QUESTIONS[levelId.toLowerCase()] ?? [];
+  if (!Number.isInteger(count) || count < 1 || count > bank.length) throw new Error("Invalid question count");
+  return bank.slice(0, count);
 }

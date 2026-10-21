@@ -16,6 +16,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { pullAndMerge } from "@/lib/progress";
+import { TranslationProvider } from "@/components/EnglishText";
 
 function NotFoundComponent() {
   return (
@@ -134,7 +135,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AppHeader />
       <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:pt-10">
-        <Outlet />
+        <TranslationProvider><Outlet /></TranslationProvider>
       </main>
       <Toaster />
     </QueryClientProvider>
