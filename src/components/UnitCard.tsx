@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Unit, MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
+import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -13,7 +14,7 @@ export type UnitAnswer = {
 };
 
 /* ---------- passage ---------- */
-function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
+function PassageContent({ text, kind }: { text: string; kind: Unit["kind"] }) {
   if (!text.trim()) return null;
   const lines = text.split("\n");
   if (/^\s*Line number/i.test(lines[0] ?? "")) {
@@ -25,7 +26,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
       const t = (m ? (m[3] ?? "") : l).trim();
       const newPara = !!m && (m[2]?.length ?? 0) >= 3;
       if (newPara || paras.length === 0) paras.push([]);
-      paras[paras.length - 1]!.push({ n, t });
+      paras[paras.length - 1]?.push({ n, t });
     }
     return (
       <div className="passage space-y-3 rounded-xl bg-muted/60 p-4 sm:p-6">
@@ -34,7 +35,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
             {p.map((r, j) => (
               <span key={j}>
                 {r.n && <span className="mr-1 select-none whitespace-nowrap font-mono text-[0.75rem] font-semibold text-primary/80">{r.n}.</span>}
-                {r.t}{" "}
+                <EnglishText text={r.t} context={text} />{" "}
               </span>
             ))}
           </p>
@@ -47,7 +48,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
     if (!cols) {
       return (
         <div className="overflow-x-auto rounded-xl bg-muted/60 p-4 sm:p-6">
-          <pre className="min-w-max font-mono text-[13px] leading-relaxed sm:text-sm">{text}</pre>
+          <pre className="min-w-max font-mono text-[13px] leading-relaxed sm:text-sm"><EnglishText text={text} /></pre>
         </div>
       );
     }
@@ -58,7 +59,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
             {items.map((it, i) => (
               <li key={i} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 text-[0.95rem] leading-snug">
                 <span className={cn("font-display text-sm font-bold", ci === 0 ? "text-primary" : "text-accent-foreground")}>{it.mark}</span>
-                <span>{it.text}</span>
+                <span><EnglishText text={it.text} context={text} /></span>
               </li>
             ))}
           </ul>
@@ -80,7 +81,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
           return (
             <li key={i} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-2 rounded-lg bg-muted/50 p-3">
               <span className="font-display text-sm font-bold text-primary">{m?.[1]}</span>
-              <span className="passage whitespace-pre-line text-[0.98rem]">{m ? m[2] : it}</span>
+              <span className="passage whitespace-pre-line text-[0.98rem]"><EnglishText text={(m ? m[2] : it) ?? ""} context={text} /></span>
             </li>
           );
         })}
@@ -107,10 +108,14 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
   return (
     <div className="passage space-y-3 rounded-xl bg-muted/60 p-4 sm:p-6">
       {paras.map((p, i) => (
-        <p key={i}>{p}</p>
+        <p key={i}><EnglishText text={p} /></p>
       ))}
     </div>
   );
+}
+
+function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
+  return <div><PassageContent text={text} kind={kind} /><PassageTranslation key={text} text={text} /></div>;
 }
 
 /* ---------- explanation ---------- */
@@ -199,18 +204,16 @@ export function UnitCard(props: {
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <p className="min-w-0 pt-0.5 font-medium leading-relaxed">{q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"}</p>
+          <p className="min-w-0 pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"} /></p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {Object.entries(q.options).map(([k, v]) => {
             const isC = k === q.answer;
             const isSel = chosen === k;
             return (
-              <button
+              <div
                 key={k}
-                type="button"
-                disabled={show}
-                onClick={() => onChange({ ...a, mc: { ...a?.mc, [q.n]: k } })}
+                onClick={() => { if (!show) onChange({ ...a, mc: { ...a?.mc, [q.n]: k } }); }}
                 className={cn(
                   "flex min-h-11 items-start gap-2 rounded-lg border-2 px-3 py-2 text-left text-[0.95rem] transition-colors",
                   !show && isSel && "border-primary bg-secondary",
@@ -220,16 +223,16 @@ export function UnitCard(props: {
                   show && !isC && !isSel && "border-border opacity-60",
                 )}
               >
-                <span className="font-display text-xs font-bold uppercase text-muted-foreground">{k})</span>
-                <span className="min-w-0 flex-1">{v}</span>
+                <Button variant="ghost" size="icon" className="size-7 shrink-0" disabled={show} aria-label={`Ընտրել ${q.n} հարցի ${k} տարբերակը`} aria-pressed={isSel}>{k})</Button>
+                <span className="min-w-0 flex-1"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
                 {show && isC && <Check className="size-4 shrink-0 text-success" />}
                 {show && isSel && !isC && <X className="size-4 shrink-0 text-destructive" />}
-              </button>
+              </div>
             );
           })}
         </div>
         {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck!(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
             Ստուգել →
           </button>
         )}
@@ -296,7 +299,7 @@ export function UnitCard(props: {
       {props.header}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
-        {props.instructionEn && <p className="text-xs italic text-muted-foreground">{props.instructionEn}</p>}
+        {props.instructionEn && <p className="text-xs italic text-muted-foreground"><EnglishText text={props.instructionEn} /></p>}
       </div>
       {(() => {
         const split = !!u.passage.trim() && (u.kind === "mc" || u.kind === "seq");
@@ -362,7 +365,7 @@ export function UnitCard(props: {
       )}
 
       {u.kind !== "mc" && props.onCheck && !show && isAnswered(u, a) && (
-        <button type="button" onClick={() => props.onCheck!("unit")} className="text-sm font-bold text-primary hover:underline">
+        <button type="button" onClick={() => props.onCheck?.("unit")} className="text-sm font-bold text-primary hover:underline">
           Ստուգել →
         </button>
       )}
@@ -417,9 +420,9 @@ function splitColumns(lines: string[]) {
   let col = Infinity;
   for (const l of lines) {
     const m = /\s{2,}(\d\s?[.)])\s/.exec(l);
-    if (m && m.index > 4) col = Math.min(col, m.index + m[0].indexOf(m[1]!));
+    if (m && m.index > 4) col = Math.min(col, m.index + m[0].indexOf(m[1] ?? ""));
     const lead = /^(\s{8,})(\d\s?[.)])\s/.exec(l);
-    if (lead) col = Math.min(col, lead[1]!.length);
+    if (lead) col = Math.min(col, (lead[1]?.length ?? 0));
   }
   if (!isFinite(col)) return null;
   const left: { mark: string; text: string }[] = [];
@@ -428,8 +431,8 @@ function splitColumns(lines: string[]) {
     const s = chunk.trim();
     if (!s) return;
     const m = re.exec(s);
-    if (m) arr.push({ mark: m[1]!, text: s.slice(m[0].length).trim() });
-    else if (arr.length) arr[arr.length - 1]!.text += " " + s;
+    if (m) arr.push({ mark: m[1] ?? "", text: s.slice(m[0].length).trim() });
+    else { const last = arr[arr.length - 1]; if (last) last.text += " " + s; }
   };
   for (const l of lines) {
     push(left, l.slice(0, col), /^([A-E])\s?[.)]\s*/);

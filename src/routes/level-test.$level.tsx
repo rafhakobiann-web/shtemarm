@@ -1,24 +1,38 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, RotateCcw, Trophy } from "lucide-react";
-import { ENGLISH_LEVELS, LEVEL_TEST_QUESTIONS, getLevel } from "@/lib/levelTests";
+import { ENGLISH_LEVELS, LEVEL_TEST_QUESTIONS, getLevel, selectLevelQuestions } from "@/lib/levelTests";
 import { Button } from "@/components/ui/button";
+import { EnglishText, PassageTranslation } from "@/components/EnglishText";
+import { Slider } from "@/components/ui/slider";
 
 export const Route = createFileRoute("/level-test/$level")({
-  head: () => ({
+  head: ({ params }) => ({
     meta: [
-      { title: "Անգլերենի մակարդակի թեստ · Շտեմարան" },
+      { title: `Անգլերենի ${params.level.toUpperCase()} թեստ · Շտեմարան` },
       { name: "description", content: "Ստուգիր անգլերենի գիտելիքներդ A1–C1 մակարդակների ուսումնական թեստերով։" },
+      { property: "og:title", content: `Շտեմարան · Անգլերենի ${params.level.toUpperCase()} թեստ` },
+      { property: "og:description", content: "Ընտրիր հարցերի քանակը և ստուգիր անգլերենի գիտելիքներդ։" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: LevelTestPage,
+  component: LevelTestRoute,
 });
+
+function LevelTestRoute() {
+  const { level } = Route.useParams();
+  return <LevelTestPage key={level} />;
+}
 
 function LevelTestPage() {
   const { level: levelParam } = Route.useParams();
   const levelId = levelParam.toLowerCase();
   const level = getLevel(levelId);
-  const questions = useMemo(() => LEVEL_TEST_QUESTIONS[levelId] ?? [], [levelId]);
+  const bank = LEVEL_TEST_QUESTIONS[levelId] ?? [];
+  const [count, setCount] = useState(bank.length);
+  const [started, setStarted] = useState(false);
+  const questions = useMemo(() => bank.length ? selectLevelQuestions(levelId, count) : [], [levelId, count, bank]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const correct = questions.filter((question) => answers[question.id] === question.answerIndex).length;
@@ -40,6 +54,7 @@ function LevelTestPage() {
   const resetTest = () => {
     setAnswers({});
     setSubmitted(false);
+    setStarted(false);
   };
 
   return (
@@ -60,6 +75,13 @@ function LevelTestPage() {
         <p className="mt-4 max-w-2xl text-sm opacity-90">Ընտրիր յուրաքանչյուր հարցի մեկ պատասխան։ Ավարտելուց հետո կտեսնես արդյունքը և ճիշտ պատասխանների բացատրությունները։</p>
       </section>
 
+      {!started && <section className="space-y-5 border-y py-6">
+        <div className="flex items-center justify-between"><label htmlFor="level-count" className="font-semibold">Հարցերի քանակը</label><strong>{count} / {bank.length}</strong></div>
+        <Slider id="level-count" aria-label="Հարցերի քանակը" min={1} max={bank.length} step={1} value={[count]} onValueChange={values => setCount(values[0] ?? bank.length)} />
+        <Button size="lg" onClick={() => setStarted(true)}>Սկսել թեստը</Button>
+      </section>}
+
+      {started && <>
       {submitted && (
         <section className="rounded-3xl border bg-card p-5 shadow-card sm:p-6" aria-live="polite">
           <div className="flex items-center gap-3">
@@ -91,8 +113,9 @@ function LevelTestPage() {
                 <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-sm font-bold text-primary">{index + 1}</span>
                 <div className="min-w-0 flex-1 space-y-2">
                   <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">{skillLabel(question.skill)}</span>
-                  {question.passage && <p className="whitespace-pre-line rounded-xl bg-muted/60 p-3 text-sm leading-relaxed">{question.passage}</p>}
-                  <h2 className="text-base font-semibold leading-relaxed">{question.prompt}</h2>
+                  {question.passage && <p className="whitespace-pre-line rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><EnglishText text={question.passage} /></p>}
+                  {question.passage && <PassageTranslation text={question.passage} />}
+                  <h2 className="text-base font-semibold leading-relaxed"><EnglishText text={question.prompt} /></h2>
                 </div>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -100,21 +123,19 @@ function LevelTestPage() {
                   const isCorrect = submitted && optionIndex === question.answerIndex;
                   const isWrongSelected = submitted && selected === optionIndex && optionIndex !== question.answerIndex;
                   return (
-                    <button
+                    <div
                       key={`${question.id}-${optionIndex}`}
-                      type="button"
-                      disabled={submitted}
-                      onClick={() => setAnswers((current) => ({ ...current, [question.id]: optionIndex }))}
-                      className={`flex min-h-12 items-center gap-3 rounded-xl border p-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default ${isCorrect ? "border-green-600 bg-green-500/10" : isWrongSelected ? "border-destructive bg-destructive/10" : selected === optionIndex ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-accent/50"}`}
+                      onClick={() => { if (!submitted) setAnswers((current) => ({ ...current, [question.id]: optionIndex })); }}
+                      className={`flex min-h-12 items-center gap-3 rounded-xl border p-3 text-left text-sm transition-colors ${isCorrect ? "border-success bg-success/10" : isWrongSelected ? "border-destructive bg-destructive/10" : selected === optionIndex ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-accent/50"}`}
                     >
-                      <span className="grid size-7 shrink-0 place-items-center rounded-full border text-xs font-bold">{String.fromCharCode(65 + optionIndex)}</span>
-                      <span className="flex-1">{option}</span>
-                      {isCorrect && <CheckCircle2 className="size-4 shrink-0 text-green-600" />}
-                    </button>
+                      <Button variant="outline" size="icon" className="size-8 shrink-0" disabled={submitted} aria-label={`Հարց ${index + 1}, տարբերակ ${String.fromCharCode(65 + optionIndex)}`} aria-pressed={selected === optionIndex}>{String.fromCharCode(65 + optionIndex)}</Button>
+                      <span className="min-w-0 flex-1"><EnglishText text={option} context={`${question.prompt} ${option}`} /></span>
+                      {isCorrect && <CheckCircle2 className="size-4 shrink-0 text-success" />}
+                    </div>
                   );
                 })}
               </div>
-              {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong>{selected === question.answerIndex ? "Ճիշտ է։ " : `Ճիշտ պատասխանը՝ ${String.fromCharCode(65 + question.answerIndex)}. ${question.options[question.answerIndex]}. `}</strong>{question.explanation}</p>}
+              {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong><EnglishText text={selected === question.answerIndex ? "Ճիշտ է։ " : `Ճիշտ պատասխանը՝ ${String.fromCharCode(65 + question.answerIndex)}. ${question.options[question.answerIndex]}. `} /></strong><EnglishText text={question.explanation} /></p>}
             </section>
           );
         })}
@@ -128,6 +149,7 @@ function LevelTestPage() {
       ) : (
         <div className="flex flex-wrap gap-3"><Button asChild variant="outline"><Link to="/">Վերադառնալ գլխավոր էջ</Link></Button><Button onClick={resetTest}><RotateCcw className="size-4" /> Նորից անցնել</Button></div>
       )}
+      </>}
     </div>
   );
 }
