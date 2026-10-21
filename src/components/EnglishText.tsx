@@ -40,7 +40,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 export function EnglishText({ text, context = text }: { text: string; context?: string }) {
   const open = useContext(TranslationContext);
   return <span>{englishTokens(text).map((token, index) => /^[A-Za-z]/.test(token) && open ?
-    <Button key={index} variant="ghost" type="button" title={`${token} · Թարգմանել`} aria-label={`Թարգմանել ${token}`} onClick={(event) => { event.stopPropagation(); open(token, context); }} className="inline h-auto rounded-sm p-0 font-[inherit] text-[length:inherit] leading-[inherit] whitespace-normal hover:bg-secondary hover:text-primary">{token}</Button> : token)}</span>;
+    <Button key={index} variant="ghost" type="button" title={`${token} · Թարգմանել`} aria-label={`Թարգմանել ${token}`} onClick={(event) => { event.stopPropagation(); open(token, context); }} className="inline h-auto rounded-sm p-0 [font-family:inherit] [font-weight:inherit] text-[length:inherit] leading-[inherit] whitespace-normal hover:bg-secondary hover:text-primary">{token}</Button> : token)}</span>;
 }
 
 export function PassageTranslation({ text }: { text: string }) {
