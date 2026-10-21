@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Current request: configurable English level tests, clickable English-to-Armenian words, reveal Armenian passage translations
 - [x] Extract all 3 books + answer keys
 - [x] Study (gamified/classic), tests, 80-question exam, AI explanations, accounts + offline progress
 - [x] Tests across all books combined
