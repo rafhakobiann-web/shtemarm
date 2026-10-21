@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, GraduationCap, Trophy, Languages, ArrowRight } from "lucide-react";
-import { ENGLISH_LEVELS } from "@/lib/levelTests";
+import { BookOpen, Calculator, GraduationCap, Trophy } from "lucide-react";
 import { BOOKS } from "@/lib/books";
 import { Button } from "@/components/ui/button";
 import { useProgress, level, levelFloor } from "@/lib/progress";
@@ -84,34 +83,17 @@ function Index() {
         </div>
       </section>
 
-      <section className="space-y-5 rounded-3xl border bg-card p-5 shadow-card sm:p-6">
+      <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div className="flex items-start gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-secondary text-primary"><Languages className="size-5" /></span>
-          <div className="min-w-0 flex-1">
-            <h2 className="text-xl font-bold sm:text-2xl">Անգլերենի մակարդակի թեստեր</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Ընտրիր քո մակարդակը և ստուգիր անգլերենի գիտելիքներդ։ Յուրաքանչյուր մակարդակ ունի առանձին հարցաշար։</p>
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-secondary text-primary"><Calculator className="size-5" /></span>
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold">Մաթեմատիկայի շտեմարաններ</h2>
+            <p className="text-sm text-muted-foreground">Երկու պաշտոնական գրքերի ընտրություն և քննության ձևաչափով բնօրինակ փորձնական հարցեր՝ պատասխաններով ու բացատրություններով։</p>
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {ENGLISH_LEVELS.map((item) => (
-            <Link
-              key={item.id}
-              to="/level-test/$level"
-              params={{ level: item.id }}
-              className="group flex min-h-28 flex-col justify-between rounded-2xl border bg-background p-4 transition-colors hover:border-primary hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <span className="flex items-center justify-between">
-                <span className="text-2xl font-black tracking-tight text-primary">{item.title}</span>
-                <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
-              </span>
-              <span>
-                <span className="block text-sm font-semibold">{item.subtitle}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{item.description}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-        <p className="text-xs text-muted-foreground">Թեստերը ուսումնական ինքնագնահատման համար են և չեն փոխարինում պաշտոնական CEFR հավաստագրմանը։</p>
+        <Button size="lg" variant="sun" asChild>
+          <Link to="/math"><Calculator /> Մաթեմատիկա</Link>
+        </Button>
       </section>
 
       <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
