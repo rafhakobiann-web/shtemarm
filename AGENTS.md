@@ -16,3 +16,7 @@
 - Answer explanations use direct Gemini in a server function and a server-only content-hash cache including the official and chosen answers; cache only successful, non-refused responses. Why: repeated explanations should not consume provider quota and must not mix different mistakes.
 - Exam selection uses exact weighted subsets of complete units and fails explicitly on shortages; custom tests can trim MC groups while preserving their passage. Why: task totals must match the requested count without dropping reading context.
 - Subject navigation uses the shared header; subjects without verified question data stay unavailable, with history covers on a locked catalog page. Why: a cover must never imply that complete study/test content is ready.
+
+- English translation controls use a shared provider; word actions do not select answers, and full passages retain their original English. Why: lookup must not alter test responses or source content.
+- Public translation results use a versioned, namespaced content/context hash in the server-only learning-content cache; cache only complete successful responses. Why: reuse provider quota without mixing meanings or account data.
+- Level-test counts are bounded by unique available questions and displayed in bank order. Why: never inflate a test by repeating questions.
