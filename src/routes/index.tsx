@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BOOKS } from "@/lib/books";
 import { Trophy, ClipboardCheck } from "lucide-react";
-import hayoc1 from "@/assets/hayoc-patm-1.webp.asset.json";
-import hayoc2 from "@/assets/hayoc-patm-2.webp.asset.json";
-import hayoc3 from "@/assets/hayoc-patm-3.webp.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -95,9 +92,13 @@ function Index() {
         </SubjectRow>
 
         <SubjectRow title="Հայոց պատմություն">
-          {[hayoc1, hayoc2, hayoc3].map((c, i) => (
-            <Link key={i} to="/history" className={TILE}>
-              <TileBody cover={c.url} title={`Հայոց պատմություն ${i + 1}`} sub="Նմուշային թեստեր" />
+          {[
+            { cover: "/covers/hist-1.webp", title: "Հայոց պատմություն · 2021", sub: "Գիրք առաջին" },
+            { cover: "/covers/hist-2.webp", title: "Հայոց պատմություն · 2021", sub: "Գիրք երկրորդ" },
+            { cover: "/covers/hist-3.webp", title: "Հայոց պատմություն · 2023", sub: "Գիրք երրորդ" },
+          ].map((h) => (
+            <Link key={h.cover} to="/history" className={TILE}>
+              <TileBody cover={h.cover} title={h.title} sub={h.sub} />
             </Link>
           ))}
         </SubjectRow>
