@@ -329,7 +329,7 @@ export function UnitCard(props: {
       {u.kind === "set" && (
         <NumPicker
           label="Ընտրեք ճիշտ համարները"
-          count={5}
+          count={u.count ?? 5}
           selected={(a?.nums ?? []).filter((x): x is number => x != null)}
           disabled={show}
           correct={show ? u.answer : undefined}
