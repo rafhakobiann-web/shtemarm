@@ -176,7 +176,7 @@ function MathPage() {
       <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> Գլխավոր էջ
       </Link>
-      <Link to="/math/books" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">Գրքեր →</Link>
+      <Link to="/math/books" className="ml-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">Գրքեր →</Link>
 
       <div className="sticky top-2 z-10 flex items-center justify-between gap-3 rounded-2xl border bg-background/95 p-4 shadow-md backdrop-blur">
         <div className="min-w-0">
