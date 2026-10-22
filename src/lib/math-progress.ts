@@ -60,3 +60,32 @@ export function useMathProgress() {
 
   return { progress, setAnswer, addExam };
 }
+
+/** Option answers: "1".."4" (choice), "T"/"F" (true/false). Anything else is a short answer. */
+export function isOptionAnswer(answer: string) {
+  return answer === "T" || answer === "F" || ["1", "2", "3", "4"].includes(answer);
+}
+
+export function isShortAnswer(answer: string) {
+  return !isOptionAnswer(answer);
+}
+
+function normalizeNumber(v: string) {
+  return v
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/[−–]/g, "-")
+    .replace(",", ".")
+    .replace(/%$/, "");
+}
+
+/** Checks a chosen/typed value against the book's answer. Numbers are compared by value (1,5 = 1.5). */
+export function isRight(answer: string, value: string) {
+  if (isOptionAnswer(answer)) return answer === value;
+  const a = normalizeNumber(answer);
+  const v = normalizeNumber(value);
+  if (a === v) return true;
+  const na = Number(a);
+  const nv = Number(v);
+  return a !== "" && v !== "" && !Number.isNaN(na) && !Number.isNaN(nv) && Math.abs(na - nv) < 1e-9;
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMathProgress } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -36,33 +36,80 @@ function useIndex() {
   });
 }
 
-function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+function CropSegment({ src, s }: { src: string; s: Segment }) {
+  const [failed, setFailed] = useState(false);
+  const h = s.y1 - s.y0;
+  if (h <= 0) return null;
+  if (failed) {
+    return (
+      <div className="grid place-items-center rounded-xl border border-dashed bg-muted/40 p-4 text-center text-xs text-muted-foreground">
+        Էջը չի բեռնվել։ <a className="ml-1 font-semibold underline" href={src} target="_blank" rel="noreferrer">Բացել էջը</a>
+      </div>
+    );
+  }
   return (
-    <div className="space-y-2">
-      {segments.map((s, i) => {
-        const h = s.y1 - s.y0;
-        if (h <= 0) return null;
-        return (
-          <div
-            key={i}
-            className="relative w-full overflow-hidden rounded-xl border bg-white"
-            style={{ aspectRatio: `${PAGE_W} / ${h}` }}
-          >
-            <img
-              src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`}
-              alt=""
-              loading="lazy"
-              className="block w-full max-w-none"
-              style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
-            />
-          </div>
-        );
-      })}
+    <div className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="block w-full max-w-none"
+        style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
+      />
     </div>
   );
 }
 
-function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask; saved: Record<string, string>; onAnswer: (id: string, value: string) => void }) {
+function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+  return (
+    <div className="space-y-2">
+      {segments.map((s, i) => (
+        <CropSegment key={i} s={s} src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`} />
+      ))}
+    </div>
+  );
+}
+
+function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: number; saved?: string; correct?: string; onAnswer: (id: string, value: string) => void }) {
+  const [draft, setDraft] = useState("");
+  const submitted = saved !== undefined;
+  const ok = submitted && correct !== undefined && isRight(correct, saved);
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
+      <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
+      {!submitted ? (
+        <>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && draft.trim()) onAnswer(id, draft.trim());
+            }}
+            placeholder="Պատասխան"
+            className="h-10 w-28 rounded-xl border-2 border-stone-300 bg-white px-3 text-sm focus:border-blue-700 focus:outline-none"
+          />
+          <button
+            type="button"
+            disabled={!draft.trim()}
+            onClick={() => onAnswer(id, draft.trim())}
+            className="h-10 rounded-xl bg-blue-700 px-4 text-sm font-bold text-white disabled:opacity-40"
+          >
+            Ստուգել
+          </button>
+        </>
+      ) : (
+        <span className={`text-sm font-bold ${ok ? "text-emerald-700" : "text-red-700"}`}>
+          {saved} {ok ? "✓" : `✗ · ճիշտ՝ ${correct ?? "—"}`}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask; saved: Record<string, string>; onAnswer: (id: string, value: string) => void; shortSection: boolean }) {
   const subs = task.answers ? task.answers.length : task.sub_count;
   const isTF = task.answers?.some((a) => a === "T" || a === "F") ?? false;
   const label = `Մաթեմատիկա • Մաս ${bookNo} • Գլուխ ${sec.chapter} • Բաժին ${sec.section} • Առաջադրանք ${task.task} • Հարցեր 1–${subs}`;
@@ -74,16 +121,19 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer }: { bookId: stri
       <div className="space-y-2">
         {Array.from({ length: subs }, (_, i) => {
           const n = i + 1;
-          const correct = task.answers?.[i];
-          const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
+          const correct = task.answers?.[i];
+          if (shortSection || (correct !== undefined && isShortAnswer(correct))) {
+            return <ShortAnswerRow key={n} id={id} n={n} saved={saved[id]} correct={correct} onAnswer={onAnswer} />;
+          }
           const chosen = saved[id];
+          const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           return (
             <div key={n} className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
               <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
               {choices.map((c) => {
-                const label = isTF ? (c === "T" ? "Ճիշտ է" : "Սխալ է") : `${c})`;
-                const isRight = chosen !== undefined && correct === c;
+                const text = isTF ? (c === "T" ? "Ճիշտ է" : "Սխալ է") : `${c})`;
+                const isRight_ = chosen !== undefined && correct === c;
                 const isWrong = chosen === c && correct !== c;
                 return (
                   <button
@@ -92,11 +142,11 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer }: { bookId: stri
                     disabled={chosen !== undefined || !correct}
                     onClick={() => onAnswer(id, c)}
                     className={`h-10 min-w-12 rounded-xl border-2 px-3 text-sm font-bold transition ${
-                      isRight ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                      isRight_ ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
                       : "border-stone-300 bg-white hover:bg-stone-50"}`}
                   >
-                    {label}
+                    {text}
                   </button>
                 );
               })}
@@ -149,7 +199,8 @@ function BooksPage() {
       const [b, ch, se, ta, su] = k.split(":");
       const sec = q.data.books[b]?.sections.find((x) => x.chapter === Number(ch) && x.section === Number(se));
       const task = sec?.tasks.find((t) => t.task === Number(ta));
-      return task?.answers?.[Number(su) - 1] === v;
+      const correct = task?.answers?.[Number(su) - 1];
+      return correct !== undefined && isRight(correct, v);
     }).length;
 
   const book = bookId && q.data ? q.data.books[bookId] : null;
@@ -313,7 +364,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">Բաժին {section.section}. {section.title}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={section.tasks.some((x) => x.answers?.some((a) => isShortAnswer(a)))} />
           ))}
         </section>
       )}
