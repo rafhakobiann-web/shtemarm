@@ -21,6 +21,7 @@ type Index = { books: Record<string, BookData> };
 
 const PAGE_W = 467.76;
 const BOOK_IDS = ["matem-1", "matem-2"] as const;
+const PAGE_COUNT: Record<string, number> = { "matem-1": 288, "matem-2": 320 };
 
 function useIndex() {
   return useQuery({
@@ -111,6 +112,7 @@ function BooksPage() {
   const q = useIndex();
   const [bookId, setBookId] = useState<string | null>(null);
   const [sectionKey, setSectionKey] = useState<string | null>(null);
+  const [mode, setMode] = useState<"chapters" | "pages">("chapters");
 
   const book = bookId && q.data ? q.data.books[bookId] : null;
   const bookNo = bookId ? Number(bookId.split("-")[1]) : 1;
@@ -132,7 +134,7 @@ function BooksPage() {
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել գրքերը։</p>;
 
-  const back = () => (sectionKey ? setSectionKey(null) : setBookId(null));
+  const back = () => (sectionKey ? setSectionKey(null) : mode === "pages" ? setMode("chapters") : setBookId(null));
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
@@ -167,9 +169,16 @@ function BooksPage() {
         </section>
       )}
 
-      {bookId && book && !sectionKey && (
+      {bookId && book && !sectionKey && mode === "chapters" && (
         <section className="space-y-5">
           <h1 className="text-xl font-bold">{book.title}</h1>
+          <button
+            onClick={() => setMode("pages")}
+            className="flex w-full items-center justify-between rounded-2xl bg-blue-700 px-4 py-3 text-left text-sm font-bold text-white shadow-sm"
+          >
+            <span>Ամբողջ գիրքը (բոլոր էջերը)</span>
+            <span className="text-xs opacity-80">{PAGE_COUNT[bookId]} էջ</span>
+          </button>
           {chapters.map(([ch, secs]) => (
             <div key={ch} className="space-y-2">
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Գլուխ {ch}</p>
@@ -186,6 +195,23 @@ function BooksPage() {
                 ))}
               </div>
             </div>
+          ))}
+        </section>
+      )}
+
+      {bookId && mode === "pages" && !sectionKey && (
+        <section className="space-y-4">
+          <h1 className="text-xl font-bold">{book?.title}</h1>
+          {Array.from({ length: PAGE_COUNT[bookId] }, (_, i) => i + 1).map((pg) => (
+            <figure key={pg} className="space-y-1">
+              <img
+                src={`/math/books/${bookId}/p-${String(pg).padStart(3, "0")}.jpg`}
+                alt={`Էջ ${pg}`}
+                loading="lazy"
+                className="w-full rounded-xl border bg-white"
+              />
+              <figcaption className="text-center text-xs text-muted-foreground">{pg}</figcaption>
+            </figure>
           ))}
         </section>
       )}
