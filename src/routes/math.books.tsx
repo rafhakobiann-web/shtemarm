@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, BookText, ClipboardCheck, Download, Gamepad2, Loader2, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -288,17 +288,17 @@ function BooksPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
               <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">
-                65 հարցանոց քննություն
+                <Trophy className="size-4" /> 65 հարցանոց քննություն
               </Link>
               <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-amber-400 px-5 text-sm font-bold text-stone-900">
-                Կազմել թեստ
+                <ClipboardCheck className="size-4" /> Կազմել թեստ
               </Link>
               <a
                 href={`/math/books/${bookId}.pdf`}
                 download
                 className="inline-flex h-11 items-center gap-2 rounded-xl border bg-card px-5 text-sm font-bold"
               >
-                Գիրքը PDF-ով
+                <Download className="size-4" /> Գիրքը PDF-ով
               </a>
             </div>
             <button
@@ -338,14 +338,14 @@ function BooksPage() {
                       </div>
                       <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
                       <div className="grid grid-cols-3 gap-2">
-                        <a href={playHref} className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-700 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">Խաղալ</a>
+                        <a href={playHref} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-700 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]"><Gamepad2 className="size-4" /> Խաղալ</a>
                         <button
                           onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
-                          className="inline-flex h-11 items-center justify-center rounded-xl border bg-card text-sm font-bold hover:bg-stone-50"
+                          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border bg-card text-sm font-bold hover:bg-stone-50"
                         >
-                          Դասական
+                          <BookText className="size-4" /> Դասական
                         </button>
-                        <a href={testHref} className="inline-flex h-11 items-center justify-center rounded-xl bg-amber-400 text-sm font-bold text-stone-900">Թեստ</a>
+                        <a href={testHref} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-amber-400 text-sm font-bold text-stone-900"><ClipboardCheck className="size-4" /> Թեստ</a>
                       </div>
                     </div>
                   );
