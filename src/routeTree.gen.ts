@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HistoryBookRouteImport } from './routes/history-book'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
 import { Route as LevelTestLevelRouteImport } from './routes/level-test.$level'
 import { Route as MathIndexRouteImport } from './routes/math.index'
@@ -33,6 +34,11 @@ const AuthRoute = AuthRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryBookRoute = HistoryBookRouteImport.update({
+  id: '/history-book',
+  path: '/history-book',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookBookIdRoute = BookBookIdRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/history-book': typeof HistoryBookRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/history-book': typeof HistoryBookRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/history-book': typeof HistoryBookRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/history-book'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/history-book'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/history-book'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   HistoryRoute: typeof HistoryRoute
+  HistoryBookRoute: typeof HistoryBookRoute
   BookBookIdRoute: typeof BookBookIdRoute
   LevelTestLevelRoute: typeof LevelTestLevelRoute
   MathBooksRoute: typeof MathBooksRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history-book': {
+      id: '/history-book'
+      path: '/history-book'
+      fullPath: '/history-book'
+      preLoaderRoute: typeof HistoryBookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book/$bookId': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   HistoryRoute: HistoryRoute,
+  HistoryBookRoute: HistoryBookRoute,
   BookBookIdRoute: BookBookIdRoute,
   LevelTestLevelRoute: LevelTestLevelRoute,
   MathBooksRoute: MathBooksRoute,
