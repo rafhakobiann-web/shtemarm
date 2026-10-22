@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, BookOpen } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -110,6 +110,17 @@ function TaskCard({ bookId, bookNo, sec, task }: { bookId: string; bookNo: numbe
 
 function BooksPage() {
   const q = useIndex();
+  const questionCounts = useMemo(() => {
+    const out: Record<string, number> = {};
+    if (!q.data) return out;
+    for (const [id, b] of Object.entries(q.data.books)) {
+      out[id] = b.sections.reduce(
+        (n, sec) => n + sec.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0),
+        0,
+      );
+    }
+    return out;
+  }, [q.data]);
   const [bookId, setBookId] = useState<string | null>(null);
   const [sectionKey, setSectionKey] = useState<string | null>(null);
   const [mode, setMode] = useState<"chapters" | "pages">("chapters");
@@ -151,27 +162,53 @@ function BooksPage() {
       </div>
 
       {!bookId && (
-        <section className="space-y-4">
-          <h1 className="text-xl font-bold">Մաթեմատիկա · Հարցաշարեր</h1>
-          <div className="grid grid-cols-2 gap-4">
-            {BOOK_IDS.map((id, i) => (
-              <button key={id} onClick={() => setBookId(id)} className="group space-y-2 text-left">
-                <img
-                  src={`/math/books/covers/${id}.jpg`}
-                  alt={`Մաթեմատիկա · Մաս ${i + 1}`}
-                  loading="lazy"
-                  className="aspect-[3/4] w-full rounded-2xl border object-cover shadow-md transition group-hover:scale-[1.02]"
-                />
-                <p className="flex items-center gap-1 text-sm font-semibold"><BookOpen className="size-4" /> Մաս {i + 1}</p>
-              </button>
-            ))}
+        <section className="space-y-5">
+          <h2 className="text-xl font-bold sm:text-2xl">Ընտրիր շտեմարանը</h2>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {BOOK_IDS.map((id, i) => {
+              const total = questionCounts[id] ?? 0;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setBookId(id)}
+                  className="shadow-card group overflow-hidden rounded-2xl border bg-card text-left transition-transform hover:-translate-y-1"
+                >
+                  <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 p-4">
+                    <img
+                      src={`/math/books/covers/${id}.jpg`}
+                      alt={`Մաթեմատիկա · Մաս ${i + 1} շապիկ`}
+                      loading="lazy"
+                      className="aspect-[3/4] w-full rounded-lg object-cover"
+                    />
+                    <div className="min-w-0 space-y-2">
+                      <h3 className="text-lg font-bold">Մաթեմատիկա • Մաս {i + 1}</h3>
+                      <p className="text-sm text-muted-foreground">Շտեմարան · {i === 0 ? "Երևան 2019" : "Երևան 2020"} · {total} հարց</p>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div className="h-full bg-success" style={{ width: "0%" }} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">0 / {total} արված</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </section>
       )}
 
       {bookId && book && !sectionKey && mode === "chapters" && (
         <section className="space-y-5">
-          <h1 className="text-xl font-bold">{book.title}</h1>
+          <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4">
+            <img src={`/math/books/covers/${bookId}.jpg`} alt="" className="aspect-[3/4] w-full rounded-lg object-cover" />
+            <div className="min-w-0 space-y-3">
+              <h1 className="text-xl font-bold">{book.title}</h1>
+              <p className="text-sm text-muted-foreground">{questionCounts[bookId]} հարց · {PAGE_COUNT[bookId]} էջ</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-blue-700 px-4 text-sm font-bold text-white">Քննություն (80 հարց)</Link>
+                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-bold text-stone-900">Կազմել թեստ</Link>
+              </div>
+            </div>
+          </div>
           <button
             onClick={() => setMode("pages")}
             className="flex w-full items-center justify-between rounded-2xl bg-blue-700 px-4 py-3 text-left text-sm font-bold text-white shadow-sm"
