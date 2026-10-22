@@ -237,6 +237,16 @@ function BooksPage() {
   }, [book, sectionKey]);
 
 
+  const chapters = useMemo(() => {
+    if (!book) return [] as [number, BookSection[]][];
+    const map = new Map<number, BookSection[]>();
+    for (const s of book.sections) {
+      if (!map.has(s.chapter)) map.set(s.chapter, []);
+      map.get(s.chapter)!.push(s);
+    }
+    return [...map.entries()];
+  }, [book]);
+
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել գրքերը։</p>;
 
@@ -316,8 +326,11 @@ function BooksPage() {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {book.sections.map((s, i) => {
+          {chapters.map(([ch, secs]) => (
+            <div key={ch} className="space-y-4">
+              <h2 className="text-xl font-black">Գլուխ {ch}</h2>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {secs.map((s, i) => {
               const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
               const prefix = `${bookId}:${s.chapter}:${s.section}:`;
               const done = answered(prefix).length;
@@ -351,7 +364,9 @@ function BooksPage() {
                 </div>
               );
             })}
-          </div>
+              </div>
+            </div>
+          ))}
         </section>
       )}
 
