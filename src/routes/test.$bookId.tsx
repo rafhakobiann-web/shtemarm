@@ -30,7 +30,9 @@ export const Route = createFileRoute("/test/$bookId")({
 
 type Item = { section: number; unit: Unit };
 type Style = "game" | "classic";
-const bookName = (id: string) => (id === "all" ? "Բոլոր շտեմարանները" : `Շտեմարան ${id}`);
+const isHistoryId = (id: string) => Number(id) > 20;
+const bookName = (id: string) =>
+  id === "all" ? "Բոլոր շտեմարանները" : isHistoryId(id) ? `Հայոց պատմություն · Գիրք ${Number(id) - 20}` : `Շտեմարան ${id}`;
 
 function TestPage() {
   const { bookId } = Route.useParams();
@@ -72,7 +74,8 @@ function Setup(p: {
   onStyle: (s: Style) => void;
   onStart: (k: "exam" | "custom", secs: number[], count: number) => void;
 }) {
-  const [tab, setTab] = useState<"exam" | "custom" | "random">(p.initial);
+  const isHistory = isHistoryId(p.bookId);
+  const [tab, setTab] = useState<"exam" | "custom" | "random">(isHistory && p.initial === "exam" ? "custom" : p.initial);
   const [secs, setSecs] = useState<number[]>(p.section ? [p.section] : [1, 2, 3]);
   const [count, setCount] = useState(p.section ? 10 : 20);
   const [randomN, setRandomN] = useState(3);
@@ -82,9 +85,9 @@ function Setup(p: {
         <ArrowLeft className="size-4" /> {bookName(p.bookId)}
       </Link>
       <h1 className="text-2xl font-black sm:text-3xl">Ընտրիր թեստի տեսակը</h1>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className={cn("grid gap-3", isHistory ? "sm:grid-cols-2" : "sm:grid-cols-3")}>
         {([
-          ["exam", <Trophy key="t" />, "Քննություն", "80 հարց, իրական կառուցվածք"],
+          ...(isHistory ? [] : [["exam", <Trophy key="t" />, "Քննություն", "80 հարց, իրական կառուցվածք"] as const]),
           ["custom", <ListChecks key="l" />, "Ըստ բաժինների", "Ընտրիր բաժիններն ու քանակը"],
           ["random", <Shuffle key="s" />, "Պատահական բաժիններ", "Համակարգը կընտրի"],
         ] as const).map(([k, icon, t, d]) => (
