@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Timer, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/math")({
+export const Route = createFileRoute("/math/")({
   head: () => ({
     meta: [
       { title: "Մաթեմատիկա · Թեստ · Շտեմարան" },
