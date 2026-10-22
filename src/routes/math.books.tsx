@@ -204,7 +204,7 @@ function BooksPage() {
               <h1 className="text-xl font-bold">{book.title}</h1>
               <p className="text-sm text-muted-foreground">{questionCounts[bookId]} հարց · {PAGE_COUNT[bookId]} էջ</p>
               <div className="flex flex-wrap gap-2">
-                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-blue-700 px-4 text-sm font-bold text-white">Քննություն (80 հարց)</Link>
+                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-blue-700 px-4 text-sm font-bold text-white">Քննություն (65 հարց)</Link>
                 <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-bold text-stone-900">Կազմել թեստ</Link>
               </div>
             </div>
