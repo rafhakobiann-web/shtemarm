@@ -70,6 +70,13 @@
   --ring: oklch(0.45 0.17 258);
   --shadow-card: 0 1px 0 oklch(0.22 0.05 262 / 6%), 0 12px 32px -16px oklch(0.22 0.05 262 / 25%);
   --shadow-pop: 0 6px 0 oklch(0.3 0.12 258);
+  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.08) 45%, rgb(255 255 255 / 0) 60%);
+  --glass-fill: color-mix(in oklch, var(--card) 58%, transparent);
+  --glass-border: rgb(255 255 255 / 0.55);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.75);
+  --blob-a: oklch(0.86 0.1 250 / 0.75);
+  --blob-b: oklch(0.93 0.11 88 / 0.7);
+  --blob-c: oklch(0.87 0.08 300 / 0.55);
   --gradient-hero: linear-gradient(135deg, oklch(0.45 0.17 258) 0%, oklch(0.55 0.15 240) 55%, oklch(0.72 0.12 235) 100%);
 }
 
@@ -100,6 +107,13 @@
   --ring: oklch(0.64 0.16 258);
   --shadow-card: 0 1px 0 oklch(0 0 0 / 30%), 0 12px 32px -16px oklch(0 0 0 / 60%);
   --shadow-pop: 0 6px 0 oklch(0.1 0.05 262);
+  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0.03) 45%, rgb(255 255 255 / 0) 60%);
+  --glass-fill: color-mix(in oklch, var(--card) 55%, transparent);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --blob-a: oklch(0.36 0.12 258 / 0.55);
+  --blob-b: oklch(0.38 0.1 60 / 0.35);
+  --blob-c: oklch(0.34 0.1 300 / 0.4);
   color-scheme: dark;
 }
 
@@ -112,10 +126,26 @@
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
   }
+  body {
+    background-image:
+      radial-gradient(60rem 40rem at 8% -10%, var(--blob-a), transparent 60%),
+      radial-gradient(50rem 36rem at 100% 0%, var(--blob-b), transparent 60%),
+      radial-gradient(60rem 42rem at 50% 115%, var(--blob-c), transparent 60%);
+    background-attachment: fixed;
+  }
   h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
 }
 
-@utility shadow-card { box-shadow: var(--shadow-card); }
+@utility shadow-card { box-shadow: var(--shadow-card), var(--glass-highlight); }
+@utility gloss { background-image: var(--gloss); }
+@utility glass {
+  background-color: var(--glass-fill);
+  background-image: var(--gloss);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card), var(--glass-highlight);
+}
 @utility shadow-pop { box-shadow: var(--shadow-pop); }
 @utility bg-hero { background-image: var(--gradient-hero); }
 

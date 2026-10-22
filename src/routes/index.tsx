@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 });
 
 const TILE =
-  "group block overflow-hidden rounded-3xl border bg-card shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+  "glass group block overflow-hidden rounded-3xl shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
 
 const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/math/books/covers/matem-1.jpg" },
@@ -72,7 +72,7 @@ function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string;
       </div>
     </div>
   );
-  const cls = "group block min-h-40 overflow-hidden rounded-3xl bg-hero text-primary-foreground shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg";
+  const cls = "gloss group block min-h-40 overflow-hidden rounded-3xl bg-hero text-primary-foreground shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg";
   if (href) return <a href={href} className={cls}>{body}</a>;
   return <Link to={to!} params={params as never} search={search as never} className={cls}>{body}</Link>;
 }
@@ -185,7 +185,7 @@ function TikTokIcon({ className }: { className?: string }) {
 
 function AboutSection() {
   return (
-    <section className="shadow-card space-y-6 rounded-3xl border bg-card p-6 sm:p-8">
+    <section className="glass space-y-6 rounded-3xl p-6 sm:p-8">
       <h2 className="text-2xl font-black sm:text-3xl">Մեր մասին</h2>
       <div className="space-y-4 text-sm leading-relaxed sm:text-base">
         <p>

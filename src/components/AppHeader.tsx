@@ -26,7 +26,7 @@ export function AppHeader() {
     return () => data.subscription.unsubscribe();
   }, []);
   return (
-    <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
+    <header className="sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-display text-lg font-black text-accent-foreground">S</span>
