@@ -288,7 +288,7 @@ function BooksPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
               <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">
-                Քննություն (65 հարց)
+                65 հարցանոց քննություն
               </Link>
               <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-amber-400 px-5 text-sm font-bold text-stone-900">
                 Կազմել թեստ
@@ -319,22 +319,35 @@ function BooksPage() {
               <div className="grid gap-3">
                 {secs.map((s) => {
                   const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
-                  const done = answered(`${bookId}:${s.chapter}:${s.section}:`).length;
+                  const prefix = `${bookId}:${s.chapter}:${s.section}:`;
+                  const done = answered(prefix).length;
+                  const right = correctIn(prefix);
+                  const playHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=play`;
+                  const testHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=test`;
                   return (
-                    <button
-                      key={`${s.chapter}-${s.section}`}
-                      onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
-                      className="shadow-card flex items-center gap-4 rounded-2xl border bg-card p-4 text-left transition-transform hover:-translate-y-0.5"
-                    >
-                      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-700 text-base font-bold text-white">{s.section}</span>
-                      <span className="min-w-0 flex-1 space-y-2">
-                        <span className="block font-bold leading-snug">{s.title}</span>
-                        <span className="block text-xs text-muted-foreground">{s.tasks.length} առաջադրանք · {total} հարց · {done} արված</span>
-                        <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
-                          <span className="block h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
-                        </span>
-                      </span>
-                    </button>
+                    <div key={`${s.chapter}-${s.section}`} className="shadow-card space-y-4 rounded-3xl border bg-card p-5">
+                      <div className="flex items-start gap-4">
+                        <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-blue-700 text-2xl font-black text-white">{s.section}</span>
+                        <div className="min-w-0 space-y-1">
+                          <p className="text-lg font-black">Բաժին {s.section}</p>
+                          <p className="text-sm text-muted-foreground">{s.title}</p>
+                        </div>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <a href={playHref} className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-700 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">Խաղալ</a>
+                        <button
+                          onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
+                          className="inline-flex h-11 items-center justify-center rounded-xl border bg-card text-sm font-bold hover:bg-stone-50"
+                        >
+                          Դասական
+                        </button>
+                        <a href={testHref} className="inline-flex h-11 items-center justify-center rounded-xl bg-amber-400 text-sm font-bold text-stone-900">Թեստ</a>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
