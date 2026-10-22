@@ -34,10 +34,15 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(`/data/book${id}.json`).then((r) => {
-        if (!r.ok) throw new Error("Չհաջողվեց բեռնել գիրքը");
-        return r.json();
-      }),
+      fetch(`/data/book${id}.json`)
+        .then((r) => {
+          if (!r.ok) throw new Error("Չհաջողվեց բեռնել գիրքը");
+          return r.json();
+        })
+        .catch((error: unknown) => {
+          cache.delete(id);
+          throw error;
+        }),
     );
   }
   const pending = cache.get(id);
