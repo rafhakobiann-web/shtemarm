@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMathProgress, isRight, isShortAnswer } from "@/lib/math-progress";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
     meta: [
-      { title: "Մաթեմատիկա · Բաժին · Շտեմարան" },
+      { title: "Մաթեմատիկա · Խաղ · Շտեմարան" },
       { name: "description", content: "Մաթեմատիկայի բաժնի խաղ և թեստ" },
     ],
   }),
@@ -19,10 +19,11 @@ type Segment = { page: number; y0: number; y1: number };
 type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
-type Item = { id: string; bookId: string; chapter: number; section: number; title: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined };
+type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined };
 
 const PAGE_W = 467.76;
 const TEST_SIZE = 20;
+const LIVES = 3;
 
 function useIndex() {
   return useQuery({
@@ -45,20 +46,17 @@ function shuffle<T>(a: T[]): T[] {
   return b;
 }
 
-function sectionItems(index: Index, bookId: string, chapter: number, section: number): Item[] {
+function sectionItems(index: Index, bookId: string, chapter: number, section: number) {
   const book = index.books[bookId];
   const sec = book?.sections.find((s) => s.chapter === chapter && s.section === section);
-  if (!sec) return [];
-  const out: Item[] = [];
+  if (!sec) return { title: "", items: [] as Item[] };
+  const items: Item[] = [];
   for (const t of sec.tasks) {
     const subs = t.answers ? t.answers.length : t.sub_count;
     for (let i = 0; i < subs; i++) {
-      out.push({
+      items.push({
         id: `${bookId}:${chapter}:${section}:${t.task}:${i + 1}`,
         bookId,
-        chapter,
-        section,
-        title: sec.title,
         task: t.task,
         sub: i + 1,
         subs,
@@ -67,7 +65,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
       });
     }
   }
-  return out;
+  return { title: sec.title, items };
 }
 
 function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
@@ -91,52 +89,57 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
   );
 }
 
-function Answer({ item, value, onAnswer, locked }: { item: Item; value?: string; onAnswer: (v: string) => void; locked: boolean }) {
+/** Answer control for one sub-question. Options are lettered like the English game (1) 2) 3) 4)). */
+function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
   const [draft, setDraft] = useState("");
   const correct = item.answer;
-  const short = correct !== undefined && isShortAnswer(correct);
-  if (short || correct === undefined) {
+  const short = correct === undefined || isShortAnswer(correct);
+  const answered = value !== undefined;
+  const ok = answered && correct !== undefined && isRight(correct, value);
+
+  if (short) {
+    if (!answered && !locked) {
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            inputMode="decimal"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && draft.trim() && onAnswer(draft.trim())}
+            placeholder="Պատասխան"
+            className="h-12 flex-1 rounded-2xl border-2 border-stone-300 bg-white px-4 text-base focus:border-blue-700 focus:outline-none"
+          />
+          <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>Ստուգել</Button>
+        </div>
+      );
+    }
     return (
-      <div className="flex flex-wrap items-center gap-2">
-        {value === undefined && !locked ? (
-          <>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="Պատասխան"
-              className="h-10 w-28 rounded-xl border-2 border-stone-300 bg-white px-3 text-sm focus:border-blue-700 focus:outline-none"
-            />
-            <Button disabled={!draft.trim() || correct === undefined} onClick={() => onAnswer(draft.trim())}>Ստուգել</Button>
-          </>
-        ) : (
-          <span className={`text-sm font-bold ${value !== undefined && correct !== undefined && isRight(correct, value) ? "text-emerald-700" : "text-red-700"}`}>
-            {value ?? "—"} {correct !== undefined && value !== undefined && isRight(correct, value) ? "✓" : `✗ · ճիշտ՝ ${correct ?? "—"}`}
-          </span>
-        )}
-      </div>
+      <p className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-red-500 bg-red-50 text-red-700"}`}>
+        {value ?? "—"} {ok ? "✓" : `✗ · ճիշտ՝ ${correct ?? "—"}`}
+      </p>
     );
   }
-  const choices = correct === "T" || correct === "F" ? ["T", "F"] : ["1", "2", "3", "4"];
+
+  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", "1)"], ["2", "2)"], ["3", "3)"], ["4", "4)"]];
   return (
-    <div className="grid grid-cols-4 gap-2">
-      {choices.map((c) => {
-        const label = c === "T" ? "Ճիշտ է" : c === "F" ? "Սխալ է" : `${c})`;
-        const isRightBtn = value !== undefined && correct === c;
+    <div className="space-y-3">
+      {choices.map(([c, label]) => {
+        const isCorrectBtn = answered && correct === c;
         const isWrongBtn = value === c && correct !== c;
         return (
           <button
             key={c}
             type="button"
-            disabled={locked || value !== undefined}
+            disabled={locked || answered}
             onClick={() => onAnswer(c)}
-            className={`h-12 rounded-xl border-2 text-sm font-bold transition ${
-              isRightBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+            className={`flex w-full items-center gap-4 rounded-2xl border-2 bg-white px-5 py-4 text-left text-base transition ${
+              isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
-              : "border-stone-300 bg-white hover:bg-stone-50"}`}
+              : "border-stone-300 hover:bg-stone-50"}`}
           >
-            {label}
+            <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : label}</span>
+            <span className="font-medium">{c === "T" || c === "F" ? label : ""}</span>
           </button>
         );
       })}
@@ -155,111 +158,150 @@ function PlayPage() {
     setParams({ book: sp.get("book") ?? "matem-1", chapter: ch, section: se, mode: sp.get("mode") ?? "play" });
   }, []);
 
-  const items = useMemo(() => {
-    if (!q.data || !params) return [];
+  const section = useMemo(() => {
+    if (!q.data || !params) return { title: "", items: [] as Item[] };
     return sectionItems(q.data, params.book, params.chapter, params.section);
   }, [q.data, params]);
 
-  const [mode, setMode] = useState<"play" | "test">("play");
+  const isTest = params?.mode === "test";
   const [round, setRound] = useState<Item[]>([]);
   const [index, setIndex] = useState(0);
+  const [lives, setLives] = useState(LIVES);
+  const [streak, setStreak] = useState(0);
   const [testAnswers, setTestAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    if (!params) return;
-    setMode(params.mode === "test" ? "test" : "play");
-  }, [params]);
-
-  useEffect(() => {
-    if (!items.length) return;
-    const fresh = shuffle(items).slice(0, mode === "test" ? TEST_SIZE : items.length);
-    setRound(fresh);
+    if (!section.items.length) return;
+    setRound(shuffle(section.items).slice(0, isTest ? TEST_SIZE : section.items.length));
     setIndex(0);
+    setLives(LIVES);
+    setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
-  }, [items, mode]);
+  }, [section.items, isTest]);
 
   if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել բաժինը։</p>;
-  if (!items.length) return <p className="p-6 text-destructive">Բաժինը չի գտնվել։</p>;
+  if (!section.items.length) return <p className="p-6 text-destructive">Բաժինը չի գտնվել։</p>;
 
-  const backHref = `/math/books?book=${params.book}&sec=${params.chapter}-${params.section}`;
+  const sectionHref = `/math/books?book=${params.book}&sec=${params.chapter}-${params.section}`;
+  const bookTitle = q.data.books[params.book]?.title ?? "";
   const correctOf = (it: Item, v: string | undefined) => v !== undefined && it.answer !== undefined && isRight(it.answer, v);
+
+  const header = (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <a href={sectionHref} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="size-4 shrink-0" />
+        <span className="truncate">{bookTitle} · Բաժին {params.section}</span>
+      </a>
+      {!isTest && (
+        <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
+          <span className="rounded-xl bg-white px-4 py-2 shadow-sm">Խաղային</span>
+          <a href={sectionHref} className="rounded-xl px-4 py-2 text-muted-foreground">Դասական</a>
+        </div>
+      )}
+    </div>
+  );
+
+  if (isTest) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
+        {header}
+        <p className="text-sm font-bold">Թեստ · {round.length} հարց · {section.title}</p>
+        {round.map((it, idx) => (
+          <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Առաջադրանք {it.task} • Հարց {it.sub} / {it.subs} • {idx + 1} / {round.length}</p>
+            <Crop bookId={it.bookId} segments={it.segments} />
+            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
+          </section>
+        ))}
+        {!submitted ? (
+          <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={() => {
+            setSubmitted(true);
+            addExam(round.filter((x) => correctOf(x, testAnswers[x.id])).length, round.length);
+          }}>Ավարտել</Button>
+        ) : (
+          <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">Արդյունք՝ {round.filter((x) => correctOf(x, testAnswers[x.id])).length} / {round.length}</p>
+        )}
+      </div>
+    );
+  }
+
+  // Խաղային (game) mode, laid out like the English game screen
+  const it = round[index];
+  const answeredCount = round.filter((x) => progress.answers[x.id] !== undefined).length;
+  const current = it ? progress.answers[it.id] : undefined;
+  const gameOver = lives <= 0;
+  const finished = !it || (index === round.length - 1 && current !== undefined);
+  const short = it?.answer === undefined || isShortAnswer(it.answer);
+
+  const onAnswer = (v: string) => {
+    if (!it || current !== undefined) return;
+    setAnswer(it.id, v);
+    if (correctOf(it, v)) {
+      setStreak((s) => s + 1);
+    } else {
+      setStreak(0);
+      setLives((l) => l - 1);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
-      <a href={backHref} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> Հետ
-      </a>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-bold">Բաժին {params.section}. {items[0].title}</p>
-          <p className="text-xs text-muted-foreground">{mode === "test" ? `Թեստ · ${round.length} հարց` : `Խաղ · ${round.length} հարց`}</p>
+      {header}
+
+      <div className="flex items-center gap-3">
+        <div className="flex gap-1">
+          {Array.from({ length: LIVES }, (_, i) => (
+            <Heart key={i} className={`size-7 ${i < lives ? "fill-red-500 text-red-500" : "text-stone-300"}`} />
+          ))}
         </div>
-        <div className="flex gap-2">
-          <Button variant={mode === "play" ? "default" : "outline"} onClick={() => setMode("play")}>Խաղալ</Button>
-          <Button variant={mode === "test" ? "default" : "outline"} onClick={() => setMode("test")}>Թեստ</Button>
+        <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-success transition-all" style={{ width: `${round.length ? (answeredCount / round.length) * 100 : 0}%` }} />
         </div>
+        <span className="flex items-center gap-1 text-sm font-black text-amber-600">
+          <Zap className="size-5" /> ×{streak}
+        </span>
       </div>
 
-      {mode === "play" && round[index] && (() => {
-        const it = round[index];
-        const saved = progress.answers[it.id];
-        return (
-          <section className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-              Առաջադրանք {it.task} • Հարց {it.sub} / {it.subs} • {index + 1} / {round.length}
+      {gameOver || finished ? (
+        <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
+          <p className="text-xl font-black">{gameOver ? "Կյանքերն ավարտվեցին" : "Խաղն ավարտված է"}</p>
+          <p className="text-sm text-muted-foreground">
+            Ճիշտ՝ {round.filter((x) => correctOf(x, progress.answers[x.id])).length} / {answeredCount}
+          </p>
+          <Button className="w-full" onClick={() => {
+            setIndex(0); setLives(LIVES); setStreak(0);
+            setRound(shuffle(section.items));
+          }}>Նորից</Button>
+        </section>
+      ) : (
+        <section className="space-y-4 rounded-3xl border bg-card p-5 shadow-sm">
+          <div className="space-y-1">
+            <p className="text-base font-bold text-blue-700">
+              {short ? "Գրել պատասխանը:" : "Ընտրել ճիշտ տարբերակը:"}
             </p>
-            <Crop bookId={it.bookId} segments={it.segments} />
-            <Answer
-              item={it}
-              value={saved}
-              locked={false}
-              onAnswer={(v) => setAnswer(it.id, v)}
-            />
-            {saved !== undefined && (
-              <Button className="w-full" onClick={() => setIndex((i) => Math.min(i + 1, round.length - 1))} disabled={index >= round.length - 1}>
-                Հաջորդը
-              </Button>
+            <p className="text-sm italic text-muted-foreground">
+              {short ? "Write the answer." : "Choose the right answer."}
+            </p>
+          </div>
+
+          <Crop bookId={it.bookId} segments={it.segments} />
+
+          <div className="space-y-4 rounded-3xl border bg-white p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
+              <p className="font-bold">Առաջադրանք {it.task} · Հարց {it.sub} / {it.subs}</p>
+            </div>
+            <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} />
+            {current !== undefined && (
+              <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>Հաջորդը</Button>
             )}
-          </section>
-        );
-      })()}
+          </div>
 
-      {mode === "play" && round.length > 0 && index >= round.length - 1 && progress.answers[round[round.length - 1].id] !== undefined && (
-        <p className="rounded-2xl bg-emerald-50 p-4 text-center text-sm font-semibold text-emerald-800">Խաղն ավարտված է։</p>
-      )}
-
-      {mode === "test" && (
-        <>
-          {round.map((it, idx) => (
-            <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Առաջադրանք {it.task} • Հարց {it.sub} / {it.subs} • {idx + 1} / {round.length}
-              </p>
-              <Crop bookId={it.bookId} segments={it.segments} />
-              <Answer
-                item={it}
-                value={testAnswers[it.id]}
-                locked={submitted}
-                onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))}
-              />
-            </section>
-          ))}
-          {!submitted ? (
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={() => {
-              setSubmitted(true);
-              addExam(round.filter((x) => correctOf(x, testAnswers[x.id])).length, round.length);
-            }}>
-              Ավարտել
-            </Button>
-          ) : (
-            <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">
-              Արդյունք՝ {round.filter((x) => correctOf(x, testAnswers[x.id])).length} / {round.length}
-            </p>
-          )}
-        </>
+          <p className="text-center text-xs text-muted-foreground">{index + 1} / {round.length}</p>
+        </section>
       )}
     </div>
   );
