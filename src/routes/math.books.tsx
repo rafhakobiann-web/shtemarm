@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BookText, ClipboardCheck, Download, Gamepad2, Loader2, Trophy } from "lucide-react";
+import { MathExplain, taskPages } from "@/components/MathExplain";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -123,13 +124,35 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
+          const explainFor = () => {
+            const chosenValue = saved[id];
+            if (chosenValue === undefined || correct === undefined) return null;
+            const kind = isTF ? "tf" : shortSection || isShortAnswer(correct) ? "open" : "choice";
+            return (
+              <MathExplain
+                item={id}
+                bookId={bookId}
+                pages={taskPages(task.segments)}
+                kind={kind}
+                task={`Առաջադրանք ${task.task}, հարց ${n}`}
+                correct={correct}
+                chosen={chosenValue}
+              />
+            );
+          };
           if (shortSection || (correct !== undefined && isShortAnswer(correct))) {
-            return <ShortAnswerRow key={n} id={id} n={n} saved={saved[id]} correct={correct} onAnswer={onAnswer} />;
+            return (
+              <Fragment key={n}>
+                <ShortAnswerRow id={id} n={n} saved={saved[id]} correct={correct} onAnswer={onAnswer} />
+                {explainFor()}
+              </Fragment>
+            );
           }
           const chosen = saved[id];
           const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           return (
-            <div key={n} className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
+            <Fragment key={n}>
+            <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
               <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
               {choices.map((c) => {
                 const text = isTF ? (c === "T" ? "Ճիշտ է" : "Սխալ է") : `${c})`;
@@ -152,6 +175,8 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
               })}
               {!correct && <span className="text-xs text-muted-foreground">Պատասխանը չկա</span>}
             </div>
+            {explainFor()}
+            </Fragment>
           );
         })}
       </div>
@@ -226,7 +251,7 @@ function BooksPage() {
   const back = () => (sectionKey ? setSectionKey(null) : mode === "pages" ? setMode("chapters") : setBookId(null));
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
+    <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-5xl">
       <div className="flex items-center gap-3">
         {bookId ? (
           <button onClick={back} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -316,7 +341,7 @@ function BooksPage() {
                 <h2 className="text-xl font-black">Գլուխ {ch}</h2>
                 <p className="text-sm text-muted-foreground">Առաջադրանքներ ընտրովի պատասխաններով</p>
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {secs.map((s) => {
                   const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
                   const prefix = `${bookId}:${s.chapter}:${s.section}:`;
@@ -338,14 +363,14 @@ function BooksPage() {
                       </div>
                       <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
                       <div className="grid grid-cols-3 gap-2">
-                        <a href={playHref} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-700 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]"><Gamepad2 className="size-4" /> Խաղալ</a>
+                        <a href={playHref} className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-blue-700 px-2 text-xs font-bold text-white shadow-[0_4px_0_#0b2a6b] sm:gap-2 sm:text-sm"><Gamepad2 className="size-4" /> Խաղալ</a>
                         <button
                           onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
-                          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border bg-card text-sm font-bold hover:bg-stone-50"
+                          className="inline-flex h-11 items-center justify-center gap-1 rounded-xl border bg-card px-2 text-xs font-bold hover:bg-stone-50 sm:gap-2 sm:text-sm"
                         >
                           <BookText className="size-4" /> Դասական
                         </button>
-                        <a href={testHref} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-amber-400 text-sm font-bold text-stone-900"><ClipboardCheck className="size-4" /> Թեստ</a>
+                        <a href={testHref} className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-amber-400 px-2 text-xs font-bold text-stone-900 sm:gap-2 sm:text-sm"><ClipboardCheck className="size-4" /> Թեստ</a>
                       </div>
                     </div>
                   );
