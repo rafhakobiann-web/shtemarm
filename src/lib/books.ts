@@ -14,15 +14,18 @@ export const BOOKS = [
   { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: "/covers/en-3.webp" },
 ] as const;
 
+/** Armenian history question books. Ids 21–23 map to public/data/history-book{1..3}.json. */
 export const HISTORY_BOOKS = [
   { id: 21, title: "Հայոց պատմություն", sub: "Գիրք առաջին", cover: "/covers/hist-1.webp" },
   { id: 22, title: "Հայոց պատմություն", sub: "Գիրք երկրորդ", cover: "/covers/hist-2.webp" },
   { id: 23, title: "Հայոց պատմություն", sub: "Գիրք երրորդ", cover: "/covers/hist-3.webp" },
 ] as const;
 
+/** Every book page, English and history. */
 export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [...BOOKS, ...HISTORY_BOOKS];
 
 const cache = new Map<number, Promise<Book>>();
+/** id 0 = all books merged section-by-section */
 export function loadAny(id: number): Promise<Book> {
   if (id !== 0) return loadBook(id);
   return Promise.all([1, 2, 3].map(loadBook)).then((bs) => {
@@ -36,6 +39,7 @@ export function loadAny(id: number): Promise<Book> {
     return { id: 0, sections: [...map.values()].sort((a, b) => a.n - b.n) };
   });
 }
+
 export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
@@ -80,6 +84,7 @@ export function shuffle<T>(a: T[]): T[] {
   return b;
 }
 
+/** Pick units from a section until reaching `points` (each MC sub-question = 1 point). */
 function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit) => boolean): Unit[] {
   const sums = new Map<number, Unit[]>([[0, []]]);
   for (const unit of shuffle(sec?.units.filter(filter ?? (() => true)) ?? [])) {
@@ -92,4 +97,47 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
     if (result) return result;
   }
   return [];
+}
+
+/** Pick units for a custom test or exam based on sections and points. */
+export function buildCustom(book: Book, sectionNums: number[], totalPoints: number, filter?: (u: Unit) => boolean): Unit[] {
+  const targetSections = book.sections.filter((s) => sectionNums.includes(s.n));
+  let remaining = totalPoints;
+  const result: Unit[] = [];
+  
+  for (const sec of targetSections) {
+    if (remaining <= 0) break;
+    const picked = pickPoints(sec, Math.ceil(remaining / targetSections.length), filter);
+    for (const u of picked) {
+      const pts = unitPoints(u);
+      if (remaining >= pts) {
+        result.push(u);
+        remaining -= pts;
+      }
+    }
+  }
+  if (remaining > 0) {
+    for (const sec of targetSections) {
+      if (remaining <= 0) break;
+      const picked = pickPoints(sec, remaining, filter);
+      for (const u of picked) {
+        if (!result.includes(u)) {
+          const pts = unitPoints(u);
+          if (remaining >= pts) {
+            result.push(u);
+            remaining -= pts;
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+export function buildExam(book: Book): Unit[] {
+  const allUnits: Unit[] = [];
+  for (const sec of book.sections) {
+    allUnits.push(...shuffle(sec.units));
+  }
+  return allUnits.slice(0, 40);
 }
