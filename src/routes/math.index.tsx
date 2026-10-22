@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { z } from "zod";
 import { MathExplain, taskPages } from "@/components/MathExplain";
+import { MathTools } from "@/components/MathTools";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/math/")({
@@ -566,6 +567,8 @@ function MathPage() {
               )}
             </div>
           </div>
+
+          <MathTools />
 
           {groupItems(exam).map((g) => (
             <section key={g.key} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
