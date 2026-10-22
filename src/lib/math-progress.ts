@@ -70,6 +70,11 @@ export function isShortAnswer(answer: string) {
   return !isOptionAnswer(answer);
 }
 
+/** A section is typed-answer if any of its answers is not an option label; such sections never show choice buttons. */
+export function isOpenSection(tasks: { answers: string[] | null }[]) {
+  return tasks.some((t) => t.answers?.some((a) => isShortAnswer(a)) ?? false);
+}
+
 function normalizeNumber(v: string) {
   return v
     .trim()
@@ -79,9 +84,11 @@ function normalizeNumber(v: string) {
     .replace(/%$/, "");
 }
 
-/** Checks a chosen/typed value against the book's answer. Numbers are compared by value (1,5 = 1.5). */
+/**
+ * Checks a chosen/typed value against the book's answer. Numbers are compared by value (1,5 = 1.5),
+ * so a typed "2" matches an answer of "2" even though "2" is also an option label.
+ */
 export function isRight(answer: string, value: string) {
-  if (isOptionAnswer(answer)) return answer === value;
   const a = normalizeNumber(answer);
   const v = normalizeNumber(value);
   if (a === v) return true;

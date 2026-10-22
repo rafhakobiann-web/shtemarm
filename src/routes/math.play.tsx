@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMathProgress, isRight, isShortAnswer } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -19,7 +19,7 @@ type Segment = { page: number; y0: number; y1: number };
 type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
-type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined };
+type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean };
 
 const PAGE_W = 467.76;
 const TEST_SIZE = 20;
@@ -50,6 +50,9 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
   const book = index.books[bookId];
   const sec = book?.sections.find((s) => s.chapter === chapter && s.section === section);
   if (!sec) return { title: "", items: [] as Item[] };
+  // A section is typed-answer (open) if any of its answers is not a choice/true-false label.
+  // Decided per section, not per answer: an open answer of "2" must not be shown as option 2).
+  const open = isOpenSection(sec.tasks);
   const items: Item[] = [];
   for (const t of sec.tasks) {
     const subs = t.answers ? t.answers.length : t.sub_count;
@@ -62,6 +65,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
         subs,
         segments: t.segments,
         answer: t.answers?.[i],
+        open,
       });
     }
   }
@@ -93,7 +97,7 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
 function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
   const [draft, setDraft] = useState("");
   const correct = item.answer;
-  const short = correct === undefined || isShortAnswer(correct);
+  const short = item.open || correct === undefined || isShortAnswer(correct);
   const answered = value !== undefined;
   const ok = answered && correct !== undefined && isRight(correct, value);
 
@@ -234,7 +238,7 @@ function PlayPage() {
   const current = it ? progress.answers[it.id] : undefined;
   const gameOver = lives <= 0;
   const finished = !it || (index === round.length - 1 && current !== undefined);
-  const short = it?.answer === undefined || isShortAnswer(it.answer);
+  const short = it ? it.open || it.answer === undefined || isShortAnswer(it.answer) : false;
 
   const onAnswer = (v: string) => {
     if (!it || current !== undefined) return;
