@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
 import { BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
+import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +25,7 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = BOOKS.find((b) => b.id === id)!;
-  const { data: book, isLoading } = useBook(id);
+  const { data: book, isLoading, error, refetch } = useBook(id);
   const p = useProgress();
 
   return (
@@ -52,7 +53,9 @@ function BookPage() {
         </div>
       </div>
 
-      {isLoading || !book ? (
+      {error && !book ? (
+        <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
+      ) : isLoading || !book ? (
         <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

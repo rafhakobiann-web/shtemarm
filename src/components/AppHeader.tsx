@@ -30,8 +30,8 @@ export function AppHeader() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-56">
               <DropdownMenuLabel>Առարկաներ</DropdownMenuLabel>
-              <DropdownMenuItem asChild><Link to="/">Անգլերեն</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link to="/math/books">Մաթեմատիկա</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to="/" search={{ subject: "english" }}>Անգլերեն</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to="/" search={{ subject: "math" }}>Մաթեմատիկա</Link></DropdownMenuItem>
               <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
               <DropdownMenuItem disabled>Կենսաբանություն <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
               <DropdownMenuItem asChild><Link to="/history">Հայոց պատմություն <span className="ml-auto text-xs">Շուտով</span></Link></DropdownMenuItem>
