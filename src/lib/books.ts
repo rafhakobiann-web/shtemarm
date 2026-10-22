@@ -15,6 +15,16 @@ export const BOOKS = [
   { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: "/covers/en-3.webp" },
 ] as const;
 
+/** Armenian history question books. Ids 21–23 map to public/data/history-book{1..3}.json. */
+export const HISTORY_BOOKS = [
+  { id: 21, title: "Հայոց պատմություն", sub: "Գիրք առաջին", cover: "/covers/hist-1.webp" },
+  { id: 22, title: "Հայոց պատմություն", sub: "Գիրք երկրորդ", cover: "/covers/hist-2.webp" },
+  { id: 23, title: "Հայոց պատմություն", sub: "Գիրք երրորդ", cover: "/covers/hist-3.webp" },
+] as const;
+
+/** Every book page, English and history. */
+export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [...BOOKS, ...HISTORY_BOOKS];
+
 const cache = new Map<number, Promise<Book>>();
 /** id 0 = all books merged section-by-section */
 export function loadAny(id: number): Promise<Book> {
@@ -34,7 +44,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(`/data/book${id}.json`).then((r) => {
+      fetch(id > 20 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`).then((r) => {
         if (!r.ok) throw new Error("Չհաջողվեց բեռնել գիրքը");
         return r.json();
       }),

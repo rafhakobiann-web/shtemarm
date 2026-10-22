@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
 import { z } from "zod";
-import { BOOKS } from "@/lib/books";
+import { BOOKS, HISTORY_BOOKS } from "@/lib/books";
 
-const SUBJECTS = ["english", "math"] as const;
+const SUBJECTS = ["english", "math", "history"] as const;
 
 export const Route = createFileRoute("/")({
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
@@ -25,12 +25,6 @@ const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/math/books/covers/matem-1.jpg" },
   { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/math/books/covers/matem-2.jpg" },
 ] as const;
-
-const HISTORY_BOOKS = [
-  { cover: "/covers/hist-1.webp", title: "Հայոց պատմություն · 2021", sub: "Գիրք առաջին" },
-  { cover: "/covers/hist-2.webp", title: "Հայոց պատմություն · 2021", sub: "Գիրք երկրորդ" },
-  { cover: "/covers/hist-3.webp", title: "Հայոց պատմություն · 2023", sub: "Գիրք երրորդ" },
-];
 
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
@@ -157,10 +151,35 @@ function MathSubject() {
   );
 }
 
+function HistorySubject() {
+  return (
+    <div className="mx-auto max-w-6xl space-y-12 py-6">
+      <SubjectHeader title="Հայոց պատմություն" sub="Շտեմարաններ և պաշտոնական քննության նմուշային թեստեր" />
+      <section className="space-y-6">
+        <h2 className="text-xl font-black sm:text-2xl">Շտեմարաններ</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {HISTORY_BOOKS.map((b) => (
+            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
+              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="space-y-6">
+        <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ExamTile to="/history" title="Նմուշային թեստեր · 2026" sub="Թեստ 1–4՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function Index() {
   const { subject } = Route.useSearch();
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
+  if (subject === "history") return <HistorySubject />;
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
@@ -185,7 +204,7 @@ function Index() {
 
         <SubjectRow title="Հայոց պատմություն">
           {HISTORY_BOOKS.map((h) => (
-            <Link key={h.cover} to="/history" className={TILE}>
+            <Link key={h.id} to="/book/$bookId" params={{ bookId: String(h.id) }} className={TILE}>
               <TileBody cover={h.cover} title={h.title} sub={h.sub} />
             </Link>
           ))}

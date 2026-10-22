@@ -1,18 +1,18 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
-import { BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
+import { ALL_BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/book/$bookId")({
   beforeLoad: ({ params }) => {
-    if (!BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
+    if (!ALL_BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
   },
   head: ({ params }) => ({
     meta: [
       { title: `Շտեմարան ${params.bookId} · Բաժիններ` },
-      { name: "description", content: `Անգլերենի շտեմարան ${params.bookId}-ի բոլոր 13 բաժինները՝ ուսուցում և թեստեր։` },
+      { name: "description", content: `Շտեմարան ${params.bookId}՝ բաժիններ, ուսուցում և թեստեր։` },
       { property: "og:title", content: `Շտեմարան ${params.bookId} · English` },
       { property: "og:description", content: "Ընտրեք բաժինը, սովորեք կամ անցեք թեստ։" },
     ],
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/book/$bookId")({
 function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
-  const meta = BOOKS.find((b) => b.id === id)!;
+  const meta = ALL_BOOKS.find((b) => b.id === id)!;
   const { data: book, isLoading } = useBook(id);
   const p = useProgress();
 
