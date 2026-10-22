@@ -83,12 +83,12 @@ function Index() {
         </SubjectRow>
 
         <SubjectRow title="Մաթեմատիկա">
-          <a href="/math/books?book=matem-1" className={TILE}>
+          <Link to="/math/books" search={{ book: "matem-1" } as never} className={TILE}>
             <TileBody cover="/math/books/covers/matem-1.jpg" title="Մաթեմատիկա • Մաս 1" sub="Երևան 2019" />
-          </a>
-          <a href="/math/books?book=matem-2" className={TILE}>
+          </Link>
+          <Link to="/math/books" search={{ book: "matem-2" } as never} className={TILE}>
             <TileBody cover="/math/books/covers/matem-2.jpg" title="Մաթեմատիկա • Մաս 2" sub="Երևան 2020" />
-          </a>
+          </Link>
         </SubjectRow>
 
         <SubjectRow title="Հայոց պատմություն">
@@ -129,7 +129,7 @@ function Index() {
             icon={<ClipboardCheck className="size-5" />}
           />
           <ExamTile
-            href="/math"
+            to="/math"
             title="Մաթեմատիկա · Թեստ"
             sub="65 հարց՝ քննության կառուցվածքով, կամ ընտրովի"
             icon={<Trophy className="size-5" />}
