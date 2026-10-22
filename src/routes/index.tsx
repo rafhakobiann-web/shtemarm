@@ -68,7 +68,7 @@ function ComingSoon({ title }: { title: string }) {
   );
 }
 
-function ExamTile({ to, search, href, title, sub, icon }: { to?: string; search?: Record<string, string>; href?: string; title: string; sub: string; icon: React.ReactNode }) {
+function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string; params?: Record<string, string>; search?: Record<string, string>; href?: string; title: string; sub: string; icon: React.ReactNode }) {
   const body = (
     <div className="flex h-full flex-col justify-between gap-6 p-5">
       <span className="grid size-11 place-items-center rounded-2xl bg-white/15">{icon}</span>
@@ -80,7 +80,7 @@ function ExamTile({ to, search, href, title, sub, icon }: { to?: string; search?
   );
   const cls = "group block min-h-40 overflow-hidden rounded-3xl bg-hero text-primary-foreground shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg";
   if (href) return <a href={href} className={cls}>{body}</a>;
-  return <Link to={to!} search={search as never} className={cls}>{body}</Link>;
+  return <Link to={to!} params={params as never} search={search as never} className={cls}>{body}</Link>;
 }
 
 function SubjectHeader({ title, sub }: { title: string; sub: string }) {
@@ -113,14 +113,14 @@ function EnglishSubject() {
         <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <ExamTile
-            to="/test/$bookId"
+            to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
             title="Պաշտոնական քննություն · 80 հարց"
             sub="Իրական քննության կառուցվածքով"
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
-            to="/test/$bookId"
+            to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "custom", style: "game" }}
             title="Թեստերի կազմիչ"
             sub="Ընտրիր բաժինները և հարցերի քանակը"
@@ -203,14 +203,14 @@ function Index() {
         <h2 className="text-2xl font-black sm:text-3xl">Քննություն</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ExamTile
-            to="/test/$bookId"
+            to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
             title="Անգլերեն · 80 հարցանոց քննություն"
             sub="Իրական քննության կառուցվածքով"
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
-            to="/test/$bookId"
+            to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "custom", style: "game" }}
             title="Անգլերեն · Կազմել թեստ"
             sub="Ընտրիր բաժինները և քանակը"
