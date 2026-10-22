@@ -6,6 +6,7 @@ import { useBook } from "@/lib/useBook";
 import { buildCustom, buildExam, secTitle, shuffle, unitPoints, type Unit } from "@/lib/books";
 import { recordAnswer, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
+import { LoadError } from "@/components/LoadError";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -37,12 +38,12 @@ const bookName = (id: string) =>
 function TestPage() {
   const { bookId } = Route.useParams();
   const { mode, section, style: initStyle } = Route.useSearch();
-  const { data: book } = useBook(bookId === "all" ? 0 : Number(bookId));
+  const { data: book, error, refetch } = useBook(bookId === "all" ? 0 : Number(bookId));
   const [style, setStyle] = useState<Style>(initStyle);
   const [items, setItems] = useState<Item[] | null>(null);
   const [kind, setKind] = useState<"exam" | "custom">(mode);
 
-  if (!book) return <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
+  if (!book) return error ? <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} /> : <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
   if (items) return <Runner book={book} items={items} kind={kind} bookId={bookId} style={style} onExit={() => setItems(null)} />;
   return (
     <Setup
