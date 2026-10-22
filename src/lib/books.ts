@@ -1,6 +1,3 @@
-import cover1 from "@/assets/cover-1.webp.asset.json";
-import cover2 from "@/assets/cover-2.webp.asset.json";
-import cover3 from "@/assets/cover-3.webp.asset.json";
 
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string };
 export type Unit =
@@ -13,9 +10,9 @@ export const secTitle = (s: { n: number; title?: string }) => (s.title ? `Բաժ
 export type Book = { id: number; sections: Section[] };
 
 export const BOOKS = [
-  { id: 1, title: "Շտեմարան 1", sub: "Մաս I · 2017", cover: cover1.url },
-  { id: 2, title: "Շտեմարան 2", sub: "Մաս II · 2017", cover: cover2.url },
-  { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: cover3.url },
+  { id: 1, title: "Շտեմարան 1", sub: "Մաս I · 2017", cover: "/covers/en-1.jpg" },
+  { id: 2, title: "Շտեմարան 2", sub: "Մաս II · 2017", cover: "/covers/en-2.webp" },
+  { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: "/covers/en-3.webp" },
 ] as const;
 
 const cache = new Map<number, Promise<Book>>();
