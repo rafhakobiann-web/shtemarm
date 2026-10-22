@@ -41,7 +41,7 @@ function TestPage() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [kind, setKind] = useState<"exam" | "custom">(mode);
 
-  if (!book) return error ? <LoadError onRetry={() => refetch()} /> : <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
+  if (!book) return error ? <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} /> : <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
   if (items) return <Runner book={book} items={items} kind={kind} bookId={bookId} style={style} onExit={() => setItems(null)} />;
   return (
     <Setup

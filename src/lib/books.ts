@@ -36,7 +36,7 @@ export function loadBook(id: number): Promise<Book> {
       id,
       fetch(`/data/book${id}.json`)
         .then((r) => {
-          if (!r.ok) throw new Error("Չհաջողվեց բեռնել գիրքը");
+          if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
         })
         .catch((error: unknown) => {

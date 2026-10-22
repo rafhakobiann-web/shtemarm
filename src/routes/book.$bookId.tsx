@@ -54,7 +54,7 @@ function BookPage() {
       </div>
 
       {error && !book ? (
-        <LoadError onRetry={() => refetch()} />
+        <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
         <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (
