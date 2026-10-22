@@ -9,7 +9,7 @@ import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/ma
 export const Route = createFileRoute("/math/play")({
   head: () => ({
     meta: [
-      { title: "Մաթեմատիկա · Խաղ · Շտեմարան" },
+      { title: "Մաթեմատիկա · Խաղ · Shtemarm" },
       { name: "description", content: "Մաթեմատիկայի բաժնի խաղ և թեստ" },
     ],
   }),

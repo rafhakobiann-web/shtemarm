@@ -1,151 +1,146 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, Calculator, GraduationCap, Trophy } from "lucide-react";
 import { BOOKS } from "@/lib/books";
-import { Button } from "@/components/ui/button";
-import { useProgress, level, levelFloor } from "@/lib/progress";
+import { Trophy, ClipboardCheck } from "lucide-react";
+import hayoc1 from "@/assets/hayoc-patm-1.webp.asset.json";
+import hayoc2 from "@/assets/hayoc-patm-2.webp.asset.json";
+import hayoc3 from "@/assets/hayoc-patm-3.webp.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Շտեմարան · Անգլերենի միասնական քննության պատրաստում" },
-      { name: "description", content: "Անգլերենի շտեմարանի 1, 2, 3 մասերի բոլոր առաջադրանքները՝ ուսուցում, թեստեր և 80 հարցանոց քննություն։" },
-      { property: "og:title", content: "Շտեմարան · English" },
-      { property: "og:description", content: "Սովորեք, խաղացեք և ստուգեք ձեզ միասնական քննության իրական առաջադրանքներով։" },
+      { title: "Shtemarm · Ընտրիր առարկան" },
+      { name: "description", content: "Ընտրիր շտեմարանը սկսելու համար կամ անցիր քննություն՝ անգլերեն, մաթեմատիկա և այլ առարկաներ։" },
+      { property: "og:title", content: "Shtemarm" },
+      { property: "og:description", content: "Ուսուցում և քննություններ՝ ըստ առարկաների։" },
     ],
   }),
   component: Index,
 });
 
-const COUNTS: Record<number, number> & Record<1 | 2 | 3, number> = { 1: 1601, 2: 1509, 3: 1271 };
+const TILE =
+  "group block overflow-hidden rounded-3xl border bg-card shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+
+function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
+  return (
+    <>
+      <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+        {cover ? (
+          <img src={cover} alt={title} loading="lazy" className="size-full object-cover transition duration-300 group-hover:scale-105" />
+        ) : (
+          <div className="grid size-full place-items-center bg-gradient-to-br from-muted to-secondary text-5xl font-black text-muted-foreground/40">{title.slice(0, 1)}</div>
+        )}
+      </div>
+      <div className="space-y-1 p-4">
+        <h3 className="text-base font-bold leading-snug">{title}</h3>
+        <p className="text-xs text-muted-foreground">{sub}</p>
+      </div>
+    </>
+  );
+}
+
+function SubjectRow({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-black">{title}</h3>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{children}</div>
+    </div>
+  );
+}
+
+function ComingSoon({ title }: { title: string }) {
+  return (
+    <div className="flex aspect-[3/4] flex-col justify-between rounded-3xl border border-dashed bg-card/60 p-4 opacity-80 sm:aspect-auto sm:min-h-44">
+      <div className="grid size-full place-items-center rounded-2xl bg-muted/50 text-5xl font-black text-muted-foreground/40">{title.slice(0, 1)}</div>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">Շուտով</p>
+    </div>
+  );
+}
+
+function ExamTile({ to, search, href, title, sub, icon }: { to?: string; search?: Record<string, string>; href?: string; title: string; sub: string; icon: React.ReactNode }) {
+  const body = (
+    <div className="flex h-full flex-col justify-between gap-6 p-5">
+      <span className="grid size-11 place-items-center rounded-2xl bg-white/15">{icon}</span>
+      <div className="space-y-1">
+        <h4 className="text-base font-black leading-snug">{title}</h4>
+        <p className="text-xs opacity-85">{sub}</p>
+      </div>
+    </div>
+  );
+  const cls = "group block min-h-40 overflow-hidden rounded-3xl bg-hero text-primary-foreground shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg";
+  if (href) return <a href={href} className={cls}>{body}</a>;
+  return <Link to={to!} search={search as never} className={cls}>{body}</Link>;
+}
 
 function Index() {
-  const p = useProgress();
-  const lv = level(p.xp);
-  const pct = Math.min(100, ((p.xp - levelFloor(lv)) / (levelFloor(lv + 1) - levelFloor(lv))) * 100);
-  const done = Object.keys(p.answers).length;
   return (
-    <div className="space-y-10">
-      <section className="bg-hero relative overflow-hidden rounded-3xl p-6 text-primary-foreground sm:p-10 lg:p-12">
-        <div className="pointer-events-none absolute -right-10 top-1/2 hidden -translate-y-1/2 xl:flex">
-          {BOOKS.map((b, i) => (
-            <img
-              key={b.id}
-              src={b.cover}
-              alt=""
-              className="shadow-card -ml-16 w-40 rounded-xl border-4 border-primary-foreground/30 object-cover"
-              style={{ transform: `rotate(${(i - 1) * 8}deg) translateY(${i === 1 ? -12 : 10}px)` }}
-            />
+    <div className="mx-auto max-w-6xl space-y-12 py-6">
+      <section className="space-y-8">
+        <h2 className="text-2xl font-black sm:text-3xl">Ընտրիր շտեմարանը սկսելու համար</h2>
+
+        <SubjectRow title="Անգլերեն">
+          {BOOKS.map((b) => (
+            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
+              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+            </Link>
           ))}
-        </div>
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <p className="inline-block rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">Միասնական քննություն · Անգլերեն</p>
-          <h1 className="text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">Պատրաստվիր քննությանը խաղալով</h1>
-          <p className="max-w-xl text-base opacity-90 sm:text-lg">
-            Շտեմարանի բոլոր 13 բաժինները, պաշտոնական պատասխաններն ու յուրաքանչյուր պատասխանի բացատրությունը։
-          </p>
-        </div>
-        <div className="relative z-10 mt-6 grid max-w-xl grid-cols-3 gap-3">
-          <Stat label="Մակարդակ" value={lv} />
-          <Stat label="Պատասխանված" value={done} />
-          <Stat label="Օրեր անընդմեջ" value={p.streak} />
-        </div>
-        <div className="relative z-10 mt-4 h-2 max-w-xl overflow-hidden rounded-full bg-primary-foreground/25">
-          <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct}%` }} />
-        </div>
-      </section>
+        </SubjectRow>
 
-      <section className="space-y-5">
-        <h2 className="text-xl font-bold sm:text-2xl">Ընտրիր շտեմարանը</h2>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {BOOKS.map((b) => {
-            const mine = Object.keys(p.answers).filter((k) => k.startsWith(`${b.id}-`)).length;
-            return (
-              <Link
-                key={b.id}
-                to="/book/$bookId"
-                params={{ bookId: String(b.id) }}
-                className="shadow-card group overflow-hidden rounded-2xl border bg-card transition-transform hover:-translate-y-1"
-              >
-                <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 p-4 sm:grid-cols-1 sm:p-0">
-                  <img src={b.cover} alt={`${b.title} շապիկ`} loading="lazy" className="aspect-[3/4] w-full rounded-lg object-cover sm:aspect-[16/10] sm:rounded-none sm:object-top" />
-                  <div className="min-w-0 space-y-2 sm:p-5">
-                    <h3 className="text-lg font-bold">{b.title}</h3>
-                    <p className="text-sm text-muted-foreground">{b.sub} · {COUNTS[b.id]} հարց</p>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div className="h-full bg-success" style={{ width: `${Math.min(100, (mine / COUNTS[b.id]) * 100)}%` }} />
-                    </div>
-                    <p className="text-xs text-muted-foreground">{mine} / {COUNTS[b.id]} արված</p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+        <SubjectRow title="Մաթեմատիկա">
+          <a href="/math/books?book=matem-1" className={TILE}>
+            <TileBody cover="/math/books/covers/matem-1.jpg" title="Մաթեմատիկա • Մաս 1" sub="Երևան 2019" />
+          </a>
+          <a href="/math/books?book=matem-2" className={TILE}>
+            <TileBody cover="/math/books/covers/matem-2.jpg" title="Մաթեմատիկա • Մաս 2" sub="Երևան 2020" />
+          </a>
+        </SubjectRow>
 
-      <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-        <div className="flex items-start gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-secondary text-primary"><Calculator className="size-5" /></span>
-          <div className="min-w-0">
-            <h2 className="text-xl font-bold">Մաթեմատիկայի շտեմարաններ</h2>
-            <p className="text-sm text-muted-foreground">Երկու պաշտոնական գրքերի ընտրություն և քննության ձևաչափով բնօրինակ փորձնական հարցեր՝ պատասխաններով ու բացատրություններով։</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button size="lg" variant="outline" asChild>
-            <Link to="/math/books"><BookOpen /> Գրքեր (2 մաս)</Link>
-          </Button>
-          <Button size="lg" variant="sun" asChild>
-            <Link to="/math"><Calculator /> Թեստ</Link>
-          </Button>
-        </div>
-      </section>
-
-      <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-        <div className="min-w-0">
-          <h2 className="text-xl font-bold">Թեստ բոլոր շտեմարաններից</h2>
-          <p className="text-sm text-muted-foreground">Հարցեր երեք գրքերից միասին՝ քննություն կամ ըստ բաժինների։</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="game" size="lg" asChild>
-            <Link to="/test/$bookId" params={{ bookId: "all" }} search={{ mode: "exam", style: "classic" }}>
-              <Trophy /> Քննություն (80)
+        <SubjectRow title="Հայոց պատմություն">
+          {[hayoc1, hayoc2, hayoc3].map((c, i) => (
+            <Link key={i} to="/history" className={TILE}>
+              <TileBody cover={c.url} title={`Հայոց պատմություն ${i + 1}`} sub="Նմուշային թեստեր" />
             </Link>
-          </Button>
-          <Button variant="sun" size="lg" asChild>
-            <Link to="/test/$bookId" params={{ bookId: "all" }} search={{ mode: "custom", style: "game" }}>
-              <GraduationCap /> Կազմել թեստ
-            </Link>
-          </Button>
+          ))}
+        </SubjectRow>
+
+        <SubjectRow title="Հայոց լեզու">
+          <ComingSoon title="Հայոց լեզու" />
+        </SubjectRow>
+        <SubjectRow title="Կենսաբանություն">
+          <ComingSoon title="Կենսաբանություն" />
+        </SubjectRow>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-black sm:text-3xl">Քննություն</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ExamTile
+            to="/test/$bookId"
+            search={{ mode: "exam", style: "classic" }}
+            title="Անգլերեն · 80 հարցանոց քննություն"
+            sub="Իրական քննության կառուցվածքով"
+            icon={<Trophy className="size-5" />}
+          />
+          <ExamTile
+            to="/test/$bookId"
+            search={{ mode: "custom", style: "game" }}
+            title="Անգլերեն · Կազմել թեստ"
+            sub="Ընտրիր բաժինները և քանակը"
+            icon={<ClipboardCheck className="size-5" />}
+          />
+          <ExamTile
+            href="/math"
+            title="Մաթեմատիկա · Թեստ"
+            sub="65 հարց՝ քննության կառուցվածքով, կամ ընտրովի"
+            icon={<Trophy className="size-5" />}
+          />
+          <ExamTile
+            to="/history"
+            title="Հայոց պատմություն · Թեստեր"
+            sub="Նմուշային թեստեր"
+            icon={<ClipboardCheck className="size-5" />}
+          />
         </div>
       </section>
-
-      <section className="grid gap-4 sm:grid-cols-3">
-        <Feature icon={<BookOpen />} title="Ուսուցում" text="Խաղային կամ դասական ռեժիմ՝ ըստ բաժինների։" />
-        <Feature icon={<GraduationCap />} title="Թեստեր" text="Ընտրիր բաժինները և հարցերի քանակը։" />
-        <Feature icon={<Trophy />} title="80 հարցանոց քննություն" text="Իրական քննության կառուցվածքով։" />
-      </section>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl bg-primary-foreground/15 p-3">
-      <p className="font-display text-2xl font-black">{value}</p>
-      <p className="text-xs opacity-85">{label}</p>
-    </div>
-  );
-}
-
-function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return (
-    <div className="flex gap-3 rounded-2xl border bg-card p-5">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-secondary text-primary">{icon}</span>
-      <div className="min-w-0">
-        <h3 className="text-base font-bold">{title}</h3>
-        <p className="text-sm text-muted-foreground">{text}</p>
-      </div>
     </div>
   );
 }
