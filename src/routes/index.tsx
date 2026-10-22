@@ -149,8 +149,8 @@ function MathSubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/math" title="Պաշտոնական քննություն · 65 հարց" sub="Քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
-          <ExamTile to="/math" title="Թեստերի կազմիչ" sub="Ընտրիր շտեմարանները, բաժինները և քանակը" icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "exam" }} title="Պաշտոնական քննություն · 65 հարց" sub="Քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "custom" }} title="Թեստերի կազմիչ" sub="Ընտրիր բաժինները և հարցերի քանակը" icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
     </div>
