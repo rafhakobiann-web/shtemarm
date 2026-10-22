@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/math/")({
   head: () => ({
     meta: [
-      { title: "Մաթեմատիկա · Թեստ · Շտեմարան" },
+      { title: "Մաթեմատիկա · Թեստ · Shtemarm" },
       { name: "description", content: "Մաթեմատիկայի թեստ՝ կազմված մաթեմատիկայի գրքերից" },
     ],
   }),

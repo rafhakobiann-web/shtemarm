@@ -10,9 +10,9 @@ import { useProgress } from "@/lib/progress";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Մուտք · Շտեմարան" },
+      { title: "Մուտք · Shtemarm" },
       { name: "description", content: "Մուտք գործեք՝ ձեր առաջընթացը բոլոր սարքերում պահելու համար։" },
-      { property: "og:title", content: "Մուտք · Շտեմարան" },
+      { property: "og:title", content: "Մուտք · Shtemarm" },
       { property: "og:description", content: "Պահպանեք առաջընթացը առցանց։" },
     ],
   }),

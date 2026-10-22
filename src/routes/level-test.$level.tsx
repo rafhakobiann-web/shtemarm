@@ -9,9 +9,9 @@ import { Slider } from "@/components/ui/slider";
 export const Route = createFileRoute("/level-test/$level")({
   head: ({ params }) => ({
     meta: [
-      { title: `Անգլերենի ${params.level.toUpperCase()} թեստ · Շտեմարան` },
+      { title: `Անգլերենի ${params.level.toUpperCase()} թեստ · Shtemarm` },
       { name: "description", content: "Ստուգիր անգլերենի գիտելիքներդ A1–C1 մակարդակների ուսումնական թեստերով։" },
-      { property: "og:title", content: `Շտեմարան · Անգլերենի ${params.level.toUpperCase()} թեստ` },
+      { property: "og:title", content: `Shtemarm · Անգլերենի ${params.level.toUpperCase()} թեստ` },
       { property: "og:description", content: "Ընտրիր հարցերի քանակը և ստուգիր անգլերենի գիտելիքներդ։" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

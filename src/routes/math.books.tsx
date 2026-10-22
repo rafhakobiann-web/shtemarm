@@ -8,7 +8,7 @@ import { MathExplain, taskPages } from "@/components/MathExplain";
 export const Route = createFileRoute("/math/books")({
   head: () => ({
     meta: [
-      { title: "Մաթեմատիկայի գրքեր · Շտեմարան" },
+      { title: "Մաթեմատիկայի գրքեր · Shtemarm" },
       { name: "description", content: "Մաթեմատիկայի հարցաշարեր՝ 2 մաս" },
     ],
   }),
