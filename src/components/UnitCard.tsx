@@ -204,7 +204,7 @@ export function UnitCard(props: {
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <p className="min-w-0 pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"} /></p>
+          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"} /></p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {Object.entries(q.options).map(([k, v]) => {
