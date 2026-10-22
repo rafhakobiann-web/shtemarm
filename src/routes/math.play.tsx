@@ -113,7 +113,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && draft.trim() && onAnswer(draft.trim())}
             placeholder="Պատասխան"
-            className="h-12 flex-1 rounded-2xl border-2 border-stone-300 bg-white px-4 text-base focus:border-blue-700 focus:outline-none"
+            className="h-12 flex-1 rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none"
           />
           <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>Ստուգել</Button>
         </div>
@@ -138,10 +138,10 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
             type="button"
             disabled={locked || answered}
             onClick={() => onAnswer(c)}
-            className={`flex w-full items-center gap-4 rounded-2xl border-2 bg-white px-5 py-4 text-left text-base transition ${
+            className={`flex w-full items-center gap-4 rounded-2xl border-2 bg-card px-5 py-4 text-left text-base transition ${
               isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
-              : "border-stone-300 hover:bg-stone-50"}`}
+              : "border-stone-300 hover:bg-muted"}`}
           >
             <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : label}</span>
             <span className="font-medium">{c === "T" || c === "F" ? label : ""}</span>
@@ -202,7 +202,7 @@ function PlayPage() {
       </a>
       {!isTest && (
         <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
-          <span className="rounded-xl bg-white px-4 py-2 shadow-sm">Խաղային</span>
+          <span className="rounded-xl bg-card px-4 py-2 shadow-sm">Խաղային</span>
           <a href={sectionHref} className="rounded-xl px-4 py-2 text-muted-foreground">Դասական</a>
         </div>
       )}
@@ -294,7 +294,7 @@ function PlayPage() {
 
           <Crop bookId={it.bookId} segments={it.segments} />
 
-          <div className="space-y-4 rounded-3xl border bg-white p-5">
+          <div className="space-y-4 rounded-3xl border bg-card p-5">
             <div className="flex items-center gap-3">
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">Առաջադրանք {it.task} · Հարց {it.sub} / {it.subs}</p>

@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, ChevronDown, BookOpen } from "lucide-react";
+import { Flame, Star, User, ChevronDown, BookOpen, Moon, Sun } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,15 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 export function AppHeader() {
   const p = useProgress();
   const [email, setEmail] = useState<string | null>(null);
+  const [theme, setTheme] = useState<Theme>("light");
+  useEffect(() => {
+    setTheme(readTheme());
+  }, []);
+  const setThemeMode = (next: Theme) => {
+    setTheme(next);
+    applyTheme(next);
+    saveTheme(next);
+  };
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
@@ -37,6 +48,15 @@ export function AppHeader() {
               <DropdownMenuItem asChild><Link to="/" search={{ subject: "history" }}>Հայոց պատմություն</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <div className="flex items-center gap-1.5" title="Մութ ռեժիմ">
+            <Sun className="size-4 text-sun" aria-hidden />
+            <Switch
+              checked={theme === "dark"}
+              onCheckedChange={(v) => setThemeMode(v ? "dark" : "light")}
+              aria-label="Մութ ռեժիմ"
+            />
+            <Moon className="size-4 text-muted-foreground" aria-hidden />
+          </div>
           <span className="flex items-center gap-1" title="Օրեր անընդմեջ">
             <Flame className="size-4 text-destructive" />
             {p.streak}

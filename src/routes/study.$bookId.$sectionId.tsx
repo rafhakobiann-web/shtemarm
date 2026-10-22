@@ -84,17 +84,10 @@ function useRevealer(onResult?: (correct: boolean) => void) {
 
 /* ---------------- Classic ---------------- */
 function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; instrEn: string }) {
-  const PER = 8;
-  const [page, setPage] = useState(0);
   const { answers, setAnswers, revealed, check } = useRevealer();
-  const pages = Math.ceil(units.length / PER);
-  const slice = units.slice(page * PER, page * PER + PER);
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [page]);
   return (
     <div className="space-y-5">
-      {slice.map((u) => (
+      {units.map((u) => (
         <UnitCard
           key={u.id}
           unit={u}
@@ -107,11 +100,6 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
           header={<p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? `Առաջադրանք ${u.label}` : u.label}</p>}
         />
       ))}
-      <div className="flex items-center justify-between gap-3">
-        <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>← Նախորդ</Button>
-        <span className="text-sm font-semibold text-muted-foreground">{page + 1} / {pages}</span>
-        <Button variant="outline" disabled={page >= pages - 1} onClick={() => setPage(page + 1)}>Հաջորդ →</Button>
-      </div>
     </div>
   );
 }

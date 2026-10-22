@@ -91,7 +91,7 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
               if (e.key === "Enter" && draft.trim()) onAnswer(id, draft.trim());
             }}
             placeholder="Պատասխան"
-            className="h-10 w-28 rounded-xl border-2 border-stone-300 bg-white px-3 text-sm focus:border-blue-700 focus:outline-none"
+            className="h-10 w-28 rounded-xl border-2 border-border bg-card px-3 text-sm focus:border-blue-700 focus:outline-none"
           />
           <button
             type="button"
@@ -168,7 +168,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                     className={`h-10 min-w-12 rounded-xl border-2 px-3 text-sm font-bold transition ${
                       isRight_ ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
-                      : "border-stone-300 bg-white hover:bg-stone-50"}`}
+                      : "border-border bg-card hover:bg-muted"}`}
                   >
                     {text}
                   </button>

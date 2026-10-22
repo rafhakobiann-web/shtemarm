@@ -270,7 +270,7 @@ function AnswerRow({
           value={value ?? ""}
           onChange={(e) => onPick(e.target.value)}
           placeholder="Պատասխան"
-          className="h-12 w-full rounded-2xl border-2 border-stone-300 bg-white px-4 text-base focus:border-blue-700 focus:outline-none disabled:opacity-80"
+          className="h-12 w-full rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none disabled:opacity-80"
         />
       ) : (
         <div className={cn("grid gap-2", item.kind === "tf" ? "grid-cols-2" : "grid-cols-4")}>
@@ -289,7 +289,7 @@ function AnswerRow({
                   isRightBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                   : isWrong ? "border-red-500 bg-red-50 text-red-700"
                   : selected ? "border-blue-700 bg-blue-50 text-blue-800"
-                  : "border-stone-300 bg-white hover:bg-stone-50",
+                  : "border-border bg-card hover:bg-muted",
                 )}
               >
                 {text}
