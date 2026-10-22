@@ -49,7 +49,7 @@ function HistoryPage() {
             <span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary"><Trophy /></span>
             <div>
               <h2 className="font-bold">Թեստ {id}</h2>
-              <p className="text-sm text-muted-foreground">70 առաջադրանք · 80 միավոր</p>
+              <p className="text-sm text-muted-foreground">70 հարց</p>
             </div>
           </Link>
         ))}

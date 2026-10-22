@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
-import { BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
+import { ALL_BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/book/$bookId")({
   beforeLoad: ({ params }) => {
-    if (!BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
+    if (!ALL_BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
   },
   head: ({ params }) => ({
     meta: [
       { title: `Շտեմարան ${params.bookId} · Բաժիններ` },
-      { name: "description", content: `Անգլերենի շտեմարան ${params.bookId}-ի բոլոր 13 բաժինները՝ ուսուցում և թեստեր։` },
+      { name: "description", content: `Շտեմարան ${params.bookId}՝ բաժիններ, ուսուցում և թեստեր։` },
       { property: "og:title", content: `Շտեմարան ${params.bookId} · English` },
       { property: "og:description", content: "Ընտրեք բաժինը, սովորեք կամ անցեք թեստ։" },
     ],
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/book/$bookId")({
 function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
-  const meta = BOOKS.find((b) => b.id === id)!;
+  const meta = ALL_BOOKS.find((b) => b.id === id)!;
   const { data: book, isLoading, error, refetch } = useBook(id);
   const p = useProgress();
 
@@ -40,9 +40,13 @@ function BookPage() {
           <p className="text-muted-foreground">{meta.sub}</p>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
-              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
-                <Trophy /> 80 հարցանոց քննություն
-              </Link>
+              {id > 20 ? (
+                <Link to="/history"><Trophy /> Քննություն</Link>
+              ) : (
+                <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
+                  <Trophy /> Քննություն
+                </Link>
+              )}
             </Button>
             <Button variant="sun" size="lg" asChild>
               <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
@@ -82,16 +86,6 @@ function BookPage() {
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> Խաղալ
-                    </Link>
-                  </Button>
-                  <Button variant="outline" className="px-2 text-xs sm:text-sm" asChild>
-                    <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
-                      <BookText /> Դասական
-                    </Link>
-                  </Button>
-                  <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
-                    <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
-                      <ClipboardCheck /> Թեստ
                     </Link>
                   </Button>
                 </div>

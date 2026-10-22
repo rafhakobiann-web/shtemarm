@@ -2,7 +2,8 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, BookText, ClipboardCheck, Download, Gamepad2, Loader2, Trophy } from "lucide-react";
+import { ArrowLeft, BookText, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 
 export const Route = createFileRoute("/math/books")({
@@ -235,8 +236,9 @@ function BooksPage() {
     return book.sections.find((s) => `${s.chapter}-${s.section}` === sectionKey) ?? null;
   }, [book, sectionKey]);
 
+
   const chapters = useMemo(() => {
-    if (!book) return [];
+    if (!book) return [] as [number, BookSection[]][];
     const map = new Map<number, BookSection[]>();
     for (const s of book.sections) {
       if (!map.has(s.chapter)) map.set(s.chapter, []);
@@ -300,81 +302,68 @@ function BooksPage() {
       )}
 
       {bookId && book && !sectionKey && mode === "chapters" && (
-        <section className="space-y-6">
-          <div className="space-y-4 text-center sm:text-left">
+        <section className="space-y-8">
+          <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
             <img
               src={`/math/books/covers/${bookId}.jpg`}
-              alt={`${book.title} շապիկ`}
-              className="mx-auto aspect-[3/4] w-40 rounded-2xl object-cover shadow-card sm:mx-0 sm:w-48"
+              alt={book.title}
+              className="shadow-card hidden aspect-[3/4] w-full rounded-xl object-cover md:block"
             />
-            <div className="space-y-1">
-              <h1 className="text-3xl font-black">{book.title}</h1>
+            <div className="space-y-4">
+              <h1 className="text-3xl font-black sm:text-4xl">{book.title}</h1>
               <p className="text-muted-foreground">Շտեմարան · {bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020"}</p>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="game" size="lg" asChild>
+                  <Link to="/math"><Trophy /> Քննություն</Link>
+                </Button>
+                <Button variant="sun" size="lg" asChild>
+                  <Link to="/math"><ClipboardCheck /> Կազմել թեստ</Link>
+                </Button>
+                <Button variant="outline" size="lg" onClick={() => setMode("pages")}>
+                  <BookText /> Էջեր
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
-              <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">
-                <Trophy className="size-4" /> 65 հարցանոց քննություն
-              </Link>
-              <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-amber-400 px-5 text-sm font-bold text-stone-900">
-                <ClipboardCheck className="size-4" /> Կազմել թեստ
-              </Link>
-              <a
-                href={`/math/books/${bookId}.pdf`}
-                download
-                className="inline-flex h-11 items-center gap-2 rounded-xl border bg-card px-5 text-sm font-bold"
-              >
-                <Download className="size-4" /> Գիրքը PDF-ով
-              </a>
-            </div>
-            <button
-              onClick={() => setMode("pages")}
-              className="flex w-full items-center justify-between rounded-2xl border bg-card px-4 py-3 text-left text-sm font-bold shadow-sm hover:bg-stone-50"
-            >
-              <span>Ամբողջ գիրքը (բոլոր էջերը)</span>
-              <span className="text-xs text-muted-foreground">{PAGE_COUNT[bookId]} էջ · {questionCounts[bookId]} հարց</span>
-            </button>
           </div>
 
           {chapters.map(([ch, secs]) => (
-            <div key={ch} className="space-y-3">
-              <div>
-                <h2 className="text-xl font-black">Գլուխ {ch}</h2>
-                <p className="text-sm text-muted-foreground">Առաջադրանքներ ընտրովի պատասխաններով</p>
-              </div>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {secs.map((s) => {
-                  const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
-                  const prefix = `${bookId}:${s.chapter}:${s.section}:`;
-                  const done = answered(prefix).length;
-                  const right = correctIn(prefix);
-                  const playHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=play`;
-                  const testHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=test`;
-                  return (
-                    <div key={`${s.chapter}-${s.section}`} className="shadow-card space-y-4 rounded-3xl border bg-card p-5">
-                      <div className="flex items-start gap-4">
-                        <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-blue-700 text-2xl font-black text-white">{s.section}</span>
-                        <div className="min-w-0 space-y-1">
-                          <p className="text-lg font-black">Բաժին {s.section}</p>
-                          <p className="text-sm text-muted-foreground">{s.title}</p>
-                        </div>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
-                      </div>
-                      <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        <a href={playHref} className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-blue-700 px-2 text-xs font-bold text-white shadow-[0_4px_0_#0b2a6b] sm:gap-2 sm:text-sm"><Gamepad2 className="size-4" /> Խաղալ</a>
-                        <button
-                          onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
-                          className="inline-flex h-11 items-center justify-center gap-1 rounded-xl border bg-card px-2 text-xs font-bold hover:bg-stone-50 sm:gap-2 sm:text-sm"
-                        >
-                          <BookText className="size-4" /> Դասական
-                        </button>
-                        <a href={testHref} className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-amber-400 px-2 text-xs font-bold text-stone-900 sm:gap-2 sm:text-sm"><ClipboardCheck className="size-4" /> Թեստ</a>
-                      </div>
+            <div key={ch} className="space-y-4">
+              <h2 className="text-xl font-black">Գլուխ {ch}</h2>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {secs.map((s, i) => {
+              const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
+              const prefix = `${bookId}:${s.chapter}:${s.section}:`;
+              const done = answered(prefix).length;
+              const right = correctIn(prefix);
+              const playHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=play`;
+              const testHref = `/math/play?book=${bookId}&sec=${s.chapter}-${s.section}&mode=test`;
+              return (
+                <div key={`${s.chapter}-${s.section}`} className="shadow-card flex flex-col gap-3 rounded-2xl border bg-card p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{i + 1}</span>
+                    <div className="min-w-0">
+                      <h2 className="text-base font-bold">Բաժին {s.section}</h2>
+                      <p className="text-sm leading-snug text-muted-foreground">{s.title}</p>
                     </div>
-                  );
-                })}
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
+                  <div className="mt-auto grid grid-cols-3 gap-2">
+                    <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
+                      <a href={playHref}><Gamepad2 /> Խաղալ</a>
+                    </Button>
+                    <Button variant="outline" className="px-2 text-xs sm:text-sm" onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}>
+                      <BookText /> Դասական
+                    </Button>
+                    <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
+                      <a href={testHref}><ClipboardCheck /> Թեստ</a>
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
               </div>
             </div>
           ))}
