@@ -54,7 +54,7 @@ function CropSegment({ src, s }: { src: string; s: Segment }) {
       <img
         src={src}
         alt=""
-        loading="lazy"
+        decoding="async"
         onError={() => setFailed(true)}
         className="block w-full max-w-none"
         style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}

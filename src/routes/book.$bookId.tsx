@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
+import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +25,7 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
-  const { data: book, isLoading } = useBook(id);
+  const { data: book, isLoading, error, refetch } = useBook(id);
   const p = useProgress();
 
   return (
@@ -56,7 +57,9 @@ function BookPage() {
         </div>
       </div>
 
-      {isLoading || !book ? (
+      {error && !book ? (
+        <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
+      ) : isLoading || !book ? (
         <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -83,16 +86,6 @@ function BookPage() {
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> Խաղալ
-                    </Link>
-                  </Button>
-                  <Button variant="outline" className="px-2 text-xs sm:text-sm" asChild>
-                    <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
-                      <BookText /> Դասական
-                    </Link>
-                  </Button>
-                  <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
-                    <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
-                      <ClipboardCheck /> Թեստ
                     </Link>
                   </Button>
                 </div>

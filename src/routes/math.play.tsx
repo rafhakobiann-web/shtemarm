@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
+import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 
 export const Route = createFileRoute("/math/play")({
@@ -213,6 +214,7 @@ function PlayPage() {
     return (
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
+        <MathTools />
         <p className="text-sm font-bold">Թեստ · {round.length} հարց · {section.title}</p>
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
@@ -255,6 +257,7 @@ function PlayPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
       {header}
+      <MathTools />
 
       <div className="flex items-center gap-3">
         <div className="flex gap-1">
