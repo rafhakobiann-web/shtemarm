@@ -258,8 +258,8 @@ function BooksPage() {
             <ArrowLeft className="size-4" /> Հետ
           </button>
         ) : (
-          <Link to="/math" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Թեստ
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="size-4" /> Գլխավոր էջ
           </Link>
         )}
       </div>
