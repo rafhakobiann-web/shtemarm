@@ -13,10 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
+import { Route as LevelTestLevelRouteImport } from './routes/level-test.$level'
 import { Route as TestBookIdRouteImport } from './routes/test.$bookId'
 import { Route as StudyBookIdSectionIdRouteImport } from './routes/study.$bookId.$sectionId'
-import { Route as MathRouteImport } from './routes/math'
-import { Route as MathTestRouteImport } from './routes/math-test'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +37,11 @@ const BookBookIdRoute = BookBookIdRouteImport.update({
   path: '/book/$bookId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LevelTestLevelRoute = LevelTestLevelRouteImport.update({
+  id: '/level-test/$level',
+  path: '/level-test/$level',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestBookIdRoute = TestBookIdRouteImport.update({
   id: '/test/$bookId',
   path: '/test/$bookId',
@@ -48,36 +52,24 @@ const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
   path: '/study/$bookId/$sectionId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MathRoute = MathRouteImport.update({
-  id: '/math',
-  path: '/math',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MathTestRoute = MathTestRouteImport.update({
-  id: '/math-test',
-  path: '/math-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/level-test/$level': typeof LevelTestLevelRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
-  '/math': typeof MathRoute
-  '/math-test': typeof MathTestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/level-test/$level': typeof LevelTestLevelRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
-  '/math': typeof MathRoute
-  '/math-test': typeof MathTestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +77,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/level-test/$level': typeof LevelTestLevelRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
-  '/math': typeof MathRoute
-  '/math-test': typeof MathTestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +88,27 @@ export interface FileRouteTypes {
     | '/auth'
     | '/history'
     | '/book/$bookId'
+    | '/level-test/$level'
     | '/test/$bookId'
     | '/study/$bookId/$sectionId'
-    | '/math'
-    | '/math-test'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/history'
     | '/book/$bookId'
+    | '/level-test/$level'
     | '/test/$bookId'
     | '/study/$bookId/$sectionId'
-    | '/math'
-    | '/math-test'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/history'
     | '/book/$bookId'
+    | '/level-test/$level'
     | '/test/$bookId'
     | '/study/$bookId/$sectionId'
-    | '/math'
-    | '/math-test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,10 +116,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   HistoryRoute: typeof HistoryRoute
   BookBookIdRoute: typeof BookBookIdRoute
+  LevelTestLevelRoute: typeof LevelTestLevelRoute
   TestBookIdRoute: typeof TestBookIdRoute
   StudyBookIdSectionIdRoute: typeof StudyBookIdSectionIdRoute
-  MathRoute: typeof MathRoute
-  MathTestRoute: typeof MathTestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -164,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookBookIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/level-test/$level': {
+      id: '/level-test/$level'
+      path: '/level-test/$level'
+      fullPath: '/level-test/$level'
+      preLoaderRoute: typeof LevelTestLevelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/$bookId': {
       id: '/test/$bookId'
       path: '/test/$bookId'
@@ -178,20 +172,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudyBookIdSectionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/math': {
-      id: '/math'
-      path: '/math'
-      fullPath: '/math'
-      preLoaderRoute: typeof MathRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/math-test': {
-      id: '/math-test'
-      path: '/math-test'
-      fullPath: '/math-test'
-      preLoaderRoute: typeof MathTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -200,10 +180,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   HistoryRoute: HistoryRoute,
   BookBookIdRoute: BookBookIdRoute,
+  LevelTestLevelRoute: LevelTestLevelRoute,
   TestBookIdRoute: TestBookIdRoute,
   StudyBookIdSectionIdRoute: StudyBookIdSectionIdRoute,
-  MathRoute: MathRoute,
-  MathTestRoute: MathTestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
