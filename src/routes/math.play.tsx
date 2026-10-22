@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MathExplain, taskPages } from "@/components/MathExplain";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 
 export const Route = createFileRoute("/math/play")({
@@ -210,7 +211,7 @@ function PlayPage() {
 
   if (isTest) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
+      <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
         <p className="text-sm font-bold">Թեստ · {round.length} հարց · {section.title}</p>
         {round.map((it, idx) => (
@@ -252,7 +253,7 @@ function PlayPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
+    <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
       {header}
 
       <div className="flex items-center gap-3">
@@ -299,6 +300,17 @@ function PlayPage() {
               <p className="font-bold">Առաջադրանք {it.task} · Հարց {it.sub} / {it.subs}</p>
             </div>
             <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} />
+            {current !== undefined && (
+              <MathExplain
+                item={it.id}
+                bookId={it.bookId}
+                pages={taskPages(it.segments)}
+                kind={it.open ? "open" : it.answer === "T" || it.answer === "F" ? "tf" : "choice"}
+                task={`Առաջադրանք ${it.task}, հարց ${it.sub}`}
+                correct={it.answer ?? ""}
+                chosen={current}
+              />
+            )}
             {current !== undefined && (
               <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>Հաջորդը</Button>
             )}
