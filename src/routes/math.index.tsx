@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Timer, RefreshCw } from "lucide-react";
+import { useMathProgress } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/math/")({
@@ -149,6 +150,7 @@ function MathPage() {
   const [submitted, setSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
+  const { progress, addExam } = useMathProgress();
 
   useEffect(() => {
     if (!running || submitted) return;
@@ -190,13 +192,14 @@ function MathPage() {
           {!exam ? (
             <Button onClick={generate}>Սկսել</Button>
           ) : !submitted ? (
-            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => { setSubmitted(true); setRunning(false); }}>Ավարտել</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => { setSubmitted(true); setRunning(false); if (exam) addExam(exam.filter((x) => answers[x.id] === x.answer).length, exam.length); }}>Ավարտել</Button>
           ) : (
             <Button variant="outline" onClick={generate}><RefreshCw className="mr-1 size-4" /> Նոր թեստ</Button>
           )}
         </div>
       </div>
 
+      {!exam && progress.exams[0] && <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">Վերջին արդյունքը՝ {progress.exams[0].correct} / {progress.exams[0].total}</p>}
       {!exam && <p className="rounded-2xl bg-muted/60 p-4 text-sm leading-relaxed">Թեստը կազմվում է մաթեմատիկայի գրքերի հարցերից։ Յուրաքանչյուր նոր թեստում հարցերը տարբեր են նախորդից։</p>}
 
       {exam && exam.map((item, idx) => {

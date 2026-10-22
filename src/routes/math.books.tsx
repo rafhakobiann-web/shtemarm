@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useMathProgress } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -61,10 +62,9 @@ function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
   );
 }
 
-function TaskCard({ bookId, bookNo, sec, task }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask }) {
+function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask; saved: Record<string, string>; onAnswer: (id: string, value: string) => void }) {
   const subs = task.answers ? task.answers.length : task.sub_count;
   const isTF = task.answers?.some((a) => a === "T" || a === "F") ?? false;
-  const [picked, setPicked] = useState<Record<number, string>>({});
   const label = `Մաթեմատիկա • Մաս ${bookNo} • Գլուխ ${sec.chapter} • Բաժին ${sec.section} • Առաջադրանք ${task.task} • Հարցեր 1–${subs}`;
 
   return (
@@ -76,7 +76,8 @@ function TaskCard({ bookId, bookNo, sec, task }: { bookId: string; bookNo: numbe
           const n = i + 1;
           const correct = task.answers?.[i];
           const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
-          const chosen = picked[n];
+          const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
+          const chosen = saved[id];
           return (
             <div key={n} className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
               <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
@@ -89,7 +90,7 @@ function TaskCard({ bookId, bookNo, sec, task }: { bookId: string; bookNo: numbe
                     key={c}
                     type="button"
                     disabled={chosen !== undefined || !correct}
-                    onClick={() => setPicked((p) => ({ ...p, [n]: c }))}
+                    onClick={() => onAnswer(id, c)}
                     className={`h-10 min-w-12 rounded-xl border-2 px-3 text-sm font-bold transition ${
                       isRight ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
@@ -124,6 +125,32 @@ function BooksPage() {
   const [bookId, setBookId] = useState<string | null>(null);
   const [sectionKey, setSectionKey] = useState<string | null>(null);
   const [mode, setMode] = useState<"chapters" | "pages">("chapters");
+
+  // Keep the open book / section in the URL, so a reload returns to the same place.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("book")) setBookId(sp.get("book"));
+    if (sp.get("sec")) setSectionKey(sp.get("sec"));
+    if (sp.get("mode") === "pages") setMode("pages");
+  }, []);
+  useEffect(() => {
+    const sp = new URLSearchParams();
+    if (bookId) sp.set("book", bookId);
+    if (sectionKey) sp.set("sec", sectionKey);
+    if (mode === "pages") sp.set("mode", "pages");
+    const qs = sp.toString();
+    window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [bookId, sectionKey, mode]);
+  const { progress, setAnswer } = useMathProgress();
+  const answered = (prefix: string) => Object.keys(progress.answers).filter((k) => k.startsWith(prefix));
+  const correctIn = (prefix: string) =>
+    Object.entries(progress.answers).filter(([k, v]) => {
+      if (!k.startsWith(prefix) || !q.data) return false;
+      const [b, ch, se, ta, su] = k.split(":");
+      const sec = q.data.books[b]?.sections.find((x) => x.chapter === Number(ch) && x.section === Number(se));
+      const task = sec?.tasks.find((t) => t.task === Number(ta));
+      return task?.answers?.[Number(su) - 1] === v;
+    }).length;
 
   const book = bookId && q.data ? q.data.books[bookId] : null;
   const bookNo = bookId ? Number(bookId.split("-")[1]) : 1;
@@ -184,9 +211,9 @@ function BooksPage() {
                       <h3 className="text-lg font-bold">Մաթեմատիկա • Մաս {i + 1}</h3>
                       <p className="text-sm text-muted-foreground">Շտեմարան · {i === 0 ? "Երևան 2019" : "Երևան 2020"} · {total} հարց</p>
                       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full bg-success" style={{ width: "0%" }} />
+                        <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (answered(`${id}:`).length / total) * 100) : 0}%` }} />
                       </div>
-                      <p className="text-xs text-muted-foreground">0 / {total} արված</p>
+                      <p className="text-xs text-muted-foreground">{answered(`${id}:`).length} / {total} արված · {correctIn(`${id}:`)} ճիշտ</p>
                     </div>
                   </div>
                 </button>
@@ -227,7 +254,7 @@ function BooksPage() {
                     className="flex items-center justify-between rounded-2xl border bg-card px-4 py-3 text-left shadow-sm hover:bg-stone-50"
                   >
                     <span className="text-sm font-semibold">Բաժին {s.section}. {s.title}</span>
-                    <span className="text-xs text-muted-foreground">{s.tasks.length}</span>
+                    <span className="text-xs text-muted-foreground">{answered(`${bookId}:${s.chapter}:${s.section}:`).length} / {s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0)}</span>
                   </button>
                 ))}
               </div>
@@ -257,7 +284,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">Բաժին {section.section}. {section.title}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} />
           ))}
         </section>
       )}
