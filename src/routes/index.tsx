@@ -91,9 +91,14 @@ function Index() {
             <p className="text-sm text-muted-foreground">Երկու պաշտոնական գրքերի ընտրություն և քննության ձևաչափով բնօրինակ փորձնական հարցեր՝ պատասխաններով ու բացատրություններով։</p>
           </div>
         </div>
-        <Button size="lg" variant="sun" asChild>
-          <Link to="/math"><Calculator /> Մաթեմատիկա</Link>
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button size="lg" variant="outline" asChild>
+            <Link to="/math/books"><BookOpen /> Գրքեր (2 մաս)</Link>
+          </Button>
+          <Button size="lg" variant="sun" asChild>
+            <Link to="/math"><Calculator /> Թեստ</Link>
+          </Button>
+        </div>
       </section>
 
       <section className="shadow-card grid gap-4 rounded-3xl border bg-card p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
