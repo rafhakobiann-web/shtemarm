@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Timer, RefreshCw } from "lucide-react";
-import { useMathProgress } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/math/")({
@@ -72,6 +72,56 @@ function buildPool(index: Index): PoolItem[] {
     }
   }
   return pool;
+}
+
+// Structure of the sample test (9_1.pdf): 65 questions, each slot drawn from the matching book section.
+// Questions 1–40 are the topics of chapter 1 sections 1–10 (4 each); 41–65 are short-answer questions from chapter 2.
+const rep = (c: number, s: number, n: number): [number, number][] => Array.from({ length: n }, () => [c, s] as [number, number]);
+const SAMPLE_STRUCTURE: [number, number][] = [
+  ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((s) => rep(1, s, 4)), // 1–40
+  ...rep(2, 2, 4),  // 41–44 inequalities
+  ...rep(2, 5, 1),  // 45 functions
+  ...rep(2, 3, 4),  // 46–49 text problems
+  ...rep(2, 6, 4),  // 50–53 planar geometry
+  ...rep(2, 1, 4),  // 54–57 expressions
+  ...rep(2, 5, 4),  // 58–61 functions
+  ...rep(2, 8, 2),  // 62–63 combinatorics
+  ...rep(2, 2, 1),  // 64 equations
+  ...rep(2, 7, 1),  // 65 solid geometry
+];
+
+function allSubs(index: Index, bookId: string, chapter: number, section: number): PoolItem[] {
+  const sec = index.books[bookId]?.sections.find((x) => x.chapter === chapter && x.section === section);
+  if (!sec) return [];
+  const out: PoolItem[] = [];
+  for (const t of sec.tasks) {
+    const subs = t.answers ? t.answers.length : t.sub_count;
+    for (let i = 0; i < subs; i++) {
+      const ans = t.answers?.[i];
+      if (ans === undefined) continue;
+      out.push({ id: `${bookId}:${chapter}:${section}:${t.task}:${i + 1}`, book: bookId, chapter, section, task: t.task, sub: i + 1, segments: t.segments, answer: ans });
+    }
+  }
+  return out;
+}
+
+function pickSample(index: Index, excluded: Set<string>): PoolItem[] {
+  const usedTasks = new Set<string>();
+  const picked: PoolItem[] = [];
+  SAMPLE_STRUCTURE.forEach(([chapter, section], slot) => {
+    // Sample questions 41–65 are short-answer questions, so those slots use short-answer items only.
+    const wantShort = slot >= 40;
+    const all = allSubs(index, "matem-1", chapter, section).filter((x) => !usedTasks.has(`${x.chapter}:${x.section}:${x.task}`));
+    const shortOnly = all.filter((x) => isShortAnswer(x.answer));
+    const candidates = wantShort && shortOnly.length ? shortOnly : all;
+    const fresh = candidates.filter((x) => !excluded.has(x.id));
+    const pool = fresh.length ? fresh : candidates;
+    if (!pool.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    usedTasks.add(`${pick.chapter}:${pick.section}:${pick.task}`);
+    picked.push(pick);
+  });
+  return picked;
 }
 
 function pickRandom(pool: PoolItem[], count: number, excluded: Set<string>): PoolItem[] {
@@ -159,7 +209,7 @@ function MathPage() {
   }, [running, submitted]);
 
   function generate() {
-    const picked = pickRandom(pool, EXAM_SIZE, readLast());
+    const picked = q.data ? pickSample(q.data, readLast()) : [];
     writeLast(picked.map((p) => p.id));
     setExam(picked);
     setAnswers({});
@@ -171,7 +221,8 @@ function MathPage() {
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել թեստը։</p>;
 
-  const correct = exam ? exam.filter((x) => answers[x.id] === x.answer).length : 0;
+  const correctOf = (x: PoolItem) => answers[x.id] !== undefined && isRight(x.answer, answers[x.id]);
+  const correct = exam ? exam.filter(correctOf).length : 0;
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
@@ -192,7 +243,7 @@ function MathPage() {
           {!exam ? (
             <Button onClick={generate}>Սկսել</Button>
           ) : !submitted ? (
-            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => { setSubmitted(true); setRunning(false); if (exam) addExam(exam.filter((x) => answers[x.id] === x.answer).length, exam.length); }}>Ավարտել</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => { setSubmitted(true); setRunning(false); if (exam) addExam(exam.filter(correctOf).length, exam.length); }}>Ավարտել</Button>
           ) : (
             <Button variant="outline" onClick={generate}><RefreshCw className="mr-1 size-4" /> Նոր թեստ</Button>
           )}
@@ -204,7 +255,7 @@ function MathPage() {
 
       {exam && exam.map((item, idx) => {
         const given = answers[item.id];
-        const ok = submitted && given === item.answer;
+        const ok = submitted && isRight(item.answer, given ?? "");
         return (
           <section key={item.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <div className="flex items-center gap-2">
@@ -214,11 +265,28 @@ function MathPage() {
               </span>
             </div>
             <TaskCrop segments={item.segments.map((s) => ({ ...s, src: `${item.book}/p-${String(s.page).padStart(3, "0")}.jpg` }))} />
+            {isShortAnswer(item.answer) ? (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    disabled={submitted}
+                    value={answers[item.id] ?? ""}
+                    onChange={(e) => setAnswers((a) => ({ ...a, [item.id]: e.target.value }))}
+                    placeholder="Պատասխան"
+                    className="h-12 flex-1 rounded-2xl border-2 border-stone-300 bg-white px-4 text-base focus:border-blue-700 focus:outline-none"
+                  />
+                </div>
+                {submitted && <p className={`text-sm font-bold ${correctOf(item) ? "text-emerald-700" : "text-red-700"}`}>{correctOf(item) ? "Ճիշտ է ✓" : `Ճիշտ պատասխանը՝ ${item.answer}`}</p>}
+              </div>
+            ) : (
+            <>
             <div className="grid grid-cols-4 gap-2">
               {["1", "2", "3", "4"].map((opt) => {
                 const selected = given === opt;
-                const isRight = submitted && item.answer === opt;
-                const isWrong = submitted && selected && !isRight;
+                const rightBtn = submitted && item.answer === opt;
+                const isWrong = submitted && selected && !rightBtn;
                 return (
                   <button
                     key={opt}
@@ -226,7 +294,7 @@ function MathPage() {
                     disabled={submitted}
                     onClick={() => setAnswers((a) => ({ ...a, [item.id]: opt }))}
                     className={`h-12 rounded-xl border-2 text-base font-bold transition ${
-                      isRight ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                      rightBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
                       : selected ? "border-blue-700 bg-blue-50 text-blue-800"
                       : "border-stone-300 bg-white hover:bg-stone-50"}`}
@@ -237,6 +305,8 @@ function MathPage() {
               })}
             </div>
             {submitted && <p className={`text-sm ${ok ? "text-emerald-700" : "text-red-700"}`}>{ok ? "Ճիշտ է ✓" : `Ճիշտ պատասխանը՝ ${item.answer})`}</p>}
+            </>
+            )}
           </section>
         );
       })}

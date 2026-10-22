@@ -173,7 +173,7 @@ function PlayPage() {
 
   useEffect(() => {
     if (!section.items.length) return;
-    setRound(shuffle(section.items).slice(0, isTest ? TEST_SIZE : section.items.length));
+    setRound(isTest ? shuffle(section.items).slice(0, TEST_SIZE) : section.items);
     setIndex(0);
     setLives(LIVES);
     setStreak(0);
@@ -273,7 +273,7 @@ function PlayPage() {
           </p>
           <Button className="w-full" onClick={() => {
             setIndex(0); setLives(LIVES); setStreak(0);
-            setRound(shuffle(section.items));
+            setRound(section.items);
           }}>Նորից</Button>
         </section>
       ) : (
