@@ -224,39 +224,68 @@ function BooksPage() {
       )}
 
       {bookId && book && !sectionKey && mode === "chapters" && (
-        <section className="space-y-5">
-          <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4">
-            <img src={`/math/books/covers/${bookId}.jpg`} alt="" className="aspect-[3/4] w-full rounded-lg object-cover" />
-            <div className="min-w-0 space-y-3">
-              <h1 className="text-xl font-bold">{book.title}</h1>
-              <p className="text-sm text-muted-foreground">{questionCounts[bookId]} հարց · {PAGE_COUNT[bookId]} էջ</p>
-              <div className="flex flex-wrap gap-2">
-                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-blue-700 px-4 text-sm font-bold text-white">Քննություն (65 հարց)</Link>
-                <Link to="/math" className="inline-flex h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-bold text-stone-900">Կազմել թեստ</Link>
-              </div>
+        <section className="space-y-6">
+          <div className="space-y-4 text-center sm:text-left">
+            <img
+              src={`/math/books/covers/${bookId}.jpg`}
+              alt={`${book.title} շապիկ`}
+              className="mx-auto aspect-[3/4] w-40 rounded-2xl object-cover shadow-card sm:mx-0 sm:w-48"
+            />
+            <div className="space-y-1">
+              <h1 className="text-3xl font-black">{book.title}</h1>
+              <p className="text-muted-foreground">Շտեմարան · {bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020"}</p>
             </div>
+            <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
+              <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-bold text-white shadow-[0_4px_0_#0b2a6b]">
+                Քննություն (65 հարց)
+              </Link>
+              <Link to="/math" className="inline-flex h-11 items-center gap-2 rounded-xl bg-amber-400 px-5 text-sm font-bold text-stone-900">
+                Կազմել թեստ
+              </Link>
+              <a
+                href={`/math/books/${bookId}.pdf`}
+                download
+                className="inline-flex h-11 items-center gap-2 rounded-xl border bg-card px-5 text-sm font-bold"
+              >
+                Գիրքը PDF-ով
+              </a>
+            </div>
+            <button
+              onClick={() => setMode("pages")}
+              className="flex w-full items-center justify-between rounded-2xl border bg-card px-4 py-3 text-left text-sm font-bold shadow-sm hover:bg-stone-50"
+            >
+              <span>Ամբողջ գիրքը (բոլոր էջերը)</span>
+              <span className="text-xs text-muted-foreground">{PAGE_COUNT[bookId]} էջ · {questionCounts[bookId]} հարց</span>
+            </button>
           </div>
-          <button
-            onClick={() => setMode("pages")}
-            className="flex w-full items-center justify-between rounded-2xl bg-blue-700 px-4 py-3 text-left text-sm font-bold text-white shadow-sm"
-          >
-            <span>Ամբողջ գիրքը (բոլոր էջերը)</span>
-            <span className="text-xs opacity-80">{PAGE_COUNT[bookId]} էջ</span>
-          </button>
+
           {chapters.map(([ch, secs]) => (
-            <div key={ch} className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Գլուխ {ch}</p>
-              <div className="grid gap-2">
-                {secs.map((s) => (
-                  <button
-                    key={`${s.chapter}-${s.section}`}
-                    onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
-                    className="flex items-center justify-between rounded-2xl border bg-card px-4 py-3 text-left shadow-sm hover:bg-stone-50"
-                  >
-                    <span className="text-sm font-semibold">Բաժին {s.section}. {s.title}</span>
-                    <span className="text-xs text-muted-foreground">{answered(`${bookId}:${s.chapter}:${s.section}:`).length} / {s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0)}</span>
-                  </button>
-                ))}
+            <div key={ch} className="space-y-3">
+              <div>
+                <h2 className="text-xl font-black">Գլուխ {ch}</h2>
+                <p className="text-sm text-muted-foreground">Առաջադրանքներ ընտրովի պատասխաններով</p>
+              </div>
+              <div className="grid gap-3">
+                {secs.map((s) => {
+                  const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
+                  const done = answered(`${bookId}:${s.chapter}:${s.section}:`).length;
+                  return (
+                    <button
+                      key={`${s.chapter}-${s.section}`}
+                      onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}
+                      className="shadow-card flex items-center gap-4 rounded-2xl border bg-card p-4 text-left transition-transform hover:-translate-y-0.5"
+                    >
+                      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-700 text-base font-bold text-white">{s.section}</span>
+                      <span className="min-w-0 flex-1 space-y-2">
+                        <span className="block font-bold leading-snug">{s.title}</span>
+                        <span className="block text-xs text-muted-foreground">{s.tasks.length} առաջադրանք · {total} հարց · {done} արված</span>
+                        <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
+                          <span className="block h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
