@@ -39,9 +39,13 @@ function BookPage() {
           <p className="text-muted-foreground">{meta.sub}</p>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
-              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
-                <Trophy /> 80 հարցանոց քննություն
-              </Link>
+              {id > 20 ? (
+                <Link to="/history"><Trophy /> Քննություն</Link>
+              ) : (
+                <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
+                  <Trophy /> Քննություն
+                </Link>
+              )}
             </Button>
             <Button variant="sun" size="lg" asChild>
               <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>

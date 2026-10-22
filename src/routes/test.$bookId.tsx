@@ -20,7 +20,7 @@ export const Route = createFileRoute("/test/$bookId")({
   head: ({ params }) => ({
     meta: [
       { title: `${bookName(params.bookId)} · Թեստ և քննություն` },
-      { name: "description", content: "80 հարցանոց քննություն կամ ձեր ընտրած բաժիններից կազմված թեստ։" },
+      { name: "description", content: "Քննություն կամ ձեր ընտրած բաժիններից կազմված թեստ։" },
       { property: "og:title", content: `${bookName(params.bookId)} · Թեստ` },
       { property: "og:description", content: "Ստուգեք ձեր գիտելիքները իրական քննության կառուցվածքով։" },
     ],

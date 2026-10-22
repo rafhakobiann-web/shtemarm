@@ -109,8 +109,8 @@ function EnglishSubject() {
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
-            title="Պաշտոնական քննություն · 80 հարց"
-            sub="Իրական քննության կառուցվածքով"
+            title="Քննություն"
+            sub="80 հարց՝ իրական քննության կառուցվածքով"
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
@@ -143,7 +143,7 @@ function MathSubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/math" search={{ mode: "exam" }} title="Պաշտոնական քննություն · 65 հարց" sub="Քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "exam" }} title="Քննություն" sub="65 հարց՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
           <ExamTile to="/math" search={{ mode: "custom" }} title="Թեստերի կազմիչ" sub="Ընտրիր բաժինները և հարցերի քանակը" icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
@@ -168,7 +168,7 @@ function HistorySubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/history" title="Նմուշային թեստեր · 2026" sub="Թեստ 1–4՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title="Քննություն" sub="70 հարց · Թեստ 1–4" icon={<Trophy className="size-5" />} />
         </div>
       </section>
     </div>
@@ -224,8 +224,8 @@ function Index() {
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
-            title="Անգլերեն · 80 հարցանոց քննություն"
-            sub="Իրական քննության կառուցվածքով"
+            title="Քննություն"
+            sub="Անգլերեն · 80 հարց՝ իրական քննության կառուցվածքով"
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
@@ -235,8 +235,8 @@ function Index() {
             sub="Ընտրիր բաժինները և քանակը"
             icon={<ClipboardCheck className="size-5" />}
           />
-          <ExamTile to="/math" title="Մաթեմատիկա · Թեստ" sub="65 հարց՝ քննության կառուցվածքով, կամ ընտրովի" icon={<Trophy className="size-5" />} />
-          <ExamTile to="/history" title="Հայոց պատմություն · Թեստեր" sub="Նմուշային թեստեր" icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/math" title="Քննություն" sub="Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title="Քննություն" sub="Հայոց պատմություն · 70 հարց" icon={<Trophy className="size-5" />} />
         </div>
       </section>
     </div>
