@@ -221,7 +221,7 @@ function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
             <img
               src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`}
               alt=""
-              loading="lazy"
+              decoding="async"
               className="block w-full max-w-none"
               style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
             />
