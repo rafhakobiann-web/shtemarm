@@ -15,9 +15,9 @@ export type Database = {
   public: {
     Tables: {
       feedback: {
-        Row: { id: string; message: string; contact: string | null; created_at: string }
-        Insert: { id?: string; message: string; contact?: string | null; created_at?: string }
-        Update: { id?: string; message?: string; contact?: string | null; created_at?: string }
+        Row: { id: string; username: string; message: string; created_at: string }
+        Insert: { id?: string; username: string; message: string; created_at?: string }
+        Update: { id?: string; username?: string; message?: string; created_at?: string }
         Relationships: []
       }
       explanation_cache: {

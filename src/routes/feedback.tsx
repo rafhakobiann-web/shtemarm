@@ -100,7 +100,9 @@ function FeedbackPage() {
         <section className="shadow-card glass grid place-items-center gap-3 rounded-3xl p-8 text-center">
           <CheckCircle2 className="size-12 text-success" />
           <p className="text-lg font-bold">{tx("Շնորհակալություն։ Հաղորդագրությունը ուղարկված է։")}</p>
-          <Button variant="outline" onClick={() => setSent(false)}>{tx("Ուղարկել մեկ այլ հաղորդագրություն")}</Button>
+          <Button variant="outline" onClick={() => setSent(false)}>
+            {tx("Ուղարկել մեկ այլ հաղորդագրություն")}
+          </Button>
         </section>
       ) : (
         <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
@@ -135,7 +137,9 @@ function FeedbackPage() {
             <p className="whitespace-pre-wrap text-sm">{m.message}</p>
             {m.reply ? (
               <div className="rounded-xl bg-emerald-50 p-3">
-                <p className="text-xs font-bold text-emerald-800">{tx("Պատասխան")}{m.replied_at ? ` · ${new Date(m.replied_at).toLocaleString()}` : ""}</p>
+                <p className="text-xs font-bold text-emerald-800">
+                  {tx("Պատասխան")}{m.replied_at ? ` · ${new Date(m.replied_at).toLocaleString()}` : ""}
+                </p>
                 <p className="mt-1 whitespace-pre-wrap text-sm">{m.reply}</p>
               </div>
             ) : (
@@ -147,7 +151,9 @@ function FeedbackPage() {
 
       <section className="shadow-card rounded-3xl border bg-card p-5 sm:p-6">
         <h2 className="font-bold">{tx("Կամ գրեք TikTok-ում")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{tx("Կարող եք նաև գրել ինձ TikTok-ում՝ մեկնաբանություններում կամ անմիջական հաղորդագրությամբ։")}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {tx("Կարող եք նաև գրել ինձ TikTok-ում՝ մեկնաբանություններում կամ անմիջական հաղորդագրությամբ։")}
+        </p>
         <a
           href={TIKTOK_URL}
           target="_blank"
