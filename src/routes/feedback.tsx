@@ -24,11 +24,15 @@ type Mine = { id: string; message: string; reply: string | null; created_at: str
 const CLIENT_KEY = "shtemarm-client-id";
 
 function getClientId(): string {
-  let id = window.localStorage.getItem(CLIENT_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    window.localStorage.setItem(CLIENT_KEY, id);
-  }
+  const existingId = window.localStorage.getItem(CLIENT_KEY);
+  if (existingId) return existingId;
+
+  const id =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  window.localStorage.setItem(CLIENT_KEY, id);
   return id;
 }
 
@@ -43,16 +47,25 @@ function FeedbackPage() {
 
   const loadMine = async (id: string) => {
     try {
-      setMine((await getMyFeedback({ data: { clientId: id } })) as Mine[]);
+      const feedback = await getMyFeedback({ data: { clientId: id } });
+      setMine(Array.isArray(feedback) ? (feedback as Mine[]) : []);
     } catch {
       setMine([]);
+      toast.error(tx("Չհաջողվեց բեռնել հաղորդագրությունները։"));
     }
   };
 
   useEffect(() => {
-    const id = getClientId();
-    setClientId(id);
-    void loadMine(id);
+    try {
+      const id = getClientId();
+      setClientId(id);
+      void loadMine(id);
+    } catch {
+      setMine([]);
+      toast.error(tx("Չհաջողվեց բացել հաղորդագրությունները այս սարքում։"));
+    }
+    // This initialization should run only once when the page mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const send = async () => {
