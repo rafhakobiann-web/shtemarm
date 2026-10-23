@@ -86,7 +86,7 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
   const submitted = saved !== undefined;
   const ok = submitted && correct !== undefined && isRight(correct, saved);
   return (
-    <div className="grid grid-cols-2 items-stretch gap-2 rounded-2xl border p-2 sm:flex sm:flex-wrap sm:items-center">\n              <span className="col-span-2 grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white sm:col-span-1">{n}</span>
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">\n      <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
       {!submitted ? (
         <>
           <input
@@ -162,8 +162,12 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           return (
             <Fragment key={n}>
-            <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
-              <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
+            <div className="grid grid-cols-2 items-stretch gap-2 rounded-2xl border p-2 sm:flex sm:flex-wrap sm:items-center">
+              const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
+          return (
+            <Fragment key={n}>
+            <div className="grid grid-cols-2 items-stretch gap-2 rounded-2xl border p-2 sm:flex sm:flex-wrap sm:items-center">
+              <span className="col-span-2 grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white sm:col-span-1">{n}</span>
               {choices.map((c) => {
                 const text = isTF ? (c === "T" ? tx("Ճիշտ է") : tx("Սխալ է")) : task.questions?.[i]?.options?.[Number(c) - 1] ?? `${c})`;
                 const isRight_ = chosen !== undefined && correct === c;
