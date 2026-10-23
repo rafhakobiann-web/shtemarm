@@ -115,24 +115,21 @@ function byBookOrder(a: Item, b: Item) {
 
 /** Build a 65-question practice exam from both books without claiming an unverified official structure. */
 function pickSample(index: Index, excluded: Set<string>): Item[] {
-  const groups = selectedGroups(index, [...BOOK_IDS], new Set(
+  const allKeys = new Set(
     BOOK_IDS.flatMap((bookId) =>
       (index.books[bookId]?.sections ?? []).map((sec) => sectionKey(bookId, sec)),
     ),
-  ));
-  const all = groups.flat();
-  const fresh = all.filter((item) => !excluded.has(item.id));
-  const pool = shuffle(fresh.length >= EXAM_SIZE ? fresh : all);
+  );
+  const groups = shuffle(selectedGroups(index, [...BOOK_IDS], allKeys));
+  const freshGroups = groups.filter((group) => group.some((item) => !excluded.has(item.id)));
+  const orderedGroups = [...freshGroups, ...groups.filter((group) => !freshGroups.includes(group))];
   const picked: Item[] = [];
-  const used = new Set<string>();
 
-  for (const item of pool) {
+  for (const group of orderedGroups) {
     if (picked.length >= EXAM_SIZE) break;
-    const key = taskKey(item);
-    // Avoid duplicate sub-questions and keep a task's sub-questions from over-dominating the test.
-    if (used.has(item.id)) continue;
-    picked.push(item);
-    used.add(item.id);
+    const freshItems = group.filter((item) => !excluded.has(item.id));
+    const candidates = freshItems.length ? freshItems : group;
+    picked.push(...candidates.slice(0, EXAM_SIZE - picked.length));
   }
 
   // If a source book ever contains fewer than 65 sub-questions, return the available count honestly.
