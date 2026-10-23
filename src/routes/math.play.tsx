@@ -5,7 +5,6 @@ import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
-import { MathText } from "@/components/MathText";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 
 export const Route = createFileRoute("/math/play")({
@@ -97,7 +96,7 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
 }
 
 /** Answer control for one sub-question. Options are lettered like the English game (1) 2) 3) 4)). */
-function AnswerBlock({ item, value, locked, onAnswer, options }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void; options?: Record<string, string> }) {
+function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
   const [draft, setDraft] = useState("");
   const correct = item.answer;
   const short = item.open || correct === undefined || isShortAnswer(correct);
@@ -146,7 +145,7 @@ function AnswerBlock({ item, value, locked, onAnswer, options }: { item: Item; v
               : "border-stone-300 hover:bg-muted"}`}
           >
             <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : label}</span>
-            <span className="font-medium"><MathText text={options?.[c] ?? (c === "T" || c === "F" ? label : "")} /></span>
+            <span className="font-medium">{c === "T" || c === "F" ? label : ""}</span>
           </button>
         );
       })}
@@ -170,19 +169,6 @@ function PlayPage() {
     return sectionItems(q.data, params.book, params.chapter, params.section);
   }, [q.data, params]);
 
-  const textBank = useQuery({
-    queryKey: ["math-text-m1s1"],
-    queryFn: async () => (await fetch("/data/math-text-matem1-s1.json")).json() as Promise<{ tasks: { task: number; questions: { sub: number; stem: string; options: Record<string, string>; answer: string }[] }[] }>,
-    enabled: !!params && params.book === "matem-1" && params.chapter === 1 && params.section === 1,
-    staleTime: Infinity,
-  });
-  const textById = useMemo(() => {
-    const m: Record<string, { stem: string; options: Record<string, string> }> = {};
-    if (params && textBank.data) {
-      for (const t of textBank.data.tasks) for (const q of t.questions) m[`${params.book}:1:1:${t.task}:${q.sub}`] = { stem: q.stem, options: q.options };
-    }
-    return m;
-  }, [params, textBank.data]);
   const isTest = params?.mode === "test";
   const [round, setRound] = useState<Item[]>([]);
   const [index, setIndex] = useState(0);
@@ -233,8 +219,8 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Առաջադրանք {it.task} • Հարց {it.sub} / {it.subs} • {idx + 1} / {round.length}</p>
-            {textById[it.id] ? <div className="rounded-2xl border bg-white p-4 text-base leading-relaxed"><MathText text={textById[it.id].stem} /></div> : <Crop bookId={it.bookId} segments={it.segments} />}
-            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} options={textById[it.id]?.options} />
+            <Crop bookId={it.bookId} segments={it.segments} />
+            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
         {!submitted ? (
@@ -309,14 +295,14 @@ function PlayPage() {
             </p>
           </div>
 
-          {textById[it.id] ? <div className="rounded-2xl border bg-white p-4 text-base leading-relaxed"><MathText text={textById[it.id].stem} /></div> : <Crop bookId={it.bookId} segments={it.segments} />}
+          <Crop bookId={it.bookId} segments={it.segments} />
 
           <div className="space-y-4 rounded-3xl border bg-card p-5">
             <div className="flex items-center gap-3">
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">Առաջադրանք {it.task} · Հարց {it.sub} / {it.subs}</p>
             </div>
-            <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} options={textById[it.id]?.options} />
+            <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} />
             {current !== undefined && (
               <MathExplain
                 item={it.id}
