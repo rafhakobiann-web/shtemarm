@@ -11,11 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ChatRouteImport } from './routes/chat'
 import { Route as CalcRouteImport } from './routes/calc'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HistoryBookRouteImport } from './routes/history-book'
+import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
 import { Route as LevelTestLevelRouteImport } from './routes/level-test.$level'
 import { Route as MathIndexRouteImport } from './routes/math.index'
@@ -34,14 +35,14 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CalcRoute = CalcRouteImport.update({
   id: '/calc',
   path: '/calc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedbackRoute = FeedbackRouteImport.update({
@@ -57,6 +58,11 @@ const HistoryRoute = HistoryRouteImport.update({
 const HistoryBookRoute = HistoryBookRouteImport.update({
   id: '/history-book',
   path: '/history-book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
+  id: '/admin/feedback',
+  path: '/admin/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookBookIdRoute = BookBookIdRouteImport.update({
@@ -98,11 +104,12 @@ const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
   '/calc': typeof CalcRoute
+  '/chat': typeof ChatRoute
   '/feedback': typeof FeedbackRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -114,11 +121,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
   '/calc': typeof CalcRoute
+  '/chat': typeof ChatRoute
   '/feedback': typeof FeedbackRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -131,11 +139,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
   '/calc': typeof CalcRoute
+  '/chat': typeof ChatRoute
   '/feedback': typeof FeedbackRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
@@ -149,11 +158,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/chat'
     | '/calc'
+    | '/chat'
     | '/feedback'
     | '/history'
     | '/history-book'
+    | '/admin/feedback'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -165,11 +175,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/chat'
     | '/calc'
+    | '/chat'
     | '/feedback'
     | '/history'
     | '/history-book'
+    | '/admin/feedback'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -181,11 +192,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
-    | '/chat'
     | '/calc'
+    | '/chat'
     | '/feedback'
     | '/history'
     | '/history-book'
+    | '/admin/feedback'
     | '/book/$bookId'
     | '/level-test/$level'
     | '/math/books'
@@ -198,11 +210,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  ChatRoute: typeof ChatRoute
   CalcRoute: typeof CalcRoute
+  ChatRoute: typeof ChatRoute
   FeedbackRoute: typeof FeedbackRoute
   HistoryRoute: typeof HistoryRoute
   HistoryBookRoute: typeof HistoryBookRoute
+  AdminFeedbackRoute: typeof AdminFeedbackRoute
   BookBookIdRoute: typeof BookBookIdRoute
   LevelTestLevelRoute: typeof LevelTestLevelRoute
   MathBooksRoute: typeof MathBooksRoute
@@ -228,18 +241,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/calc': {
       id: '/calc'
       path: '/calc'
       fullPath: '/calc'
       preLoaderRoute: typeof CalcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feedback': {
@@ -261,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/history-book'
       fullPath: '/history-book'
       preLoaderRoute: typeof HistoryBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/feedback': {
+      id: '/admin/feedback'
+      path: '/admin/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AdminFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book/$bookId': {
@@ -318,11 +338,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  ChatRoute: ChatRoute,
   CalcRoute: CalcRoute,
+  ChatRoute: ChatRoute,
   FeedbackRoute: FeedbackRoute,
   HistoryRoute: HistoryRoute,
   HistoryBookRoute: HistoryBookRoute,
+  AdminFeedbackRoute: AdminFeedbackRoute,
   BookBookIdRoute: BookBookIdRoute,
   LevelTestLevelRoute: LevelTestLevelRoute,
   MathBooksRoute: MathBooksRoute,

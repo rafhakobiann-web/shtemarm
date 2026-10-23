@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Loader2, MessageSquare, Send, Music2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
 import { TIKTOK_URL } from "@/lib/site";
 import { useTx } from "@/lib/lang";
+import { submitFeedback, getMyFeedback } from "@/lib/feedback.functions";
 
 export const Route = createFileRoute("/feedback")({
   head: () => ({
@@ -20,29 +20,56 @@ export const Route = createFileRoute("/feedback")({
   component: FeedbackPage,
 });
 
+type Mine = { id: string; message: string; reply: string | null; created_at: string; replied_at: string | null };
+const CLIENT_KEY = "shtemarm-client-id";
+
+function getClientId(): string {
+  let id = window.localStorage.getItem(CLIENT_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    window.localStorage.setItem(CLIENT_KEY, id);
+  }
+  return id;
+}
+
 function FeedbackPage() {
   const tx = useTx();
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [mine, setMine] = useState<Mine[] | null>(null);
+
+  const loadMine = async (id: string) => {
+    try {
+      setMine((await getMyFeedback({ data: { clientId: id } })) as Mine[]);
+    } catch {
+      setMine([]);
+    }
+  };
+
+  useEffect(() => {
+    const id = getClientId();
+    setClientId(id);
+    void loadMine(id);
+  }, []);
 
   const send = async () => {
     const text = message.trim();
-    if (!text || busy) return;
+    if (!text || busy || !clientId) return;
     setBusy(true);
-    const { error } = await supabase.from("feedback").insert({
-      message: text.slice(0, 2000),
-      contact: contact.trim() ? contact.trim().slice(0, 200) : null,
-    });
-    setBusy(false);
-    if (error) {
+    try {
+      await submitFeedback({ data: { message: text.slice(0, 2000), contact: contact.trim().slice(0, 200), clientId } });
+      setSent(true);
+      setMessage("");
+      setContact("");
+      void loadMine(clientId);
+    } catch {
       toast.error(tx("Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ գրեք TikTok-ում։"));
-      return;
+    } finally {
+      setBusy(false);
     }
-    setSent(true);
-    setMessage("");
-    setContact("");
   };
 
   return (
@@ -52,7 +79,7 @@ function FeedbackPage() {
           <MessageSquare className="size-7 text-primary" /> {tx("Կապ և առաջարկներ")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {tx("Գրեք ձեր առաջարկը, սխալը կամ հարցը։ Կարդում ենք բոլոր հաղորդագրությունները։")}
+          {tx("Գրեք ձեր առաջարկը, սխալը կամ հարցը։ Կարդում ենք բոլոր հաղորդագրությունները և պատասխանում ենք այստեղ։")}
         </p>
       </header>
 
@@ -79,11 +106,31 @@ function FeedbackPage() {
             maxLength={200}
             aria-label={tx("Կապի տվյալներ")}
           />
-          <Button variant="game" className="w-full" onClick={send} disabled={busy || !message.trim()}>
+          <Button variant="game" className="w-full" onClick={send} disabled={busy || !message.trim() || !clientId}>
             {busy ? <Loader2 className="animate-spin" /> : <Send />} {tx("Ուղարկել")}
           </Button>
         </section>
       )}
+
+      <section className="shadow-card glass space-y-3 rounded-3xl p-5 sm:p-6">
+        <h2 className="font-bold">{tx("Ձեր հաղորդագրությունները և պատասխանները")}</h2>
+        {mine === null && <p className="text-sm text-muted-foreground">{tx("Բեռնվում է…")}</p>}
+        {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Դեռ հաղորդագրություններ չկան։")}</p>}
+        {mine?.map((m) => (
+          <div key={m.id} className="space-y-2 rounded-2xl border bg-white/60 p-4">
+            <p className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString()}</p>
+            <p className="whitespace-pre-wrap text-sm">{m.message}</p>
+            {m.reply ? (
+              <div className="rounded-xl bg-emerald-50 p-3">
+                <p className="text-xs font-bold text-emerald-800">{tx("Պատասխան")}{m.replied_at ? ` · ${new Date(m.replied_at).toLocaleString()}` : ""}</p>
+                <p className="mt-1 whitespace-pre-wrap text-sm">{m.reply}</p>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">{tx("Դեռ պատասխան չկա։")}</p>
+            )}
+          </div>
+        ))}
+      </section>
 
       <section className="shadow-card rounded-3xl border bg-card p-5 sm:p-6">
         <h2 className="font-bold">{tx("Կամ գրեք TikTok-ում")}</h2>
