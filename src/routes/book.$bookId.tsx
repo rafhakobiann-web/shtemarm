@@ -64,7 +64,7 @@ function BookPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {book.sections.map((s) => {
-            const ids = s.units.flatMap((u) => (u.kind === "mc" ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
+            const ids = s.units.flatMap((u) => ("questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (
