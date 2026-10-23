@@ -37,7 +37,7 @@ export function HistoryExam({ testId }: { testId: number }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-2xl font-black">{tx("Թեստ {n}", { n: test.id })}</h2>
         <p className="text-sm text-muted-foreground">
-          {finished ? `Արդյունք՝ ${score} / ${total}` : `${answered} / ${test.tasks.length} առաջադրանք`}
+          {finished ? tx("Արդյունք՝ {score} / {total}", { score, total }) : tx("{answered} / {total} առաջադրանք", { answered, total: test.tasks.length })}
         </p>
       </div>
 

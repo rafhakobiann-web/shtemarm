@@ -139,7 +139,7 @@ function Explain(props: { instruction: string; passage: string; question: string
         setLoading(true);
         try {
           const r = await fn({ data: { ...props, passage: props.passage.slice(0, 5800) } });
-          setText(r.text);
+          setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
         } catch {
           setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
