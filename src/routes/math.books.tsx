@@ -126,12 +126,12 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   const label = tx("Մաթեմատիկա • Մաս {m} • Գլուխ {c} • Բաժին {s} • Առաջադրանք {t} • Հարցեր 1–{k}", { m: bookNo, c: sec.chapter, s: sec.section, t: task.task, k: subs });
 
   return (
-    <article className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
+    <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       {!task.questions && !task.sub_segments && <TaskCrop book={bookId} segments={task.segments} />}
       {task.questions && <p className="text-sm text-muted-foreground">{tx("Տեքստային տարբերակ · ստուգված ըստ գրքի առաջին էջի")}</p>}
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i] ? <div className="rounded-xl bg-muted/40 p-3 text-sm leading-7"><p className="font-semibold">{task.questions[i].prompt}</p></div> : task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i] ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -175,7 +175,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                     type="button"
                     disabled={chosen !== undefined || !correct}
                     onClick={() => onAnswer(id, c)}
-                    className={`h-10 min-w-12 rounded-xl border-2 px-3 text-sm font-bold transition ${
+                    className={`min-h-10 min-w-0 rounded-xl border-2 px-2 py-2 text-center text-sm font-bold leading-snug transition sm:px-3 ${
                       isRight_ ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
                       : "border-border bg-card hover:bg-muted"}`}
@@ -184,7 +184,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                   </button>
                 );
               })}
-              {!correct && <span className="text-xs text-muted-foreground">{tx("Պատասխանը չկա")}</span>}
+              {!correct && <span className="col-span-2 text-xs text-muted-foreground sm:col-span-1">{tx("Պատասխանը չկա")}</span>}
             </div>
             {explainFor()}
             </Fragment>
