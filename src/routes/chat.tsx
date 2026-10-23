@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { chatReply } from "@/lib/chat.functions";
@@ -17,6 +17,54 @@ export const Route = createFileRoute("/chat")({
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+const KATEX_VERSION = "0.16.11";
+type Katex = { renderToString: (tex: string, opts?: Record<string, unknown>) => string };
+
+/** Loads KaTeX once from a pinned CDN build; until it is ready, formulas show as plain text. */
+function useKatex(): Katex | null {
+  const [katex, setKatex] = useState<Katex | null>(() => (typeof window !== "undefined" ? (window as unknown as { katex?: Katex }).katex ?? null : null));
+  useEffect(() => {
+    const w = window as unknown as { katex?: Katex };
+    if (w.katex) return setKatex(w.katex);
+    if (!document.querySelector("link[data-katex]")) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = `https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist/katex.min.css`;
+      link.dataset.katex = "1";
+      document.head.appendChild(link);
+    }
+    const script = document.createElement("script");
+    script.src = `https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist/katex.min.js`;
+    script.async = true;
+    script.onload = () => setKatex(w.katex ?? null);
+    document.head.appendChild(script);
+  }, []);
+  return katex;
+}
+
+/** Plain text, with $…$ and $$…$$ segments rendered as KaTeX. */
+function RichText({ text, katex }: { text: string; katex: Katex | null }) {
+  if (!katex) return <>{text}</>;
+  const parts = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const display = part.startsWith("$$") && part.endsWith("$$") && part.length > 4;
+        const inline = !display && part.startsWith("$") && part.endsWith("$") && part.length > 2;
+        if (!display && !inline) return <span key={i}>{part}</span>;
+        const tex = display ? part.slice(2, -2) : part.slice(1, -1);
+        let html: string;
+        try {
+          html = katex.renderToString(tex, { displayMode: display, throwOnError: false });
+        } catch {
+          return <span key={i}>{part}</span>;
+        }
+        return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />;
+      })}
+    </>
+  );
+}
+
 const STARTERS = ["Ինչպե՞ս պատրաստվեմ անգլերենի քննությանը", "Բացատրիր Հայոց պատմության թեստի ձևաչափը", "Ի՞նչ է միտոքոնդրիումը"];
 
 function ChatPage() {
@@ -24,6 +72,7 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const katex = useKatex();
 
   // The conversation lives only in this page's memory: nothing is stored in the browser or the database.
   const send = async (text: string) => {
@@ -73,7 +122,7 @@ function ChatPage() {
           <div key={i} className={cn("flex gap-2", m.role === "user" && "justify-end")}>
             {m.role === "assistant" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Bot className="size-4" /></span>}
             <p className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.95rem] leading-relaxed", m.role === "user" ? "bg-secondary text-secondary-foreground" : "bg-card border")}>
-              {m.content}
+              <RichText text={m.content} katex={katex} />
             </p>
             {m.role === "user" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted"><User className="size-4" /></span>}
           </div>
