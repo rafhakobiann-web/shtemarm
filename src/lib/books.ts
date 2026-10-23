@@ -6,7 +6,12 @@ export type Unit =
   | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string }[] };
 export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
 export const secNum = (n: number) => (n > 70 ? 7 : n);
-export const secTitle = (s: { n: number; title?: string; label?: string }) => s.label ?? (s.title ? `Բաժին ${s.title}` : `Բաժին ${s.n}`);
+/** Translator shape of useTx(); the default only fills placeholders in the Armenian text. */
+export type Tx = (hy: string, vars?: Record<string, string | number>) => string;
+const fillHy: Tx = (hy, vars) => (vars ? hy.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m)) : hy);
+/** Pass useTx() as `tx` at render sites so the label follows the selected language. */
+export const secTitle = (s: { n: number; title?: string; label?: string }, tx: Tx = fillHy) =>
+  s.label ?? (s.title ? tx("Բաժին {n}", { n: s.title }) : tx("Բաժին {n}", { n: s.n }));
 export type Book = { id: number; sections: Section[] };
 
 export const BOOKS = [

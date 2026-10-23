@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -97,6 +98,7 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
 
 /** Answer control for one sub-question. Options are lettered like the English game (1) 2) 3) 4)). */
 function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
+  const tx = useTx();
   const [draft, setDraft] = useState("");
   const correct = item.answer;
   const short = item.open || correct === undefined || isShortAnswer(correct);
@@ -113,16 +115,16 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && draft.trim() && onAnswer(draft.trim())}
-            placeholder="Պատասխան"
+            placeholder={tx("Պատասխան")}
             className="h-12 flex-1 rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none"
           />
-          <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>Ստուգել</Button>
+          <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>{tx("Ստուգել")}</Button>
         </div>
       );
     }
     return (
       <p className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-red-500 bg-red-50 text-red-700"}`}>
-        {value ?? "—"} {ok ? "✓" : `✗ · ճիշտ՝ ${correct ?? "—"}`}
+        {value ?? "—"} {ok ? "✓" : tx("✗ · ճիշտ՝ {c}", { c: correct ?? "—" })}
       </p>
     );
   }
@@ -144,8 +146,8 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
               : "border-stone-300 hover:bg-muted"}`}
           >
-            <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : label}</span>
-            <span className="font-medium">{c === "T" || c === "F" ? label : ""}</span>
+            <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : tx(label)}</span>
+            <span className="font-medium">{c === "T" || c === "F" ? tx(label) : ""}</span>
           </button>
         );
       })}
@@ -156,6 +158,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
 function PlayPage() {
   const q = useIndex();
   const { progress, setAnswer, addExam } = useMathProgress();
+  const tx = useTx();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
 
   useEffect(() => {
@@ -187,9 +190,9 @@ function PlayPage() {
     setSubmitted(false);
   }, [section.items, isTest]);
 
-  if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել բաժինը։</p>;
-  if (!section.items.length) return <p className="p-6 text-destructive">Բաժինը չի գտնվել։</p>;
+  if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
+  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել բաժինը։")}</p>;
+  if (!section.items.length) return <p className="p-6 text-destructive">{tx("Բաժինը չի գտնվել։")}</p>;
 
   const sectionHref = `/math/books?book=${params.book}&sec=${params.chapter}-${params.section}`;
   const bookTitle = q.data.books[params.book]?.title ?? "";
@@ -199,12 +202,12 @@ function PlayPage() {
     <div className="flex flex-wrap items-center justify-between gap-3">
       <a href={sectionHref} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 shrink-0" />
-        <span className="truncate">{bookTitle} · Բաժին {params.section}</span>
+        <span className="truncate">{bookTitle} · {tx("Բաժին {n}", { n: params.section })}</span>
       </a>
       {!isTest && (
         <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
-          <span className="rounded-xl bg-card px-4 py-2 shadow-sm">Խաղային</span>
-          <a href={sectionHref} className="rounded-xl px-4 py-2 text-muted-foreground">Դասական</a>
+          <span className="rounded-xl bg-card px-4 py-2 shadow-sm">{tx("Խաղային")}</span>
+          <a href={sectionHref} className="rounded-xl px-4 py-2 text-muted-foreground">{tx("Դասական")}</a>
         </div>
       )}
     </div>
@@ -215,10 +218,10 @@ function PlayPage() {
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
         <MathTools />
-        <p className="text-sm font-bold">Թեստ · {round.length} հարց · {section.title}</p>
+        <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {section.title}</p>
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Առաջադրանք {it.task} • Հարց {it.sub} / {it.subs} • {idx + 1} / {round.length}</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
             <Crop bookId={it.bookId} segments={it.segments} />
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
@@ -227,9 +230,9 @@ function PlayPage() {
           <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={() => {
             setSubmitted(true);
             addExam(round.filter((x) => correctOf(x, testAnswers[x.id])).length, round.length);
-          }}>Ավարտել</Button>
+          }}>{tx("Ավարտել")}</Button>
         ) : (
-          <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">Արդյունք՝ {round.filter((x) => correctOf(x, testAnswers[x.id])).length} / {round.length}</p>
+          <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">{tx("Արդյունք՝ {c} / {t}", { c: round.filter((x) => correctOf(x, testAnswers[x.id])).length, t: round.length })}</p>
         )}
       </div>
     );
@@ -275,20 +278,20 @@ function PlayPage() {
 
       {gameOver || finished ? (
         <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
-          <p className="text-xl font-black">{gameOver ? "Կյանքերն ավարտվեցին" : "Խաղն ավարտված է"}</p>
+          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">
-            Ճիշտ՝ {round.filter((x) => correctOf(x, progress.answers[x.id])).length} / {answeredCount}
+            {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
           </p>
           <Button className="w-full" onClick={() => {
             setIndex(0); setLives(LIVES); setStreak(0);
             setRound(section.items);
-          }}>Նորից</Button>
+          }}>{tx("Նորից")}</Button>
         </section>
       ) : (
         <section className="space-y-4 rounded-3xl border bg-card p-5 shadow-sm">
           <div className="space-y-1">
             <p className="text-base font-bold text-blue-700">
-              {short ? "Գրել պատասխանը:" : "Ընտրել ճիշտ տարբերակը:"}
+              {short ? tx("Գրել պատասխանը:") : tx("Ընտրել ճիշտ տարբերակը:")}
             </p>
             <p className="text-sm italic text-muted-foreground">
               {short ? "Write the answer." : "Choose the right answer."}
@@ -300,7 +303,7 @@ function PlayPage() {
           <div className="space-y-4 rounded-3xl border bg-card p-5">
             <div className="flex items-center gap-3">
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
-              <p className="font-bold">Առաջադրանք {it.task} · Հարց {it.sub} / {it.subs}</p>
+              <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
             </div>
             <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} />
             {current !== undefined && (
@@ -315,7 +318,7 @@ function PlayPage() {
               />
             )}
             {current !== undefined && (
-              <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>Հաջորդը</Button>
+              <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
             )}
           </div>
 

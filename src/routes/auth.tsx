@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProgress } from "@/lib/progress";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -20,6 +21,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const tx = useTx();
+  const lang = useLang();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -37,20 +40,20 @@ function AuthPage() {
   if (user)
     return (
       <div className="shadow-card mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6">
-        <h1 className="text-2xl font-black">Ձեր հաշիվը</h1>
+        <h1 className="text-2xl font-black">{tx("Ձեր հաշիվը")}</h1>
         <p className="break-all text-sm text-muted-foreground">{user}</p>
-        <p className="text-sm">Առաջընթացը ({p.xp} միավոր, {Object.keys(p.answers).length} պատասխան) պահվում է և՛ այս սարքում, և՛ առցանց։</p>
+        <p className="text-sm">{tx("Առաջընթացը ({xp} միավոր, {answers} պատասխան) պահվում է և՛ այս սարքում, և՛ առցանց։", { xp: p.xp, answers: Object.keys(p.answers).length })}</p>
         {p.exams.length > 0 && (
           <div className="space-y-1 text-sm">
-            <p className="font-bold">Վերջին քննությունները</p>
+            <p className="font-bold">{tx("Վերջին քննությունները")}</p>
             {p.exams.slice(-5).reverse().map((e) => (
               <p key={e.date} className="text-muted-foreground">
-                {new Date(e.date).toLocaleDateString("hy-AM")} · Շտեմարան {e.book} · {e.score}/{e.total}
+                {new Date(e.date).toLocaleDateString(lang === "en" ? "en-GB" : "hy-AM")} · {tx("Շտեմարան {book} · {score}/{total}", { book: e.book, score: e.score, total: e.total })}
               </p>
             ))}
           </div>
         )}
-        <Button variant="outline" className="w-full" onClick={() => supabase.auth.signOut()}>Դուրս գալ</Button>
+        <Button variant="outline" className="w-full" onClick={() => supabase.auth.signOut()}>{tx("Դուրս գալ")}</Button>
       </div>
     );
 
@@ -67,7 +70,7 @@ function AuthPage() {
       return;
     }
     if (mode === "up" && !data.session) {
-      toast.success("Ստուգեք ձեր էլ. փոստը՝ հաշիվը հաստատելու համար։");
+      toast.success(tx("Ստուգեք ձեր էլ. փոստը՝ հաշիվը հաստատելու համար։"));
       return;
     }
     nav({ to: "/" });
@@ -76,26 +79,26 @@ function AuthPage() {
   return (
     <div className="shadow-card mx-auto max-w-md space-y-5 rounded-2xl border bg-card p-6">
       <div>
-        <h1 className="text-2xl font-black">{mode === "in" ? "Մուտք" : "Գրանցում"}</h1>
-        <p className="text-sm text-muted-foreground">Առանց մուտքի էլ կարող եք սովորել․ առաջընթացը կպահվի այս սարքում։ Մուտք գործեք՝ այն բոլոր սարքերում ունենալու համար։</p>
+        <h1 className="text-2xl font-black">{mode === "in" ? tx("Մուտք") : tx("Գրանցում")}</h1>
+        <p className="text-sm text-muted-foreground">{tx("Առանց մուտքի էլ կարող եք սովորել․ առաջընթացը կպահվի այս սարքում։ Մուտք գործեք՝ այն բոլոր սարքերում ունենալու համար։")}</p>
       </div>
       <Button
         variant="outline"
         className="w-full"
         onClick={async () => {
           const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-          if (r.error) toast.error("Google-ով մուտքը չհաջողվեց");
+          if (r.error) toast.error(tx("Google-ով մուտքը չհաջողվեց"));
         }}
       >
-        Շարունակել Google-ով
+        {tx("Շարունակել Google-ով")}
       </Button>
       <form onSubmit={submit} className="space-y-3">
-        <Input type="email" required placeholder="Էլ. փոստ" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input type="password" required minLength={6} placeholder="Գաղտնաբառ" value={pw} onChange={(e) => setPw(e.target.value)} />
-        <Button variant="game" className="w-full" disabled={busy}>{mode === "in" ? "Մուտք" : "Գրանցվել"}</Button>
+        <Input type="email" required placeholder={tx("Էլ. փոստ")} value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input type="password" required minLength={6} placeholder={tx("Գաղտնաբառ")} value={pw} onChange={(e) => setPw(e.target.value)} />
+        <Button variant="game" className="w-full" disabled={busy}>{mode === "in" ? tx("Մուտք") : tx("Գրանցվել")}</Button>
       </form>
       <button type="button" className="text-sm font-semibold text-primary" onClick={() => setMode(mode === "in" ? "up" : "in")}>
-        {mode === "in" ? "Չունե՞ք հաշիվ․ գրանցվեք" : "Արդեն ունե՞ք հաշիվ․ մուտք"}
+        {mode === "in" ? tx("Չունե՞ք հաշիվ․ գրանցվեք") : tx("Արդեն ունե՞ք հաշիվ․ մուտք")}
       </button>
     </div>
   );

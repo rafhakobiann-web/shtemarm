@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useEffect } from "react";
+import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 
 const SUBJECTS = ["english", "math", "history"] as const;
@@ -55,10 +56,11 @@ function SubjectRow({ title, children }: { title: string; children: React.ReactN
 }
 
 function ComingSoon({ title }: { title: string }) {
+  const tx = useTx();
   return (
     <div className="flex aspect-[3/4] flex-col justify-between rounded-3xl border border-dashed bg-card/60 p-4 opacity-80 sm:aspect-auto sm:min-h-44">
       <div className="grid size-full place-items-center rounded-2xl bg-muted/50 text-5xl font-black text-muted-foreground/40">{title.slice(0, 1)}</div>
-      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">Շուտով</p>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Շուտով")}</p>
     </div>
   );
 }
@@ -79,10 +81,11 @@ function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string;
 }
 
 function SubjectHeader({ title, sub }: { title: string; sub: string }) {
+  const tx = useTx();
   return (
     <div className="space-y-3">
       <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> Բոլոր առարկաները
+        <ArrowLeft className="size-4" /> {tx("Բոլոր առարկաները")}
       </Link>
       <h1 className="text-3xl font-black sm:text-4xl">{title}</h1>
       <p className="text-muted-foreground">{sub}</p>
@@ -91,11 +94,12 @@ function SubjectHeader({ title, sub }: { title: string; sub: string }) {
 }
 
 function EnglishSubject() {
+  const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title="Անգլերեն" sub="Շտեմարաններ, պաշտոնական քննություններ և թեստերի կազմիչ" />
+      <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ, պաշտոնական քննություններ և թեստերի կազմիչ")} />
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Շտեմարաններ</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
@@ -105,20 +109,20 @@ function EnglishSubject() {
         </div>
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
-            title="Քննություն"
-            sub="80 հարց՝ իրական քննության կառուցվածքով"
+            title={tx("Քննություն")}
+            sub={tx("80 հարց՝ իրական քննության կառուցվածքով")}
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "custom", style: "game" }}
-            title="Թեստերի կազմիչ"
-            sub="Ընտրիր բաժինները և հարցերի քանակը"
+            title={tx("Թեստերի կազմիչ")}
+            sub={tx("Ընտրիր բաժինները և հարցերի քանակը")}
             icon={<ClipboardCheck className="size-5" />}
           />
         </div>
@@ -128,24 +132,25 @@ function EnglishSubject() {
 }
 
 function MathSubject() {
+  const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title="Մաթեմատիկա" sub="Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ" />
+      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} />
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Շտեմարաններ</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
             </Link>
           ))}
         </div>
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/math" search={{ mode: "exam" }} title="Քննություն" sub="65 հարց՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
-          <ExamTile to="/math" search={{ mode: "custom" }} title="Թեստերի կազմիչ" sub="Ընտրիր բաժինները և հարցերի քանակը" icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "custom" }} title={tx("Թեստերի կազմիչ")} sub={tx("Ընտրիր բաժինները և հարցերի քանակը")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
     </div>
@@ -153,11 +158,12 @@ function MathSubject() {
 }
 
 function HistorySubject() {
+  const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title="Հայոց պատմություն" sub="Շտեմարաններ և պաշտոնական քննության նմուշային թեստեր" />
+      <SubjectHeader title={tx("Հայոց պատմություն")} sub={tx("Շտեմարաններ և պաշտոնական քննության նմուշային թեստեր")} />
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Շտեմարաններ</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {HISTORY_BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
@@ -167,9 +173,9 @@ function HistorySubject() {
         </div>
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">Քննություն</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/history" title="Քննություն" sub="70 հարց · Թեստ 1–4" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("70 հարց · Թեստ 1–4")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
     </div>
@@ -185,23 +191,24 @@ function TikTokIcon({ className }: { className?: string }) {
 }
 
 function AboutSection() {
+  const tx = useTx();
   // Opened from the header menu (/#about): bring the section into view once the page is ready.
   useEffect(() => {
     if (window.location.hash === "#about") document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   }, []);
   return (
     <section id="about" className="glass scroll-mt-24 space-y-6 rounded-3xl p-6 sm:p-8">
-      <h2 className="text-2xl font-black sm:text-3xl">Մեր մասին</h2>
+      <h2 className="text-2xl font-black sm:text-3xl">{tx("Մեր մասին")}</h2>
       <div className="space-y-4 text-sm leading-relaxed sm:text-base">
         <p>
-          <b>Ինչու ստեղծվեց Shtemarm-ը։</b> Քննությանը պատրաստվելը չպետք է լինի խառնաշփոթ։ Շատ աշակերտներ շտեմարանները, թեստերը և պատասխանները փնտրում են տարբեր տեղերում։ Մենք ուզեցինք, որ ամեն ինչ լինի մեկ տեղում՝ պարզ և միշտ հասանելի։
+          <b>{tx("Ինչու ստեղծվեց Shtemarm-ը։")}</b> {tx("Քննությանը պատրաստվելը չպետք է լինի խառնաշփոթ։ Շատ աշակերտներ շտեմարանները, թեստերը և պատասխանները փնտրում են տարբեր տեղերում։ Մենք ուզեցինք, որ ամեն ինչ լինի մեկ տեղում՝ պարզ և միշտ հասանելի։")}
         </p>
         <p>
-          <b>Ինչպես է օգնում աշակերտներին։</b> Առաջադրանքներն ունեն ճիշտ պատասխան և բացատրություն, որպեսզի սխալից հետո կարողանաս հասկանալ, թե ինչու ես սխալվել։ Խաղային ռեժիմում սովորում ես քայլ առ քայլ և հավաքում միավորներ, իսկ դասական ռեժիմում ամբողջ բաժինը տեսնում ես մեկ էջում։ Թեստերի կազմիչով ընտրում ես բաժինները և հարցերի քանակը, իսկ քննության ռեժիմը կառուցված է միասնական քննության ձևաչափով։
+          <b>{tx("Ինչպես է օգնում աշակերտներին։")}</b> {tx("Առաջադրանքներն ունեն ճիշտ պատասխան և բացատրություն, որպեսզի սխալից հետո կարողանաս հասկանալ, թե ինչու ես սխալվել։ Խաղային ռեժիմում սովորում ես քայլ առ քայլ և հավաքում միավորներ, իսկ դասական ռեժիմում ամբողջ բաժինը տեսնում ես մեկ էջում։ Թեստերի կազմիչով ընտրում ես բաժինները և հարցերի քանակը, իսկ քննության ռեժիմը կառուցված է միասնական քննության ձևաչափով։")}
         </p>
         <div className="rounded-2xl bg-muted/60 p-4 sm:p-5">
           <p>
-            <b>Իմ մասին։</b> Ես Ռաֆիկ Հակոբյանն եմ, 17 տարեկան։ Shtemarm-ը ստեղծել եմ այն պատճառով, որ լավ հասկանում եմ, թե որքան դժվար է պատրաստվել քննություններին, երբ նյութերը ցրված են։ Ուզում եմ օգնել իմ հասակակիցներին՝ խնայելով նրանց ժամանակը և նվազեցնելով անհանգստությունը։ Եթե ունես առաջարկ կամ նկատես սխալ, գրիր ինձ TikTok-ում։
+            <b>{tx("Իմ մասին։")}</b> {tx("Ես Ռաֆիկ Հակոբյանն եմ, 17 տարեկան։ Shtemarm-ը ստեղծել եմ այն պատճառով, որ լավ հասկանում եմ, թե որքան դժվար է պատրաստվել քննություններին, երբ նյութերը ցրված են։ Ուզում եմ օգնել իմ հասակակիցներին՝ խնայելով նրանց ժամանակը և նվազեցնելով անհանգստությունը։ Եթե ունես առաջարկ կամ նկատես սխալ, գրիր ինձ TikTok-ում։")}
           </p>
         </div>
       </div>
@@ -220,7 +227,7 @@ function AboutSection() {
             <span className="block truncate font-display text-base font-bold">@shtemarm_official</span>
           </span>
         </span>
-        <span className="text-sm font-bold text-primary group-hover:underline">Բացել →</span>
+        <span className="text-sm font-bold text-primary group-hover:underline">{tx("Բացել →")}</span>
       </a>
       <p className="text-center text-xs font-semibold text-muted-foreground">Shtemarm @ 2026</p>
     </section>
@@ -228,6 +235,7 @@ function AboutSection() {
 }
 
 function Index() {
+  const tx = useTx();
   const { subject } = Route.useSearch();
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
@@ -236,9 +244,9 @@ function Index() {
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
       <section className="space-y-8">
-        <h2 className="text-2xl font-black sm:text-3xl">Ընտրիր շտեմարանը սկսելու համար</h2>
+        <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
 
-        <SubjectRow title="Անգլերեն">
+        <SubjectRow title={tx("Անգլերեն")}>
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
@@ -246,15 +254,15 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title="Մաթեմատիկա">
+        <SubjectRow title={tx("Մաթեմատիկա")}>
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
             </Link>
           ))}
         </SubjectRow>
 
-        <SubjectRow title="Հայոց պատմություն">
+        <SubjectRow title={tx("Հայոց պատմություն")}>
           {HISTORY_BOOKS.map((h) => (
             <Link key={h.id} to="/book/$bookId" params={{ bookId: String(h.id) }} className={TILE}>
               <TileBody cover={h.cover} title={h.title} sub={h.sub} />
@@ -262,15 +270,15 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title="Հայոց լեզու">
-          <ComingSoon title="Հայոց լեզու" />
+        <SubjectRow title={tx("Հայոց լեզու")}>
+          <ComingSoon title={tx("Հայոց լեզու")} />
         </SubjectRow>
-        <SubjectRow title="Կենսաբանություն">
+        <SubjectRow title={tx("Կենսաբանություն")}>
           {BIO_BOOKS.map((b) =>
             b.locked ? (
               <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
                 <TileBody cover={b.cover} title={b.title} sub={b.sub} />
-                <p className="px-4 pb-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">Շուտով</p>
+                <p className="px-4 pb-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Շուտով")}</p>
               </div>
             ) : (
               <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
@@ -282,24 +290,24 @@ function Index() {
       </section>
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-black sm:text-3xl">Քննություն</h2>
+        <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
-            title="Քննություն"
-            sub="Անգլերեն · 80 հարց՝ իրական քննության կառուցվածքով"
+            title={tx("Քննություն")}
+            sub={tx("Անգլերեն · 80 հարց՝ իրական քննության կառուցվածքով")}
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "custom", style: "game" }}
-            title="Անգլերեն · Կազմել թեստ"
-            sub="Ընտրիր բաժինները և քանակը"
+            title={tx("Անգլերեն · Կազմել թեստ")}
+            sub={tx("Ընտրիր բաժինները և քանակը")}
             icon={<ClipboardCheck className="size-5" />}
           />
-          <ExamTile to="/math" title="Քննություն" sub="Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով" icon={<Trophy className="size-5" />} />
-          <ExamTile to="/history" title="Քննություն" sub="Հայոց պատմություն · 70 հարց" icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · 70 հարց")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
       <AboutSection />

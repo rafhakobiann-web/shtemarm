@@ -1,0 +1,59 @@
+export const dict_d: Record<string, string> = {
+  // EnglishText.tsx: word and passage translation controls
+  "Բառի թարգմանություն": "Word translation",
+  "Փակել թարգմանությունը": "Close translation",
+  "Չհաջողվեց թարգմանել։": "Could not translate.",
+  "Թարգմանվում է": "Translating",
+  "Կրկին փորձել": "Try again",
+  "Թարգմանել": "Translate",
+  "Թարգմանել {token}": "Translate {token}",
+  "Թարգմանվում է…": "Translating…",
+  "Կրկին թարգմանել": "Translate again",
+  "Թաքցնել հայերենը": "Hide Armenian",
+  "Ցուցադրել հայերեն թարգմանությունը": "Show Armenian translation",
+
+  // translate.functions.ts: server messages
+  "Թարգմանության ծառայությունը դեռ միացված չէ։": "The translation service is not enabled yet.",
+  "Թարգմանության սահմանաչափը ժամանակավորապես սպառվել է․ փորձիր ավելի ուշ։": "The translation limit has been reached for now. Try again later.",
+  "Չհաջողվեց թարգմանել․ կրկին փորձիր։": "Could not translate. Please try again.",
+  "Ամբողջական թարգմանություն չստացվեց․ կրկին փորձիր։": "A complete translation could not be produced. Please try again.",
+  "Թարգմանությունը հասանելի չէ․ ստուգիր կապը և կրկին փորձիր։": "The translation is unavailable. Check your connection and try again.",
+
+  // explanation.ts, explain.functions.ts, math-explain.functions.ts: server messages
+  "Արհեստական բանականության սահմանաչափը ժամանակավորապես սպառվել է․ փորձեք ավելի ուշ։ Պահված բացատրությունները հասանելի են։": "The AI usage limit has been reached for now. Please try again later. Saved explanations are still available.",
+  "ԱԲ բանալին կամ հասանելիությունը պետք է ստուգի կայքի պատասխանատուն։": "The site administrator needs to check the AI key or its access.",
+  "Բացատրությունների ընտրված ծառայությունը հասանելի չէ կամ բացատրությունը դեռևս ավելացված չէ բազայում։": "The selected explanation service is unavailable, or this explanation has not been added to the database yet.",
+  "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։": "Could not get the explanation. Please try again later.",
+  "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։": "To turn on explanations, the site administrator must add a Groq or Gemini key.",
+  "Ծառայությունը մերժեց այս բացատրության ստեղծումը։": "The service refused to create this explanation.",
+  "Ծառայությունը դատարկ պատասխան վերադարձրեց։": "The service returned an empty response.",
+
+  // chat.functions.ts: server messages
+  "Չատբոտը միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։": "To turn on the chatbot, the site administrator must add a Groq or Gemini key.",
+  "Ծառայությունը դատարկ պատասխան վերադարձրեց։ Փորձեք կրկին։": "The service returned an empty response. Please try again.",
+  "Չհաջողվեց պատասխանել։ Փորձեք ավելի ուշ։": "Could not answer. Please try again later.",
+
+  // books.ts: book, subject and section labels
+  "Շտեմարան 1": "Shtemaran 1",
+  "Շտեմարան 2": "Shtemaran 2",
+  "Շտեմարան 3": "Shtemaran 3",
+  "Մաս I · 2017": "Part I · 2017",
+  "Մաս II · 2017": "Part II · 2017",
+  "Մաս III · 2018": "Part III · 2018",
+  "Հայոց պատմություն": "Armenian history",
+  "Գիրք առաջին": "Book one",
+  "Գիրք երկրորդ": "Book two",
+  "Գիրք երրորդ": "Book three",
+  "Կենսաբանություն": "Biology",
+  "Մաս առաջին": "Part one",
+  "Մաս երկրորդ": "Part two",
+  "Մաս երրորդ": "Part three",
+  "Մաս չորրորդ": "Part four",
+  "Բաժին {n}": "Section {n}",
+  "Ընտրել ճիշտ տարբերակը": "Choose the correct option",
+  "Ընտրել ճիշտ համարները": "Choose the correct numbers",
+  "Տեղադրել համարները ըստ բացթողումների": "Insert the numbers into the gaps",
+  "Համապատասխանեցնել": "Match",
+  "Գրեք պատասխանի թիվը": "Write the numerical answer",
+  "Չհաջողվեց բեռնել գիրքը": "Could not load the book",
+};

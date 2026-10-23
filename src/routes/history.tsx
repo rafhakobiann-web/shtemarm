@@ -3,6 +3,7 @@ import { z } from "zod";
 import { ArrowLeft, Trophy } from "lucide-react";
 import { HistoryExam } from "@/components/HistoryExam";
 import { Button } from "@/components/ui/button";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/history")({
   validateSearch: z.object({ test: z.coerce.number().int().min(1).max(4).optional() }),
@@ -19,13 +20,14 @@ export const Route = createFileRoute("/history")({
 const TESTS = [1, 2, 3, 4] as const;
 
 function HistoryPage() {
+  const tx = useTx();
   const { test } = Route.useSearch();
 
   if (test) {
     return (
       <div className="space-y-6">
         <Button variant="outline" size="sm" asChild>
-          <Link to="/history"><ArrowLeft /> Բոլոր թեստերը</Link>
+          <Link to="/history"><ArrowLeft /> {tx("Բոլոր թեստերը")}</Link>
         </Button>
         <HistoryExam testId={test} />
       </div>
@@ -35,8 +37,8 @@ function HistoryPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-black">Հայոց պատմություն</h1>
-        <p className="text-sm text-muted-foreground">2026 թ. 1-ին փուլ · նմուշային թեստեր։ Շտեմարանները շուտով։</p>
+        <h1 className="text-3xl font-black">{tx("Հայոց պատմություն")}</h1>
+        <p className="text-sm text-muted-foreground">{tx("2026 թ. 1-ին փուլ · նմուշային թեստեր։ Շտեմարանները շուտով։")}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {TESTS.map((id) => (
@@ -48,8 +50,8 @@ function HistoryPage() {
           >
             <span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary"><Trophy /></span>
             <div>
-              <h2 className="font-bold">Թեստ {id}</h2>
-              <p className="text-sm text-muted-foreground">70 հարց</p>
+              <h2 className="font-bold">{tx("Թեստ {n}", { n: id })}</h2>
+              <p className="text-sm text-muted-foreground">{tx("70 հարց")}</p>
             </div>
           </Link>
         ))}

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHistoryProgress } from "@/lib/history-progress";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/history-book")({
   head: () => ({
@@ -96,6 +97,7 @@ function AnswerRow({ q, chosen, locked, onPick }: { q: Question; chosen?: string
 }
 
 function HistoryBookPage() {
+  const tx = useTx();
   const q = useBank();
   const { progress, setAnswer, addExam } = useHistoryProgress();
   const sections = useMemo(() => (q.data ? groupSections(q.data.questions) : []), [q.data]);
@@ -139,8 +141,8 @@ function HistoryBookPage() {
     setSubmitted(false);
   }, [sectionNo, mode, q.data]);
 
-  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել գիրքը։</p>;
+  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
+  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գիրքը։")}</p>;
 
   // ---------- book page (cover + sections) ----------
   if (!section) {
@@ -152,20 +154,20 @@ function HistoryBookPage() {
           <div className="absolute bottom-10 left-1/4 h-72 w-72 rounded-full bg-violet-300/40 blur-3xl" />
         </div>
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Գլխավոր էջ
+          <ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}
         </Link>
         <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4">
-          <img src="/history/covers/patm-1.jpg" alt="Հայոց պատմություն · Գիրք 1" className="aspect-[3/4] w-full rounded-[22px] border border-white/70 object-cover shadow-[0_14px_40px_rgba(30,58,138,0.25)]" />
+          <img src="/history/covers/patm-1.jpg" alt={tx("Հայոց պատմություն · Գիրք 1")} className="aspect-[3/4] w-full rounded-[22px] border border-white/70 object-cover shadow-[0_14px_40px_rgba(30,58,138,0.25)]" />
           <div className="space-y-2">
-            <h1 className="text-xl font-black">Հայոց պատմություն · Գիրք 1</h1>
-            <p className="text-sm text-muted-foreground">{q.data.questions.length} հարց · {sections.length} բաժին</p>
+            <h1 className="text-xl font-black">{tx("Հայոց պատմություն · Գիրք 1")}</h1>
+            <p className="text-sm text-muted-foreground">{tx("{count} հարց · {sections} բաժին", { count: q.data.questions.length, sections: sections.length })}</p>
           </div>
         </div>
         <button
           onClick={() => { setMode("test"); setSectionNo(-1); }}
           className="w-full rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 px-4 py-3 text-sm font-bold text-stone-900 shadow-[0_6px_18px_rgba(245,158,11,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]"
         >
-          Կազմել թեստ (20 հարց ամբողջ գրքից)
+          {tx("Կազմել թեստ ({n} հարց ամբողջ գրքից)", { n: TEST_SIZE })}
         </button>
         <div className="grid gap-3">
           {sections.map((s) => {
@@ -177,16 +179,16 @@ function HistoryBookPage() {
                   <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-700 font-black text-white">{s.index}</span>
                   <div className="min-w-0">
                     <p className="font-bold leading-snug">{s.title}</p>
-                    <p className="text-xs text-muted-foreground">{s.items.length} հարց · {done} արված</p>
+                    <p className="text-xs text-muted-foreground">{tx("{count} հարց · {done} արված", { count: s.items.length, done })}</p>
                   </div>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                   <div className="h-full bg-success" style={{ width: `${Math.min(100, (done / s.items.length) * 100)}%` }} />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <button onClick={() => { setMode("play"); setSectionNo(s.index); }} className="h-11 rounded-2xl bg-gradient-to-b from-blue-500 to-blue-800 text-sm font-bold text-white shadow-[0_6px_18px_rgba(29,78,216,0.35),inset_0_1px_0_rgba(255,255,255,0.45)]">Խաղալ</button>
-                  <button onClick={() => { setMode("classic"); setSectionNo(s.index); }} className="h-11 rounded-2xl border border-white/70 bg-white/60 text-sm font-bold text-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">Դասական</button>
-                  <button onClick={() => { setMode("test"); setSectionNo(s.index); }} className="h-11 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-sm font-bold text-stone-900 shadow-[0_6px_18px_rgba(245,158,11,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]">Թեստ</button>
+                  <button onClick={() => { setMode("play"); setSectionNo(s.index); }} className="h-11 rounded-2xl bg-gradient-to-b from-blue-500 to-blue-800 text-sm font-bold text-white shadow-[0_6px_18px_rgba(29,78,216,0.35),inset_0_1px_0_rgba(255,255,255,0.45)]">{tx("Խաղալ")}</button>
+                  <button onClick={() => { setMode("classic"); setSectionNo(s.index); }} className="h-11 rounded-2xl border border-white/70 bg-white/60 text-sm font-bold text-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">{tx("Դասական")}</button>
+                  <button onClick={() => { setMode("test"); setSectionNo(s.index); }} className="h-11 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 text-sm font-bold text-stone-900 shadow-[0_6px_18px_rgba(245,158,11,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]">{tx("Թեստ")}</button>
                 </div>
               </div>
             );
@@ -196,17 +198,19 @@ function HistoryBookPage() {
     );
   }
 
+  const sectionTitle = isWholeBook ? tx("Ամբողջ գիրքը") : section.title;
+
   // ---------- section pages ----------
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <button onClick={() => setSectionNo(null)} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 shrink-0" />
-        <span className="truncate">{isWholeBook ? "Գիրք 1 · Կազմել թեստ" : `Գիրք 1 · Բաժին ${section.index}`}</span>
+        <span className="truncate">{isWholeBook ? tx("Գիրք 1 · Կազմել թեստ") : tx("Գիրք 1 · Բաժին {n}", { n: section.index })}</span>
       </button>
       <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
-        <button onClick={() => setMode("play")} className={`rounded-xl px-4 py-2 ${mode === "play" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Խաղային</button>
-        <button onClick={() => setMode("classic")} className={`rounded-xl px-4 py-2 ${mode === "classic" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Դասական</button>
-        <button onClick={() => setMode("test")} className={`rounded-xl px-4 py-2 ${mode === "test" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Թեստ</button>
+        <button onClick={() => setMode("play")} className={`rounded-xl px-4 py-2 ${mode === "play" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>{tx("Խաղային")}</button>
+        <button onClick={() => setMode("classic")} className={`rounded-xl px-4 py-2 ${mode === "classic" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>{tx("Դասական")}</button>
+        <button onClick={() => setMode("test")} className={`rounded-xl px-4 py-2 ${mode === "test" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>{tx("Թեստ")}</button>
       </div>
     </div>
   );
@@ -215,7 +219,7 @@ function HistoryBookPage() {
     return (
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
         {header}
-        <p className="text-sm font-bold">{section.title}</p>
+        <p className="text-sm font-bold">{sectionTitle}</p>
         {section.items.map((it) => (
           <section key={qid(it)} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <p className="text-sm font-semibold">{it.num}. {it.stem}</p>
@@ -235,7 +239,7 @@ function HistoryBookPage() {
     return (
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4">
         {header}
-        <p className="text-sm font-bold">Թեստ · {round.length} հարց · {section.title}</p>
+        <p className="text-sm font-bold">{tx("Թեստ · {count} հարց · {title}", { count: round.length, title: sectionTitle })}</p>
         {round.map((it, idx) => (
           <section key={qid(it)} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{idx + 1} / {round.length}</p>
@@ -247,9 +251,9 @@ function HistoryBookPage() {
           <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={() => {
             setSubmitted(true);
             addExam(round.filter(correctOf).length, round.length);
-          }}>Ավարտել</Button>
+          }}>{tx("Ավարտել")}</Button>
         ) : (
-          <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">Արդյունք՝ {round.filter(correctOf).length} / {round.length}</p>
+          <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">{tx("Արդյունք՝ {score} / {total}", { score: round.filter(correctOf).length, total: round.length })}</p>
         )}
       </div>
     );
@@ -293,21 +297,21 @@ function HistoryBookPage() {
 
       {gameOver || finished ? (
         <section className="space-y-3 rounded-[28px] border border-white/60 bg-white/55 p-6 text-center shadow-[0_8px_32px_rgba(30,58,138,0.12)] backdrop-blur-xl">
-          <p className="text-xl font-black">{gameOver ? "Կյանքերն ավարտվեցին" : "Խաղն ավարտված է"}</p>
-          <p className="text-sm text-muted-foreground">Ճիշտ՝ {round.filter((x) => progress.answers[qid(x)] === x.answer).length} / {answeredCount}</p>
-          <Button className="w-full" onClick={() => { setIndex(0); setLives(LIVES); setStreak(0); setRound(section.items); }}>Նորից</Button>
+          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
+          <p className="text-sm text-muted-foreground">{tx("Ճիշտ՝ {correct} / {answered}", { correct: round.filter((x) => progress.answers[qid(x)] === x.answer).length, answered: answeredCount })}</p>
+          <Button className="w-full" onClick={() => { setIndex(0); setLives(LIVES); setStreak(0); setRound(section.items); }}>{tx("Նորից")}</Button>
         </section>
       ) : (
         <section className="space-y-4 rounded-[28px] border border-white/60 bg-white/55 p-5 shadow-[0_8px_32px_rgba(30,58,138,0.12),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl">
           <div className="space-y-1">
-            <p className="text-base font-bold text-blue-700">Կարդալ հարցը և ընտրել ճիշտ տարբերակը:</p>
+            <p className="text-base font-bold text-blue-700">{tx("Կարդալ հարցը և ընտրել ճիշտ տարբերակը:")}</p>
             <p className="text-sm italic text-muted-foreground">Read the question and choose the right answer.</p>
           </div>
           <div className="rounded-[24px] border border-white/70 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">
             <p className="mb-4 text-base font-semibold leading-relaxed">{it.num}. {it.stem}</p>
             <AnswerRow q={it} chosen={current} locked={lives <= 0} onPick={onPick} />
             {current !== undefined && (
-              <Button className="mt-4 h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>Հաջորդը</Button>
+              <Button className="mt-4 h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
             )}
           </div>
           <p className="text-center text-xs text-muted-foreground">{index + 1} / {round.length}</p>

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BookText, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -39,13 +40,14 @@ function useIndex() {
 }
 
 function CropSegment({ src, s }: { src: string; s: Segment }) {
+  const tx = useTx();
   const [failed, setFailed] = useState(false);
   const h = s.y1 - s.y0;
   if (h <= 0) return null;
   if (failed) {
     return (
       <div className="grid place-items-center rounded-xl border border-dashed bg-muted/40 p-4 text-center text-xs text-muted-foreground">
-        Էջը չի բեռնվել։ <a className="ml-1 font-semibold underline" href={src} target="_blank" rel="noreferrer">Բացել էջը</a>
+        {tx("Էջը չի բեռնվել։")} <a className="ml-1 font-semibold underline" href={src} target="_blank" rel="noreferrer">{tx("Բացել էջը")}</a>
       </div>
     );
   }
@@ -74,6 +76,7 @@ function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
 }
 
 function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: number; saved?: string; correct?: string; onAnswer: (id: string, value: string) => void }) {
+  const tx = useTx();
   const [draft, setDraft] = useState("");
   const submitted = saved !== undefined;
   const ok = submitted && correct !== undefined && isRight(correct, saved);
@@ -90,7 +93,7 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
             onKeyDown={(e) => {
               if (e.key === "Enter" && draft.trim()) onAnswer(id, draft.trim());
             }}
-            placeholder="Պատասխան"
+            placeholder={tx("Պատասխան")}
             className="h-10 w-28 rounded-xl border-2 border-border bg-card px-3 text-sm focus:border-blue-700 focus:outline-none"
           />
           <button
@@ -99,12 +102,12 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
             onClick={() => onAnswer(id, draft.trim())}
             className="h-10 rounded-xl bg-blue-700 px-4 text-sm font-bold text-white disabled:opacity-40"
           >
-            Ստուգել
+            {tx("Ստուգել")}
           </button>
         </>
       ) : (
         <span className={`text-sm font-bold ${ok ? "text-emerald-700" : "text-red-700"}`}>
-          {saved} {ok ? "✓" : `✗ · ճիշտ՝ ${correct ?? "—"}`}
+          {saved} {ok ? "✓" : tx("✗ · ճիշտ՝ {c}", { c: correct ?? "—" })}
         </span>
       )}
     </div>
@@ -112,9 +115,10 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
 }
 
 function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask; saved: Record<string, string>; onAnswer: (id: string, value: string) => void; shortSection: boolean }) {
+  const tx = useTx();
   const subs = task.answers ? task.answers.length : task.sub_count;
   const isTF = task.answers?.some((a) => a === "T" || a === "F") ?? false;
-  const label = `Մաթեմատիկա • Մաս ${bookNo} • Գլուխ ${sec.chapter} • Բաժին ${sec.section} • Առաջադրանք ${task.task} • Հարցեր 1–${subs}`;
+  const label = tx("Մաթեմատիկա • Մաս {m} • Գլուխ {c} • Բաժին {s} • Առաջադրանք {t} • Հարցեր 1–{k}", { m: bookNo, c: sec.chapter, s: sec.section, t: task.task, k: subs });
 
   return (
     <article className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
@@ -156,7 +160,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
             <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
               <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
               {choices.map((c) => {
-                const text = isTF ? (c === "T" ? "Ճիշտ է" : "Սխալ է") : `${c})`;
+                const text = isTF ? (c === "T" ? tx("Ճիշտ է") : tx("Սխալ է")) : `${c})`;
                 const isRight_ = chosen !== undefined && correct === c;
                 const isWrong = chosen === c && correct !== c;
                 return (
@@ -174,7 +178,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                   </button>
                 );
               })}
-              {!correct && <span className="text-xs text-muted-foreground">Պատասխանը չկա</span>}
+              {!correct && <span className="text-xs text-muted-foreground">{tx("Պատասխանը չկա")}</span>}
             </div>
             {explainFor()}
             </Fragment>
@@ -187,6 +191,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
 
 function BooksPage() {
   const q = useIndex();
+  const tx = useTx();
   const questionCounts = useMemo(() => {
     const out: Record<string, number> = {};
     if (!q.data) return out;
@@ -247,8 +252,8 @@ function BooksPage() {
     return [...map.entries()];
   }, [book]);
 
-  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել գրքերը։</p>;
+  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
+  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գրքերը։")}</p>;
 
   const back = () => (sectionKey ? setSectionKey(null) : mode === "pages" ? setMode("chapters") : setBookId(null));
 
@@ -257,18 +262,18 @@ function BooksPage() {
       <div className="flex items-center gap-3">
         {bookId ? (
           <button onClick={back} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Հետ
+            <ArrowLeft className="size-4" /> {tx("Հետ")}
           </button>
         ) : (
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Գլխավոր էջ
+            <ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}
           </Link>
         )}
       </div>
 
       {!bookId && (
         <section className="space-y-5">
-          <h2 className="text-xl font-bold sm:text-2xl">Ընտրիր շտեմարանը</h2>
+          <h2 className="text-xl font-bold sm:text-2xl">{tx("Ընտրիր շտեմարանը")}</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             {BOOK_IDS.map((id, i) => {
               const total = questionCounts[id] ?? 0;
@@ -281,17 +286,17 @@ function BooksPage() {
                   <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 p-4">
                     <img
                       src={`/math/books/covers/${id}.jpg`}
-                      alt={`Մաթեմատիկա · Մաս ${i + 1} շապիկ`}
+                      alt={tx("Մաթեմատիկա · Մաս {n} շապիկ", { n: i + 1 })}
                       loading="lazy"
                       className="aspect-[3/4] w-full rounded-lg object-cover"
                     />
                     <div className="min-w-0 space-y-2">
-                      <h3 className="text-lg font-bold">Մաթեմատիկա • Մաս {i + 1}</h3>
-                      <p className="text-sm text-muted-foreground">Շտեմարան · {i === 0 ? "Երևան 2019" : "Երևան 2020"} · {total} հարց</p>
+                      <h3 className="text-lg font-bold">{tx("Մաթեմատիկա • Մաս {n}", { n: i + 1 })}</h3>
+                      <p className="text-sm text-muted-foreground">{tx("Շտեմարան · {place} · {n} հարց", { place: tx(i === 0 ? "Երևան 2019" : "Երևան 2020"), n: total })}</p>
                       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                         <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (answered(`${id}:`).length / total) * 100) : 0}%` }} />
                       </div>
-                      <p className="text-xs text-muted-foreground">{answered(`${id}:`).length} / {total} արված · {correctIn(`${id}:`)} ճիշտ</p>
+                      <p className="text-xs text-muted-foreground">{tx("{n} / {t} արված · {c} ճիշտ", { n: answered(`${id}:`).length, t: total, c: correctIn(`${id}:`) })}</p>
                     </div>
                   </div>
                 </button>
@@ -306,21 +311,21 @@ function BooksPage() {
           <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
             <img
               src={`/math/books/covers/${bookId}.jpg`}
-              alt={book.title}
+              alt={tx(book.title)}
               className="shadow-card hidden aspect-[3/4] w-full rounded-xl object-cover md:block"
             />
             <div className="space-y-4">
-              <h1 className="text-3xl font-black sm:text-4xl">{book.title}</h1>
-              <p className="text-muted-foreground">Շտեմարան · {bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020"}</p>
+              <h1 className="text-3xl font-black sm:text-4xl">{tx(book.title)}</h1>
+              <p className="text-muted-foreground">{tx("Շտեմարան · {place}", { place: tx(bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020") })}</p>
               <div className="flex flex-wrap gap-3">
                 <Button variant="game" size="lg" asChild>
-                  <Link to="/math"><Trophy /> Քննություն</Link>
+                  <Link to="/math"><Trophy /> {tx("Քննություն")}</Link>
                 </Button>
                 <Button variant="sun" size="lg" asChild>
-                  <Link to="/math"><ClipboardCheck /> Կազմել թեստ</Link>
+                  <Link to="/math"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
                 </Button>
                 <Button variant="outline" size="lg" onClick={() => setMode("pages")}>
-                  <BookText /> Էջեր
+                  <BookText /> {tx("Էջեր")}
                 </Button>
               </div>
             </div>
@@ -328,7 +333,7 @@ function BooksPage() {
 
           {chapters.map(([ch, secs]) => (
             <div key={ch} className="space-y-4">
-              <h2 className="text-xl font-black">Գլուխ {ch}</h2>
+              <h2 className="text-xl font-black">{tx("Գլուխ {n}", { n: ch })}</h2>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {secs.map((s, i) => {
               const total = s.tasks.reduce((m, t) => m + (t.answers ? t.answers.length : t.sub_count), 0);
@@ -342,23 +347,23 @@ function BooksPage() {
                   <div className="flex items-start gap-3">
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{i + 1}</span>
                     <div className="min-w-0">
-                      <h2 className="text-base font-bold">Բաժին {s.section}</h2>
+                      <h2 className="text-base font-bold">{tx("Բաժին {n}", { n: s.section })}</h2>
                       <p className="text-sm leading-snug text-muted-foreground">{s.title}</p>
                     </div>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                     <div className="h-full bg-success" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
                   </div>
-                  <p className="text-xs text-muted-foreground">{done}/{total} արված · {right} ճիշտ</p>
+                  <p className="text-xs text-muted-foreground">{tx("{n}/{t} արված · {c} ճիշտ", { n: done, t: total, c: right })}</p>
                   <div className="mt-auto grid grid-cols-3 gap-2">
                     <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
-                      <a href={playHref}><Gamepad2 /> Խաղալ</a>
+                      <a href={playHref}><Gamepad2 /> {tx("Խաղալ")}</a>
                     </Button>
                     <Button variant="outline" className="px-2 text-xs sm:text-sm" onClick={() => setSectionKey(`${s.chapter}-${s.section}`)}>
-                      <BookText /> Դասական
+                      <BookText /> {tx("Դասական")}
                     </Button>
                     <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
-                      <a href={testHref}><ClipboardCheck /> Թեստ</a>
+                      <a href={testHref}><ClipboardCheck /> {tx("Թեստ")}</a>
                     </Button>
                   </div>
                 </div>
@@ -372,12 +377,12 @@ function BooksPage() {
 
       {bookId && mode === "pages" && !sectionKey && (
         <section className="space-y-4">
-          <h1 className="text-xl font-bold">{book?.title}</h1>
+          <h1 className="text-xl font-bold">{tx(book?.title ?? "")}</h1>
           {Array.from({ length: PAGE_COUNT[bookId] }, (_, i) => i + 1).map((pg) => (
             <figure key={pg} className="space-y-1">
               <img
                 src={`/math/books/${bookId}/p-${String(pg).padStart(3, "0")}.jpg`}
-                alt={`Էջ ${pg}`}
+                alt={tx("Էջ {n}", { n: pg })}
                 loading="lazy"
                 className="w-full rounded-xl border bg-white"
               />
@@ -389,7 +394,7 @@ function BooksPage() {
 
       {bookId && section && (
         <section className="space-y-4">
-          <p className="text-sm font-bold">Բաժին {section.section}. {section.title}</p>
+          <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {section.title}</p>
           {section.tasks.map((t) => (
             <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection(section.tasks)} />
           ))}

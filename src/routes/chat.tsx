@@ -4,6 +4,7 @@ import { Loader2, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { chatReply } from "@/lib/chat.functions";
 import { cn } from "@/lib/utils";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -68,6 +69,7 @@ function RichText({ text, katex }: { text: string; katex: Katex | null }) {
 const STARTERS = ["Ինչպե՞ս պատրաստվեմ անգլերենի քննությանը", "Բացատրիր Հայոց պատմության թեստի ձևաչափը", "Ի՞նչ է միտոքոնդրիումը"];
 
 function ChatPage() {
+  const tx = useTx();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -86,7 +88,7 @@ function ChatPage() {
       const res = await chatReply({ data: { messages: next.slice(-20) } });
       setMessages((m) => [...m, { role: "assistant", content: res.text }]);
     } catch {
-      setMessages((m) => [...m, { role: "assistant", content: "Չհաջողվեց պատասխանել։ Փորձեք կրկին։" }]);
+      setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։") }]);
     } finally {
       setLoading(false);
       setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
@@ -96,23 +98,23 @@ function ChatPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 py-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-black sm:text-3xl">Չատբոտ</h1>
-        <p className="text-sm text-muted-foreground">Հարցրեք ուսման, թեմաների կամ քննության ձևաչափի մասին։</p>
+        <h1 className="text-2xl font-black sm:text-3xl">{tx("Չատբոտ")}</h1>
+        <p className="text-sm text-muted-foreground">{tx("Հարցրեք ուսման, թեմաների կամ քննության ձևաչափի մասին։")}</p>
       </header>
 
       <div className="glass flex min-h-[50vh] flex-col gap-3 rounded-3xl p-4 sm:p-6">
         {messages.length === 0 && (
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Սկսելու համար ընտրեք հարց կամ գրեք ձեր հարցը ներքևում։</p>
+            <p className="text-sm text-muted-foreground">{tx("Սկսելու համար ընտրեք հարց կամ գրեք ձեր հարցը ներքևում։")}</p>
             <div className="flex flex-wrap gap-2">
               {STARTERS.map((s) => (
                 <button
                   key={s}
                   type="button"
-                  onClick={() => send(s)}
+                  onClick={() => send(tx(s))}
                   className="rounded-full border bg-card px-3 py-1.5 text-left text-sm font-semibold hover:border-primary/50"
                 >
-                  {s}
+                  {tx(s)}
                 </button>
               ))}
             </div>
@@ -129,7 +131,7 @@ function ChatPage() {
         ))}
         {loading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" /> Պատասխանը պատրաստվում է…
+            <Loader2 className="size-4 animate-spin" /> {tx("Պատասխանը պատրաստվում է…")}
           </div>
         )}
         <div ref={endRef} />
@@ -153,11 +155,11 @@ function ChatPage() {
           }}
           rows={2}
           maxLength={2000}
-          placeholder="Գրեք ձեր հարցը…"
-          aria-label="Հաղորդագրություն"
+          placeholder={tx("Գրեք ձեր հարցը…")}
+          aria-label={tx("Հաղորդագրություն")}
           className="min-h-11 flex-1 resize-none rounded-2xl border bg-background px-4 py-2.5 text-[0.95rem] focus:border-primary focus:outline-none"
         />
-        <Button type="submit" disabled={loading || !input.trim()} aria-label="Ուղարկել" className="h-11 gap-1">
+        <Button type="submit" disabled={loading || !input.trim()} aria-label={tx("Ուղարկել")} className="h-11 gap-1">
           <Send className="size-4" />
         </Button>
       </form>
