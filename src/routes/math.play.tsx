@@ -149,7 +149,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
 
   const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options?.[0] ?? "1)"], ["2", item.options?.[1] ?? "2)"], ["3", item.options?.[2] ?? "3)"], ["4", item.options?.[3] ?? "4)"]];
   return (
-    <div className="space-y-3">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
         const isCorrectBtn = answered && correct === c;
         const isWrongBtn = value === c && correct !== c;
@@ -159,7 +159,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
             type="button"
             disabled={locked || answered}
             onClick={() => onAnswer(c)}
-            className={`flex w-full items-center gap-4 rounded-2xl border-2 bg-card px-5 py-4 text-left text-base transition ${
+            className={`flex min-w-0 w-full items-start gap-2 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition sm:items-center sm:gap-3 sm:px-4 sm:py-4 sm:text-base ${
               isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
               : "border-stone-300 hover:bg-muted"}`}
@@ -316,7 +316,7 @@ function PlayPage() {
             </p>
           </div>
 
-          <Crop bookId={it.bookId} segments={it.segments} />
+          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
 
           <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
