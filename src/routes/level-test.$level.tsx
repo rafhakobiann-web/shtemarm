@@ -62,7 +62,7 @@ function LevelTestPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}</Link>
-      <section className="bg-hero rounded-3xl p-6 text-primary-foreground sm:p-8">
+      <section className="bg-hero rounded-3xl p-6 text-white sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-wider opacity-80">English level test</p>

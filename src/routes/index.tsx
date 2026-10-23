@@ -75,7 +75,7 @@ function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string;
       </div>
     </div>
   );
-  const cls = "gloss group block min-h-40 overflow-hidden rounded-3xl bg-hero text-primary-foreground shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg";
+  const cls = "group block min-h-40 overflow-hidden rounded-3xl text-white shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg [background-image:var(--gloss),var(--gradient-hero)]";
   if (href) return <a href={href} className={cls}>{body}</a>;
   return <Link to={to!} params={params as never} search={search as never} className={cls}>{body}</Link>;
 }

@@ -247,7 +247,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
       </div>
 
       {finished && (
-        <div className="bg-hero animate-pop rounded-3xl p-6 text-center text-primary-foreground">
+        <div className="bg-hero animate-pop rounded-3xl p-6 text-center text-white">
           <Trophy className="mx-auto size-10 text-sun" />
           <p className="mt-2 font-display text-4xl font-black">{score} / {total}</p>
           <p className="opacity-90">{Math.round((score / Math.max(1, total)) * 100)}% · {tx("Ստորև տեսեք ճիշտ պատասխաններն ու բացատրությունները")}</p>

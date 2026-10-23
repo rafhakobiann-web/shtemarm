@@ -90,6 +90,16 @@ function BookPage() {
                       <Gamepad2 /> {tx("Խաղալ")}
                     </Link>
                   </Button>
+                  <Button variant="outline" className="px-2 text-xs sm:text-sm" asChild>
+                    <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
+                      <BookText /> {tx("Դասական")}
+                    </Link>
+                  </Button>
+                  <Button variant="sun" className="px-2 text-xs sm:text-sm" asChild>
+                    <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
+                      <ClipboardCheck /> {tx("Թեստ")}
+                    </Link>
+                  </Button>
                 </div>
               </div>
             );
