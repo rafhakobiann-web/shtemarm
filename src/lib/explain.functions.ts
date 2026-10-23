@@ -80,9 +80,10 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
             }
           );
 
-        res = await callGemini("gemini-3.5-flash");
-        if (!res.ok && (res.status === 503 || res.status === 429)) {
-          res = await callGemini("gemini-3.5-flash-lite");
+        // Flash-lite first for speed; the stronger model is only a fallback.
+        res = await callGemini("gemini-3.5-flash-lite");
+        if (!res.ok) {
+          res = await callGemini("gemini-3.5-flash");
         }
       }
 
@@ -95,9 +96,11 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
       if (result.blocked) return { text: "Ծառայությունը մերժեց այս բացատրության ստեղծումը։", error: true };
       if (!result.text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։", error: true };
 
-      await supabaseAdmin
+      // Store in the background so the learner gets the explanation without waiting for the write.
+      supabaseAdmin
         .from("explanation_cache")
-        .upsert({ cache_key: cacheKey, explanation: result.text }, { onConflict: "cache_key" });
+        .upsert({ cache_key: cacheKey, explanation: result.text }, { onConflict: "cache_key" })
+        .then(() => undefined, () => undefined);
 
       return { text: result.text, cached: false, error: false };
     } catch {
