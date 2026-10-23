@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      feedback: {
+        Row: { id: string; message: string; contact: string | null; created_at: string }
+        Insert: { id?: string; message: string; contact?: string | null; created_at?: string }
+        Update: { id?: string; message?: string; contact?: string | null; created_at?: string }
+        Relationships: []
+      }
       explanation_cache: {
         Row: {
           cache_key: string
