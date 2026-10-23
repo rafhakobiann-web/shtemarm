@@ -175,6 +175,17 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
             );
           }
           const chosen = saved[id];
+          const optionTexts = task.questions?.[i]?.options;
+          if (!isTF && (!optionTexts || optionTexts.length < 4)) {
+            return (
+              <Fragment key={n}>
+                <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">
+                  {tx("Այս հարցի պատասխանների տարբերակները դեռ մշակվում են։ Ընտրության կոճակները կհայտնվեն, երբ բոլոր տարբերակները մուտքագրվեն։")}
+                </p>
+                {explainFor()}
+              </Fragment>
+            );
+          }
           const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           return (
             <Fragment key={n}>
