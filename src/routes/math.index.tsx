@@ -22,7 +22,7 @@ export const Route = createFileRoute("/math/")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
 type IndexSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: IndexSection[] }> };
 type Kind = "choice" | "tf" | "open";
@@ -35,6 +35,7 @@ type Item = {
   sub: number;
   subs: number;
   segments: Segment[];
+  split?: boolean;
   answer: string;
   kind: Kind;
 };
@@ -104,7 +105,8 @@ function sectionItems(bookId: string, sec: IndexSection): Item[] {
         task: t.task,
         sub: i + 1,
         subs,
-        segments: t.segments,
+        segments: t.sub_segments?.[i] ?? t.segments,
+        split: !!t.sub_segments,
         answer,
         kind,
       });
@@ -202,7 +204,7 @@ function writeLast(ids: string[]) {
 function groupItems(items: Item[]) {
   const groups: { key: string; first: Item; rows: Item[] }[] = [];
   for (const it of items) {
-    const key = taskKey(it);
+    const key = it.split ? `${taskKey(it)}#${it.sub}` : taskKey(it);
     const last = groups[groups.length - 1];
     if (last && last.key === key) last.rows.push(it);
     else groups.push({ key, first: it, rows: [it] });

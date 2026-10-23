@@ -18,7 +18,7 @@ export const Route = createFileRoute("/math/play")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
 type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean };
@@ -65,7 +65,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
         task: t.task,
         sub: i + 1,
         subs,
-        segments: t.segments,
+        segments: t.sub_segments?.[i] ?? t.segments,
         answer: t.answers?.[i],
         open,
       });
