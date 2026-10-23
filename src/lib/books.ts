@@ -4,9 +4,9 @@ export type Unit =
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
   | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string }[] };
-export type Section = { n: number; title?: string; instr_en: string; instr_hy: string; units: Unit[] };
+export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
 export const secNum = (n: number) => (n > 70 ? 7 : n);
-export const secTitle = (s: { n: number; title?: string }) => (s.title ? `Բաժին ${s.title}` : `Բաժին ${s.n}`);
+export const secTitle = (s: { n: number; title?: string; label?: string }) => s.label ?? (s.title ? `Բաժին ${s.title}` : `Բաժին ${s.n}`);
 export type Book = { id: number; sections: Section[] };
 
 export const BOOKS = [
