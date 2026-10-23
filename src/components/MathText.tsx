@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 // KaTeX loader and renderer for chat and calculator replies.
 const KATEX_VERSION = "0.16.11";
 type Katex = { renderToString: (tex: string, opts?: Record<string, unknown>) => string };
