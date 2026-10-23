@@ -19,10 +19,10 @@ export const Route = createFileRoute("/math/play")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: { prompt: string; options: string[] }[] };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
-type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean };
+type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean; prompt?: string; options?: string[] };
 
 const PAGE_W = 467.76;
 const TEST_SIZE = 20;
@@ -130,7 +130,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
     );
   }
 
-  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", "1)"], ["2", "2)"], ["3", "3)"], ["4", "4)"]];
+  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options?.[0] ?? "1)"], ["2", item.options?.[1] ?? "2)"], ["3", item.options?.[2] ?? "3)"], ["4", item.options?.[3] ?? "4)"]];
   return (
     <div className="space-y-3">
       {choices.map(([c, label]) => {
@@ -221,7 +221,7 @@ function PlayPage() {
         <MathTools />
         <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
         {round.map((it, idx) => (
-          <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
+          <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
             <Crop bookId={it.bookId} segments={it.segments} />
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
