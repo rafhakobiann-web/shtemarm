@@ -155,7 +155,9 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
       </p>
     );
   }
-  const choices = isTrueFalse ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options![0]], ["2", item.options![1]], ["3", item.options![2]], ["4", item.options![3]]];
+  const choices: [string, string][] = isTrueFalse
+    ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]]
+    : item.options!.slice(0, 4).map((option, i) => [String(i + 1), option]);
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
@@ -172,8 +174,8 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
               : "border-stone-300 hover:bg-muted"}`}
           >
-            <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : tx(label)}</span>
-            <span className="font-medium">{c === "T" || c === "F" ? tx(label) : ""}</span>
+            <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : `${c})`}</span>
+            <span className="font-medium">{tx(label)}</span>
           </button>
         );
       })}
