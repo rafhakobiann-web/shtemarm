@@ -18,7 +18,7 @@ export const Route = createFileRoute("/math/books")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: { prompt: string; options: string[] }[] };
 type BookSection = { chapter: number; section: number; title: string; pages: [number, number]; tasks: BookTask[] };
 type BookData = { title: string; sections: BookSection[] };
 type Index = { books: Record<string, BookData> };
@@ -128,9 +128,10 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   return (
     <article className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      {!task.sub_segments && <TaskCrop book={bookId} segments={task.segments} />}
+      {!task.questions && !task.sub_segments && <TaskCrop book={bookId} segments={task.segments} />}
+      {task.questions && <p className="text-sm text-muted-foreground">{tx("Տեքստային տարբերակ · ստուգված ըստ գրքի առաջին էջի")}</p>}
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i] ? <div className="rounded-xl bg-muted/40 p-3 text-sm leading-7"><p className="font-semibold">{task.questions[i].prompt}</p></div> : task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -165,7 +166,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
             <div className="flex flex-wrap items-center gap-2 rounded-2xl border p-2">
               <span className="grid size-8 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
               {choices.map((c) => {
-                const text = isTF ? (c === "T" ? tx("Ճիշտ է") : tx("Սխալ է")) : `${c})`;
+                const text = isTF ? (c === "T" ? tx("Ճիշտ է") : tx("Սխալ է")) : task.questions?.[i]?.options?.[Number(c) - 1] ?? `${c})`;
                 const isRight_ = chosen !== undefined && correct === c;
                 const isWrong = chosen === c && correct !== c;
                 return (
