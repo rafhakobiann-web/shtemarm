@@ -52,15 +52,20 @@ function CropSegment({ src, s }: { src: string; s: Segment }) {
     );
   }
   return (
-    <div className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
-      <img
-        src={src}
-        alt=""
-        decoding="async"
-        onError={() => setFailed(true)}
-        className="block w-full max-w-none"
-        style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
-      />
+    <div className="space-y-1">
+      <div className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
+        <img
+          src={src}
+          alt=""
+          decoding="async"
+          onError={() => setFailed(true)}
+          className="block w-full max-w-none"
+          style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
+        />
+      </div>
+      <a href={src} target="_blank" rel="noreferrer" className="inline-flex text-xs font-medium text-blue-700 underline underline-offset-2">
+        {tx("Բացել ամբողջ էջը")} ↗
+      </a>
     </div>
   );
 }
@@ -396,7 +401,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {tx(section.title)}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection(section.tasks)} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection([t])} />
           ))}
         </section>
       )}

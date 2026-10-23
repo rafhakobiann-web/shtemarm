@@ -47,21 +47,8 @@ const LAST_KEY = "math-exam-last-ids";
 const BOOK_IDS = ["matem-1", "matem-2"] as const;
 const BOOK_NAMES: Record<string, string> = { "matem-1": "Մաթեմատիկա · Մաս 1", "matem-2": "Մաթեմատիկա · Մաս 2" };
 
-// Structure of the sample exam: 65 questions, each slot drawn from the matching section of Part 1.
-// Questions 1–40 are chapter 1 sections 1–10 (4 each); 41–65 are typed-answer questions from chapter 2.
-const rep = (c: number, s: number, n: number): [number, number][] => Array.from({ length: n }, () => [c, s] as [number, number]);
-const SAMPLE_STRUCTURE: [number, number][] = [
-  ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((s) => rep(1, s, 4)), // 1–40
-  ...rep(2, 2, 4), // 41–44 inequalities
-  ...rep(2, 5, 1), // 45 functions
-  ...rep(2, 3, 4), // 46–49 text problems
-  ...rep(2, 6, 4), // 50–53 planar geometry
-  ...rep(2, 1, 4), // 54–57 expressions
-  ...rep(2, 5, 4), // 58–61 functions
-  ...rep(2, 8, 2), // 62–63 combinatorics
-  ...rep(2, 2, 1), // 64 equations
-  ...rep(2, 7, 1), // 65 solid geometry
-];
+// The official math-exam structure has not been verified against a math sample paper.
+// Keep this as a 65-question practice test drawn from both source books, not an asserted official blueprint.
 
 function useIndex() {
   return useQuery({
@@ -88,11 +75,11 @@ const taskKey = (x: Pick<Item, "book" | "chapter" | "section" | "task">) => `${x
 const sectionKey = (bookId: string, sec: IndexSection) => `${bookId}:${sec.chapter}:${sec.section}`;
 const bookNo = (bookId: string) => Number(bookId.split("-")[1]);
 
-/** Every sub-question of one section, with its answer kind decided per section (see isOpenSection). */
+/** Expand each source task into sub-questions. Infer answer mode per task, never across a whole section. */
 function sectionItems(bookId: string, sec: IndexSection): Item[] {
-  const open = isOpenSection(sec.tasks);
   const out: Item[] = [];
   for (const t of sec.tasks) {
+    const open = isOpenSection([t]);
     const subs = t.answers ? t.answers.length : t.sub_count;
     for (let i = 0; i < subs; i++) {
       const answer = t.answers?.[i];
@@ -126,28 +113,28 @@ function byBookOrder(a: Item, b: Item) {
   );
 }
 
-/** Sample exam: one question per slot, drawn from the matching section of Part 1, never repeating a task. */
+/** Build a 65-question practice exam from both books without claiming an unverified official structure. */
 function pickSample(index: Index, excluded: Set<string>): Item[] {
-  const usedTasks = new Set<string>();
+  const allKeys = new Set(
+    BOOK_IDS.flatMap((bookId) =>
+      (index.books[bookId]?.sections ?? []).map((sec) => sectionKey(bookId, sec)),
+    ),
+  );
+  const groups = shuffle(selectedGroups(index, [...BOOK_IDS], allKeys));
+  const freshGroups = groups.filter((group) => group.some((item) => !excluded.has(item.id)));
+  const orderedGroups = [...freshGroups, ...groups.filter((group) => !freshGroups.includes(group))];
   const picked: Item[] = [];
-  const sections = index.books["matem-1"]?.sections ?? [];
-  SAMPLE_STRUCTURE.forEach(([chapter, section], slot) => {
-    const sec = sections.find((x) => x.chapter === chapter && x.section === section);
-    if (!sec) return;
-    const wantOpen = slot >= 40;
-    const all = sectionItems("matem-1", sec).filter((x) => !usedTasks.has(taskKey(x)));
-    const typed = all.filter((x) => x.kind === "open");
-    const candidates = wantOpen && typed.length ? typed : all;
-    const fresh = candidates.filter((x) => !excluded.has(x.id));
-    const pool = fresh.length ? fresh : candidates;
-    if (!pool.length) return;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    usedTasks.add(taskKey(pick));
-    picked.push(pick);
-  });
+
+  for (const group of orderedGroups) {
+    if (picked.length >= EXAM_SIZE) break;
+    const freshItems = group.filter((item) => !excluded.has(item.id));
+    const candidates = freshItems.length ? freshItems : group;
+    picked.push(...candidates.slice(0, EXAM_SIZE - picked.length));
+  }
+
+  // If a source book ever contains fewer than 65 sub-questions, return the available count honestly.
   return picked;
 }
-
 /** Items of the chosen sections, grouped by task so a task's sub-questions are picked together. */
 function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[][] {
   const groups: Item[][] = [];
@@ -214,20 +201,27 @@ function groupItems(items: Item[]) {
 }
 
 function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+  const tx = useTx();
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {segments.map((s, i) => {
         const h = s.y1 - s.y0;
         if (h <= 0) return null;
+        const src = `/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`;
         return (
-          <div key={i} className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
-            <img
-              src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`}
-              alt=""
-              decoding="async"
-              className="block w-full max-w-none"
-              style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
-            />
+          <div key={i} className="space-y-1">
+            <div className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
+              <img
+                src={src}
+                alt=""
+                decoding="async"
+                className="block w-full max-w-none"
+                style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
+              />
+            </div>
+            <a href={src} target="_blank" rel="noreferrer" className="inline-flex text-xs font-medium text-blue-700 underline underline-offset-2">
+              {tx("Բացել ամբողջ էջը")} ↗
+            </a>
           </div>
         );
       })}
@@ -419,7 +413,7 @@ function MathPage() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             {([
-              ["exam", <Trophy key="t" />, "Քննություն ({n})", "Քննության կառուցվածքով, Մաս 1-ից"],
+              ["exam", <Trophy key="t" />, "Փորձնական թեստ ({n})", "Երկու մաթեմատիկայի շտեմարաններից"],
               ["custom", <ListChecks key="l" />, "Ըստ բաժինների", "Ընտրիր շտեմարանները, բաժինները և քանակը"],
             ] as const).map(([k, icon, title, desc]) => (
               <button
@@ -441,7 +435,7 @@ function MathPage() {
           <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
             {mode === "exam" ? (
               <p className="text-sm leading-relaxed">
-                {tx("{n} հարց՝ քննության իրական կառուցվածքով։ Առաջին 40-ը՝ առաջին գլխի բաժիններից, մնացածը՝ երկրորդ գլխից՝ բաց պատասխաններով։", { n: EXAM_SIZE })}
+                {tx("{n} հարց՝ պատահական ընտրված երկու մաթեմատիկայի շտեմարաններից։ Սա փորձնական թեստ է, ոչ թե հաստատված պաշտոնական քննության կառուցվածքի պատճեն։", { n: EXAM_SIZE })}
                 {tx("Յուրաքանչյուր նոր թեստում հարցերը տարբեր են նախորդից։")}
               </p>
             ) : (
