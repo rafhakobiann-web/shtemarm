@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
 import { z } from "zod";
+import { useEffect } from "react";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 
 const SUBJECTS = ["english", "math", "history"] as const;
@@ -184,8 +185,12 @@ function TikTokIcon({ className }: { className?: string }) {
 }
 
 function AboutSection() {
+  // Opened from the header menu (/#about): bring the section into view once the page is ready.
+  useEffect(() => {
+    if (window.location.hash === "#about") document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
   return (
-    <section className="glass space-y-6 rounded-3xl p-6 sm:p-8">
+    <section id="about" className="glass scroll-mt-24 space-y-6 rounded-3xl p-6 sm:p-8">
       <h2 className="text-2xl font-black sm:text-3xl">Մեր մասին</h2>
       <div className="space-y-4 text-sm leading-relaxed sm:text-base">
         <p>

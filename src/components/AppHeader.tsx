@@ -33,21 +33,6 @@ export function AppHeader() {
           <span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span>
         </Link>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" aria-label="Ընտրել առարկան" className="gap-1">
-                <BookOpen /><span className="hidden sm:inline">Առարկա</span><ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-56">
-              <DropdownMenuLabel>Առարկաներ</DropdownMenuLabel>
-              <DropdownMenuItem asChild><Link to="/" search={{ subject: "english" }}>Անգլերեն</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link to="/" search={{ subject: "math" }}>Մաթեմատիկա</Link></DropdownMenuItem>
-              <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link to="/book/$bookId" params={{ bookId: "31" }}>Կենսաբանություն</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link to="/" search={{ subject: "history" }}>Հայոց պատմություն</Link></DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
           <div className="flex items-center gap-1.5" title="Մութ ռեժիմ">
             <Sun className="size-4 text-sun" aria-hidden />
             <Switch
@@ -72,6 +57,25 @@ export function AppHeader() {
           </Link>
         </div>
       </div>
+      <nav aria-label="Գլխավոր մենյու" className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 pb-3 text-sm font-bold sm:px-6">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" aria-label="Ընտրել առարկան" className="gap-1">
+              <BookOpen /><span>Առարկաներ</span><ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-56">
+            <DropdownMenuLabel>Առարկաներ</DropdownMenuLabel>
+            <DropdownMenuItem asChild><Link to="/" search={{ subject: "english" }}>Անգլերեն</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link to="/" search={{ subject: "math" }}>Մաթեմատիկա</Link></DropdownMenuItem>
+            <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link to="/book/$bookId" params={{ bookId: "31" }}>Կենսաբանություն</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link to="/" search={{ subject: "history" }}>Հայոց պատմություն</Link></DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Link to="/" hash="about" className="shrink-0 rounded-lg px-3 py-1.5 hover:bg-muted">Մեր մասին</Link>
+        <Link to="/chat" className="shrink-0 rounded-lg px-3 py-1.5 hover:bg-muted">Չատբոտ</Link>
+      </nav>
     </header>
   );
 }
