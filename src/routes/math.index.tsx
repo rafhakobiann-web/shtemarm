@@ -88,11 +88,11 @@ const taskKey = (x: Pick<Item, "book" | "chapter" | "section" | "task">) => `${x
 const sectionKey = (bookId: string, sec: IndexSection) => `${bookId}:${sec.chapter}:${sec.section}`;
 const bookNo = (bookId: string) => Number(bookId.split("-")[1]);
 
-/** Every sub-question of one section, with its answer kind decided per section (see isOpenSection). */
+/** Expand each source task into sub-questions. Infer answer mode per task, never across a whole section. */
 function sectionItems(bookId: string, sec: IndexSection): Item[] {
-  const open = isOpenSection(sec.tasks);
   const out: Item[] = [];
   for (const t of sec.tasks) {
+    const open = isOpenSection([t]);
     const subs = t.answers ? t.answers.length : t.sub_count;
     for (let i = 0; i < subs; i++) {
       const answer = t.answers?.[i];
