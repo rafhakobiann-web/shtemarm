@@ -18,7 +18,7 @@ export const Route = createFileRoute("/math/books")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
 type BookSection = { chapter: number; section: number; title: string; pages: [number, number]; tasks: BookTask[] };
 type BookData = { title: string; sections: BookSection[] };
 type Index = { books: Record<string, BookData> };
@@ -123,9 +123,9 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   return (
     <article className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <TaskCrop book={bookId} segments={task.segments} />
+      {!task.sub_segments && <TaskCrop book={bookId} segments={task.segments} />}
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -183,7 +183,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
             {explainFor()}
             </Fragment>
           );
-        })}
+        })()}</Fragment>))}
       </div>
     </article>
   );
