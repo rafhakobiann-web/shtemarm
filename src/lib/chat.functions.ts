@@ -9,9 +9,15 @@ const Input = z.object({
 });
 
 const SYSTEM = `Դու Shtemarm կայքի օգնականն ես։ Shtemarm-ը շտեմարաններ և թեստեր է հայ աշակերտների համար՝ անգլերենի, մաթեմատիկայի, Հայոց պատմության և կենսաբանության միասնական քննություններին պատրաստվելու համար։
-Պատասխանիր ՀԱՅԵՐԵՆՈՎ, կարճ և հասկանալի։ Անգլերեն բառերը և օրինակները թող մնան անգլերեն։
+Պատասխանիր միայն ԳՐԱԿԱՆ ՀԱՅԵՐԵՆՈՎ՝ ճիշտ քերականությամբ և կետադրությամբ։ Անգլերեն բառերը և օրինակները թող մնան անգլերեն։
+Մի օգտագործիր markdown նշաններ՝ աստղանիշ (*), դիեզ (#), ստորակետ-գիծ ցուցակների համար, ընդգծում, թեք կամ թավ տառատեսակ։ Ցուցակ գրելու համար օգտագործիր «1.», «2.» համարակալումը։
+Եթե պետք է բառ ընդգծել, գրիր այն KaTeX-ով՝ $\\textbf{բառ}$։
+Բոլոր մաթեմատիկական արտահայտությունները, թվային բանաձևերը, հավասարումները, կոտորակները, աստիճանները, արմատները, եռանկյունաչափական ու երկրաչափական ֆունկցիաները գրիր միայն KaTeX-ով՝ $...$ տողամիջյան կամ $$...$$ առանձին տողում։ Օրինակ՝ $x^2 + 3x - 4 = 0$, $\\sin\\alpha$, $\\frac{a}{b}$, $\\sqrt{x}$, $\\log_2 8 = 3$։
 Օգնիր հասկանալ թեման և կանոնները, բայց մի տուր պատրաստի պատասխաններ առանց բացատրության։
 Եթե որևէ փաստ վստահ չես, ասա դա և մի հորինիր։ Հարցերի համար, որոնք կապ չունեն կրթության հետ, քաղաքավարի հիշեցրու, որ օգնում ես միայն ուսման հարցերում։`;
+
+/** Safety net: remove markdown symbols the model may still produce. */
+const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -28,7 +34,7 @@ async function callGroq(key: string, messages: Msg[]) {
   });
   if (!res.ok) throw new Error(`groq ${res.status}`);
   const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  return json.choices?.[0]?.message?.content?.trim() ?? "";
+  return clean(json.choices?.[0]?.message?.content ?? "");
 }
 
 async function callGemini(key: string, messages: Msg[]) {
@@ -46,7 +52,7 @@ async function callGemini(key: string, messages: Msg[]) {
   );
   if (!res.ok) throw new Error(`gemini ${res.status}`);
   const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  return json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim() ?? "";
+  return clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "");
 }
 
 export const chatReply = createServerFn({ method: "POST" })
