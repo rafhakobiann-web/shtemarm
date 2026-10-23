@@ -19,10 +19,10 @@ export const Route = createFileRoute("/math/play")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
-type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean };
+type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean; prompt?: string; options?: string[] };
 
 const PAGE_W = 467.76;
 const TEST_SIZE = 20;
@@ -32,9 +32,24 @@ function useIndex() {
   return useQuery({
     queryKey: ["math-books-index"],
     queryFn: async (): Promise<Index> => {
-      const r = await fetch("/data/math-books-index.json");
+      const [r, textR] = await Promise.all([fetch("/data/math-books-index.json"), fetch("/data/math-text-questions.json")]);
       if (!r.ok) throw new Error("load failed");
-      return r.json();
+      const index: Index = await r.json();
+      if (textR.ok) {
+        const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+        for (const [bookId, sections] of Object.entries(extra)) {
+          for (const [sectionId, tasks] of Object.entries(sections)) {
+            const [chapter, section] = sectionId.split("-").map(Number);
+            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
+            if (!target) continue;
+            for (const [taskId, questions] of Object.entries(tasks)) {
+              const task = target.tasks.find((t) => t.task === Number(taskId));
+              if (task) task.questions = questions;
+            }
+          }
+        }
+      }
+      return index;
     },
     staleTime: Infinity,
   });
@@ -70,6 +85,8 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
         segments: t.sub_segments?.[i] ?? t.segments,
         answer: t.answers?.[i],
         open,
+        prompt: t.questions?.[i]?.prompt,
+        options: t.questions?.[i]?.options,
       });
     }
   }
@@ -130,9 +147,9 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
     );
   }
 
-  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", "1)"], ["2", "2)"], ["3", "3)"], ["4", "4)"]];
+  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options?.[0] ?? "1)"], ["2", item.options?.[1] ?? "2)"], ["3", item.options?.[2] ?? "3)"], ["4", item.options?.[3] ?? "4)"]];
   return (
-    <div className="space-y-3">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
         const isCorrectBtn = answered && correct === c;
         const isWrongBtn = value === c && correct !== c;
@@ -142,7 +159,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
             type="button"
             disabled={locked || answered}
             onClick={() => onAnswer(c)}
-            className={`flex w-full items-center gap-4 rounded-2xl border-2 bg-card px-5 py-4 text-left text-base transition ${
+            className={`flex min-w-0 w-full items-start gap-2 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition sm:items-center sm:gap-3 sm:px-4 sm:py-4 sm:text-base ${
               isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
               : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
               : "border-stone-300 hover:bg-muted"}`}
@@ -221,9 +238,9 @@ function PlayPage() {
         <MathTools />
         <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
         {round.map((it, idx) => (
-          <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
+          <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            <Crop bookId={it.bookId} segments={it.segments} />
+            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
@@ -299,9 +316,9 @@ function PlayPage() {
             </p>
           </div>
 
-          <Crop bookId={it.bookId} segments={it.segments} />
+          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
 
-          <div className="space-y-4 rounded-3xl border bg-card p-5">
+          <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
