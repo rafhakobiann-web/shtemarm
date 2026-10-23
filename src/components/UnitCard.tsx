@@ -156,9 +156,16 @@ function Explain(props: { instruction: string; passage: string; question: string
 }
 
 /* ---------- scoring ---------- */
+/** Numeric answers compare ignoring spaces, so "1 200" and "1200" count the same. */
+export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
+
 export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   if (u.kind === "mc") {
     const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
+    return { got: per.filter(Boolean).length, total: per.length, per };
+  }
+  if (u.kind === "num") {
+    const per = u.questions.map((q) => normNum(a?.mc?.[q.n]) === normNum(q.answer));
     return { got: per.filter(Boolean).length, total: per.length, per };
   }
   if (u.kind === "match") {
@@ -176,6 +183,7 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
 export function isAnswered(u: Unit, a: UnitAnswer | undefined, qn?: string) {
   if (!a) return false;
   if (u.kind === "mc") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
+  if (u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
   if (u.kind === "match") return Object.keys(u.answer).every((k) => a.match?.[k]);
   if (u.kind === "seq") return (a.nums ?? []).filter((x) => x != null).length === u.answer.length;
   return (a.nums ?? []).length > 0;
@@ -249,6 +257,53 @@ export function UnitCard(props: {
     );
   };
 
+  const numBlock = (q: { n: string; stem: string; answer: string }) => {
+    const show = revealed(q.n);
+    const val = a?.mc?.[q.n] ?? "";
+    const ok = normNum(val) === normNum(q.answer);
+    return (
+      <div key={q.n} className={cn("rounded-xl border bg-card p-4", show && !ok && "animate-shake")}>
+        <div className="mb-3 flex gap-2">
+          <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
+            {q.n}
+          </span>
+          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem} /></p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            type="text"
+            inputMode="numeric"
+            disabled={show}
+            value={val}
+            aria-label={`Պատասխան ${q.n}`}
+            onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [q.n]: e.target.value } })}
+            className={cn(
+              "h-11 w-40 rounded-lg border-2 bg-background px-3 font-display text-lg font-bold focus:outline-none",
+              !show && "border-border focus:border-primary",
+              show && ok && "border-success bg-success/10",
+              show && !ok && "border-destructive bg-destructive/10",
+            )}
+          />
+          {show && <span className="text-sm font-semibold">Ճիշտ պատասխանը՝ {q.answer}</span>}
+        </div>
+        {props.onCheck && !show && val.trim() && (
+          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+            Ստուգել →
+          </button>
+        )}
+        {show && (
+          <Explain
+            instruction={props.instructionEn ?? props.instruction}
+            passage={u.passage}
+            question={q.stem}
+            correct={q.answer}
+            chosen={val.trim() ? val : null}
+          />
+        )}
+      </div>
+    );
+  };
+
   const show = revealed("unit");
   const res = scoreUnit(u, a);
   const seqBlock =
@@ -286,7 +341,7 @@ export function UnitCard(props: {
   const correctText =
     u.kind === "match"
       ? Object.entries(u.answer).map(([k, v]) => `${k}${v}`).join(" ")
-      : u.kind !== "mc"
+      : u.kind === "set" || u.kind === "seq"
         ? u.answer.join(", ")
         : "";
   const chosenText =
@@ -302,10 +357,11 @@ export function UnitCard(props: {
         {props.instructionEn && <p className="text-xs italic text-muted-foreground"><EnglishText text={props.instructionEn} /></p>}
       </div>
       {(() => {
-        const split = !!u.passage.trim() && (u.kind === "mc" || u.kind === "seq");
+        const split = !!u.passage.trim() && (u.kind === "mc" || u.kind === "num" || u.kind === "seq");
         const qs = (
           <div className="min-w-0 space-y-4">
             {u.kind === "mc" && <div className="space-y-3">{u.questions.map(mcBlock)}</div>}
+            {u.kind === "num" && <div className="space-y-3">{u.questions.map(numBlock)}</div>}
             {u.kind === "seq" && seqBlock}
           </div>
         );
@@ -364,12 +420,12 @@ export function UnitCard(props: {
         </div>
       )}
 
-      {u.kind !== "mc" && props.onCheck && !show && isAnswered(u, a) && (
+      {u.kind !== "mc" && u.kind !== "num" && props.onCheck && !show && isAnswered(u, a) && (
         <button type="button" onClick={() => props.onCheck?.("unit")} className="text-sm font-bold text-primary hover:underline">
           Ստուգել →
         </button>
       )}
-      {u.kind !== "mc" && show && (
+      {u.kind !== "mc" && u.kind !== "num" && show && (
         <div className={cn("rounded-xl p-4", res.got ? "bg-success/10" : "bg-destructive/10")}>
           <p className="font-bold">{res.got ? "Ճիշտ է 🎉" : "Սխալ է"}</p>
           <p className="text-sm">

@@ -2,7 +2,8 @@ export type MCQuestion = { n: string; stem: string; options: Record<string, stri
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
-  | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> };
+  | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
+  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string }[] };
 export type Section = { n: number; title?: string; instr_en: string; instr_hy: string; units: Unit[] };
 export const secNum = (n: number) => (n > 70 ? 7 : n);
 export const secTitle = (s: { n: number; title?: string }) => (s.title ? `Բաժին ${s.title}` : `Բաժին ${s.n}`);
@@ -21,8 +22,20 @@ export const HISTORY_BOOKS = [
   { id: 23, title: "Հայոց պատմություն", sub: "Գիրք երրորդ", cover: "/covers/hist-3.webp" },
 ] as const;
 
-/** Every book page, English and history. */
-export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [...BOOKS, ...HISTORY_BOOKS];
+/** Biology books. Ids 31–34 map to public/data/bio-book{1..4}.json. Only unlocked books are playable. */
+export const BIO_BOOKS = [
+  { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.webp", locked: false },
+  { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.webp", locked: true },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս երրորդ", cover: "/covers/bio-3.webp", locked: true },
+  { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.webp", locked: true },
+] as const;
+
+/** Every playable book page, English, history and biology. */
+export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [
+  ...BOOKS,
+  ...HISTORY_BOOKS,
+  ...BIO_BOOKS.filter((b) => !b.locked),
+];
 
 const cache = new Map<number, Promise<Book>>();
 /** id 0 = all books merged section-by-section */
@@ -44,7 +57,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id > 20 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id > 30 ? `/data/bio-book${id - 30}.json` : id > 20 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then((r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
@@ -61,7 +74,7 @@ export function loadBook(id: number): Promise<Book> {
 }
 
 export function unitPoints(u: Unit) {
-  return u.kind === "mc" ? u.questions.length : 1;
+  return u.kind === "mc" || u.kind === "num" ? u.questions.length : 1;
 }
 
 export const KIND_HY: Record<Unit["kind"], string> = {
@@ -69,6 +82,7 @@ export const KIND_HY: Record<Unit["kind"], string> = {
   set: "Ընտրել ճիշտ համարները",
   seq: "Տեղադրել համարները ըստ բացթողումների",
   match: "Համապատասխանեցնել",
+  num: "Գրեք պատասխանի թիվը",
 };
 
 export function shuffle<T>(a: T[]): T[] {

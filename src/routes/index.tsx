@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
 import { z } from "zod";
-import { BOOKS, HISTORY_BOOKS } from "@/lib/books";
+import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 
 const SUBJECTS = ["english", "math", "history"] as const;
 
@@ -261,7 +261,18 @@ function Index() {
           <ComingSoon title="Հայոց լեզու" />
         </SubjectRow>
         <SubjectRow title="Կենսաբանություն">
-          <ComingSoon title="Կենսաբանություն" />
+          {BIO_BOOKS.map((b) =>
+            b.locked ? (
+              <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
+                <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+                <p className="px-4 pb-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">Շուտով</p>
+              </div>
+            ) : (
+              <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
+                <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              </Link>
+            ),
+          )}
         </SubjectRow>
       </section>
 

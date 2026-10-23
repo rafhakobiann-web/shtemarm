@@ -44,7 +44,7 @@ export function AppHeader() {
               <DropdownMenuItem asChild><Link to="/" search={{ subject: "english" }}>Անգլերեն</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link to="/" search={{ subject: "math" }}>Մաթեմատիկա</Link></DropdownMenuItem>
               <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
-              <DropdownMenuItem disabled>Կենսաբանություն <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to="/book/$bookId" params={{ bookId: "31" }}>Կենսաբանություն</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link to="/" search={{ subject: "history" }}>Հայոց պատմություն</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
