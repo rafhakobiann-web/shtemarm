@@ -53,12 +53,13 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
   const book = index.books[bookId];
   const sec = book?.sections.find((s) => s.chapter === chapter && s.section === section);
   if (!sec) return { title: "", items: [] as Item[] };
-  // A section is typed-answer (open) if any of its answers is not a choice/true-false label.
-  // Decided per section, not per answer: an open answer of "2" must not be shown as option 2).
-  const open = isOpenSection(sec.tasks);
+  // Determine answer format per task, not per section: sections may contain both
+  // multiple-choice tasks and typed-answer tasks. A numeric typed answer such as "2"
+  // must remain typed input when another sub-answer in that same task is numeric.
   const items: Item[] = [];
   for (const t of sec.tasks) {
     const subs = t.answers ? t.answers.length : t.sub_count;
+    const open = isOpenSection([t]);
     for (let i = 0; i < subs; i++) {
       items.push({
         id: `${bookId}:${chapter}:${section}:${t.task}:${i + 1}`,
