@@ -55,7 +55,7 @@ export function MathExplain(props: {
       const r = await fn({
         data: { item: props.item, kind: props.kind, task: props.task, correct: props.correct, chosen: props.chosen, pages },
       });
-      setText(r.text);
+      setText(r.error ? tx(r.text) : r.text);
       setFailed(r.error);
     } catch {
       setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));

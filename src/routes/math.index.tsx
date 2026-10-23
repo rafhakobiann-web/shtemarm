@@ -315,7 +315,7 @@ function AnswerRow({
           bookId={item.book}
           pages={taskPages(item.segments)}
           kind={item.kind === "tf" ? "tf" : item.kind === "open" ? "open" : "choice"}
-          task={`Առաջադրանք ${item.task}, հարց ${item.sub}`}
+          task={tx("Առաջադրանք {task}, հարց {sub}", { task: item.task, sub: item.sub })}
           correct={item.answer}
           chosen={value ?? null}
         />

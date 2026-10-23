@@ -312,7 +312,7 @@ function PlayPage() {
                 bookId={it.bookId}
                 pages={taskPages(it.segments)}
                 kind={it.open ? "open" : it.answer === "T" || it.answer === "F" ? "tf" : "choice"}
-                task={`Առաջադրանք ${it.task}, հարց ${it.sub}`}
+                task={tx("Առաջադրանք {task}, հարց {sub}", { task: it.task, sub: it.sub })}
                 correct={it.answer ?? ""}
                 chosen={current}
               />
