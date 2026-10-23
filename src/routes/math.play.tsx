@@ -19,7 +19,7 @@ export const Route = createFileRoute("/math/play")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: { prompt: string; options: string[] }[] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
 type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean; prompt?: string; options?: string[] };
@@ -32,9 +32,24 @@ function useIndex() {
   return useQuery({
     queryKey: ["math-books-index"],
     queryFn: async (): Promise<Index> => {
-      const r = await fetch("/data/math-books-index.json");
+      const [r, textR] = await Promise.all([fetch("/data/math-books-index.json"), fetch("/data/math-text-questions.json")]);
       if (!r.ok) throw new Error("load failed");
-      return r.json();
+      const index: Index = await r.json();
+      if (textR.ok) {
+        const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+        for (const [bookId, sections] of Object.entries(extra)) {
+          for (const [sectionId, tasks] of Object.entries(sections)) {
+            const [chapter, section] = sectionId.split("-").map(Number);
+            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
+            if (!target) continue;
+            for (const [taskId, questions] of Object.entries(tasks)) {
+              const task = target.tasks.find((t) => t.task === Number(taskId));
+              if (task) task.questions = questions;
+            }
+          }
+        }
+      }
+      return index;
     },
     staleTime: Infinity,
   });
