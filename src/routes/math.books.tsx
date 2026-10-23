@@ -143,10 +143,10 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   return (
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      {!task.questions && !task.sub_segments && <TaskCrop book={bookId} segments={task.segments} />}
-      {task.questions && <p className="text-sm text-muted-foreground">{tx("Տեքստային տարբերակ · ստուգված ըստ գրքի առաջին էջի")}</p>}
+      {!task.questions && !task.sub_segments && <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս առաջադրանքի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
+      {task.questions && <p className="text-sm text-muted-foreground">{tx("Տեքստային տարբերակ")}</p>}
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i] ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : task.sub_segments?.[i] ? <TaskCrop book={bookId} segments={task.sub_segments[i]} /> : null}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i] ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : task.sub_segments?.[i] ? <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։")}</p> : null}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
