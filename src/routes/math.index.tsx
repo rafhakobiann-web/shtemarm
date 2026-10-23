@@ -231,20 +231,27 @@ function groupItems(items: Item[]) {
 }
 
 function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+  const tx = useTx();
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {segments.map((s, i) => {
         const h = s.y1 - s.y0;
         if (h <= 0) return null;
+        const src = `/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`;
         return (
-          <div key={i} className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
-            <img
-              src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`}
-              alt=""
-              decoding="async"
-              className="block w-full max-w-none"
-              style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
-            />
+          <div key={i} className="space-y-1">
+            <div className="relative w-full overflow-hidden rounded-xl border bg-white" style={{ aspectRatio: `${PAGE_W} / ${h}` }}>
+              <img
+                src={src}
+                alt=""
+                decoding="async"
+                className="block w-full max-w-none"
+                style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
+              />
+            </div>
+            <a href={src} target="_blank" rel="noreferrer" className="inline-flex text-xs font-medium text-blue-700 underline underline-offset-2">
+              {tx("Բացել ամբողջ էջը")} ↗
+            </a>
           </div>
         );
       })}
