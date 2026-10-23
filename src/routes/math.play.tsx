@@ -70,6 +70,8 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
         segments: t.sub_segments?.[i] ?? t.segments,
         answer: t.answers?.[i],
         open,
+        prompt: t.questions?.[i]?.prompt,
+        options: t.questions?.[i]?.options,
       });
     }
   }
@@ -223,7 +225,7 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            <Crop bookId={it.bookId} segments={it.segments} />
+            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
@@ -301,7 +303,7 @@ function PlayPage() {
 
           <Crop bookId={it.bookId} segments={it.segments} />
 
-          <div className="space-y-4 rounded-3xl border bg-card p-5">
+          <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
