@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Loader2, MessageSquare, Send, Music2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,19 +22,31 @@ export const Route = createFileRoute("/feedback")({
 
 function FeedbackPage() {
   const tx = useTx();
+  const [username, setUsername] = useState("");
+  const [signedIn, setSignedIn] = useState(false);
   const [message, setMessage] = useState("");
-  const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const send = async () => {
-    const text = message.trim();
-    if (!text || busy) return;
-    setBusy(true);
-    const { error } = await supabase.from("feedback").insert({
-      message: text.slice(0, 2000),
-      contact: contact.trim() ? contact.trim().slice(0, 200) : null,
+  // Signed-in users send with their account username; others type one.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const name = data.user?.user_metadata?.username as string | undefined;
+      if (name) {
+        setUsername(name);
+        setSignedIn(true);
+      }
     });
+  }, []);
+
+  const cleanName = username.trim().slice(0, 40);
+  const cleanMessage = message.trim();
+  const canSend = cleanName.length >= 2 && cleanMessage.length > 0 && !busy;
+
+  const send = async () => {
+    if (!canSend) return;
+    setBusy(true);
+    const { error } = await supabase.from("feedback").insert({ username: cleanName, message: cleanMessage.slice(0, 2000) });
     setBusy(false);
     if (error) {
       toast.error(tx("Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ գրեք TikTok-ում։"));
@@ -42,7 +54,6 @@ function FeedbackPage() {
     }
     setSent(true);
     setMessage("");
-    setContact("");
   };
 
   return (
@@ -64,6 +75,14 @@ function FeedbackPage() {
         </section>
       ) : (
         <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
+          <Input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            readOnly={signedIn}
+            placeholder={tx("Ձեր օգտանունը")}
+            maxLength={40}
+            aria-label={tx("Օգտանուն")}
+          />
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -72,14 +91,7 @@ function FeedbackPage() {
             maxLength={2000}
             aria-label={tx("Հաղորդագրություն")}
           />
-          <Input
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
-            placeholder={tx("Կապի տվյալներ (ոչ պարտադիր)՝ էլ. փոստ կամ TikTok անուն")}
-            maxLength={200}
-            aria-label={tx("Կապի տվյալներ")}
-          />
-          <Button variant="game" className="w-full" onClick={send} disabled={busy || !message.trim()}>
+          <Button variant="game" className="w-full" onClick={send} disabled={!canSend}>
             {busy ? <Loader2 className="animate-spin" /> : <Send />} {tx("Ուղարկել")}
           </Button>
         </section>

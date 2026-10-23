@@ -499,7 +499,7 @@ function MathPage() {
                               />
                               <span className="min-w-0 text-sm">
                                 <b>{tx("Բաժին {n}", { n: sec.section })}</b> <span className="text-muted-foreground">· {n}</span>
-                                <span className="block text-xs leading-snug text-muted-foreground">{sec.title}</span>
+                                <span className="block text-xs leading-snug text-muted-foreground">{tx(sec.title)}</span>
                               </span>
                             </label>
                           );

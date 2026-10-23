@@ -26,6 +26,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [mode, setMode] = useState<"in" | "up">("in");
+  const [username, setUsername] = useState("");
   const [user, setUser] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const nav = useNavigate();
@@ -63,7 +64,7 @@ function AuthPage() {
     const { data, error } =
       mode === "in"
         ? await supabase.auth.signInWithPassword({ email, password: pw })
-        : await supabase.auth.signUp({ email, password: pw, options: { emailRedirectTo: window.location.origin } });
+        : await supabase.auth.signUp({ email, password: pw, options: { emailRedirectTo: window.location.origin, data: { username: username.trim().slice(0, 40) } } });
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -93,6 +94,9 @@ function AuthPage() {
         {tx("Շարունակել Google-ով")}
       </Button>
       <form onSubmit={submit} className="space-y-3">
+        {mode === "up" && (
+          <Input required minLength={2} maxLength={40} placeholder={tx("Օգտանուն")} value={username} onChange={(e) => setUsername(e.target.value)} />
+        )}
         <Input type="email" required placeholder={tx("Էլ. փոստ")} value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input type="password" required minLength={6} placeholder={tx("Գաղտնաբառ")} value={pw} onChange={(e) => setPw(e.target.value)} />
         <Button variant="game" className="w-full" disabled={busy}>{mode === "in" ? tx("Մուտք") : tx("Գրանցվել")}</Button>

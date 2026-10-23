@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { solveProblem } from "@/lib/calc.functions";
 import { useKatex, RichText } from "@/components/MathText";
+import { ScientificCalc } from "@/components/ScientificCalc";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/calc")({
@@ -87,61 +89,72 @@ function CalcPage() {
         </p>
       </header>
 
-      <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
-        <Textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={tx("Օրինակ՝ լուծիր՝ $x^2 - 5x + 6 = 0$")}
-          rows={4}
-          maxLength={2000}
-          aria-label={tx("Խնդրի տեքստը")}
-        />
+      <Tabs defaultValue="sci">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="sci">{tx("Գիտական հաշվիչ")}</TabsTrigger>
+          <TabsTrigger value="ai">{tx("AI լուծիչ")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="sci" className="shadow-card glass rounded-3xl p-5 sm:p-6">
+          <ScientificCalc />
+        </TabsContent>
+        <TabsContent value="ai" className="space-y-6">
+        <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={tx("Օրինակ՝ լուծիր՝ $x^2 - 5x + 6 = 0$")}
+            rows={4}
+            maxLength={2000}
+            aria-label={tx("Խնդրի տեքստը")}
+          />
 
-        {img && (
-          <div className="relative w-fit">
-            <img src={img.preview} alt={tx("Խնդրի նկարը")} className="max-h-60 rounded-2xl border object-contain" />
-            <button
-              type="button"
-              onClick={() => setImg(null)}
-              aria-label={tx("Հեռացնել նկարը")}
-              className="absolute -right-2 -top-2 grid size-7 place-items-center rounded-full bg-destructive text-destructive-foreground shadow"
-            >
-              <X className="size-4" />
-            </button>
+          {img && (
+            <div className="relative w-fit">
+              <img src={img.preview} alt={tx("Խնդրի նկարը")} className="max-h-60 rounded-2xl border object-contain" />
+              <button
+                type="button"
+                onClick={() => setImg(null)}
+                aria-label={tx("Հեռացնել նկարը")}
+                className="absolute -right-2 -top-2 grid size-7 place-items-center rounded-full bg-destructive text-destructive-foreground shadow"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => cameraRef.current?.click()}>
+              <Camera /> {tx("Լուսանկարել")}
+            </Button>
+            <Button variant="outline" onClick={() => fileRef.current?.click()}>
+              <ImagePlus /> {tx("Ընտրել նկար")}
+            </Button>
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+            <Button variant="game" className="ml-auto" onClick={solve} disabled={busy || (!text.trim() && !img)}>
+              {busy ? <Loader2 className="animate-spin" /> : <Send />} {tx("Լուծել")}
+            </Button>
+          </div>
+        </section>
+
+        {busy && (
+          <div className="grid place-items-center py-10 text-muted-foreground">
+            <Loader2 className="animate-spin text-primary" />
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => cameraRef.current?.click()}>
-            <Camera /> {tx("Լուսանկարել")}
-          </Button>
-          <Button variant="outline" onClick={() => fileRef.current?.click()}>
-            <ImagePlus /> {tx("Ընտրել նկար")}
-          </Button>
-          <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-          <Button variant="game" className="ml-auto" onClick={solve} disabled={busy || (!text.trim() && !img)}>
-            {busy ? <Loader2 className="animate-spin" /> : <Send />} {tx("Լուծել")}
-          </Button>
-        </div>
-      </section>
-
-      {busy && (
-        <div className="grid place-items-center py-10 text-muted-foreground">
-          <Loader2 className="animate-spin text-primary" />
-        </div>
-      )}
-
-      {result && (
-        <section
-          className={`shadow-card rounded-3xl border p-5 sm:p-6 ${result.error ? "border-destructive/40 bg-card text-destructive" : "bg-card"}`}
-          aria-live="polite"
-        >
-          <div className="whitespace-pre-line text-[15px] leading-relaxed">
-            <RichText text={result.text} katex={katex} />
-          </div>
-        </section>
-      )}
+        {result && (
+          <section
+            className={`shadow-card rounded-3xl border p-5 sm:p-6 ${result.error ? "border-destructive/40 bg-card text-destructive" : "bg-card"}`}
+            aria-live="polite"
+          >
+            <div className="whitespace-pre-line text-[15px] leading-relaxed">
+              <RichText text={result.text} katex={katex} />
+            </div>
+          </section>
+        )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

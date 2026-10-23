@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 
@@ -237,6 +238,10 @@ function AboutSection() {
 function Index() {
   const tx = useTx();
   const { subject } = Route.useSearch();
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setName((data.user?.user_metadata?.username as string | undefined) ?? null));
+  }, []);
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
   if (subject === "history") return <HistorySubject />;
@@ -244,7 +249,13 @@ function Index() {
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
       <section className="space-y-8">
-        <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
+        <div className="space-y-2">
+          <p className="text-lg font-bold text-primary">
+            {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
+          </p>
+          <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
+          <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
+        </div>
 
         <SubjectRow title={tx("Անգլերեն")}>
           {BOOKS.map((b) => (
@@ -311,6 +322,16 @@ function Index() {
         </div>
       </section>
       <AboutSection />
+      <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
+        <div>
+          <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{tx("Սխալ գտե՞ր, ունե՞ս գաղափար։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground">{tx("Գրել մեզ")}</Link>
+          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold">{tx("Բացել հաշվիչը")}</Link>
+        </div>
+      </section>
     </div>
   );
 }

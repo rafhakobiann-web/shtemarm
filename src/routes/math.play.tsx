@@ -218,7 +218,7 @@ function PlayPage() {
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
         <MathTools />
-        <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {section.title}</p>
+        <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>

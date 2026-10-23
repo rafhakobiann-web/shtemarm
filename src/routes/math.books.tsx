@@ -348,7 +348,7 @@ function BooksPage() {
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{i + 1}</span>
                     <div className="min-w-0">
                       <h2 className="text-base font-bold">{tx("Բաժին {n}", { n: s.section })}</h2>
-                      <p className="text-sm leading-snug text-muted-foreground">{s.title}</p>
+                      <p className="text-sm leading-snug text-muted-foreground">{tx(s.title)}</p>
                     </div>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -394,7 +394,7 @@ function BooksPage() {
 
       {bookId && section && (
         <section className="space-y-4">
-          <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {section.title}</p>
+          <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {tx(section.title)}</p>
           {section.tasks.map((t) => (
             <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection(section.tasks)} />
           ))}
