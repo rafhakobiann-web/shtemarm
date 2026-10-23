@@ -147,7 +147,15 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
     );
   }
 
-  const choices = correct === "T" || correct === "F" ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options?.[0] ?? "1)"], ["2", item.options?.[1] ?? "2)"], ["3", item.options?.[2] ?? "3)"], ["4", item.options?.[3] ?? "4)"]];
+  const isTrueFalse = correct === "T" || correct === "F";
+  if (!isTrueFalse && (!item.options || item.options.length < 4)) {
+    return (
+      <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">
+        {tx("Այս հարցի պատասխանների տարբերակները դեռ մշակվում են։ Ընտրության կոճակները կհայտնվեն, երբ բոլոր տարբերակները մուտքագրվեն։")}
+      </p>
+    );
+  }
+  const choices = isTrueFalse ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]] : [["1", item.options![0]], ["2", item.options![1]], ["3", item.options![2]], ["4", item.options![3]]];
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
