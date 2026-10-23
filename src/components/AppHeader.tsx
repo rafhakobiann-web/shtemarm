@@ -1,19 +1,27 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, ChevronDown, BookOpen, Moon, Sun } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { initLang, setLang, useLang, useT, type Lang } from "@/lib/lang";
+
+const LANG_NAMES: Record<Lang, string> = { hy: "Հայերեն", en: "English" };
 
 export function AppHeader() {
   const p = useProgress();
+  const t = useT();
+  const lang = useLang();
   const [email, setEmail] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>("light");
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     setTheme(readTheme());
+    initLang();
   }, []);
   const setThemeMode = (next: Theme) => {
     setTheme(next);
@@ -25,6 +33,10 @@ export function AppHeader() {
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
     return () => data.subscription.unsubscribe();
   }, []);
+
+  const close = () => setOpen(false);
+  const item = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-muted";
+
   return (
     <header className="sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
@@ -32,50 +44,91 @@ export function AppHeader() {
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-display text-lg font-black text-accent-foreground">S</span>
           <span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span>
         </Link>
-        <div className="flex items-center gap-2 text-sm font-bold sm:gap-4">
-          <div className="flex items-center gap-1.5" title="Մութ ռեժիմ">
+        <div className="flex items-center gap-2 text-sm font-bold sm:gap-3">
+          <div className="flex items-center gap-1.5" title={t.darkMode}>
             <Sun className="size-4 text-sun" aria-hidden />
             <Switch
               checked={theme === "dark"}
               onCheckedChange={(v) => setThemeMode(v ? "dark" : "light")}
-              aria-label="Մութ ռեժիմ"
+              aria-label={t.darkMode}
             />
             <Moon className="size-4 text-muted-foreground" aria-hidden />
           </div>
-          <span className="flex items-center gap-1" title="Օրեր անընդմեջ">
+          <span className="flex items-center gap-1" title={t.streak}>
             <Flame className="size-4 text-destructive" />
             {p.streak}
           </span>
-          <span className="flex items-center gap-1" title="Միավորներ">
+          <span className="flex items-center gap-1" title={t.points}>
             <Star className="size-4 text-sun" />
             {p.xp}
-            <span className="hidden text-muted-foreground sm:inline">· Մակ. {level(p.xp)}</span>
+            <span className="hidden text-muted-foreground md:inline">· {t.level} {level(p.xp)}</span>
           </span>
-          <Link to="/auth" className="flex items-center gap-1 rounded-lg bg-secondary px-2.5 py-1.5 text-secondary-foreground">
-            <User className="size-4" />
-            <span className="hidden max-w-32 truncate sm:inline">{email ?? "Մուտք"}</span>
-          </Link>
+
+          <Sheet open={open} onOpenChange={setOpen}>
+            <Button variant="outline" size="icon" aria-label={t.openMenu} onClick={() => setOpen(true)}>
+              <Menu className="size-5" />
+            </Button>
+            <SheetContent side="right" className="flex w-[min(20rem,90vw)] flex-col gap-4 overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-display text-lg font-black">{t.menu}</SheetTitle>
+                <SheetDescription className="sr-only">{t.menu}</SheetDescription>
+              </SheetHeader>
+
+              <Link to="/auth" onClick={close} className={item}>
+                <User className="size-4" />
+                <span className="truncate">{email ?? t.account}</span>
+              </Link>
+
+              <div className="space-y-1">
+                <p className="px-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{t.subjects}</p>
+                <Link to="/" search={{ subject: "english" }} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{t.english}
+                </Link>
+                <Link to="/" search={{ subject: "math" }} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{t.math}
+                </Link>
+                <div className={`${item} cursor-not-allowed text-muted-foreground`} aria-disabled>
+                  <Lock className="size-4" />{t.armenianLang}
+                  <span className="ml-auto text-xs">{t.soon}</span>
+                </div>
+                <Link to="/book/$bookId" params={{ bookId: "31" }} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{t.biology}
+                </Link>
+                <Link to="/" search={{ subject: "history" }} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{t.history}
+                </Link>
+              </div>
+
+              <div className="space-y-1">
+                <Link to="/" hash="about" onClick={close} className={item}>
+                  <Info className="size-4" />{t.about}
+                </Link>
+                <Link to="/chat" onClick={close} className={item}>
+                  <MessageSquare className="size-4" />{t.chat}
+                </Link>
+              </div>
+
+              <div className="mt-auto space-y-2 border-t pt-4">
+                <p className="flex items-center gap-2 px-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  <Languages className="size-4" />{t.language}
+                </p>
+                <div className="grid grid-cols-2 gap-2" role="group" aria-label={t.language}>
+                  {(["hy", "en"] as const).map((l) => (
+                    <Button
+                      key={l}
+                      variant={lang === l ? "default" : "outline"}
+                      aria-pressed={lang === l}
+                      onClick={() => setLang(l)}
+                    >
+                      {LANG_NAMES[l]}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-      <nav aria-label="Գլխավոր մենյու" className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 pb-3 text-sm font-bold sm:px-6">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" aria-label="Ընտրել առարկան" className="gap-1">
-              <BookOpen /><span>Առարկաներ</span><ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-56">
-            <DropdownMenuLabel>Առարկաներ</DropdownMenuLabel>
-            <DropdownMenuItem asChild><Link to="/" search={{ subject: "english" }}>Անգլերեն</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link to="/" search={{ subject: "math" }}>Մաթեմատիկա</Link></DropdownMenuItem>
-            <DropdownMenuItem disabled>Հայոց լեզու <span className="ml-auto text-xs">Շուտով</span></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link to="/book/$bookId" params={{ bookId: "31" }}>Կենսաբանություն</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link to="/" search={{ subject: "history" }}>Հայոց պատմություն</Link></DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Link to="/" hash="about" className="shrink-0 rounded-lg px-3 py-1.5 hover:bg-muted">Մեր մասին</Link>
-        <Link to="/chat" className="shrink-0 rounded-lg px-3 py-1.5 hover:bg-muted">Չատբոտ</Link>
-      </nav>
     </header>
   );
 }
