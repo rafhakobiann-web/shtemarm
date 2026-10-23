@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Loader2, Timer, Trophy, Shuffle, ListChecks } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { buildCustom, buildExam, secTitle, shuffle, unitPoints, type Unit } from "@/lib/books";
+import { buildCustom, buildExam, shuffle, unitPoints, type Unit } from "@/lib/books";
 import { recordAnswer, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
 import { LoadError } from "@/components/LoadError";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/test/$bookId")({
   validateSearch: z.object({
@@ -35,7 +36,16 @@ const isHistoryId = (id: string) => Number(id) > 20;
 const bookName = (id: string) =>
   id === "all" ? "Բոլոր շտեմարանները" : isHistoryId(id) ? `Հայոց պատմություն · Գիրք ${Number(id) - 20}` : `Շտեմարան ${id}`;
 
+type Tx = ReturnType<typeof useTx>;
+/** On-screen workbook name (bookName above is only for head(), which cannot use hooks). */
+const bookLabel = (tx: Tx, id: string) =>
+  id === "all" ? tx("Բոլոր շտեմարանները") : isHistoryId(id) ? tx("Հայոց պատմություն · Գիրք {n}", { n: Number(id) - 20 }) : tx("Շտեմարան {n}", { n: id });
+/** Section name, built the same way as secTitle in lib/books, but translated. */
+const sectionName = (tx: Tx, s: { n: number; title?: string; label?: string }) =>
+  s.label ?? (s.title ? tx("Բաժին {n}", { n: s.title }) : tx("Բաժին {n}", { n: s.n }));
+
 function TestPage() {
+  const tx = useTx();
   const { bookId } = Route.useParams();
   const { mode, section, style: initStyle } = Route.useSearch();
   const { data: book, error, refetch } = useBook(bookId === "all" ? 0 : Number(bookId));
@@ -48,7 +58,7 @@ function TestPage() {
   return (
     <Setup
       bookId={bookId}
-      sections={book.sections.map((s) => ({ n: s.n, title: secTitle(s), label: s.instr_hy, count: s.units.reduce((a, u) => a + unitPoints(u), 0) }))}
+      sections={book.sections.map((s) => ({ n: s.n, title: sectionName(tx, s), label: s.instr_hy, labelEn: s.instr_en, count: s.units.reduce((a, u) => a + unitPoints(u), 0) }))}
       initial={mode}
       section={section}
       style={style}
@@ -59,7 +69,7 @@ function TestPage() {
           setKind(k);
           setItems(selected);
         } catch (error) {
-          toast.error(error instanceof Error ? error.message : "Չհաջողվեց կազմել թեստը։");
+          toast.error(error instanceof Error ? error.message : tx("Չհաջողվեց կազմել թեստը։"));
         }
       }}
     />
@@ -68,13 +78,15 @@ function TestPage() {
 
 function Setup(p: {
   bookId: string;
-  sections: { n: number; title: string; label: string; count: number }[];
+  sections: { n: number; title: string; label: string; labelEn: string; count: number }[];
   initial: "exam" | "custom";
   section: number | undefined;
   style: Style;
   onStyle: (s: Style) => void;
   onStart: (k: "exam" | "custom", secs: number[], count: number) => void;
 }) {
+  const tx = useTx();
+  const lang = useLang();
   const isHistory = isHistoryId(p.bookId);
   const [tab, setTab] = useState<"exam" | "custom" | "random">(isHistory && p.initial === "exam" ? "custom" : p.initial);
   const [secs, setSecs] = useState<number[]>(p.section ? [p.section] : [1, 2, 3]);
@@ -83,9 +95,9 @@ function Setup(p: {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <Link to={p.bookId === "all" ? "/" : "/book/$bookId"} params={{ bookId: p.bookId }} className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> {bookName(p.bookId)}
+        <ArrowLeft className="size-4" /> {bookLabel(tx, p.bookId)}
       </Link>
-      <h1 className="text-2xl font-black sm:text-3xl">Ընտրիր թեստի տեսակը</h1>
+      <h1 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր թեստի տեսակը")}</h1>
       <div className={cn("grid gap-3", isHistory ? "sm:grid-cols-2" : "sm:grid-cols-3")}>
         {([
           ...(isHistory ? [] : [["exam", <Trophy key="t" />, "Քննություն", "80 հարց, իրական կառուցվածք"] as const]),
@@ -99,8 +111,8 @@ function Setup(p: {
             className={cn("flex flex-col items-start gap-1 rounded-2xl border-2 bg-card p-4 text-left", tab === k ? "border-primary" : "border-border hover:border-primary/40")}
           >
             <span className="text-primary">{icon}</span>
-            <span className="font-bold">{t}</span>
-            <span className="text-xs text-muted-foreground">{d}</span>
+            <span className="font-bold">{tx(t)}</span>
+            <span className="text-xs text-muted-foreground">{tx(d)}</span>
           </button>
         ))}
       </div>
@@ -108,8 +120,8 @@ function Setup(p: {
       <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5 sm:p-6">
         {tab === "exam" && (
           <div className="space-y-2 text-sm leading-relaxed">
-            <p>Քննությունը կազմված է 80 առաջադրանքից՝ շտեմարանի 13 բաժինների հերթականությամբ, ինչպես միասնական քննության թեստում։</p>
-            <p className="text-muted-foreground">Ժամանակը՝ 3 ժամ։ Պատասխաններն ու բացատրությունները կերևան ավարտելուց հետո։</p>
+            <p>{tx("Քննությունը կազմված է 80 առաջադրանքից՝ շտեմարանի 13 բաժինների հերթականությամբ, ինչպես միասնական քննության թեստում։")}</p>
+            <p className="text-muted-foreground">{tx("Ժամանակը՝ 3 ժամ։ Պատասխաններն ու բացատրությունները կերևան ավարտելուց հետո։")}</p>
           </div>
         )}
         {tab === "custom" && (
@@ -124,7 +136,7 @@ function Setup(p: {
                 />
                 <span className="min-w-0 text-sm">
                   <b>{s.title}</b> <span className="text-muted-foreground">· {s.count}</span>
-                  <span className="block text-xs leading-snug text-muted-foreground">{s.label}</span>
+                  <span className="block text-xs leading-snug text-muted-foreground">{(lang === "en" && s.labelEn) || s.label}</span>
                 </span>
               </label>
             ))}
@@ -132,31 +144,31 @@ function Setup(p: {
         )}
         {tab === "random" && (
           <div className="space-y-3">
-            <p className="text-sm font-semibold">Բաժինների քանակը՝ {randomN}</p>
+            <p className="text-sm font-semibold">{tx("Բաժինների քանակը՝ {n}", { n: randomN })}</p>
             <Slider min={1} max={p.sections.length} step={1} value={[randomN]} onValueChange={(v) => setRandomN(v[0] ?? 3)} />
           </div>
         )}
         {tab !== "exam" && (
           <div className="space-y-3">
-            <p className="text-sm font-semibold">Հարցերի քանակը՝ {count}</p>
+            <p className="text-sm font-semibold">{tx("Հարցերի քանակը՝ {n}", { n: count })}</p>
             <Slider min={5} max={120} step={5} value={[count]} onValueChange={(v) => setCount(v[0] ?? 20)} />
           </div>
         )}
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Ռեժիմ</p>
+          <p className="text-sm font-semibold">{tx("Ռեժիմ")}</p>
           <div className="grid grid-cols-2 gap-2">
             {([
-              ["game", "🎮 Խաղային", "Մեկ առ մեկ, միավորներով"],
-              ["classic", "📄 Դասական", "Բոլորը միասին, ինչպես քննությունում"],
-            ] as const).map(([k, t, d]) => (
+              ["game", "🎮", "Խաղային", "Մեկ առ մեկ, միավորներով"],
+              ["classic", "📄", "Դասական", "Բոլորը միասին, ինչպես քննությունում"],
+            ] as const).map(([k, icon, t, d]) => (
               <button
                 key={k}
                 type="button"
                 onClick={() => p.onStyle(k)}
                 className={cn("rounded-xl border-2 p-3 text-left", p.style === k ? "border-primary bg-secondary" : "border-border hover:border-primary/40")}
               >
-                <span className="block font-bold">{t}</span>
-                <span className="text-xs text-muted-foreground">{d}</span>
+                <span className="block font-bold">{icon} {tx(t)}</span>
+                <span className="text-xs text-muted-foreground">{tx(d)}</span>
               </button>
             ))}
           </div>
@@ -172,7 +184,7 @@ function Setup(p: {
             else p.onStart("custom", shuffle(p.sections.map((s) => s.n)).slice(0, randomN), count);
           }}
         >
-          Սկսել
+          {tx("Սկսել")}
         </Button>
       </div>
     </div>
@@ -180,6 +192,7 @@ function Setup(p: {
 }
 
 function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: number; sections: { n: number; title?: string; instr_hy: string; instr_en: string }[] }; items: Item[]; kind: "exam" | "custom"; bookId: string; style: Style; onExit: () => void }) {
+  const tx = useTx();
   const [cur, setCur] = useState(0);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [combo, setCombo] = useState(0);
@@ -218,17 +231,17 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
     <div className="mx-auto max-w-3xl space-y-5 lg:max-w-6xl [--sticky-top:9.5rem]">
       <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border bg-card/95 p-3 backdrop-blur">
         <div className="min-w-0">
-          <p className="truncate font-display text-sm font-bold">{kind === "exam" ? "Քննություն" : "Թեստ"} · {bookName(bookId)}</p>
+          <p className="truncate font-display text-sm font-bold">{kind === "exam" ? tx("Քննություն") : tx("Թեստ")} · {bookLabel(tx, bookId)}</p>
           <p className="text-xs text-muted-foreground">
-            {finished ? `Արդյունք՝ ${score} / ${total}` : `${Object.keys(answers).length} / ${items.length} առաջադրանք`}
+            {finished ? tx("Արդյունք՝ {score} / {total}", { score, total }) : tx("{done} / {total} առաջադրանք", { done: Object.keys(answers).length, total: items.length })}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1 font-mono text-sm"><Timer className="size-4" />{time}</span>
           {finished ? (
-            <Button variant="outline" size="sm" onClick={onExit}>Նոր թեստ</Button>
+            <Button variant="outline" size="sm" onClick={onExit}>{tx("Նոր թեստ")}</Button>
           ) : (
-            <Button variant="success" size="sm" onClick={finish}>Ավարտել</Button>
+            <Button variant="success" size="sm" onClick={finish}>{tx("Ավարտել")}</Button>
           )}
         </div>
       </div>
@@ -237,7 +250,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
         <div className="bg-hero animate-pop rounded-3xl p-6 text-center text-primary-foreground">
           <Trophy className="mx-auto size-10 text-sun" />
           <p className="mt-2 font-display text-4xl font-black">{score} / {total}</p>
-          <p className="opacity-90">{Math.round((score / Math.max(1, total)) * 100)}% · Ստորև տեսեք ճիշտ պատասխաններն ու բացատրությունները</p>
+          <p className="opacity-90">{Math.round((score / Math.max(1, total)) * 100)}% · {tx("Ստորև տեսեք ճիշտ պատասխաններն ու բացատրությունները")}</p>
         </div>
       )}
 
@@ -268,7 +281,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
             revealed={() => finished || isChecked}
             header={
               <p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                {secTitle(sec)} · {from === qNo ? `Հարց ${from}` : `Հարցեր ${from}–${qNo}`}
+                {sectionName(tx, sec)} · {from === qNo ? tx("Հարց {n}", { n: from }) : tx("Հարցեր {from}–{to}", { from, to: qNo })}
               </p>
             }
           />
@@ -284,14 +297,14 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
                     setCombo((c) => (r.got === r.total ? c + 1 : 0));
                   }}
                 >
-                  Ստուգել
+                  {tx("Ստուգել")}
                 </Button>
               ) : idx < items.length - 1 ? (
                 <Button variant="game" size="lg" onClick={() => { setCur(idx + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-                  Հաջորդը →
+                  {tx("Հաջորդը")} →
                 </Button>
               ) : (
-                <Button variant="success" size="lg" onClick={finish}>Ավարտել</Button>
+                <Button variant="success" size="lg" onClick={finish}>{tx("Ավարտել")}</Button>
               )}
             </div>
           )}
@@ -299,7 +312,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
         );
       })}
       {!finished && style === "classic" && (
-        <Button variant="game" size="lg" className="w-full" onClick={finish}>Ավարտել և տեսնել արդյունքը</Button>
+        <Button variant="game" size="lg" className="w-full" onClick={finish}>{tx("Ավարտել և տեսնել արդյունքը")}</Button>
       )}
     </div>
   );

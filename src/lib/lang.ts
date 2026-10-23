@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { DICT } from "@/i18n";
 
 export type Lang = "hy" | "en";
 
@@ -89,4 +90,21 @@ export const MENU_TEXT = {
 
 export function useT() {
   return MENU_TEXT[useLang()];
+}
+
+/**
+ * Translate one UI string. The Armenian text is the key; in English mode it is
+ * looked up in DICT and falls back to the Armenian when no entry exists.
+ * Placeholders like {n} are filled from vars in both languages.
+ */
+export function translate(lang: Lang, hy: string, vars?: Record<string, string | number>): string {
+  const base = lang === "en" ? (DICT[hy] ?? hy) : hy;
+  if (!vars) return base;
+  return base.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+}
+
+/** Hook: returns tx(hyText, vars?) bound to the current language. */
+export function useTx() {
+  const lang = useLang();
+  return (hy: string, vars?: Record<string, string | number>) => translate(lang, hy, vars);
 }

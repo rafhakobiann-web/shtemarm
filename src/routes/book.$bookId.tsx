@@ -5,6 +5,7 @@ import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/book/$bookId")({
   beforeLoad: ({ params }) => {
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/book/$bookId")({
 });
 
 function BookPage() {
+  const tx = useTx();
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
@@ -31,7 +33,7 @@ function BookPage() {
   return (
     <div className="space-y-8">
       <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> Բոլոր գրքերը
+        <ArrowLeft className="size-4" /> {tx("Բոլոր գրքերը")}
       </Link>
       <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
         <img src={meta.cover} alt={meta.title} className="shadow-card hidden aspect-[3/4] w-full rounded-xl object-cover md:block" />
@@ -41,16 +43,16 @@ function BookPage() {
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
               {id > 20 ? (
-                <Link to="/history"><Trophy /> Քննություն</Link>
+                <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
                 <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
-                  <Trophy /> Քննություն
+                  <Trophy /> {tx("Քննություն")}
                 </Link>
               )}
             </Button>
             <Button variant="sun" size="lg" asChild>
               <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
-                <ClipboardCheck /> Կազմել թեստ
+                <ClipboardCheck /> {tx("Կազմել թեստ")}
               </Link>
             </Button>
           </div>
@@ -80,12 +82,12 @@ function BookPage() {
                   <div className="h-full bg-success" style={{ width: `${(right / Math.max(1, ids.length)) * 100}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {done}/{ids.length} արված · {right} ճիշտ
+                  {tx("{done}/{total} արված · {right} ճիշտ", { done, total: ids.length, right })}
                 </p>
                 <div className="mt-auto grid grid-cols-3 gap-2">
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
-                      <Gamepad2 /> Խաղալ
+                      <Gamepad2 /> {tx("Խաղալ")}
                     </Link>
                   </Button>
                 </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Calculator, Eraser, Pencil, Undo2, X } from "lucide-react";
+import { useTx } from "@/lib/lang";
 
 /* ---------- safe arithmetic evaluator (no eval) ---------- */
 function evaluate(src: string): number {
@@ -84,6 +85,7 @@ function evaluate(src: string): number {
 const KEYS = ["7", "8", "9", "÷", "4", "5", "6", "×", "1", "2", "3", "−", "0", ".", "(", ")", "+", "^", "√", "π"];
 
 export function CalculatorPanel() {
+  const tx = useTx();
   const [expr, setExpr] = useState("");
   const [result, setResult] = useState("");
   const [error, setError] = useState(false);
@@ -113,7 +115,7 @@ export function CalculatorPanel() {
     <div className="space-y-3">
       <div className="min-h-16 break-all rounded-2xl bg-white px-4 py-3 text-right font-mono text-lg">
         <div className="text-sm text-muted-foreground">{expr || "\u00a0"}</div>
-        <div className={`text-2xl font-black ${error ? "text-red-600" : ""}`}>{error ? "Սխալ" : result || "0"}</div>
+        <div className={`text-2xl font-black ${error ? "text-red-600" : ""}`}>{error ? tx("Սխալ") : result || "0"}</div>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {KEYS.map((k) => (
@@ -131,6 +133,7 @@ export function CalculatorPanel() {
 
 type Stroke = ImageData;
 export function DrawingPad() {
+  const tx = useTx();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [color, setColor] = useState("#1d4ed8");
   const [eraser, setEraser] = useState(false);
@@ -206,17 +209,17 @@ export function DrawingPad() {
           <button
             key={c}
             type="button"
-            aria-label="Գույն"
+            aria-label={tx("Գույն")}
             onClick={() => { setColor(c); setEraser(false); }}
             className={`size-8 rounded-full border-2 ${color === c && !eraser ? "border-stone-900" : "border-white shadow"}`}
             style={{ background: c }}
           />
         ))}
         <button type="button" onClick={() => setEraser((v) => !v)} className={`inline-flex h-8 items-center gap-1 rounded-lg px-2 text-sm ${eraser ? "bg-stone-800 text-white" : "bg-stone-100"}`}>
-          <Eraser className="size-4" /> Ջնջել
+          <Eraser className="size-4" /> {tx("Ջնջել")}
         </button>
-        <button type="button" onClick={undo} className="inline-flex h-8 items-center gap-1 rounded-lg bg-stone-100 px-2 text-sm"><Undo2 className="size-4" /> Հետ</button>
-        <button type="button" onClick={clear} className="inline-flex h-8 items-center gap-1 rounded-lg bg-red-50 px-2 text-sm text-red-700"><X className="size-4" /> Մաքրել</button>
+        <button type="button" onClick={undo} className="inline-flex h-8 items-center gap-1 rounded-lg bg-stone-100 px-2 text-sm"><Undo2 className="size-4" /> {tx("Հետ")}</button>
+        <button type="button" onClick={clear} className="inline-flex h-8 items-center gap-1 rounded-lg bg-red-50 px-2 text-sm text-red-700"><X className="size-4" /> {tx("Մաքրել")}</button>
       </div>
       <canvas
         ref={canvasRef}
@@ -232,15 +235,16 @@ export function DrawingPad() {
 
 /** Toolbar shown on math pages: opens a calculator or a drawing board. */
 export function MathTools() {
+  const tx = useTx();
   const [open, setOpen] = useState<"calc" | "draw" | null>(null);
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
         <button type="button" onClick={() => setOpen(open === "calc" ? null : "calc")} className={`inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold ${open === "calc" ? "bg-blue-700 text-white" : "border bg-card"}`}>
-          <Calculator className="size-4" /> Հաշվիչ
+          <Calculator className="size-4" /> {tx("Հաշվիչ")}
         </button>
         <button type="button" onClick={() => setOpen(open === "draw" ? null : "draw")} className={`inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold ${open === "draw" ? "bg-blue-700 text-white" : "border bg-card"}`}>
-          <Pencil className="size-4" /> Գրատախտակ
+          <Pencil className="size-4" /> {tx("Գրատախտակ")}
         </button>
       </div>
       {open === "calc" && <div className="rounded-3xl border bg-card p-4 shadow-sm"><CalculatorPanel /></div>}

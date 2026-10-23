@@ -3,6 +3,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { explainMathAnswer } from "@/lib/math-explain.functions";
 import { Button } from "@/components/ui/button";
+import { useTx } from "@/lib/lang";
 
 type Segment = { page: number };
 
@@ -41,6 +42,7 @@ export function MathExplain(props: {
   correct: string;
   chosen: string | null;
 }) {
+  const tx = useTx();
   const fn = useServerFn(explainMathAnswer);
   const [text, setText] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -56,7 +58,7 @@ export function MathExplain(props: {
       setText(r.text);
       setFailed(r.error);
     } catch {
-      setText("Չհաջողվեց ստանալ բացատրությունը։");
+      setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
       setFailed(true);
     } finally {
       setLoading(false);
@@ -82,7 +84,7 @@ export function MathExplain(props: {
           className="mt-3 h-auto min-h-10 w-full whitespace-normal text-left sm:w-auto"
         >
           {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-          {loading ? "Բացատրությունը պատրաստվում է…" : failed ? "Կրկին փորձել" : "Բացատրել"}
+          {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Բացատրել")}
         </Button>
       )}
     </div>

@@ -6,6 +6,7 @@ import type { Unit, MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
+import { useTx } from "@/lib/lang";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -120,6 +121,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
 
 /* ---------- explanation ---------- */
 function Explain(props: { instruction: string; passage: string; question: string; correct: string; chosen: string | null }) {
+  const tx = useTx();
   const fn = useServerFn(explainAnswer);
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -140,7 +142,7 @@ function Explain(props: { instruction: string; passage: string; question: string
           setText(r.text);
           setFailed(r.error);
         } catch {
-          setText("Չհաջողվեց ստանալ բացատրությունը։");
+          setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
           setFailed(true);
         } finally {
           setLoading(false);
@@ -149,7 +151,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       className="mt-3 h-auto min-h-10 whitespace-normal text-left"
     >
       {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-      {loading ? "Բացատրությունը պատրաստվում է…" : failed ? "Կրկին փորձել" : "Բացատրել"}
+      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Բացատրել")}
     </Button>}
     </div>
   );
@@ -202,6 +204,7 @@ export function UnitCard(props: {
   header?: React.ReactNode;
 }) {
   const { unit: u, value: a, onChange, revealed } = props;
+  const tx = useTx();
 
   const mcBlock = (q: MCQuestion) => {
     const show = revealed(q.n);
@@ -212,7 +215,7 @@ export function UnitCard(props: {
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || "Ընտրեք ճիշտ տարբերակը (" + q.n + ")"} /></p>
+          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {Object.entries(q.options).map(([k, v]) => {
@@ -231,7 +234,7 @@ export function UnitCard(props: {
                   show && !isC && !isSel && "border-border opacity-60",
                 )}
               >
-                <Button variant="ghost" size="icon" className="size-7 shrink-0" disabled={show} aria-label={`Ընտրել ${q.n} հարցի ${k} տարբերակը`} aria-pressed={isSel}>{k})</Button>
+                <Button variant="ghost" size="icon" className="size-7 shrink-0" disabled={show} aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })} aria-pressed={isSel}>{k})</Button>
                 <span className="min-w-0 flex-1"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
                 {show && isC && <Check className="size-4 shrink-0 text-success" />}
                 {show && isSel && !isC && <X className="size-4 shrink-0 text-destructive" />}
@@ -241,7 +244,7 @@ export function UnitCard(props: {
         </div>
         {props.onCheck && !show && chosen && (
           <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
-            Ստուգել →
+            {tx("Ստուգել →")}
           </button>
         )}
         {show && (
@@ -275,7 +278,7 @@ export function UnitCard(props: {
             inputMode="numeric"
             disabled={show}
             value={val}
-            aria-label={`Պատասխան ${q.n}`}
+            aria-label={tx("Պատասխան {n}", { n: q.n })}
             onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [q.n]: e.target.value } })}
             className={cn(
               "h-11 w-40 rounded-lg border-2 bg-background px-3 font-display text-lg font-bold focus:outline-none",
@@ -284,11 +287,11 @@ export function UnitCard(props: {
               show && !ok && "border-destructive bg-destructive/10",
             )}
           />
-          {show && <span className="text-sm font-semibold">Ճիշտ պատասխանը՝ {q.answer}</span>}
+          {show && <span className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
         {props.onCheck && !show && val.trim() && (
           <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
-            Ստուգել →
+            {tx("Ստուգել →")}
           </button>
         )}
         {show && (
@@ -309,14 +312,14 @@ export function UnitCard(props: {
   const seqBlock =
     u.kind === "seq" ? (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Յուրաքանչյուր բացթողման համար ընտրեք բառի համարը</p>
+          <p className="text-sm font-semibold">{tx("Յուրաքանչյուր բացթողման համար ընտրեք բառի համարը")}</p>
           <div className="grid gap-2">
             {u.answer.map((ans, i) => {
               const v = a?.nums?.[i] ?? null;
               const max = Math.max(/(^|\s)8\s?[.)]/.test(u.passage) ? 8 : 7, ...u.answer);
               return (
                 <div key={i} className="flex flex-wrap items-center gap-1.5">
-                  <span className="w-16 shrink-0 text-xs font-bold text-muted-foreground">Բաց {i + 1}</span>
+                  <span className="w-16 shrink-0 text-xs font-bold text-muted-foreground">{tx("Բաց {n}", { n: i + 1 })}</span>
                   {Array.from({ length: max }, (_, k) => k + 1).map((n) => (
                     <button
                       key={n}
@@ -384,7 +387,7 @@ export function UnitCard(props: {
 
       {u.kind === "set" && (
         <NumPicker
-          label="Ընտրեք ճիշտ համարները"
+          label={tx("Ընտրեք ճիշտ համարները")}
           count={u.count ?? 5}
           selected={(a?.nums ?? []).filter((x): x is number => x != null)}
           disabled={show}
@@ -422,15 +425,15 @@ export function UnitCard(props: {
 
       {u.kind !== "mc" && u.kind !== "num" && props.onCheck && !show && isAnswered(u, a) && (
         <button type="button" onClick={() => props.onCheck?.("unit")} className="text-sm font-bold text-primary hover:underline">
-          Ստուգել →
+          {tx("Ստուգել →")}
         </button>
       )}
       {u.kind !== "mc" && u.kind !== "num" && show && (
         <div className={cn("rounded-xl p-4", res.got ? "bg-success/10" : "bg-destructive/10")}>
-          <p className="font-bold">{res.got ? "Ճիշտ է 🎉" : "Սխալ է"}</p>
+          <p className="font-bold">{res.got ? tx("Ճիշտ է 🎉") : tx("Սխալ է")}</p>
           <p className="text-sm">
-            Ճիշտ պատասխանը՝ <b>{correctText}</b>
-            {!res.got && chosenText && <> · Ձեր պատասխանը՝ {chosenText}</>}
+            {tx("Ճիշտ պատասխանը՝")} <b>{correctText}</b>
+            {!res.got && chosenText && <> · {tx("Ձեր պատասխանը՝")} {chosenText}</>}
           </p>
           <Explain
             instruction={props.instructionEn ?? props.instruction}

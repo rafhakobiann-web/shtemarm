@@ -9,6 +9,7 @@ import { z } from "zod";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
 import { cn } from "@/lib/utils";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/")({
   validateSearch: z.object({ mode: z.enum(["exam", "custom"]).optional().catch(undefined) }),
@@ -234,8 +235,8 @@ function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
   );
 }
 
-function answerLabel(item: Item) {
-  if (item.kind === "tf") return item.answer === "T" ? "Ճիշտ է" : "Սխալ է";
+function answerLabel(item: Item, tx: ReturnType<typeof useTx>) {
+  if (item.kind === "tf") return item.answer === "T" ? tx("Ճիշտ է") : tx("Սխալ է");
   if (item.kind === "choice") return `${item.answer})`;
   return item.answer;
 }
@@ -253,6 +254,7 @@ function AnswerRow({
   submitted: boolean;
   onPick: (v: string) => void;
 }) {
+  const tx = useTx();
   const answered = value !== undefined && value !== "";
   const ok = submitted && answered && isRight(item.answer, value!);
   const options: [string, string][] =
@@ -262,7 +264,7 @@ function AnswerRow({
     <div className="space-y-2 rounded-2xl border p-3">
       <div className="flex items-center gap-2">
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
-        <span className="text-xs text-muted-foreground">Առաջադրանք {item.task}, կետ {item.sub}/{item.subs}</span>
+        <span className="text-xs text-muted-foreground">{tx("Առաջադրանք {n}, կետ {m}/{k}", { n: item.task, m: item.sub, k: item.subs })}</span>
       </div>
 
       {item.kind === "open" ? (
@@ -272,7 +274,7 @@ function AnswerRow({
           disabled={submitted}
           value={value ?? ""}
           onChange={(e) => onPick(e.target.value)}
-          placeholder="Պատասխան"
+          placeholder={tx("Պատասխան")}
           className="h-12 w-full rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none disabled:opacity-80"
         />
       ) : (
@@ -295,7 +297,7 @@ function AnswerRow({
                   : "border-border bg-card hover:bg-muted",
                 )}
               >
-                {text}
+                {tx(text)}
               </button>
             );
           })}
@@ -304,7 +306,7 @@ function AnswerRow({
 
       {submitted && (
         <p className={cn("text-sm font-bold", ok ? "text-emerald-700" : "text-red-700")}>
-          {ok ? "Ճիշտ է ✓" : `Ճիշտ պատասխանը՝ ${answerLabel(item)}`}
+          {ok ? tx("Ճիշտ է ✓") : tx("Ճիշտ պատասխանը՝ {answer}", { answer: answerLabel(item, tx) })}
         </p>
       )}
       {submitted && (
@@ -325,6 +327,7 @@ function AnswerRow({
 function MathPage() {
   const q = useIndex();
   const { progress, addExam } = useMathProgress();
+  const tx = useTx();
 
   // Setup
   const { mode: initialMode } = Route.useSearch();
@@ -362,8 +365,8 @@ function MathPage() {
   const maxCount = Math.max(1, Math.min(100, available));
   const shownCount = Math.min(count, maxCount);
 
-  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Բեռնվում է…</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">Չհաջողվեց բեռնել թեստը։</p>;
+  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
+  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել թեստը։")}</p>;
   const index = q.data;
 
   function begin(items: Item[]) {
@@ -400,23 +403,23 @@ function MathPage() {
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Գլխավոր էջ
+          <ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}
         </Link>
-        <Link to="/math/books" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">Գրքեր →</Link>
+        <Link to="/math/books" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">{tx("Գրքեր")} →</Link>
       </div>
 
       {!exam ? (
         <>
-          <h1 className="text-2xl font-black sm:text-3xl">Մաթեմատիկայի թեստ</h1>
+          <h1 className="text-2xl font-black sm:text-3xl">{tx("Մաթեմատիկայի թեստ")}</h1>
           {progress.exams[0] && (
             <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
-              Վերջին արդյունքը՝ {progress.exams[0].correct} / {progress.exams[0].total}
+              {tx("Վերջին արդյունքը՝ {c} / {t}", { c: progress.exams[0].correct, t: progress.exams[0].total })}
             </p>
           )}
 
           <div className="grid gap-3 sm:grid-cols-2">
             {([
-              ["exam", <Trophy key="t" />, `Քննություն (${EXAM_SIZE})`, "Քննության կառուցվածքով, Մաս 1-ից"],
+              ["exam", <Trophy key="t" />, "Քննություն ({n})", "Քննության կառուցվածքով, Մաս 1-ից"],
               ["custom", <ListChecks key="l" />, "Ըստ բաժինների", "Ընտրիր շտեմարանները, բաժինները և քանակը"],
             ] as const).map(([k, icon, title, desc]) => (
               <button
@@ -429,8 +432,8 @@ function MathPage() {
                 )}
               >
                 <span className="text-primary">{icon}</span>
-                <span className="font-bold">{title}</span>
-                <span className="text-xs text-muted-foreground">{desc}</span>
+                <span className="font-bold">{tx(title, { n: EXAM_SIZE })}</span>
+                <span className="text-xs text-muted-foreground">{tx(desc)}</span>
               </button>
             ))}
           </div>
@@ -438,13 +441,13 @@ function MathPage() {
           <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
             {mode === "exam" ? (
               <p className="text-sm leading-relaxed">
-                {EXAM_SIZE} հարց՝ քննության իրական կառուցվածքով։ Առաջին 40-ը՝ առաջին գլխի բաժիններից, մնացածը՝ երկրորդ գլխից՝ բաց պատասխաններով։
-                Յուրաքանչյուր նոր թեստում հարցերը տարբեր են նախորդից։
+                {tx("{n} հարց՝ քննության իրական կառուցվածքով։ Առաջին 40-ը՝ առաջին գլխի բաժիններից, մնացածը՝ երկրորդ գլխից՝ բաց պատասխաններով։", { n: EXAM_SIZE })}
+                {tx("Յուրաքանչյուր նոր թեստում հարցերը տարբեր են նախորդից։")}
               </p>
             ) : (
               <>
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold">Շտեմարաններ</p>
+                  <p className="text-sm font-semibold">{tx("Շտեմարաններ")}</p>
                   <div className="flex flex-wrap gap-2">
                     {BOOK_IDS.map((id) => {
                       const on = books.includes(id);
@@ -458,7 +461,7 @@ function MathPage() {
                             on ? "border-primary bg-primary/10" : "border-border hover:border-primary/40",
                           )}
                         >
-                          {BOOK_NAMES[id]}
+                          {tx(BOOK_NAMES[id])}
                         </button>
                       );
                     })}
@@ -467,18 +470,18 @@ function MathPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold">Բաժիններ</p>
+                    <p className="text-sm font-semibold">{tx("Բաժիններ")}</p>
                     <div className="flex gap-2 text-xs font-semibold">
-                      <button type="button" className="text-primary hover:underline" onClick={() => setKeys(new Set(allKeys))}>Ընտրել բոլորը</button>
-                      <button type="button" className="text-muted-foreground hover:underline" onClick={() => setKeys(new Set())}>Մաքրել</button>
+                      <button type="button" className="text-primary hover:underline" onClick={() => setKeys(new Set(allKeys))}>{tx("Ընտրել բոլորը")}</button>
+                      <button type="button" className="text-muted-foreground hover:underline" onClick={() => setKeys(new Set())}>{tx("Մաքրել")}</button>
                     </div>
                   </div>
                   {books.map((bookId) => (
                     <div key={bookId} className="space-y-3">
-                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{BOOK_NAMES[bookId]}</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx(BOOK_NAMES[bookId])}</p>
                       {byChapter(index.books[bookId]?.sections ?? []).map(([chapter, secs]) => (
                       <div key={chapter} className="space-y-2">
-                      <p className="text-sm font-semibold text-muted-foreground">Գլուխ {chapter}</p>
+                      <p className="text-sm font-semibold text-muted-foreground">{tx("Գլուխ {n}", { n: chapter })}</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {secs.map((sec) => {
                           const k = sectionKey(bookId, sec);
@@ -497,7 +500,7 @@ function MathPage() {
                                 }}
                               />
                               <span className="min-w-0 text-sm">
-                                <b>Բաժին {sec.section}</b> <span className="text-muted-foreground">· {n}</span>
+                                <b>{tx("Բաժին {n}", { n: sec.section })}</b> <span className="text-muted-foreground">· {n}</span>
                                 <span className="block text-xs leading-snug text-muted-foreground">{sec.title}</span>
                               </span>
                             </label>
@@ -512,7 +515,7 @@ function MathPage() {
 
                 <div className="space-y-3">
                   <p className="text-sm font-semibold">
-                    Հարցերի քանակը՝ {shownCount} <span className="font-normal text-muted-foreground">· հասանելի է՝ {available}</span>
+                    {tx("Հարցերի քանակը՝ {n}", { n: shownCount })} <span className="font-normal text-muted-foreground">· {tx("հասանելի է՝ {n}", { n: available })}</span>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {[5, 10, 20, 40, 65].filter((n) => n <= maxCount).map((n) => (
@@ -535,14 +538,14 @@ function MathPage() {
             )}
 
             {mode === "custom" && available === 0 && (
-              <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-800">Ընտրիր առնվազն մեկ բաժին՝ թեստը սկսելու համար։</p>
+              <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-800">{tx("Ընտրիր առնվազն մեկ բաժին՝ թեստը սկսելու համար։")}</p>
             )}
             <Button
               className="h-12 w-full rounded-2xl"
               disabled={mode === "custom" && available === 0}
               onClick={start}
             >
-              Սկսել{mode === "custom" ? ` · ${shownCount} հարց` : ` · ${EXAM_SIZE} հարց`}
+              {tx("Սկսել · {n} հարց", { n: mode === "custom" ? shownCount : EXAM_SIZE })}
             </Button>
           </div>
         </>
@@ -550,9 +553,9 @@ function MathPage() {
         <>
           <div className="sticky top-2 z-10 flex items-center justify-between gap-3 rounded-2xl border bg-background/95 p-4 shadow-md backdrop-blur">
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold">Թեստ · Մաթեմատիկա</p>
+              <p className="truncate text-sm font-bold">{tx("Թեստ · Մաթեմատիկա")}</p>
               <p className="text-xs text-muted-foreground">
-                {submitted ? `Արդյունք՝ ${correct} / ${exam.length}` : `${answeredCount} / ${exam.length} հարց պատասխանված`}
+                {submitted ? tx("Արդյունք՝ {c} / {t}", { c: correct, t: exam.length }) : tx("{n} / {t} հարց պատասխանված", { n: answeredCount, t: exam.length })}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -561,10 +564,10 @@ function MathPage() {
                 {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}
               </span>
               {!submitted ? (
-                <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={finish}>Ավարտել</Button>
+                <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={finish}>{tx("Ավարտել")}</Button>
               ) : (
                 <Button variant="outline" onClick={() => setExam(null)}>
-                  <RefreshCw className="mr-1 size-4" /> Նոր թեստ
+                  <RefreshCw className="mr-1 size-4" /> {tx("Նոր թեստ")}
                 </Button>
               )}
             </div>
@@ -575,7 +578,7 @@ function MathPage() {
           {groupItems(exam).map((g) => (
             <section key={g.key} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                {BOOK_NAMES[g.first.book]} · Գլուխ {g.first.chapter} · Բաժին {g.first.section} · Առաջադրանք {g.first.task}
+                {tx("{book} · Գլուխ {c} · Բաժին {s} · Առաջադրանք {t}", { book: tx(BOOK_NAMES[g.first.book]), c: g.first.chapter, s: g.first.section, t: g.first.task })}
               </p>
               <TaskCrop book={g.first.book} segments={g.first.segments} />
               <div className="space-y-3">
@@ -594,10 +597,10 @@ function MathPage() {
           ))}
 
           {!submitted && (
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={finish}>Ավարտել</Button>
+            <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={finish}>{tx("Ավարտել")}</Button>
           )}
           {submitted && (
-            <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">Արդյունք՝ {correct} / {exam.length}</p>
+            <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">{tx("Արդյունք՝ {c} / {t}", { c: correct, t: exam.length })}</p>
           )}
         </>
       )}

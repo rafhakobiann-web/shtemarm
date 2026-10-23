@@ -8,6 +8,7 @@ import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
   validateSearch: z.object({ mode: z.enum(["game", "classic"]).catch("game") }),
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/study/$bookId/$sectionId")({
 });
 
 function StudyPage() {
+  const tx = useTx();
   const { bookId, sectionId } = Route.useParams();
   const { mode } = Route.useSearch();
   const { data: book } = useBook(Number(bookId));
@@ -36,7 +38,7 @@ function StudyPage() {
     <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">Շտեմարան {bookId} · {section ? secTitle(section) : `Բաժին ${sectionId}`}</span>
+          <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">{section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}</span>
         </Link>
         <div className="flex rounded-xl bg-muted p-1 text-sm font-semibold">
           {(["game", "classic"] as const).map((m) => (
@@ -47,7 +49,7 @@ function StudyPage() {
               search={{ mode: m }}
               className={cn("rounded-lg px-3 py-1.5", mode === m ? "bg-card shadow-sm" : "text-muted-foreground")}
             >
-              {m === "game" ? "Խաղային" : "Դասական"}
+              {m === "game" ? tx("Խաղային") : tx("Դասական")}
             </Link>
           ))}
         </div>
@@ -86,6 +88,7 @@ function useRevealer(onResult?: (correct: boolean) => void) {
 
 /* ---------------- Classic ---------------- */
 function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; instrEn: string }) {
+  const tx = useTx();
   const { answers, setAnswers, revealed, check } = useRevealer();
   return (
     <div className="space-y-5">
@@ -99,7 +102,7 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
           onChange={(v) => setAnswers((s) => ({ ...s, [u.id]: v }))}
           revealed={(k) => !!revealed[qKey(u, k)]}
           onCheck={(k) => check(u, k)}
-          header={<p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? `Առաջադրանք ${u.label}` : u.label}</p>}
+          header={<p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? tx("Առաջադրանք {n}", { n: u.label }) : u.label}</p>}
         />
       ))}
     </div>
@@ -108,6 +111,7 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
 
 /* ---------------- Game ---------------- */
 function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
+  const tx = useTx();
   const progress = useProgress();
   const ROUND = 6;
   const [seed, setSeed] = useState(0);
@@ -161,13 +165,13 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     return (
       <div className="animate-pop shadow-card space-y-5 rounded-3xl border bg-card p-8 text-center">
         <Trophy className={cn("mx-auto size-14", win ? "text-sun" : "text-muted-foreground")} />
-        <h2 className="text-2xl font-black">{win ? "Փուլն ավարտված է" : "Սրտերը վերջացան"}</h2>
+        <h2 className="text-2xl font-black">{win ? tx("Փուլն ավարտված է") : tx("Սրտերը վերջացան")}</h2>
         <p className="text-muted-foreground">
-          {right} / {total} ճիշտ · +{earned} միավոր
+          {tx("{right} / {total} ճիշտ · +{earned} միավոր", { right, total, earned })}
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Button variant="game" size="lg" onClick={restart}><RotateCcw /> Նոր փուլ</Button>
-          <Button variant="outline" size="lg" asChild><Link to="/book/$bookId" params={{ bookId }}>Բաժիններ</Link></Button>
+          <Button variant="game" size="lg" onClick={restart}><RotateCcw /> {tx("Նոր փուլ")}</Button>
+          <Button variant="outline" size="lg" asChild><Link to="/book/$bookId" params={{ bookId }}>{tx("Բաժիններ")}</Link></Button>
         </div>
       </div>
     );
@@ -205,7 +209,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
       {allRevealed && (
         <div className="sticky bottom-4 z-20 flex justify-end">
           <Button variant="game" size="lg" onClick={() => { setIdx(idx + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-            Շարունակել →
+            {tx("Շարունակել →")}
           </Button>
         </div>
       )}
