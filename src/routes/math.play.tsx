@@ -240,7 +240,7 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
+            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
@@ -316,7 +316,7 @@ function PlayPage() {
             </p>
           </div>
 
-          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <Crop bookId={it.bookId} segments={it.segments} />}
+          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
 
           <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
