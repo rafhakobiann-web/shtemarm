@@ -126,25 +126,42 @@ function byBookOrder(a: Item, b: Item) {
   );
 }
 
-/** Sample exam: one question per slot, drawn from the matching section of Part 1, never repeating a task. */
+/**
+ * Build the 65-question sample-style exam from BOTH official books.
+ * Match sections by chapter and title so equivalent topics can be used even
+ * when the second book numbers a chapter-2 section differently.
+ */
 function pickSample(index: Index, excluded: Set<string>): Item[] {
   const usedTasks = new Set<string>();
   const picked: Item[] = [];
-  const sections = index.books["matem-1"]?.sections ?? [];
+  const referenceSections = index.books["matem-1"]?.sections ?? [];
+
   SAMPLE_STRUCTURE.forEach(([chapter, section], slot) => {
-    const sec = sections.find((x) => x.chapter === chapter && x.section === section);
-    if (!sec) return;
+    const reference = referenceSections.find((x) => x.chapter === chapter && x.section === section);
+    if (!reference) return;
+
+    const matchingSections = BOOK_IDS.flatMap((bookId) =>
+      (index.books[bookId]?.sections ?? [])
+        .filter((candidate) => candidate.chapter === chapter && candidate.title === reference.title)
+        .map((candidate) => ({ bookId, section: candidate })),
+    );
+    const all = matchingSections.flatMap(({ bookId, section: candidateSection }) =>
+      sectionItems(bookId, candidateSection).filter((item) => !usedTasks.has(taskKey(item))),
+    );
+
+    // The last 25 slots are typed-answer slots when that topic has typed answers.
     const wantOpen = slot >= 40;
-    const all = sectionItems("matem-1", sec).filter((x) => !usedTasks.has(taskKey(x)));
-    const typed = all.filter((x) => x.kind === "open");
+    const typed = all.filter((item) => item.kind === "open");
     const candidates = wantOpen && typed.length ? typed : all;
-    const fresh = candidates.filter((x) => !excluded.has(x.id));
+    const fresh = candidates.filter((item) => !excluded.has(item.id));
     const pool = fresh.length ? fresh : candidates;
     if (!pool.length) return;
+
     const pick = pool[Math.floor(Math.random() * pool.length)];
     usedTasks.add(taskKey(pick));
     picked.push(pick);
   });
+
   return picked;
 }
 
@@ -419,7 +436,7 @@ function MathPage() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             {([
-              ["exam", <Trophy key="t" />, "Քննություն ({n})", "Քննության կառուցվածքով, Մաս 1-ից"],
+              ["exam", <Trophy key="t" />, "Քննություն ({n})", "Քննության կառուցվածքով՝ երկու շտեմարաններից"],
               ["custom", <ListChecks key="l" />, "Ըստ բաժինների", "Ընտրիր շտեմարանները, բաժինները և քանակը"],
             ] as const).map(([k, icon, title, desc]) => (
               <button
