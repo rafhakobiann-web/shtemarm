@@ -113,30 +113,40 @@ function byBookOrder(a: Item, b: Item) {
   );
 }
 
-/** Build a 65-question practice exam from both books without claiming an unverified official structure. */
+/** Build a balanced 65-question practice exam: 32 from one book and 33 from the other. */
 function pickSample(index: Index, excluded: Set<string>): Item[] {
-  const allKeys = new Set(
-    BOOK_IDS.flatMap((bookId) =>
-      (index.books[bookId]?.sections ?? []).map((sec) => sectionKey(bookId, sec)),
-    ),
-  );
-  const groups = shuffle(selectedGroups(index, [...BOOK_IDS], allKeys));
-  const freshGroups = groups.filter((group) => group.some((item) => !excluded.has(item.id)));
-  const orderedGroups = [...freshGroups, ...groups.filter((group) => !freshGroups.includes(group))];
+  const targets = shuffle([
+    { bookId: BOOK_IDS[0], count: 32 },
+    { bookId: BOOK_IDS[1], count: 33 },
+  ]);
   const picked: Item[] = [];
 
-  for (const group of orderedGroups) {
-    if (picked.length >= EXAM_SIZE) break;
-    const freshItems = group.filter((item) => !excluded.has(item.id));
-    const candidates = freshItems.length ? freshItems : group;
-    picked.push(...candidates.slice(0, EXAM_SIZE - picked.length));
+  for (const { bookId, count } of targets) {
+    const sections = index.books[bookId]?.sections ?? [];
+    const keys = new Set(sections.map((sec) => sectionKey(bookId, sec)));
+    const groups = shuffle(selectedGroups(index, [bookId], keys));
+    const freshGroups = groups.filter((group) => group.some((item) => !excluded.has(item.id)));
+    const orderedGroups = [...freshGroups, ...groups.filter((group) => !freshGroups.includes(group))];
+    const bookPicked: Item[] = [];
+
+    for (const group of orderedGroups) {
+      if (bookPicked.length >= count) break;
+      const freshItems = group.filter((item) => !excluded.has(item.id));
+      const candidates = freshItems.length ? freshItems : group;
+      const room = count - bookPicked.length;
+      bookPicked.push(...candidates.slice(0, room));
+    }
+
+    if (bookPicked.length !== count) {
+      throw new Error(`Math book ${bookId} needs ${count} answerable questions; found ${bookPicked.length}.`);
+    }
+    picked.push(...bookPicked);
   }
 
-  // Never silently label a shorter set as the 65-question exam.
-  if (picked.length !== EXAM_SIZE) {
-    throw new Error(`Math exam requires ${EXAM_SIZE} answerable questions, but only ${picked.length} were available.`);
+  if (picked.length !== EXAM_SIZE || new Set(picked.map((item) => item.id)).size !== EXAM_SIZE) {
+    throw new Error(`Math exam must contain exactly ${EXAM_SIZE} unique questions.`);
   }
-  return picked;
+  return shuffle(picked);
 }
 /** Items of the chosen sections, grouped by task so a task's sub-questions are picked together. */
 function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[][] {
