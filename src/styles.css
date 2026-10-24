@@ -210,3 +210,47 @@ html.user-reduced-motion *::after {
   scroll-behavior: auto !important;
   transition-duration: 0.01ms !important;
 }
+
+
+/* Smooth, restrained motion across the interface; transform/opacity avoid layout-heavy animation. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  body { transition: background-color 220ms ease, color 220ms ease; }
+  a, button, [role="button"], input, select, textarea,
+  .glass, .study-tools {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  a, button, [role="button"] {
+    transition-duration: 180ms;
+  }
+  .study-tools {
+    animation: study-tools-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes study-tools-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .glass {
+    transition: border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+  }
+}
+
+/* Focus mode removes navigation distractions without affecting the study panel. */
+html.study-focus-mode body:has(.study-tools) header,
+html.study-focus-mode body:has(.study-tools) [aria-label="Accessibility"],
+html.study-focus-mode body:has(.study-tools) [aria-label="Մատչելիություն"],
+html.study-focus-mode body:has(.study-tools) [aria-label="Settings"],
+html.study-focus-mode body:has(.study-tools) [aria-label="Կարգավորումներ"] {
+  opacity: 0.12;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+html.study-focus-mode body:has(.study-tools) main > div > section:not(:has(.study-tools)) {
+  opacity: 0.22;
+  transition: opacity 240ms ease;
+}
+html.study-focus-mode body:has(.study-tools) .study-tools {
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 18%, transparent), var(--shadow-card);
+}
