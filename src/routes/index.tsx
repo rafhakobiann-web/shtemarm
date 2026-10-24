@@ -210,6 +210,10 @@ function BiologySubject() {
           <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Քննություն")} sub={tx("Փորձնական քննություն հասանելի հարցաշարից")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
+      <section className="space-y-4">
+        <h2 className="text-xl font-black">{tx("Պաշտոնական քննության նմուշներ")}</h2>
+        <ExamTile href="https://test.am/pdf.php?page=13" title={tx("Կենսաբանության պաշտոնական թեստեր")} sub={tx("Բացիր հրապարակված թեստերն ու պատասխանները՝ համեմատելու և լրացուցիչ պատրաստվելու համար")} icon={<BookOpen className="size-5" />} />
+      </section>
       <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ այս պահին հասանելի են առաջին երկու մասերի տվյալները։ Մյուս մասերը կավելացվեն միայն հարցերն ու պատասխանները ստուգելուց հետո։")}</p>
     </div>
   );
