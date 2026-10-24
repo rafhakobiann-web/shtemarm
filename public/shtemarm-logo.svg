@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Shtemarm</title>
+  <defs>
+    <linearGradient id="shtemarm-gradient" x1="18" y1="10" x2="108" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#55c8ff"/>
+      <stop offset=".52" stop-color="#477bff"/>
+      <stop offset="1" stop-color="#9b4dff"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#shtemarm-gradient)" d="M103 13 42 32c-10 3-16 9-16 17 0 8 6 13 16 15l32 7c7 2 10 4 10 8s-3 7-10 9L25 104l1 13 63-20c11-4 17-10 17-19 0-9-6-14-17-17l-31-7c-6-1-9-3-9-7 0-3 3-6 9-8l46-14z"/>
+</svg>
