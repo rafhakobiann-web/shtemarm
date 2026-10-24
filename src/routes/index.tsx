@@ -7,7 +7,7 @@ import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 
-const SUBJECTS = ["english", "math", "history"] as const;
+const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
 
 export const Route = createFileRoute("/")({
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
@@ -185,6 +185,60 @@ function HistorySubject() {
   );
 }
 
+function BiologySubject() {
+  const tx = useTx();
+  const playable = BIO_BOOKS.filter((b) => !b.locked);
+  return (
+    <div className="mx-auto max-w-6xl space-y-12 py-6">
+      <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
+      <section className="space-y-6">
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {playable.map((b) => (
+            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
+              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="space-y-6">
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {playable.map((b) => (
+            <ExamTile key={b.id} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "custom", style: "classic" }} title={tx("{part} · Թեստ", { part: b.sub })} sub={tx("Կազմիր թեստ տվյալ շտեմարանի հարցերից")} icon={<Dna className="size-5" />} />
+          ))}
+          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Քննություն")} sub={tx("Փորձնական քննություն հասանելի հարցաշարից")} icon={<Trophy className="size-5" />} />
+        </div>
+      </section>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ այս պահին հասանելի են առաջին երկու մասերի տվյալները։ Մյուս մասերը կավելացվեն միայն հարցերն ու պատասխանները ստուգելուց հետո։")}</p>
+    </div>
+  );
+}
+
+function ArmenianSubject() {
+  const tx = useTx();
+  return (
+    <div className="mx-auto max-w-6xl space-y-8 py-6">
+      <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Շտեմարանի երեք մասեր, առաջադրանքների բանկ և փորձնական քննություններ")} beta />
+      <div className="rounded-3xl border bg-card p-6 sm:p-8">
+        <div className="flex items-start gap-4">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><BookOpen className="size-6" /></span>
+          <div className="space-y-2">
+            <h2 className="text-xl font-black">{tx("Շտեմարաններ I–III")}</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">{tx("Շտեմարանի PDF աղբյուրները ներառում են հնչյունաբանություն, բառագիտություն, ձևաբանություն, շարահյուսություն, կապակցված խոսք, ուղղագրություն և գրականություն։ Ինտերակտիվ բանկը դեռ պետք է կազմվի և ստուգվի՝ ճիշտ պատասխաններով։")}</p>
+            <a href="https://test.am/pdf.php?page=13" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition hover:bg-muted"><BookOpen className="size-4" />{tx("Բացել պաշտոնական թեստերի աղբյուրը")}</a>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <ExamTile href="https://test.am/pdf.php?page=13" title={tx("Պաշտոնական քննության նմուշներ")} sub={tx("Բացել հրապարակված քննության նյութերը")} icon={<Trophy className="size-5" />} />
+        <ExamTile href="https://test.am/pdf.php?page=110" title={tx("Շտեմարանների նյութեր")} sub={tx("Աղբյուրային նյութեր՝ հետագա թվայնացման համար")} icon={<ClipboardCheck className="size-5" />} />
+      </div>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Ինտերակտիվ հարցերն ու ավտոմատ գնահատումը դեռ պատրաստ չեն այս առարկայի համար․ չենք ցուցադրում չստուգված պատասխաններ որպես ճիշտ։")}</p>
+    </div>
+  );
+}
+
 function Index() {
   const tx = useTx();
   const progress = useProgress();
@@ -195,7 +249,7 @@ function Index() {
   }, []);
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
-  if (subject === "history") return <HistorySubject />;
+  if (subject === "history") return <HistorySubject />;\n  if (subject === "biology") return <BiologySubject />;\n  if (subject === "armenian") return <ArmenianSubject />;
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
@@ -293,7 +347,7 @@ function Index() {
         <SubjectRow title={tx("Հայոց լեզու")}>
           <ComingSoon title={tx("Հայոց լեզու")} />
         </SubjectRow>
-        <SubjectRow title={tx("Կենսաբանություն")} beta>
+        <SubjectRow title={tx("Կենսաբանություն")} beta>\n          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[3/4] flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
           {BIO_BOOKS.map((b) =>
             b.locked ? (
               <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
