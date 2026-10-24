@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock, Calculator, MessageCircle, Gamepad2 } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock, Calculator, MessageCircle, Gamepad2, Timer } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -100,8 +100,11 @@ export function AppHeader() {
               </div>
 
               <div className="space-y-1">
-                <Link to="/" hash="about" onClick={close} className={item}>
+                <Link to="/about" onClick={close} className={item}>
                   <Info className="size-4" />{t.about}
+                </Link>
+                <Link to="/study-tools" onClick={close} className={item}>
+                  <Timer className="size-4" />Ուսումնական գործիքներ / Focus mode
                 </Link>
                                 <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />Մինի խաղեր</Link>
                 <Link to="/chat" onClick={close} className={item}>
