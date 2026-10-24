@@ -247,6 +247,11 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
+        {show && chosen === q.answer && (
+          <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
+            <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
+          </div>
+        )}
         {show && (
           <Explain
             instruction={props.instructionEn ?? props.instruction}
@@ -293,6 +298,11 @@ export function UnitCard(props: {
           <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
+        )}
+        {show && ok && (
+          <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
+            <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
+          </div>
         )}
         {show && (
           <Explain
