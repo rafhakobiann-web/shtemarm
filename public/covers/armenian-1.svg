@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#172554"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+<rect width="600" height="800" rx="28" fill="url(#bg)"/>
+<circle cx="470" cy="135" r="110" fill="#60a5fa" opacity=".18"/><circle cx="100" cy="650" r="170" fill="#c4b5fd" opacity=".14"/>
+<path d="M145 280 Q300 220 300 310 Q300 220 455 280 L455 505 Q300 450 300 535 Q300 450 145 505 Z" fill="#fff" fill-opacity=".12" stroke="#e0e7ff" stroke-width="8"/>
+<path d="M300 310 V535" stroke="#e0e7ff" stroke-width="6"/>
+<text x="300" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="700" fill="#c7d2fe" letter-spacing="7">SHTEMARM</text>
+<text x="300" y="190" text-anchor="middle" font-family="Arial,sans-serif" font-size="46" font-weight="700" fill="#fff">ՀԱՅՈՑ ԼԵԶՈՒ</text>
+<text x="300" y="600" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="#fff">ՓՈՐՁՆԱԿԱՆ</text>
+<text x="300" y="646" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="#fff">ՀԱՐՑԱՇԱՐ</text>
+<text x="300" y="720" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#ddd6fe">24 հարց · 3 բաժին</text>
+</svg>
