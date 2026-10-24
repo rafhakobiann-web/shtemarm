@@ -28,7 +28,7 @@ type Question = {
 };
 type Bank = { title: string; questions: Question[] };
 
-const TEST_SIZE = 20;
+const DEFAULT_TEST_SIZE = 20;
 const LIVES = 3;
 const BOOK_KEY = "patm-1";
 
@@ -104,6 +104,7 @@ function HistoryBookPage() {
 
   const [sectionNo, setSectionNo] = useState<number | null>(null);
   const [mode, setMode] = useState<"play" | "classic" | "test">("play");
+  const [testSize, setTestSize] = useState(DEFAULT_TEST_SIZE);
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -133,13 +134,13 @@ function HistoryBookPage() {
 
   useEffect(() => {
     if (!section) return;
-    setRound(mode === "test" ? shuffle(section.items).slice(0, TEST_SIZE) : section.items);
+    setRound(mode === "test" ? shuffle(section.items).slice(0, Math.min(testSize, section.items.length)) : section.items);
     setIndex(0);
     setLives(LIVES);
     setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
-  }, [sectionNo, mode, q.data]);
+  }, [sectionNo, mode, q.data, testSize]);
 
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գիրքը։")}</p>;
@@ -163,12 +164,25 @@ function HistoryBookPage() {
             <p className="text-sm text-muted-foreground">{tx("{count} հարց · {sections} բաժին", { count: q.data.questions.length, sections: sections.length })}</p>
           </div>
         </div>
-        <button
-          onClick={() => { setMode("test"); setSectionNo(-1); }}
-          className="w-full rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 px-4 py-3 text-sm font-bold text-stone-900 shadow-[0_6px_18px_rgba(245,158,11,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]"
-        >
-          {tx("Կազմել թեստ ({n} հարց ամբողջ գրքից)", { n: TEST_SIZE })}
-        </button>
+        <div className="space-y-3 rounded-2xl border bg-card p-4">
+          <label htmlFor="history-test-size" className="block text-sm font-bold">{tx("Քանի՞ հարցով կազմել թեստը")}</label>
+          <select
+            id="history-test-size"
+            value={testSize}
+            onChange={(e) => setTestSize(Number(e.target.value))}
+            className="h-11 w-full rounded-xl border bg-background px-3 text-sm"
+          >
+            {[5, 10, 15, 20, 30, 40, 50, 60, 70].map((n) => (
+              <option key={n} value={n}>{n} {tx("հարց")}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => { setMode("test"); setSectionNo(-1); }}
+            className="w-full rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 px-4 py-3 text-sm font-bold text-stone-900 shadow-[0_6px_18px_rgba(245,158,11,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]"
+          >
+            {tx("Կազմել թեստ ({n} հարց ամբողջ գրքից)", { n: testSize })}
+          </button>
+        </div>
         <div className="grid gap-3">
           {sections.map((s) => {
             const prefix = `${BOOK_KEY}:${s.items[0].source_run}:`;
