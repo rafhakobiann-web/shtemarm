@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ClipboardCheck, Trophy, Brain } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, Languages, Landmark, FlaskConical, GraduationCap, Sparkles } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,11 +34,11 @@ const MATH_BOOKS = [
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
     <>
-      <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+      <div className="cover-frame relative aspect-[3/4] overflow-hidden bg-muted">
         {cover ? (
           <img src={cover} alt={title} loading="lazy" className="size-full object-cover transition duration-300 group-hover:scale-105" />
         ) : (
-          <div className="grid size-full place-items-center bg-gradient-to-br from-muted to-secondary text-5xl font-black text-muted-foreground/40">{title.slice(0, 1)}</div>
+          <div className="cover-placeholder grid size-full place-items-center bg-gradient-to-br from-primary/10 via-muted to-secondary text-primary/65"><BookOpen className="size-12 sm:size-16" strokeWidth={1.35} aria-hidden="true" /></div>
         )}
       </div>
       <div className="space-y-1 p-4">
@@ -62,7 +62,7 @@ function ComingSoon({ title }: { title: string }) {
   const tx = useTx();
   return (
     <div className="flex aspect-[3/4] flex-col justify-between rounded-3xl border border-dashed bg-card/60 p-4 opacity-80 sm:aspect-auto sm:min-h-44">
-      <div className="grid size-full place-items-center rounded-2xl bg-muted/50 text-5xl font-black text-muted-foreground/40">{title.slice(0, 1)}</div>
+      <div className="grid size-full place-items-center rounded-2xl bg-primary/5 text-primary/55"><GraduationCap className="size-10" strokeWidth={1.4} aria-hidden="true" /></div>
       <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Շուտով")}</p>
     </div>
   );
@@ -260,17 +260,17 @@ function Index() {
           <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border bg-card p-4 shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground">{tx("Քո միավորները")}</p>
+              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
             </div>
             <div className="rounded-2xl border bg-card p-4 shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground">{tx("Ճիշտ պատասխաններ")}</p>
+              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><CheckCircle2 className="size-4 text-success" aria-hidden="true" />{tx("Ճիշտ պատասխաններ")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 1).length}</p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Ընդհանուր պատասխանված հարցերից")}</p>
             </div>
             <div className="rounded-2xl border bg-card p-4 shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground">{tx("Կրկնելու հարցեր")}</p>
+              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><RotateCcw className="size-4 text-amber-600" aria-hidden="true" />{tx("Կրկնելու հարցեր")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 0).length}</p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Անհատական առաջարկ")}</p>
             </div>
@@ -360,8 +360,8 @@ function Index() {
           <p className="mt-1 text-sm text-muted-foreground">{tx("Սխալ գտե՞ր, ունե՞ս գաղափար։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground">{tx("Գրել մեզ")}</Link>
-          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold">{tx("Բացել հաշվիչը")}</Link>
+          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:shadow-md"><Languages className="size-4" aria-hidden="true" />{tx("Գրել մեզ")}</Link>
+          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Calculator className="size-4" aria-hidden="true" />{tx("Բացել հաշվիչը")}</Link>
         </div>
       </section>
     </div>
