@@ -287,3 +287,45 @@ html.study-focus-mode body:has(.study-tools) .study-tools {
 @media (prefers-reduced-motion: reduce) {
   .question-step { animation: none !important; }
 }
+
+
+/* Site-wide usability and visual consistency */
+:root {
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.dark { color-scheme: dark; }
+html { scroll-padding-top: 6rem; }
+body { min-width: 320px; min-height: 100vh; }
+img { max-width: 100%; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+a, button { touch-action: manipulation; }
+:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+::selection { background: color-mix(in oklch, var(--primary) 22%, transparent); }
+.cover-frame { isolation: isolate; }
+.cover-frame img { display: block; }
+.cover-placeholder { transition: background-color 220ms ease, color 220ms ease; }
+.group:hover .cover-placeholder { color: var(--primary); }
+.glass {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+@media (max-width: 639px) {
+  .cover-frame { aspect-ratio: 3 / 4; }
+  .question-card { overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
