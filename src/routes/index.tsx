@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
-import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
+import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
@@ -219,17 +219,24 @@ function ArmenianSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-6">
-      <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Շտեմարանի երեք մասեր, առաջադրանքների բանկ և փորձնական քննություններ")} beta />
-      <div className="rounded-3xl border bg-card p-6 sm:p-8">
-        <div className="flex items-start gap-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><BookOpen className="size-6" /></span>
-          <div className="space-y-2">
-            <h2 className="text-xl font-black">{tx("Շտեմարաններ I–III")}</h2>
-            <p className="text-sm leading-relaxed text-muted-foreground">{tx("Շտեմարանի PDF աղբյուրները ներառում են հնչյունաբանություն, բառագիտություն, ձևաբանություն, շարահյուսություն, կապակցված խոսք, ուղղագրություն և գրականություն։ Ինտերակտիվ բանկը դեռ պետք է կազմվի և ստուգվի՝ ճիշտ պատասխաններով։")}</p>
-            <a href="https://test.am/pdf.php?page=13" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition hover:bg-muted"><BookOpen className="size-4" />{tx("Բացել պաշտոնական թեստերի աղբյուրը")}</a>
-          </div>
+      <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Փորձնական հարցաշար և պաշտոնապես հրապարակված քննությունների նմուշներ")} beta />
+      <section className="space-y-4">
+        <h2 className="text-xl font-black">{tx("Ինտերակտիվ հարցաշար")}</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
+            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("24 հարց · 3 թեմատիկ բաժին")} />
+          </Link>
+          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Արագ փորձնական քննություն")} sub={tx("Խառը հարցեր՝ բառագիտությունից, ձևաբանությունից և շարահյուսությունից")} icon={<Trophy className="size-5" />} />
         </div>
-      </div>
+        <p className="text-sm text-muted-foreground">{tx("Այս 24 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
+      </section>
+      <section className="space-y-4">
+        <h2 className="text-xl font-black">{tx("Պաշտոնական թեստեր և պատասխաններ")}</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ExamTile href="https://test.am/pdf.php?page=13" title={tx("2026 թ․ քննությունների նյութեր")} sub={tx("Հայոց լեզու և հայ գրականություն, կենսաբանություն և այլ առարկաներ")} icon={<BookOpen className="size-5" />} />
+          <ExamTile href="https://test.am/pdf.php?page=94" title={tx("Շտեմարաններից կազմված թեստեր")} sub={tx("Նմուշային միասնական քննություններ և պատասխաններ")} icon={<ClipboardCheck className="size-5" />} />
+        </div>
+      </section>
       <div className="grid gap-4 sm:grid-cols-2">
         <ExamTile href="https://test.am/pdf.php?page=13" title={tx("Պաշտոնական քննության նմուշներ")} sub={tx("Բացել հրապարակված քննության նյութերը")} icon={<Trophy className="size-5" />} />
         <ExamTile href="https://test.am/pdf.php?page=110" title={tx("Շտեմարանների նյութեր")} sub={tx("Աղբյուրային նյութեր՝ հետագա թվայնացման համար")} icon={<ClipboardCheck className="size-5" />} />
@@ -347,7 +354,8 @@ function Index() {
         </SubjectRow>
 
         <SubjectRow title={tx("Հայոց լեզու և հայ գրականություն")} beta>
-          <Link to="/" search={{ subject: "armenian" }} className={TILE}><TileBody title={tx("Շտեմարան 1–3")} sub={tx("Շտեմարանի երեք մասերը")} /></Link>
+          <Link to="/" search={{ subject: "armenian" }} className={TILE}><TileBody title={tx("Հայոց լեզու · Թեստեր")} sub={tx("Հարցաշար և պաշտոնական նմուշներ")} /></Link>
+          {ARMENIAN_BOOKS.map((b) => <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}><TileBody cover={b.cover} title={b.title} sub={b.sub} /></Link>)}
         </SubjectRow>
         <SubjectRow title={tx("Կենսաբանություն")} beta>
           <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[3/4] flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
