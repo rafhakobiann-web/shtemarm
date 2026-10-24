@@ -24,9 +24,9 @@ async function pageDataUrl(bookId: string, page: number) {
 }
 
 function renderExplanation(text: string) {
-  return text.split(/(```[\\s\\S]*?```)/g).map((block, i) => {
+  return text.split(/(```[\s\S]*?```)/g).map((block, i) => {
     if (block.startsWith("```")) {
-      const diagram = block.replace(/^```[^\\n]*\\n?/, "").replace(/```$/, "").trim();
+      const diagram = block.replace(/^```[^\n]*\n?/, "").replace(/```$/, "").trim();
       return (
         <div key={i} className="my-3 overflow-x-auto rounded-2xl border border-primary/20 bg-background p-4 shadow-sm">
           <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary"><Sparkles className="size-3.5" />Գծագիր / սխեմա</p>
@@ -34,7 +34,7 @@ function renderExplanation(text: string) {
         </div>
       );
     }
-    return block.split(/(\\*\\*[^*]+\\*\\*)/g).map((part, j) =>
+    return block.split(/(\*\*[^*]+\*\*)/g).map((part, j) =>
       part.startsWith("**") ? <b key={j}>{part.slice(2, -2)}</b> : <span key={j}>{part}</span>,
     );
   });
