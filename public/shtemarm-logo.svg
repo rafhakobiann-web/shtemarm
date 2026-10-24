@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
-  <title id="title">Shtemarm</title>
+  <title id="title">Shtemarm educational logo</title>
   <defs>
-    <linearGradient id="shtemarm-gradient" x1="18" y1="10" x2="108" y2="118" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#55c8ff"/>
-      <stop offset=".52" stop-color="#477bff"/>
-      <stop offset="1" stop-color="#9b4dff"/>
+    <linearGradient id="edu" x1="14" y1="18" x2="112" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39c6ff"/><stop offset=".55" stop-color="#477bff"/><stop offset="1" stop-color="#994cff"/>
     </linearGradient>
   </defs>
-  <path fill="url(#shtemarm-gradient)" d="M103 13 42 32c-10 3-16 9-16 17 0 8 6 13 16 15l32 7c7 2 10 4 10 8s-3 7-10 9L25 104l1 13 63-20c11-4 17-10 17-19 0-9-6-14-17-17l-31-7c-6-1-9-3-9-7 0-3 3-6 9-8l46-14z"/>
+  <g stroke="url(#edu)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 48 64 29 110 48 64 67 18 48Z" fill="url(#edu)" stroke="none"/>
+    <path d="M31 57v28c10 8 21 12 33 12s23-4 33-12V57L64 73 31 57Z" fill="url(#edu)" fill-opacity=".18" stroke-width="4"/>
+    <path d="M64 73v24" fill="none" stroke-width="4"/>
+    <path d="M110 49v27" fill="none" stroke-width="4"/>
+    <path d="M103 79h14l-2 9h-10l-2-9Z" fill="url(#edu)" stroke="none"/>
+  </g>
 </svg>
