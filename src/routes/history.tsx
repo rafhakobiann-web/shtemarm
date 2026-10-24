@@ -38,7 +38,18 @@ function HistoryPage() {
     <div className="space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-black">{tx("Հայոց պատմություն")}</h1>
-        <p className="text-sm text-muted-foreground">{tx("2026 թ. 1-ին փուլ · նմուշային թեստեր։ Շտեմարանները շուտով։")}</p>
+        <p className="text-sm text-muted-foreground">{tx("2026 թ. 1-ին փուլ · նմուշային թեստեր։ Կարող ես անցնել պաշտոնական թեստերը կամ կազմել քո սեփական փորձնական թեստը։")}</p>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="game" asChild>
+            <Link to="/history-book">{tx("Կազմել անհատական թեստ")}</Link>
+          </Button>
+          <a href="https://test.am/pdf.php?page=13" target="_blank" rel="noreferrer" className="inline-flex items-center rounded-xl border px-4 py-2 text-sm font-semibold hover:bg-muted">
+            {tx("Պաշտոնական քննությունների աղբյուր")}
+          </a>
+          <a href="https://test.am/pdf.php?page=110" target="_blank" rel="noreferrer" className="inline-flex items-center rounded-xl border px-4 py-2 text-sm font-semibold hover:bg-muted">
+            {tx("Հայոց պատմության շտեմարաններ")}
+          </a>
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {TESTS.map((id) => (
