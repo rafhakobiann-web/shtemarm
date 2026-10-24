@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, RotateCcw, Trophy } from "lucide-react";
-import { ENGLISH_LEVELS, LEVEL_TEST_QUESTIONS, getLevel, selectLevelQuestions } from "@/lib/levelTests";
+import { ENGLISH_LEVELS, LEVEL_TEST_QUESTIONS, getLevel, selectLevelQuestions, type LevelQuestion } from "@/lib/levelTests";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 import { Slider } from "@/components/ui/slider";
@@ -30,11 +30,26 @@ function LevelTestPage() {
   const tx = useTx();
   const { level: levelParam } = Route.useParams();
   const levelId = levelParam.toLowerCase();
-  const level = getLevel(levelId);
-  const bank = LEVEL_TEST_QUESTIONS[levelId] ?? [];
-  const [count, setCount] = useState(bank.length);
+  const placement = levelId === "placement";
+  const level = getLevel(levelId) ?? (placement ? { id: "placement", title: "A1–C1", subtitle: "Placement assessment", description: "Գտիր անգլերենի մոտավոր մակարդակդ" } : undefined);
+  const bank = placement ? Object.values(LEVEL_TEST_QUESTIONS).flat() : LEVEL_TEST_QUESTIONS[levelId] ?? [];
+  const [count, setCount] = useState(placement ? Math.min(20, bank.length) : bank.length);
   const [started, setStarted] = useState(false);
-  const questions = useMemo(() => bank.length ? selectLevelQuestions(levelId, count) : [], [levelId, count, bank]);
+  const questions = useMemo(() => {
+    if (!bank.length || count < 1 || count > bank.length) return [];
+    if (!placement) return selectLevelQuestions(levelId, count);
+    const shuffled = [...bank].sort(() => Math.random() - 0.5);
+    // Spread the placement test across all five levels before filling remaining slots.
+    const selected: LevelQuestion[] = [];
+    const used = new Set<string>();
+    for (const tier of ["a1", "a2", "b1", "b2", "c1"]) {
+      const tierQuestions = (LEVEL_TEST_QUESTIONS[tier] ?? []).sort(() => Math.random() - 0.5);
+      const item = tierQuestions.find((q) => !used.has(q.id));
+      if (item && selected.length < count) { selected.push(item); used.add(item.id); }
+    }
+    for (const item of shuffled) if (selected.length < count && !used.has(item.id)) { selected.push(item); used.add(item.id); }
+    return selected.sort(() => Math.random() - 0.5);
+  }, [levelId, count, bank, placement]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const correct = questions.filter((question) => answers[question.id] === question.answerIndex).length;
@@ -65,16 +80,16 @@ function LevelTestPage() {
       <section className="bg-hero rounded-3xl p-6 text-white sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wider opacity-80">English level test</p>
-            <h1 className="text-3xl font-black sm:text-4xl">{tx("Մակարդակ {level}", { level: level.title })}</h1>
-            <p className="text-sm opacity-90">{level.subtitle} · {tx(level.description)}</p>
+            <p className="text-xs font-bold uppercase tracking-wider opacity-80">{placement ? "English placement assessment" : "English level practice"}</p>
+            <h1 className="text-3xl font-black sm:text-4xl">{placement ? tx("Գտիր անգլերենի մակարդակդ") : tx("Մակարդակ {level}", { level: level.title })}</h1>
+            <p className="text-sm opacity-90">{placement ? tx("Խառը հարցեր՝ A1-ից մինչև C1") : `${level.subtitle} · ${tx(level.description)}`}</p>
           </div>
           <div className="rounded-2xl bg-primary-foreground/15 px-4 py-3 text-center">
             <p className="text-2xl font-black">{questions.length}</p>
             <p className="text-xs opacity-85">{tx("հարց")}</p>
           </div>
         </div>
-        <p className="mt-4 max-w-2xl text-sm opacity-90">{tx("Ընտրիր յուրաքանչյուր հարցի մեկ պատասխան։ Ավարտելուց հետո կտեսնես արդյունքը և ճիշտ պատասխանների բացատրությունները։")}</p>
+        <p className="mt-4 max-w-2xl text-sm opacity-90">{placement ? tx("Պատասխանիր տարբեր բարդության հարցերին։ Արդյունքը կտա մոտավոր մակարդակ և ցույց կտա՝ որ հարցերն են դժվար եղել։") : tx("Ընտրիր յուրաքանչյուր հարցի մեկ պատասխան։ Ավարտելուց հետո կտեսնես արդյունքը և ճիշտ պատասխանների բացատրությունները։")}</p>
       </section>
 
       {!started && <section className="space-y-5 border-y py-6">
@@ -154,6 +169,18 @@ function LevelTestPage() {
       </>}
     </div>
   );
+}
+
+function placementLevel(questions: LevelQuestion[], answers: Record<string, number>) {
+  const byLevel = ["a1", "a2", "b1", "b2", "c1"] as const;
+  let estimate = "A1";
+  for (const tier of byLevel) {
+    const tierQuestions = questions.filter((q) => q.id.startsWith(`${tier}-`));
+    if (!tierQuestions.length) continue;
+    const rate = tierQuestions.filter((q) => answers[q.id] === q.answerIndex).length / tierQuestions.length;
+    if (rate >= 0.6) estimate = tier.toUpperCase();
+  }
+  return estimate;
 }
 
 function skillLabel(skill: string) {
