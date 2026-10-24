@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
-import { StudyTools } from "@/components/StudyTools";
 
 const SUBJECTS = ["english", "math", "history"] as const;
 
@@ -330,8 +329,6 @@ function Index() {
         </SubjectRow>
       </section>
 
-      <StudyTools />
-
       <section className="space-y-6">
         <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -353,7 +350,6 @@ function Index() {
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · 70 հարց")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
-      <AboutSection />
       <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
         <div>
           <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
