@@ -228,11 +228,11 @@ function ArmenianSubject() {
         <h2 className="text-xl font-black">{tx("Ինտերակտիվ հարցաշար")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
-            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("24 հարց · 3 թեմատիկ բաժին")} />
+            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("32 հարց · 4 թեմատիկ բաժին")} />
           </Link>
           <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Արագ փորձնական քննություն")} sub={tx("Խառը հարցեր՝ բառագիտությունից, ձևաբանությունից և շարահյուսությունից")} icon={<Trophy className="size-5" />} />
         </div>
-        <p className="text-sm text-muted-foreground">{tx("Այս 24 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
+        <p className="text-sm text-muted-foreground">{tx("Այս 32 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
       </section>
       <section className="space-y-4">
         <h2 className="text-xl font-black">{tx("Պաշտոնական թեստեր և պատասխաններ")}</h2>
