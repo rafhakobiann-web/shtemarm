@@ -23,10 +23,21 @@ async function pageDataUrl(bookId: string, page: number) {
   return `data:image/jpeg;base64,${btoa(binary)}`;
 }
 
-function renderBold(text: string) {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>,
-  );
+function renderExplanation(text: string) {
+  return text.split(/(```[\\s\\S]*?```)/g).map((block, i) => {
+    if (block.startsWith("```")) {
+      const diagram = block.replace(/^```[^\\n]*\\n?/, "").replace(/```$/, "").trim();
+      return (
+        <div key={i} className="my-3 overflow-x-auto rounded-2xl border border-primary/20 bg-background p-4 shadow-sm">
+          <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary"><Sparkles className="size-3.5" />Գծագիր / սխեմա</p>
+          <pre className="min-w-max font-mono text-sm leading-relaxed text-foreground">{diagram}</pre>
+        </div>
+      );
+    }
+    return block.split(/(\\*\\*[^*]+\\*\\*)/g).map((part, j) =>
+      part.startsWith("**") ? <b key={j}>{part.slice(2, -2)}</b> : <span key={j}>{part}</span>,
+    );
+  });
 }
 
 /**
@@ -72,7 +83,7 @@ export function MathExplain(props: {
           role={failed ? "alert" : "status"}
           className="mt-3 whitespace-pre-line rounded-xl border-l-4 border-sky bg-secondary/60 p-4 text-sm leading-relaxed"
         >
-          {renderBold(text)}
+          {renderExplanation(text)}
         </div>
       )}
       {(!text || failed) && (
