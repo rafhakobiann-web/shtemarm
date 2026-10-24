@@ -185,58 +185,6 @@ function HistorySubject() {
   );
 }
 
-function TikTokIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="currentColor">
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  );
-}
-
-function AboutSection() {
-  const tx = useTx();
-  // Opened from the header menu (/#about): bring the section into view once the page is ready.
-  useEffect(() => {
-    if (window.location.hash === "#about") document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-  return (
-    <section id="about" className="glass scroll-mt-24 space-y-6 rounded-3xl p-6 sm:p-8">
-      <h2 className="text-2xl font-black sm:text-3xl">{tx("Մեր մասին")}</h2>
-      <div className="space-y-4 text-sm leading-relaxed sm:text-base">
-        <p>
-          <b>{tx("Ինչու ստեղծվեց Shtemarm-ը։")}</b> {tx("Քննությանը պատրաստվելը չպետք է լինի խառնաշփոթ։ Շատ աշակերտներ շտեմարանները, թեստերը և պատասխանները փնտրում են տարբեր տեղերում։ Մենք ուզեցինք, որ ամեն ինչ լինի մեկ տեղում՝ պարզ և միշտ հասանելի։")}
-        </p>
-        <p>
-          <b>{tx("Ինչպես է օգնում աշակերտներին։")}</b> {tx("Առաջադրանքներն ունեն ճիշտ պատասխան և բացատրություն, որպեսզի սխալից հետո կարողանաս հասկանալ, թե ինչու ես սխալվել։ Խաղային ռեժիմում սովորում ես քայլ առ քայլ և հավաքում միավորներ, իսկ դասական ռեժիմում ամբողջ բաժինը տեսնում ես մեկ էջում։ Թեստերի կազմիչով ընտրում ես բաժինները և հարցերի քանակը, իսկ քննության ռեժիմը կառուցված է միասնական քննության ձևաչափով։")}
-        </p>
-        <div className="rounded-2xl bg-muted/60 p-4 sm:p-5">
-          <p>
-            <b>{tx("Իմ մասին։")}</b> {tx("Ես Ռաֆիկ Հակոբյանն եմ, 17 տարեկան։ Shtemarm-ը ստեղծել եմ այն պատճառով, որ լավ հասկանում եմ, թե որքան դժվար է պատրաստվել քննություններին, երբ նյութերը ցրված են։ Ուզում եմ օգնել իմ հասակակիցներին՝ խնայելով նրանց ժամանակը և նվազեցնելով անհանգստությունը։ Եթե ունես առաջարկ կամ նկատես սխալ, գրիր ինձ TikTok-ում։")}
-          </p>
-        </div>
-      </div>
-      <a
-        href="https://www.tiktok.com/@shtemarm_official"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex items-center justify-between gap-3 rounded-2xl border bg-background p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
-      >
-        <span className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl bg-foreground text-background">
-            <TikTokIcon className="size-6" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">TikTok</span>
-            <span className="block truncate font-display text-base font-bold">@shtemarm_official</span>
-          </span>
-        </span>
-        <span className="text-sm font-bold text-primary group-hover:underline">{tx("Բացել →")}</span>
-      </a>
-      <p className="text-center text-xs font-semibold text-muted-foreground">Shtemarm @ 2026</p>
-    </section>
-  );
-}
-
 function Index() {
   const tx = useTx();
   const progress = useProgress();
