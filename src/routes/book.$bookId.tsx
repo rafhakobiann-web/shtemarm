@@ -42,7 +42,7 @@ function BookPage() {
           <p className="text-muted-foreground">{meta.sub}</p>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
-              {id > 20 ? (
+              {id >= 21 && id <= 23 ? (
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
                 <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
