@@ -34,13 +34,14 @@ type Item = { section: number; unit: Unit };
 type Style = "game" | "classic";
 const isHistoryId = (id: string) => Number(id) >= 21 && Number(id) <= 23;
 const isBiologyId = (id: string) => Number(id) >= 31 && Number(id) <= 34;
+const isArmenianId = (id: string) => Number(id) === 41;
 const bookName = (id: string) =>
-  id === "all" ? "Բոլոր շտեմարանները" : isHistoryId(id) ? `Հայոց պատմություն · Գիրք ${Number(id) - 20}` : isBiologyId(id) ? `Կենսաբանություն · Մաս ${Number(id) - 30}` : `Շտեմարան ${id}`;
+  id === "all" ? "Բոլոր շտեմարանները" : isArmenianId(id) ? "Հայոց լեզու · Փորձնական հարցաշար" : isHistoryId(id) ? `Հայոց պատմություն · Գիրք ${Number(id) - 20}` : isBiologyId(id) ? `Կենսաբանություն · Մաս ${Number(id) - 30}` : `Շտեմարան ${id}`;
 
 type Tx = ReturnType<typeof useTx>;
 /** On-screen workbook name (bookName above is only for head(), which cannot use hooks). */
 const bookLabel = (tx: Tx, id: string) =>
-  id === "all" ? tx("Բոլոր շտեմարանները") : isHistoryId(id) ? tx("Հայոց պատմություն · Գիրք {n}", { n: Number(id) - 20 }) : isBiologyId(id) ? tx("Կենսաբանություն · Մաս {n}", { n: Number(id) - 30 }) : tx("Շտեմարան {n}", { n: id });
+  id === "all" ? tx("Բոլոր շտեմարանները") : isArmenianId(id) ? tx("Հայոց լեզու · Փորձնական հարցաշար") : isHistoryId(id) ? tx("Հայոց պատմություն · Գիրք {n}", { n: Number(id) - 20 }) : isBiologyId(id) ? tx("Կենսաբանություն · Մաս {n}", { n: Number(id) - 30 }) : tx("Շտեմարան {n}", { n: id });
 /** Section name, built the same way as secTitle in lib/books, but translated. */
 const sectionName = (tx: Tx, s: { n: number; title?: string; label?: string }) =>
   s.label ?? (s.title ? tx("Բաժին {n}", { n: s.title }) : tx("Բաժին {n}", { n: s.n }));
