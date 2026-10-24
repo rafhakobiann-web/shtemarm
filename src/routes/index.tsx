@@ -82,14 +82,14 @@ function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string;
   return <Link to={to!} params={params as never} search={search as never} className={cls}>{body}</Link>;
 }
 
-function SubjectHeader({ title, sub }: { title: string; sub: string }) {
+function SubjectHeader({ title, sub, beta = false }: { title: string; sub: string; beta?: boolean }) {
   const tx = useTx();
   return (
     <div className="space-y-3">
       <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> {tx("Բոլոր առարկաները")}
       </Link>
-      <h1 className="text-3xl font-black sm:text-4xl">{title}</h1>
+      <h1 className="flex flex-wrap items-center gap-2 text-3xl font-black sm:text-4xl">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h1>
       <p className="text-muted-foreground">{sub}</p>
     </div>
   );
@@ -138,7 +138,7 @@ function MathSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} />
+      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} beta />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
