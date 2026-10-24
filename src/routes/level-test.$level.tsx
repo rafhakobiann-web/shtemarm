@@ -49,7 +49,7 @@ function LevelTestPage() {
     }
     for (const item of shuffled) if (selected.length < count && !used.has(item.id)) { selected.push(item); used.add(item.id); }
     return selected.sort(() => Math.random() - 0.5);
-  }, [levelId, count, bank, placement]);
+  }, [levelId, count, placement]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const correct = questions.filter((question) => answers[question.id] === question.answerIndex).length;
