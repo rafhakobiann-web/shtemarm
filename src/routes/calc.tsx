@@ -79,7 +79,7 @@ function CalcPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6">
       <header className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-black sm:text-3xl">
           <Calculator className="size-7 text-primary" /> {tx("Հաշվիչ")}
@@ -129,7 +129,7 @@ function CalcPage() {
             <Button variant="outline" onClick={() => fileRef.current?.click()}>
               <ImagePlus /> {tx("Ընտրել նկար")}
             </Button>
-            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { void pick(e.target.files?.[0]); e.currentTarget.value = ""; }} />
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             <Button variant="game" className="ml-auto" onClick={solve} disabled={busy || (!text.trim() && !img)}>
               {busy ? <Loader2 className="animate-spin" /> : <Send />} {tx("Լուծել")}
