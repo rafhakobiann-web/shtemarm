@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ClipboardCheck, Trophy } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Trophy, Brain } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -110,8 +110,9 @@ function EnglishSubject() {
         </div>
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն և մակարդակի ստուգում")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
+          <ExamTile to="/level-test/$level" params={{ level: "placement" }} title={tx("Ստուգել անգլերենի մակարդակս")} sub={tx("Խառը հարցեր՝ A1–C1 · մոտավոր գնահատում")} icon={<Brain className="size-5" />} />
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
