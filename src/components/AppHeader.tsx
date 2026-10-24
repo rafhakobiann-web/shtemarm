@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock, Calculator, MessageCircle, Gamepad2, Crown } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock, Calculator, MessageCircle, Gamepad2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -103,7 +103,8 @@ export function AppHeader() {
                 <Link to="/" hash="about" onClick={close} className={item}>
                   <Info className="size-4" />{t.about}
                 </Link>
-                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />Մինի խաղեր</Link>\n                <Link to="/subscription" onClick={close} className={item}><Crown className="size-4" />Բաժանորդագրություն <span className="ml-auto text-xs text-primary">Շուտով</span></Link>\n                <Link to="/chat" onClick={close} className={item}>
+                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />Մինի խաղեր</Link>
+                <Link to="/chat" onClick={close} className={item}>
                   <MessageSquare className="size-4" />{t.chat}
                 </Link>
                 <Link to="/calc" onClick={close} className={item}>
