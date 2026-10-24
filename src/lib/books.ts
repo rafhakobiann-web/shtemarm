@@ -37,7 +37,7 @@ export const BIO_BOOKS = [
 
 /** Original Armenian-language practice bank; official past-paper links are shown separately. */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 24 հարց", cover: "/covers/armenian-1.webp" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 24 հարց", cover: "/covers/armenian-1.svg" },
 ] as const;
 
 /** Every playable book page, English, history, biology and Armenian language. */
