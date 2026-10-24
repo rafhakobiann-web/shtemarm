@@ -48,10 +48,10 @@ function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: s
   );
 }
 
-function SubjectRow({ title, children }: { title: string; children: React.ReactNode }) {
+function SubjectRow({ title, children, beta = false }: { title: string; children: React.ReactNode; beta?: boolean }) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-black">{title}</h3>
+      <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{children}</div>
     </div>
   );
@@ -231,6 +231,38 @@ function Index() {
               <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
             </div>
           )}
+          {(() => {
+            const values = Object.values(progress.answers);
+            const right = values.filter((v) => v === 1).length;
+            const wrong = values.filter((v) => v === 0).length;
+            const answered = values.length;
+            const accuracy = answered ? Math.round((right / answered) * 100) : 0;
+            return (
+              <section className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6" aria-label={tx("Առաջընթացի վերլուծություն")}>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="flex items-center gap-2 text-lg font-black"><Trophy className="size-5 text-primary" />{tx("Առաջընթացի վերլուծություն")}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{tx("Տես՝ ինչն է արդեն լավ ստացվում և ինչն է պետք կրկնել։")}</p>
+                  </div>
+                  <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-black text-primary">{accuracy}% {tx("ճշտություն")}</span>
+                </div>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-success transition-[width] duration-500" style={{ width: String(accuracy) + "%" }} />
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-success/8 p-4">
+                    <p className="flex items-center gap-2 font-bold text-success"><CheckCircle2 className="size-4" />{tx("Ուժեղ կողմեր")}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{answered ? tx("Դու արդեն ճիշտ ես պատասխանել {n} հարցի։ Շարունակի՛ր պահպանել այս արդյունքը։", { n: right }) : tx("Երբ սկսես լուծել հարցեր, այստեղ կերևան ճիշտ պատասխաններդ և ձեռք բերած հմտությունները։")}</p>
+                  </div>
+                  <div className="rounded-2xl bg-amber-500/8 p-4">
+                    <p className="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-300"><RotateCcw className="size-4" />{tx("Կրկնելու կարիք ունեն")}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{wrong ? tx("Կա {n} սխալ պատասխան․ կրկնիր այդ հարցերը և փորձիր նորից։", { n: wrong }) : tx("Առայժմ սխալ պատասխաններ չկան։ Նոր թեստեր լուծիր՝ բացերը բացահայտելու համար։")}</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">{tx("Վերլուծությունը հիմնված է պահված պատասխանների վրա և դեռ չի դասակարգում առանձին թեմաները։")}</p>
+              </section>
+            );
+          })()}
           <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
         </div>
 
@@ -242,7 +274,7 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title={tx("Մաթեմատիկա")}>
+        <SubjectRow title={tx("Մաթեմատիկա")} beta>
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
               <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
@@ -261,7 +293,7 @@ function Index() {
         <SubjectRow title={tx("Հայոց լեզու")}>
           <ComingSoon title={tx("Հայոց լեզու")} />
         </SubjectRow>
-        <SubjectRow title={tx("Կենսաբանություն")}>
+        <SubjectRow title={tx("Կենսաբանություն")} beta>
           {BIO_BOOKS.map((b) =>
             b.locked ? (
               <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
