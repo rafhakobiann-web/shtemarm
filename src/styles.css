@@ -176,3 +176,37 @@
 @keyframes shake { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-6px) } 75% { transform: translateX(6px) } }
 @utility animate-pop { animation: pop-in .25s ease-out; }
 @utility animate-shake { animation: shake .3s ease-in-out; }
+
+/* User-selected accessibility preferences */
+html.user-high-contrast {
+  --background: #ffffff;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --muted: #eeeeee;
+  --muted-foreground: #333333;
+  --border: #555555;
+  --input: #555555;
+}
+html.dark.user-high-contrast {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #080808;
+  --card-foreground: #ffffff;
+  --popover: #080808;
+  --popover-foreground: #ffffff;
+  --muted: #1d1d1d;
+  --muted-foreground: #eeeeee;
+  --border: #bdbdbd;
+  --input: #bdbdbd;
+}
+html.user-reduced-motion *,
+html.user-reduced-motion *::before,
+html.user-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
