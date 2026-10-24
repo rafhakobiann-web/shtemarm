@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
+import { StudyTools } from "@/components/StudyTools";
 
 const SUBJECTS = ["english", "math", "history"] as const;
 
@@ -328,6 +329,8 @@ function Index() {
           )}
         </SubjectRow>
       </section>
+
+      <StudyTools />
 
       <section className="space-y-6">
         <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
