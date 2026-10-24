@@ -229,7 +229,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 lg:max-w-6xl [--sticky-top:9.5rem]">
-      <div className="sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border bg-card/95 p-3 backdrop-blur">
+      <div className="test-toolbar sticky top-16 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border bg-card/95 p-3 shadow-sm backdrop-blur transition-shadow duration-200">
         <div className="min-w-0">
           <p className="truncate font-display text-sm font-bold">{kind === "exam" ? tx("Քննություն") : tx("Թեստ")} · {bookLabel(tx, bookId)}</p>
           <p className="text-xs text-muted-foreground">
@@ -257,7 +257,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
       {style === "game" && !finished && (
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <div className="h-3 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-success transition-all" style={{ width: `${(cur / items.length) * 100}%` }} />
+            <div className="h-full rounded-full bg-success transition-[width] duration-500 ease-out" style={{ width: `${(cur / items.length) * 100}%` }} />
           </div>
           <span className={cn("font-display text-sm font-bold", combo >= 2 ? "text-sun" : "text-muted-foreground")}>⚡×{combo}</span>
         </div>
@@ -270,7 +270,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
         if (style === "game" && !finished && idx !== cur) return null;
         const isChecked = !!checked[unit.id];
         return (
-          <div key={unit.id} className="space-y-3">
+          <div key={unit.id} className="question-step space-y-3">
           <UnitCard
             key={unit.id}
             unit={unit}
