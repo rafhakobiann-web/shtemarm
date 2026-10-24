@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProgress } from "@/lib/progress";
 import { useLang, useTx } from "@/lib/lang";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -44,6 +45,15 @@ function AuthPage() {
         <h1 className="text-2xl font-black">{tx("Ձեր հաշիվը")}</h1>
         <p className="break-all text-sm text-muted-foreground">{user}</p>
         <p className="text-sm">{tx("Առաջընթացը ({xp} միավոր, {answers} պատասխան) պահվում է և՛ այս սարքում, և՛ առցանց։", { xp: p.xp, answers: Object.keys(p.answers).length })}</p>
+        <section className="space-y-3 rounded-xl border bg-muted/30 p-4">
+          <h2 className="font-bold">{tx("Ուսումնական առաջընթաց")}</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg bg-background p-3"><p className="text-xs text-muted-foreground">{tx("Ճիշտ պատասխաններ")}</p><p className="text-xl font-black">{Object.values(p.answers).filter((v) => v === 1).length}</p></div>
+            <div className="rounded-lg bg-background p-3"><p className="text-xs text-muted-foreground">{tx("Կրկնելու հարցեր")}</p><p className="text-xl font-black">{Object.values(p.answers).filter((v) => v === 0).length}</p></div>
+          </div>
+          {Object.values(p.answers).some((v) => v === 0) ? <p className="text-sm text-muted-foreground">{tx("Առաջարկ․ կրկնիր սխալ պատասխանած հարցերը և նոր թեստ անցիր՝ առաջընթացը համեմատելու համար։")}</p> : <p className="text-sm text-muted-foreground">{tx("Լուծիր մի քանի թեստ՝ թույլ թեմաները բացահայտելու համար։")}</p>}
+          <Link to="/" search={{ subject: "english" }} className="inline-flex rounded-xl border bg-background px-3 py-2 text-sm font-semibold">{tx("Անցնել անգլերենի թեստերը")}</Link>
+        </section>
         {p.exams.length > 0 && (
           <div className="space-y-1 text-sm">
             <p className="font-bold">{tx("Վերջին քննությունները")}</p>
