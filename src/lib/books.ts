@@ -35,11 +35,17 @@ export const BIO_BOOKS = [
   { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.webp", locked: true },
 ] as const;
 
-/** Every playable book page, English, history and biology. */
+/** Original Armenian-language practice bank; official past-paper links are shown separately. */
+export const ARMENIAN_BOOKS = [
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 24 հարց", cover: "/covers/armenian-1.webp" },
+] as const;
+
+/** Every playable book page, English, history, biology and Armenian language. */
 export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [
   ...BOOKS,
   ...HISTORY_BOOKS,
   ...BIO_BOOKS.filter((b) => !b.locked),
+  ...ARMENIAN_BOOKS,
 ];
 
 const cache = new Map<number, Promise<Book>>();
@@ -62,7 +68,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id > 30 ? `/data/bio-book${id - 30}.json` : id > 20 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then((r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
