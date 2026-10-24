@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
+import { useProgress, level } from "@/lib/progress";
 
 const SUBJECTS = ["english", "math", "history"] as const;
 
@@ -238,6 +239,7 @@ function AboutSection() {
 
 function Index() {
   const tx = useTx();
+  const progress = useProgress();
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
@@ -255,6 +257,32 @@ function Index() {
             {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
           </p>
           <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground">{tx("Քո միավորները")}</p>
+              <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
+              <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
+            </div>
+            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground">{tx("Ճիշտ պատասխաններ")}</p>
+              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 1).length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{tx("Ընդհանուր պատասխանված հարցերից")}</p>
+            </div>
+            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground">{tx("Կրկնելու հարցեր")}</p>
+              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 0).length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{tx("Անհատական առաջարկ")}</p>
+            </div>
+          </div>
+          {Object.values(progress.answers).some((v) => v === 0) && (
+            <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-bold">{tx("Առաջարկ քեզ համար")}</p>
+                <p className="text-sm text-muted-foreground">{tx("Կրկնիր նախկինում սխալ պատասխանած հարցերը, հետո նորից ստուգիր առաջընթացդ։")}</p>
+              </div>
+              <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
         </div>
 
