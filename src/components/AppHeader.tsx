@@ -39,7 +39,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
-      <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
           <span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span>
