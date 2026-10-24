@@ -132,7 +132,10 @@ function pickSample(index: Index, excluded: Set<string>): Item[] {
     picked.push(...candidates.slice(0, EXAM_SIZE - picked.length));
   }
 
-  // If a source book ever contains fewer than 65 sub-questions, return the available count honestly.
+  // Never silently label a shorter set as the 65-question exam.
+  if (picked.length !== EXAM_SIZE) {
+    throw new Error(`Math exam requires ${EXAM_SIZE} answerable questions, but only ${picked.length} were available.`);
+  }
   return picked;
 }
 /** Items of the chosen sections, grouped by task so a task's sub-questions are picked together. */
@@ -332,6 +335,7 @@ function MathPage() {
 
   // Running test
   const [exam, setExam] = useState<Item[] | null>(null);
+  const [examError, setExamError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -364,6 +368,7 @@ function MathPage() {
   const index = q.data;
 
   function begin(items: Item[]) {
+    setExamError(null);
     setExam(items);
     setAnswers({});
     setSubmitted(false);
@@ -372,12 +377,22 @@ function MathPage() {
   }
 
   function start() {
-    if (mode === "exam") {
-      const picked = pickSample(index, readLast());
-      writeLast(picked.map((p) => p.id));
-      begin(picked);
-    } else {
-      begin(buildCustom(index, books, selectedKeys, shownCount));
+    setExamError(null);
+    try {
+      if (mode === "exam") {
+        const picked = pickSample(index, readLast());
+        writeLast(picked.map((p) => p.id));
+        begin(picked);
+      } else {
+        const picked = buildCustom(index, books, selectedKeys, shownCount);
+        if (picked.length !== shownCount) {
+          setExamError(tx("Ընտրված բաժիններում բավարար պատասխանելի հարցեր չկան։ Փոխիր բաժինները կամ հարցերի քանակը։"));
+          return;
+        }
+        begin(picked);
+      }
+    } catch {
+      setExamError(tx("Չհաջողվեց կազմել 65 հարցից բաղկացած թեստը։ Ստուգիր երկու մաթեմատիկայի գրքերի հարցերի տվյալները։"));
     }
   }
 
@@ -405,6 +420,7 @@ function MathPage() {
       {!exam ? (
         <>
           <h1 className="text-2xl font-black sm:text-3xl">{tx("Մաթեմատիկայի թեստ")}</h1>
+          {examError && <p role="alert" className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-medium text-destructive">{examError}</p>}
           {progress.exams[0] && (
             <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
               {tx("Վերջին արդյունքը՝ {c} / {t}", { c: progress.exams[0].correct, t: progress.exams[0].total })}
