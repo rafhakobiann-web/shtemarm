@@ -249,7 +249,9 @@ function Index() {
   }, []);
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
-  if (subject === "history") return <HistorySubject />;\n  if (subject === "biology") return <BiologySubject />;\n  if (subject === "armenian") return <ArmenianSubject />;
+  if (subject === "history") return <HistorySubject />;
+  if (subject === "biology") return <BiologySubject />;
+  if (subject === "armenian") return <ArmenianSubject />;
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
@@ -344,10 +346,11 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title={tx("Հայոց լեզու")}>
-          <ComingSoon title={tx("Հայոց լեզու")} />
+        <SubjectRow title={tx("Հայոց լեզու և հայ գրականություն")} beta>
+          <Link to="/" search={{ subject: "armenian" }} className={TILE}><TileBody title={tx("Շտեմարան 1–3")} sub={tx("Շտեմարանի երեք մասերը")} /></Link>
         </SubjectRow>
-        <SubjectRow title={tx("Կենսաբանություն")} beta>\n          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[3/4] flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
+        <SubjectRow title={tx("Կենսաբանություն")} beta>
+          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[3/4] flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
           {BIO_BOOKS.map((b) =>
             b.locked ? (
               <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
