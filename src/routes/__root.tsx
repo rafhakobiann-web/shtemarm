@@ -136,9 +136,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <AppHeader />
       <PersonalizationControls />
-      <main className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <TranslationProvider><Outlet /></TranslationProvider>
       </main>
       <Toaster />
