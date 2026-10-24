@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -275,6 +275,14 @@ function Index() {
             ),
           )}
         </SubjectRow>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Կենսաբանություն · Թեստեր")}</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "custom", style: "classic" }} title={tx("Կենսաբանություն · Մաս 1")} sub={tx("Կազմիր թեստ առաջին գրքի հարցերից")} icon={<Dna className="size-5" />} />
+          <ExamTile to="/test/$bookId" params={{ bookId: "32" }} search={{ mode: "custom", style: "classic" }} title={tx("Կենսաբանություն · Մաս 2")} sub={tx("Կազմիր թեստ երկրորդ գրքի հարցերից")} icon={<Dna className="size-5" />} />
+        </div>
       </section>
 
       <section className="space-y-6">
