@@ -133,7 +133,22 @@
       radial-gradient(60rem 42rem at 50% 115%, var(--blob-c), transparent 60%);
     background-attachment: fixed;
   }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }\n\n  /* Keep Armenian glyphs readable and consistent across the entire interface. */\n  :lang(hy), :lang(hy) body, :lang(hy) button, :lang(hy) input, :lang(hy) textarea, :lang(hy) select {\n    font-family: "Noto Sans Armenian", "DejaVu Sans", system-ui, sans-serif;\n    font-synthesis: none;\n  }\n  :lang(hy) h1, :lang(hy) h2, :lang(hy) h3, :lang(hy) h4, :lang(hy) .font-display {\n    font-family: "Noto Sans Armenian", "DejaVu Sans", system-ui, sans-serif;\n    letter-spacing: 0;\n    line-height: 1.35;\n  }\n  :lang(hy) .passage {\n    font-family: "Noto Serif Armenian", "Noto Sans Armenian", serif;\n    line-height: 1.8;\n  }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+
+  /* Keep Armenian glyphs readable and consistent across the entire interface. */
+  :lang(hy), :lang(hy) body, :lang(hy) button, :lang(hy) input, :lang(hy) textarea, :lang(hy) select {
+    font-family: "Noto Sans Armenian", "DejaVu Sans", system-ui, sans-serif;
+    font-synthesis: none;
+  }
+  :lang(hy) h1, :lang(hy) h2, :lang(hy) h3, :lang(hy) h4, :lang(hy) .font-display {
+    font-family: "Noto Sans Armenian", "DejaVu Sans", system-ui, sans-serif;
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+  :lang(hy) .passage {
+    font-family: "Noto Serif Armenian", "Noto Sans Armenian", serif;
+    line-height: 1.8;
+  }
 }
 
 @utility shadow-card { box-shadow: var(--shadow-card), var(--glass-highlight); }
