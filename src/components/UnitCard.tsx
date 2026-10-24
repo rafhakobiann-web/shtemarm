@@ -210,7 +210,7 @@ export function UnitCard(props: {
     const show = revealed(q.n);
     const chosen = a?.mc?.[q.n];
     return (
-      <div key={q.n} className={cn("rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
+      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -226,7 +226,7 @@ export function UnitCard(props: {
                 key={k}
                 onClick={() => { if (!show) onChange({ ...a, mc: { ...a?.mc, [q.n]: k } }); }}
                 className={cn(
-                  "flex min-h-11 items-start gap-2 rounded-lg border-2 px-3 py-2 text-left text-[0.95rem] transition-colors",
+                  "answer-option flex min-h-11 items-start gap-2 rounded-lg border-2 px-3 py-2 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200",
                   !show && isSel && "border-primary bg-secondary",
                   !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted",
                   show && isC && "border-success bg-success/10",
@@ -270,7 +270,7 @@ export function UnitCard(props: {
     const val = a?.mc?.[q.n] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <div key={q.n} className={cn("rounded-xl border bg-card p-4", show && !ok && "animate-shake")}>
+      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && !ok && "animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -363,7 +363,7 @@ export function UnitCard(props: {
       : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
 
   return (
-    <article className="shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
+    <article className="question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
       {props.header}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
