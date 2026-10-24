@@ -42,7 +42,7 @@ export function AppHeader() {
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
-          <span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span>
+          <span className="flex min-w-0 items-center gap-2"><span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span><span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span></span>
         </Link>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-3">
           <div className="flex items-center gap-1.5" title={t.darkMode}>
