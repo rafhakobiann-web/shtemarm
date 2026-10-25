@@ -115,12 +115,14 @@ function useIndex() {
     queryFn: async (): Promise<Index> => {
       const [r, textR] = await Promise.all([
         fetch("/data/math-books-index.json"),
-        fetch("/data/math-text-questions.json"),
+        fetch("/data/math-text-questions.json").catch(() => null),
       ]);
       if (!r.ok) throw new Error("load failed");
       const index: Index = await r.json();
-      if (textR.ok) {
-        const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+      if (textR?.ok) {
+        try {
+          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+
         for (const [bookId, sections] of Object.entries(extra)) {
           for (const [sectionId, tasks] of Object.entries(sections)) {
             const [chapter, section] = sectionId.split("-").map(Number);
@@ -135,6 +137,9 @@ function useIndex() {
               task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
             }
           }
+        }
+        } catch {
+          // The transcription bank is supplementary; a failed response must not crash math pages.
         }
       }
       return index;
