@@ -128,8 +128,9 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [failed, setFailed] = useState(false);
   return (
     <div>
-    {text && <div role={failed ? "alert" : "status"} className="animate-pop mt-3 whitespace-pre-line rounded-xl border-l-4 border-sky bg-secondary/60 p-4 text-sm leading-relaxed">
-      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>)}
+    {text && <div role={failed ? "alert" : "status"} className="animate-pop mt-3 rounded-xl border border-sky/30 bg-secondary/60 p-4 text-sm leading-relaxed">
+      <p className="mb-2 flex items-center gap-2 font-black text-foreground"><Sparkles className="size-4 shrink-0 text-primary" />{tx("Բացատրություն")}</p>
+      <div className="whitespace-pre-line">{text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>)}</div>
     </div>}
     {(!text || failed) && <Button
       variant="secondary"
@@ -151,7 +152,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       className="mt-3 h-auto min-h-10 whitespace-normal text-left"
     >
       {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Բացատրել")}
+      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Ստանալ բացատրություն")}
     </Button>}
     </div>
   );
