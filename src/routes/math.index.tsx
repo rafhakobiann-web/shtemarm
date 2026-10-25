@@ -47,6 +47,63 @@ const LAST_KEY = "math-exam-last-ids";
 const BOOK_IDS = ["matem-1", "matem-2"] as const;
 const BOOK_NAMES: Record<string, string> = { "matem-1": "Մաթեմատիկա · Մաս 1", "matem-2": "Մաթեմատիկա · Մաս 2" };
 
+const SECTION_TITLES: Record<string, Record<string, string>> = {
+  "matem-1": {
+    "1:1": "Թվաբանական առաջադրանքներ",
+    "1:2": "Արտահայտությունների ձևափոխություններ և արժեքների հաշվում",
+    "1:3": "Հավասարումներ",
+    "1:4": "Անհավասարումներ",
+    "1:5": "Տեքստային խնդիրներ",
+    "1:6": "Պրոգրեսիաներ",
+    "1:7": "Ֆունկցիաներ",
+    "1:8": "Հարթաչափություն",
+    "1:9": "Տարածաչափություն",
+    "1:10": "Կոորդինատների մեթոդ, վեկտորներ",
+    "2:1": "Արտահայտությունների ձևափոխություններ և արժեքների հաշվում",
+    "2:2": "Հավասարումներ և անհավասարումներ",
+    "2:3": "Տեքստային խնդիրներ",
+    "2:4": "Պրոգրեսիաներ",
+    "2:5": "Ֆունկցիաներ",
+    "2:6": "Հարթաչափություն",
+    "2:7": "Տարածաչափություն",
+    "2:8": "Միացություններ",
+    "3:1": "Հավասարումներ և անհավասարումներ",
+    "3:2": "Ֆունկցիաներ",
+    "3:3": "Հարթաչափություն",
+    "3:4": "Տարածաչափություն",
+  },
+  "matem-2": {
+    "1:1": "Թվաբանական առաջադրանքներ",
+    "1:2": "Արտահայտությունների ձևափոխություններ և արժեքների հաշվում",
+    "1:3": "Հավասարումներ",
+    "1:4": "Անհավասարումներ",
+    "1:5": "Տեքստային խնդիրներ",
+    "1:6": "Պրոգրեսիաներ",
+    "1:7": "Ֆունկցիաներ",
+    "1:8": "Հարթաչափություն",
+    "1:9": "Տարածաչափություն",
+    "1:10": "Կոորդինատների մեթոդ, վեկտորներ",
+    "2:1": "Արտահայտությունների ձևափոխություններ և արժեքների հաշվում",
+    "2:2": "Հավասարումներ և անհավասարումներ",
+    "2:3": "Տեքստային խնդիրներ",
+    "2:4": "Ֆունկցիաներ",
+    "2:5": "Հարթաչափություն",
+    "2:6": "Տարածաչափություն",
+    "2:7": "Կոորդինատների մեթոդ, վեկտորներ",
+    "2:8": "Միացություններ",
+    "3:1": "Թվաբանական առաջադրանքներ",
+    "3:2": "Հավասարումներ և անհավասարումներ",
+    "3:3": "Պրոգրեսիաներ",
+    "3:4": "Ֆունկցիաներ",
+    "3:5": "Հարթաչափություն",
+    "3:6": "Տարածաչափություն",
+  },
+};
+function sectionTitle(bookId: string, chapter: number, section: number) {
+  return SECTION_TITLES[bookId]?.[`${chapter}:${section}`] ?? `Բաժին ${section}`;
+}
+
+
 // The official math-exam structure has not been verified against a math sample paper.
 // Keep this as a 65-question practice test drawn from both source books, not an asserted official blueprint.
 
@@ -458,29 +515,24 @@ function MathPage() {
             ))}
           </div>
 
-          <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5" aria-labelledby="extra-math-practice">
+          <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5" aria-labelledby="math-pdf-books">
             <div className="space-y-1">
-              <h2 id="extra-math-practice" className="text-lg font-bold">{tx("Լրացուցիչ քննական թեստեր")}</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">{tx("Օգտագործիր նաև հրապարակված քննությունների ամբողջական տարբերակները։ Սրանք արտաքին աղբյուրներ են, իսկ Shtemarm-ի 65 հարցանոց փորձնական թեստը կազմվում է քո երկու շտեմարաններից։")}</p>
+              <h2 id="math-pdf-books" className="text-lg font-bold">{tx("Բնօրինակ շտեմարանները՝ PDF ձևաչափով")}</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">{tx("Այս երկու ամբողջական PDF-երը հենց կայքում պահված են։ Կարող ես բացել կամ ներբեռնել դրանք՝ առանց արտաքին կայք վերահղվելու։ Թեստի հարցերն ընտրվում են նույն գրքերի առաջադրանքներից։")}</p>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              <a href="https://dimord.am/public/tests" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40">
-                <span className="block font-semibold">{tx("ԳԹԿ · Թեստեր և պատասխաններ")}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{tx("Պաշտոնական հրապարակված քննական թեստերի էջ")}</span>
-                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
+              <a href="/math/books/matem-1.pdf" target="_blank" rel="noreferrer" className="group rounded-xl border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40">
+                <span className="block font-semibold">{tx("Մաթեմատիկա · Մաս 1")}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{tx("Ամբողջական PDF · 288 էջ")}</span>
+                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">{tx("Բացել PDF-ը")} ↗</span>
               </a>
-              <a href="https://test.am/pdf.php?page=108" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40">
-                <span className="block font-semibold">{tx("Թեստ.am · Մաթեմատիկայի շտեմարաններ")}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{tx("Տարիներով դասավորված շտեմարաններ և PDF նյութեր")}</span>
-                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
-              </a>
-              <a href="https://miasnakan.parsart.am/" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40 sm:col-span-2">
-                <span className="block font-semibold">{tx("Միասնական քննությունների արխիվ")}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{tx("Վերջին տարիների մաթեմատիկայի թեստեր՝ կարդալու և ներբեռնելու համար")}</span>
-                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
+              <a href="/math/books/matem-2.pdf" target="_blank" rel="noreferrer" className="group rounded-xl border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40">
+                <span className="block font-semibold">{tx("Մաթեմատիկա · Մաս 2")}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{tx("Ամբողջական PDF · 320 էջ")}</span>
+                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">{tx("Բացել PDF-ը")} ↗</span>
               </a>
             </div>
-            <p className="text-xs text-muted-foreground">{tx("Արտաքին թեստերի հարցերը այստեղ պատճենված չեն․ բացիր աղբյուրը՝ բնօրինակ PDF-ը և դրա պատասխանները տեսնելու համար։")}</p>
+            <p className="text-xs text-muted-foreground">{tx("Յուրաքանչյուր առաջադրանք թեստում ցուցադրվում է բնօրինակ գրքի էջից, իսկ պատասխանը ստուգվում է գրքի պատասխանների հիման վրա։")}</p>
           </section>
 
           <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
@@ -546,7 +598,7 @@ function MathPage() {
                               />
                               <span className="min-w-0 text-sm">
                                 <b>{tx("Բաժին {n}", { n: sec.section })}</b> <span className="text-muted-foreground">· {n}</span>
-                                <span className="block text-xs leading-snug text-muted-foreground">{tx(sec.title)}</span>
+                                <span className="block text-xs leading-snug text-muted-foreground">{tx(sectionTitle(bookId, sec.chapter, sec.section))}</span>
                               </span>
                             </label>
                           );
