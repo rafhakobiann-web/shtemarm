@@ -113,12 +113,23 @@ function useIndex() {
   return useQuery({
     queryKey: ["math-books-index"],
     queryFn: async (): Promise<Index> => {
-      const [r, textR] = await Promise.all([
-        fetch("/data/math-books-index.json"),
-        fetch("/data/math-text-questions.json").catch(() => null),
-      ]);
+      // Load the essential index first so an optional transcription request cannot
+      // keep the entire math page stuck on its loading spinner.
+      const r = await fetch("/data/math-books-index.json");
       if (!r.ok) throw new Error("load failed");
       const index: Index = await r.json();
+
+      // The text bank is supplementary. Abort it if the server never responds.
+      let textR: Response | null = null;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      try {
+        textR = await fetch("/data/math-text-questions.json", { signal: controller.signal });
+      } catch {
+        textR = null;
+      } finally {
+        clearTimeout(timeoutId);
+      }
       if (textR?.ok) {
         try {
           const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
