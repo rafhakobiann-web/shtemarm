@@ -23,7 +23,7 @@ export const Route = createFileRoute("/math/")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
 type IndexSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: IndexSection[] }> };
 type Kind = "choice" | "tf" | "open";
@@ -39,6 +39,8 @@ type Item = {
   split?: boolean;
   answer: string;
   kind: Kind;
+  prompt?: string;
+  options?: string[];
 };
 
 const PAGE_W = 467.76;
@@ -111,9 +113,27 @@ function useIndex() {
   return useQuery({
     queryKey: ["math-books-index"],
     queryFn: async (): Promise<Index> => {
-      const r = await fetch("/data/math-books-index.json");
+      const [r, textR] = await Promise.all([
+        fetch("/data/math-books-index.json"),
+        fetch("/data/math-text-questions.json"),
+      ]);
       if (!r.ok) throw new Error("load failed");
-      return r.json();
+      const index: Index = await r.json();
+      if (textR.ok) {
+        const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+        for (const [bookId, sections] of Object.entries(extra)) {
+          for (const [sectionId, tasks] of Object.entries(sections)) {
+            const [chapter, section] = sectionId.split("-").map(Number);
+            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
+            if (!target) continue;
+            for (const [taskId, questions] of Object.entries(tasks)) {
+              const task = target.tasks.find((t) => t.task === Number(taskId));
+              if (task) task.questions = questions;
+            }
+          }
+        }
+      }
+      return index;
     },
     staleTime: Infinity,
   });
@@ -154,6 +174,8 @@ function sectionItems(bookId: string, sec: IndexSection): Item[] {
         split: !!t.sub_segments,
         answer,
         kind,
+        prompt: t.questions?.[i]?.prompt,
+        options: t.questions?.[i]?.options,
       });
     }
   }
@@ -343,6 +365,7 @@ function AnswerRow({
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
         <span className="text-xs text-muted-foreground">{tx("Առաջադրանք {n}, կետ {m}/{k}", { n: item.task, m: item.sub, k: item.subs })}</span>
       </div>
+      {item.prompt && <p className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base">{item.prompt}</p>}
 
       {item.kind === "open" ? (
         <input
@@ -374,7 +397,7 @@ function AnswerRow({
                   : "border-border bg-card hover:bg-muted",
                 )}
               >
-                {tx(text)}
+                {item.options?.[Number(opt) - 1] ?? tx(text)}
               </button>
             );
           })}
@@ -675,7 +698,7 @@ function MathPage() {
               <div className="space-y-4">
                 {g.rows.map((it) => (
                   <div key={it.id} className="space-y-2 rounded-2xl bg-muted/20 p-2 sm:p-3">
-                    <TaskCrop book={it.book} segments={it.segments} />
+                    {!it.prompt && <TaskCrop book={it.book} segments={it.segments} />}
                     <AnswerRow
                     key={it.id}
                     item={it}
