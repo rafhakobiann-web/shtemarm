@@ -103,7 +103,7 @@ export function AppHeader() {
                   <Info className="size-4" />{t.about}
                 </Link>
                 <Link to="/vocabulary" onClick={close} className={item}>
-                  <Bookmark className="size-4" />{t.language === "English" ? "My vocabulary" : "Իմ բառապաշարը"}
+                  <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : "Իմ բառապաշարը"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />Ուսումնական գործիքներ / Focus mode
