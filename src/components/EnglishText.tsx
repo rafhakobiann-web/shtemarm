@@ -1,10 +1,11 @@
 import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Languages, Loader2, X } from "lucide-react";
+import { Languages, Loader2, X, BookmarkPlus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
 import { translateEnglish } from "@/lib/translate.functions";
 import { englishTokens, type TranslationInput } from "@/lib/translation";
+import { addVocabularyEntry } from "@/lib/vocabulary";
 
 const TranslationContext = createContext<((word: string, context: string) => void) | null>(null);
 const localCache = new Map<string, string>();
@@ -13,9 +14,11 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   const tx = useTx();
   const translate = useServerFn(translateEnglish);
   const [result, setResult] = useState<{ word: string; text: string; loading: boolean; error: boolean; context: string } | null>(null);
+  const [saved, setSaved] = useState(false);
   const request = useRef(0);
   const open = async (word: string, context: string) => {
     const id = ++request.current;
+    setSaved(false);
     const data: TranslationInput = { text: word, kind: "word", context: context.slice(0, 2000) };
     const key = JSON.stringify(data);
     const saved = localCache.get(key);
@@ -35,6 +38,9 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       <div className="flex items-center justify-between gap-3"><strong lang="en">{result.word}</strong><Button variant="ghost" size="icon" aria-label={tx("Փակել թարգմանությունը")} onClick={() => { request.current++; setResult(null); }}><X /></Button></div>
       <div role="status" className="break-words text-sm leading-relaxed">{result.loading ? <Loader2 className="size-5 animate-spin" aria-label={tx("Թարգմանվում է")} /> : result.error ? tx(result.text) : result.text}</div>
       {result.error && <Button variant="outline" className="mt-2" onClick={() => open(result.word, result.context)}>{tx("Կրկին փորձել")}</Button>}
+      {!result.loading && !result.error && result.text && <Button variant={saved ? "secondary" : "outline"} className="mt-3 w-full" onClick={() => { const ok = addVocabularyEntry({ word: result.word, meaning: result.text, context: result.context }); if (ok) setSaved(true); }} disabled={saved}>
+        {saved ? <Check className="mr-2 size-4" /> : <BookmarkPlus className="mr-2 size-4" />}{saved ? tx("Ավելացված է բառապաշարում") : tx("Ավելացնել բառապաշարում")}
+      </Button>}
     </aside>}
   </TranslationContext.Provider>;
 }
