@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Lock, Calculator, MessageCircle, Gamepad2, Timer } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -87,11 +87,10 @@ export function AppHeader() {
                 <Link to="/" search={{ subject: "math" }} onClick={close} className={item}>
                   <BookOpen className="size-4" />{t.math}
                 </Link>
-                <div className={`${item} cursor-not-allowed text-muted-foreground`} aria-disabled>
-                  <Lock className="size-4" />{t.armenianLang}
-                  <span className="ml-auto text-xs">{t.soon}</span>
-                </div>
-                <Link to="/book/$bookId" params={{ bookId: "31" }} onClick={close} className={item}>
+                <Link to="/" search={{ subject: "armenian" }} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{t.armenianLang}
+                </Link>
+                <Link to="/" search={{ subject: "biology" }} onClick={close} className={item}>
                   <BookOpen className="size-4" />{t.biology}
                 </Link>
                 <Link to="/" search={{ subject: "history" }} onClick={close} className={item}>
