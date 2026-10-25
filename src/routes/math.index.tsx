@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Timer, RefreshCw, Trophy, ListChecks } from "lucide-react";
-import { useMathProgress, isRight, isOpenSection } from "@/lib/math-progress";
+import { useMathProgress, isRight, isOpenTask } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { z } from "zod";
@@ -160,7 +160,7 @@ const bookNo = (bookId: string) => Number(bookId.split("-")[1]);
 function sectionItems(bookId: string, sec: IndexSection): Item[] {
   const out: Item[] = [];
   for (const t of sec.tasks) {
-    const open = isOpenSection([t]);
+    const open = isOpenTask([t]);
     const subs = t.answers ? t.answers.length : t.sub_count;
     for (let i = 0; i < subs; i++) {
       const answer = t.answers?.[i];
