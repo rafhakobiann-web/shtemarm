@@ -36,9 +36,10 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
       const expected = Number.isInteger(task.sub_count) ? task.sub_count : (task.answers?.length ?? 0);
       questionCount += expected;
       const sectionKey = `${section.chapter}-${section.section}`;
-      const taskQuestions = textQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? task.questions ?? [];
+      const taskQuestions = textQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? [];
       for (let sub = 0; sub < expected; sub++) {
-        const question = taskQuestions[sub];
+        // Null means transcription is still missing; retain a verified question from the index if present.
+        const question = taskQuestions[sub] ?? task.questions?.[sub];
         if (typeof question?.prompt === "string" && question.prompt.trim()) {
           textPrompts++;
           if (Array.isArray(question.options) && question.options.length >= 4) completeChoiceSets++;
