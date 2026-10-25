@@ -305,9 +305,6 @@ function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
                 style={{ marginTop: `-${(s.y0 / PAGE_W) * 100}%` }}
               />
             </div>
-            <a href={src} target="_blank" rel="noreferrer" className="inline-flex text-xs font-medium text-blue-700 underline underline-offset-2">
-              {tx("Բացել ամբողջ էջը")} ↗
-            </a>
           </div>
         );
       })}
