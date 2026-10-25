@@ -277,8 +277,9 @@ function HistoryBookPage() {
   const it = round[index];
   const answeredCount = round.filter((x) => progress.answers[qid(x)] !== undefined).length;
   const current = it ? progress.answers[qid(it)] : undefined;
+  // Keep the learner moving through the selected round even after three mistakes.
+  // Hearts show mistakes, but must not skip unanswered questions and jump to results.
   const finished = !it || (index === round.length - 1 && current !== undefined);
-  const gameOver = lives <= 0;
 
   const onPick = (c: string) => {
     if (!it || current !== undefined) return;
@@ -309,9 +310,9 @@ function HistoryBookPage() {
         <span className="flex items-center gap-1 text-sm font-black text-amber-600"><Zap className="size-5" /> ×{streak}</span>
       </div>
 
-      {gameOver || finished ? (
+      {finished ? (
         <section className="space-y-3 rounded-[28px] border border-white/60 bg-white/55 p-6 text-center shadow-[0_8px_32px_rgba(30,58,138,0.12)] backdrop-blur-xl">
-          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
+          <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">{tx("Ճիշտ՝ {correct} / {answered}", { correct: round.filter((x) => progress.answers[qid(x)] === x.answer).length, answered: answeredCount })}</p>
           <Button className="w-full" onClick={() => { setIndex(0); setLives(LIVES); setStreak(0); setRound(section.items); }}>{tx("Նորից")}</Button>
         </section>
