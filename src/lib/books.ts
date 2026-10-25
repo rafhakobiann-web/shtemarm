@@ -109,7 +109,14 @@ export function shuffle<T>(a: T[]): T[] {
   return b;
 }
 
-/** Pick units from a section until reaching `points` (each MC sub-question = 1 point). */
+export type ExamItem = { section: number; unit: Unit };
+
+/** Official English exam point quotas by section (total: 80 points). */
+export const EXAM_BLUEPRINT: ReadonlyArray<readonly [number, number]> = [
+  [1, 10], [2, 16], [3, 11], [4, 5], [5, 8], [6, 5], [7, 1],
+  [8, 5], [9, 1], [10, 5], [11, 5], [12, 4], [13, 4],
+];
+
 function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit) => boolean): Unit[] {
   const sums = new Map<number, Unit[]>([[0, []]]);
   for (const unit of shuffle(sec?.units.filter(filter ?? (() => true)) ?? [])) {
@@ -124,45 +131,62 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
   return [];
 }
 
-/** Pick units for a custom test or exam based on sections and points. */
-export function buildCustom(book: Book, sectionNums: number[], totalPoints: number, filter?: (u: Unit) => boolean): Unit[] {
-  const targetSections = book.sections.filter((s) => sectionNums.includes(s.n));
-  let remaining = totalPoints;
-  const result: Unit[] = [];
-  
-  for (const sec of targetSections) {
-    if (remaining <= 0) break;
-    const picked = pickPoints(sec, Math.ceil(remaining / targetSections.length), filter);
-    for (const u of picked) {
-      const pts = unitPoints(u);
-      if (remaining >= pts) {
-        result.push(u);
-        remaining -= pts;
-      }
+function pickItems(items: ExamItem[], points: number): ExamItem[] {
+  const sums = new Map<number, ExamItem[]>([[0, []]]);
+  for (const item of shuffle(items)) {
+    const weight = unitPoints(item.unit);
+    for (const [sum, picked] of [...sums.entries()]) {
+      const next = sum + weight;
+      if (next <= points && !sums.has(next)) sums.set(next, [...picked, item]);
     }
+    const result = sums.get(points);
+    if (result) return result;
   }
-  if (remaining > 0) {
-    for (const sec of targetSections) {
-      if (remaining <= 0) break;
-      const picked = pickPoints(sec, remaining, filter);
-      for (const u of picked) {
-        if (!result.includes(u)) {
-          const pts = unitPoints(u);
-          if (remaining >= pts) {
-            result.push(u);
-            remaining -= pts;
-          }
-        }
-      }
-    }
-  }
-  return result;
+  return [];
 }
 
-export function buildExam(book: Book): Unit[] {
-  const allUnits: Unit[] = [];
-  for (const sec of book.sections) {
-    allUnits.push(...shuffle(sec.units));
-  }
-  return allUnits.slice(0, 40);
+function ordered(book: Book, items: ExamItem[]): ExamItem[] {
+  const positions = new Map<Unit, number>();
+  let position = 0;
+  for (const section of book.sections) for (const unit of section.units) positions.set(unit, position++);
+  return [...items].sort((a, b) => (positions.get(a.unit) ?? 0) - (positions.get(b.unit) ?? 0));
 }
+
+/** Build a custom test with an exact point total from the chosen sections. */
+export function buildCustom(book: Book, sectionNums: number[], totalPoints: number, filter?: (u: Unit) => boolean): ExamItem[] {
+  const sections = book.sections.filter((s) => sectionNums.includes(s.n));
+  const pool = sections.flatMap((section) =>
+    section.units.filter(filter ?? (() => true)).map((unit) => ({ section: section.n, unit })),
+  );
+  const selected = pickItems(pool, totalPoints);
+  if (selected.reduce((sum, item) => sum + unitPoints(item.unit), 0) !== totalPoints) {
+    throw new Error("Ընտրված բաժիններում բավարար համապատասխան հարցեր չկան այս քանակի թեստ կազմելու համար։");
+  }
+  return ordered(book, selected);
+}
+
+/** Build an 80-point exam; English uses the published 13-section blueprint. */
+export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
+  if (requestedBookId >= 1 && requestedBookId <= 3) {
+    const selected: ExamItem[] = [];
+    for (const [sectionNo, points] of EXAM_BLUEPRINT) {
+      const section = book.sections.find((s) => s.n === sectionNo);
+      const units = pickPoints(section, points);
+      if (units.reduce((sum, unit) => sum + unitPoints(unit), 0) !== points) {
+        throw new Error(`Բաժին ${sectionNo}-ում բավարար հարցեր չկան քննության կառուցվածքը լրացնելու համար։`);
+      }
+      selected.push(...units.map((unit) => ({ section: sectionNo, unit })));
+    }
+    return ordered(book, selected);
+  }
+
+  const available = book.sections.reduce((sum, section) => sum + section.units.reduce((n, unit) => n + unitPoints(unit), 0), 0);
+  const target = requestedBookId === 41 ? Math.min(80, available) : 80;
+  if (available < target || target < 1) throw new Error("Այս շտեմարանում դեռ բավարար հարցեր չկան ամբողջական քննություն կազմելու համար։");
+  const pool = book.sections.flatMap((section) => section.units.map((unit) => ({ section: section.n, unit })));
+  const selected = pickItems(pool, target);
+  if (selected.reduce((sum, item) => sum + unitPoints(item.unit), 0) !== target) {
+    throw new Error("Չհաջողվեց կազմել անհրաժեշտ միավորներով քննություն։ Փորձիր մեկ այլ շտեմարան։");
+  }
+  return ordered(book, selected);
+}}
