@@ -268,29 +268,22 @@ function ArmenianSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-6">
-      <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Փորձնական հարցաշար և պաշտոնապես հրապարակված քննությունների նմուշներ")} beta />
+      <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Ուսումնական հարցաշարեր և քննության պատրաստություն")} beta />
       <section className="space-y-4">
-        <h2 className="text-xl font-black">{tx("Ինտերակտիվ հարցաշար")}</h2>
+        <h2 className="text-xl font-black">{tx("Ինտերակտիվ շտեմարան")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
-            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("64 հարց · 4 թեմատիկ բաժին")} />
+            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու և գրականություն")} sub={tx("8 բաժին · 96 հարց · պատասխանների ավտոմատ ստուգում")} />
           </Link>
-          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Արագ փորձնական քննություն")} sub={tx("Խառը հարցեր՝ բառագիտությունից, ձևաբանությունից և շարահյուսությունից")} icon={<Trophy className="size-5" />} />
-        </div>
-        <p className="text-sm text-muted-foreground">{tx("Այս 64 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
-      </section>
-      <section className="space-y-4">
-        <h2 className="text-xl font-black">{tx("Պաշտոնական թեստեր և պատասխաններ")}</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile href="https://test.am/pdf.php?page=17" title={tx("2026 թ․ հունիսյան քննություններ")} sub={tx("Հայոց լեզվի և գրականության թեստեր 1–4 և պաշտոնական պատասխաններ")} icon={<BookOpen className="size-5" />} />
-          <ExamTile href="https://test.am/pdf.php?page=13" title={tx("2026 թ․ հունվար–փետրվարի քննություններ")} sub={tx("Հայոց լեզվի և գրականության թեստեր և պատասխաններ")} icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Փորձնական քննություն")} sub={tx("Խառը հարցեր բոլոր 8 բաժիններից")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "custom", style: "classic" }} title={tx("Կազմել սեփական թեստ")} sub={tx("Ընտրիր բաժինը և վարժվիր ըստ թեմայի")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ExamTile href="https://dimord.am/public/tests" title={tx("ԳԹԿ պաշտոնական թեստերի էջ")} sub={tx("Պաշտոնական քննությունների թեստերի և պատասխանների հրապարակման էջ")} icon={<Trophy className="size-5" />} />
-        <ExamTile href="https://test.am/pdf.php?page=17" title={tx("Շտեմարանների և քննությունների արխիվ")} sub={tx("Լրացուցիչ աղբյուրներ՝ հաջորդ հարցաշարերը ստուգելու համար")} icon={<ClipboardCheck className="size-5" />} />
-      </div>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Ինտերակտիվ հարցաշարը և ավտոմատ գնահատումը հասանելի են։ Հարցերը մեր կազմած ուսումնական օրինակներն են, իսկ պաշտոնական թեստերի էջերը բացվում են առանձին՝ սկզբնաղբյուրը պահպանելու համար։")}</p>
+      <section className="rounded-2xl border bg-card p-4 text-sm text-muted-foreground">
+        <p className="font-bold text-foreground">{tx("Բաժիններն ու թեմաները")}</p>
+        <p className="mt-2">{tx("Հնչյունաբանություն և բառագիտություն · Ձևաբանություն · Շարահյուսություն և կետադրություն · Կապակցված խոսք · Ընդհանուր գիտելիքներ հայոց լեզվի մասին · Ոճագիտություն · Հայ գրականություն")}</p>
+        <p className="mt-3">{tx("Այս էջում առաջադրանքները բացվում են հենց Shtemarm-ում․ արտաքին կայքերին ուղղորդող շտեմարանի հղումներ չեն օգտագործվում։ Ներկայում ավելացված հարցերը ուսումնական վարժություններ են, իսկ PDF-ների մնացած առաջադրանքները պետք է հաջորդաբար թվայնացնել և ստուգել պատասխանների բանալիներով։")}</p>
+      </section>
     </div>
   );
 }
