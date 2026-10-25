@@ -131,6 +131,21 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
   return [];
 }
 
+function expandForTest(item: ExamItem): ExamItem[] {
+  const unit = item.unit;
+  if ((unit.kind === "mc" || unit.kind === "num") && unit.questions.length > 1) {
+    return unit.questions.map((question) => ({
+      section: item.section,
+      unit: {
+        ...unit,
+        id: `${unit.id}-q${question.n}`,
+        label: question.n,
+        questions: [question],
+      },
+    }));
+  }
+  return [item];
+}
 function pickItems(items: ExamItem[], points: number): ExamItem[] {
   const sums = new Map<number, ExamItem[]>([[0, []]]);
   for (const item of shuffle(items)) {
@@ -156,7 +171,9 @@ function ordered(book: Book, items: ExamItem[]): ExamItem[] {
 export function buildCustom(book: Book, sectionNums: number[], totalPoints: number, filter?: (u: Unit) => boolean): ExamItem[] {
   const sections = book.sections.filter((s) => sectionNums.includes(s.n));
   const pool = sections.flatMap((section) =>
-    section.units.filter(filter ?? (() => true)).map((unit) => ({ section: section.n, unit })),
+    section.units
+      .filter(filter ?? (() => true))
+      .flatMap((unit) => expandForTest({ section: section.n, unit })),
   );
   const selected = pickItems(pool, totalPoints);
   if (selected.reduce((sum, item) => sum + unitPoints(item.unit), 0) !== totalPoints) {
@@ -183,7 +200,9 @@ export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
   const available = book.sections.reduce((sum, section) => sum + section.units.reduce((n, unit) => n + unitPoints(unit), 0), 0);
   const target = requestedBookId === 41 ? Math.min(80, available) : 80;
   if (available < target || target < 1) throw new Error("Այս շտեմարանում դեռ բավարար հարցեր չկան ամբողջական քննություն կազմելու համար։");
-  const pool = book.sections.flatMap((section) => section.units.map((unit) => ({ section: section.n, unit })));
+  const pool = book.sections.flatMap((section) =>
+    section.units.flatMap((unit) => expandForTest({ section: section.n, unit })),
+  );
   const selected = pickItems(pool, target);
   if (selected.reduce((sum, item) => sum + unitPoints(item.unit), 0) !== target) {
     throw new Error("Չհաջողվեց կազմել անհրաժեշտ միավորներով քննություն։ Փորձիր մեկ այլ շտեմարան։");
