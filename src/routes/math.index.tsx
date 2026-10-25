@@ -458,6 +458,31 @@ function MathPage() {
             ))}
           </div>
 
+          <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5" aria-labelledby="extra-math-practice">
+            <div className="space-y-1">
+              <h2 id="extra-math-practice" className="text-lg font-bold">{tx("Լրացուցիչ քննական թեստեր")}</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">{tx("Օգտագործիր նաև հրապարակված քննությունների ամբողջական տարբերակները։ Սրանք արտաքին աղբյուրներ են, իսկ Shtemarm-ի 65 հարցանոց փորձնական թեստը կազմվում է քո երկու շտեմարաններից։")}</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <a href="https://dimord.am/public/tests" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40">
+                <span className="block font-semibold">{tx("ԳԹԿ · Թեստեր և պատասխաններ")}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{tx("Պաշտոնական հրապարակված քննական թեստերի էջ")}</span>
+                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
+              </a>
+              <a href="https://test.am/pdf.php?page=108" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40">
+                <span className="block font-semibold">{tx("Թեստ.am · Մաթեմատիկայի շտեմարաններ")}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{tx("Տարիներով դասավորված շտեմարաններ և PDF նյութեր")}</span>
+                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
+              </a>
+              <a href="https://miasnakan.parsart.am/" target="_blank" rel="noreferrer" className="group rounded-xl border p-3 transition-colors hover:border-primary/50 hover:bg-muted/40 sm:col-span-2">
+                <span className="block font-semibold">{tx("Միասնական քննությունների արխիվ")}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{tx("Վերջին տարիների մաթեմատիկայի թեստեր՝ կարդալու և ներբեռնելու համար")}</span>
+                <span className="mt-2 block text-sm font-semibold text-primary">{tx("Բացել աղբյուրը")} ↗</span>
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground">{tx("Արտաքին թեստերի հարցերը այստեղ պատճենված չեն․ բացիր աղբյուրը՝ բնօրինակ PDF-ը և դրա պատասխանները տեսնելու համար։")}</p>
+          </section>
+
           <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
             {mode === "exam" ? (
               <p className="text-sm leading-relaxed">
