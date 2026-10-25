@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { explanationError, explanationKey, readGeminiStream, readGroqStream } from "./explanation";
+import { explanationError, explanationKey, offlineEnglishExplanation, readGeminiStream, readGroqStream } from "./explanation";
 
 const Input = z.object({
   instruction: z.string().max(500),
@@ -15,13 +15,16 @@ export const explainAnswer = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const cacheKey = await explanationKey(data);
-    const { data: cached } = await supabaseAdmin
-      .from("explanation_cache")
-      .select("explanation")
-      .eq("cache_key", cacheKey)
-      .maybeSingle();
-
-    if (cached) return { text: cached.explanation, cached: true, error: false };
+    try {
+      const { data: cached } = await supabaseAdmin
+        .from("explanation_cache")
+        .select("explanation")
+        .eq("cache_key", cacheKey)
+        .maybeSingle();
+      if (cached) return { text: cached.explanation, cached: true, error: false };
+    } catch {
+      // Keep the explanation flow available even if the optional cache is offline.
+    }
 
     const wrong = data.chosen && data.chosen !== data.correct;
     const prompt = `Դու անգլերենի ուսուցիչ ես, որը հայ աշակերտներին պատրաստում է միասնական քննությանը։
@@ -42,7 +45,12 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
     const geminiKey = process.env["GEMINI_API_KEY"];
 
     if (!groqKey && !geminiKey) {
-      return { text: "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։", error: true };
+      return {
+        text: offlineEnglishExplanation(data),
+        cached: false,
+        error: false,
+        offline: true,
+      };
     }
 
     try {
