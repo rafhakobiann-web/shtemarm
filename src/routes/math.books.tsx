@@ -162,6 +162,20 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
   );
 }
 
+function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+  return (
+    <div className="space-y-2">
+      {segments.map((s, i) => (
+        <CropSegment
+          key={`${s.page}-${s.y0}-${i}`}
+          src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`}
+          s={s}
+        />
+      ))}
+    </div>
+  );
+}
+
 function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: { bookId: string; bookNo: number; sec: BookSection; task: BookTask; saved: Record<string, string>; onAnswer: (id: string, value: string) => void; shortSection: boolean }) {
   const tx = useTx();
   const subs = task.answers ? task.answers.length : task.sub_count;
