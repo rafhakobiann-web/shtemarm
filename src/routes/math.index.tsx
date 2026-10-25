@@ -179,23 +179,39 @@ function pickSample(index: Index, excluded: Set<string>): Item[] {
   const picked: Item[] = [];
 
   for (const { bookId, count } of targets) {
-    const sections = index.books[bookId]?.sections ?? [];
-    const keys = new Set(sections.map((sec) => sectionKey(bookId, sec)));
-    const groups = shuffle(selectedGroups(index, [bookId], keys));
-    const freshGroups = groups.filter((group) => group.some((item) => !excluded.has(item.id)));
-    const orderedGroups = [...freshGroups, ...groups.filter((group) => !freshGroups.includes(group))];
-    const bookPicked: Item[] = [];
-
-    for (const group of orderedGroups) {
-      if (bookPicked.length >= count) break;
-      const freshItems = group.filter((item) => !excluded.has(item.id));
-      const candidates = freshItems.length ? freshItems : group;
-      const room = count - bookPicked.length;
-      bookPicked.push(...candidates.slice(0, room));
+    const sections = (index.books[bookId]?.sections ?? [])
+      .map((sec) => ({ sec, items: sectionItems(bookId, sec) }))
+      .filter((entry) => entry.items.length > 0);
+    const totalAvailable = sections.reduce((sum, entry) => sum + entry.items.length, 0);
+    if (totalAvailable < count) {
+      throw new Error(`Math book ${bookId} needs ${count} answerable questions; found ${totalAvailable}.`);
     }
 
-    if (bookPicked.length !== count) {
-      throw new Error(`Math book ${bookId} needs ${count} answerable questions; found ${bookPicked.length}.`);
+    // Keep the same section/topic distribution on every exam while randomizing
+    // the actual questions within each section. Largest-remainder allocation
+    // makes the per-section quotas add up to exactly 32 or 33.
+    const quotas = sections.map((entry) => {
+      const exact = (entry.items.length / totalAvailable) * count;
+      return { ...entry, quota: Math.floor(exact), remainder: exact - Math.floor(exact) };
+    });
+    let remaining = count - quotas.reduce((sum, entry) => sum + entry.quota, 0);
+    for (const entry of [...quotas].sort((a, b) => b.remainder - a.remainder).slice(0, remaining)) {
+      entry.quota += 1;
+    }
+
+    const bookPicked: Item[] = [];
+    for (const entry of quotas) {
+      if (entry.quota === 0) continue;
+      const fresh = shuffle(entry.items.filter((item) => !excluded.has(item.id)));
+      const fallback = shuffle(entry.items.filter((item) => excluded.has(item.id)));
+      bookPicked.push(...fresh.slice(0, entry.quota));
+      if (fresh.length < entry.quota) {
+        bookPicked.push(...fallback.slice(0, entry.quota - fresh.length));
+      }
+    }
+
+    if (bookPicked.length !== count || new Set(bookPicked.map((item) => item.id)).size !== count) {
+      throw new Error(`Could not build the required ${count}-question sample for ${bookId}.`);
     }
     picked.push(...bookPicked);
   }
