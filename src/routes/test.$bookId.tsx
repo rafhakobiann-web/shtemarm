@@ -67,7 +67,7 @@ function TestPage() {
       onStyle={setStyle}
       onStart={(k, secs, count) => {
         try {
-          const selected = k === "exam" ? buildExam(book) : buildCustom(book, secs, count);
+          const selected = k === "exam" ? buildExam(book, Number(bookId)) : buildCustom(book, secs, count);
           setKind(k);
           setItems(selected);
         } catch (error) {
