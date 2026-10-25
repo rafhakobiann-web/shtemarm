@@ -4,39 +4,75 @@ import { Languages, Loader2, X, BookmarkPlus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
 import { translateEnglish } from "@/lib/translate.functions";
-import { englishTokens, type TranslationInput } from "@/lib/translation";
+import { englishTokens, TRANSLATION_LANGUAGES, type TranslationInput, type TranslationLanguage } from "@/lib/translation";
 import { addVocabularyEntry } from "@/lib/vocabulary";
 
 const TranslationContext = createContext<((word: string, context: string) => void) | null>(null);
-const localCache = new Map<string, string>();
+const CACHE_PREFIX = "shtemarm-word-translation-v2:";
+const memoryCache = new Map<string, string>();
+
+function cacheKey(word: string, language: TranslationLanguage) {
+  return `${language}:${word.trim().toLocaleLowerCase("en")}`;
+}
+function readCached(word: string, language: TranslationLanguage) {
+  const key = cacheKey(word, language);
+  const memory = memoryCache.get(key);
+  if (memory) return memory;
+  try {
+    const value = window.localStorage.getItem(CACHE_PREFIX + key);
+    if (value) { memoryCache.set(key, value); return value; }
+  } catch { /* Private browsing or disabled storage: session cache still works. */ }
+  return null;
+}
+function saveCached(word: string, language: TranslationLanguage, value: string) {
+  const key = cacheKey(word, language);
+  memoryCache.set(key, value);
+  try { window.localStorage.setItem(CACHE_PREFIX + key, value); } catch { /* Keep memory cache. */ }
+}
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const tx = useTx();
   const translate = useServerFn(translateEnglish);
+  const [language, setLanguage] = useState<TranslationLanguage>("hy");
   const [result, setResult] = useState<{ word: string; text: string; loading: boolean; error: boolean; context: string } | null>(null);
   const [saved, setSaved] = useState(false);
   const request = useRef(0);
   const open = async (word: string, context: string) => {
     const id = ++request.current;
     setSaved(false);
-    const data: TranslationInput = { text: word, kind: "word", context: context.slice(0, 2000) };
-    const key = JSON.stringify(data);
-    const saved = localCache.get(key);
-    setResult({ word, context, text: saved ?? "", loading: !saved, error: false });
-    if (saved) return;
+    const cached = readCached(word, language);
+    setResult({ word, context, text: cached ?? "", loading: !cached, error: false });
+    if (cached) return;
+    const data: TranslationInput = { text: word, kind: "word", context: context.slice(0, 2000), language };
     try {
       const response = await translate({ data });
-      if (!response.error) localCache.set(key, response.text);
+      if (!response.error) saveCached(word, language, response.text);
       if (id === request.current) setResult({ word, context, ...response, loading: false });
     } catch {
       if (id === request.current) setResult({ word, context, text: "Չհաջողվեց թարգմանել։", loading: false, error: true });
+    }
+  };
+  const changeLanguage = (next: TranslationLanguage) => {
+    setLanguage(next);
+    if (result) {
+      const cached = readCached(result.word, next);
+      setSaved(false);
+      if (cached) setResult({ ...result, text: cached, loading: false, error: false });
+      else void open(result.word, result.context);
     }
   };
   return <TranslationContext.Provider value={open}>
     {children}
     {result && <aside aria-label={tx("Բառի թարգմանություն")} className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-lg border bg-popover p-4 text-popover-foreground shadow-card">
       <div className="flex items-center justify-between gap-3"><strong lang="en">{result.word}</strong><Button variant="ghost" size="icon" aria-label={tx("Փակել թարգմանությունը")} onClick={() => { request.current++; setResult(null); }}><X /></Button></div>
-      <div role="status" className="break-words text-sm leading-relaxed">{result.loading ? <Loader2 className="size-5 animate-spin" aria-label={tx("Թարգմանվում է")} /> : result.error ? tx(result.text) : result.text}</div>
+      <label className="mt-3 flex items-center gap-2 text-sm">
+        <Languages className="size-4 shrink-0" />
+        <span className="sr-only">{tx("Թարգմանության լեզու")}</span>
+        <select aria-label={tx("Թարգմանության լեզու")} value={language} onChange={(event) => changeLanguage(event.target.value as TranslationLanguage)} className="w-full rounded-md border bg-background px-3 py-2 text-foreground">
+          {TRANSLATION_LANGUAGES.map((item) => <option key={item.code} value={item.code}>{item.label}</option>)}
+        </select>
+      </label>
+      <div role="status" className="mt-3 break-words text-sm leading-relaxed">{result.loading ? <Loader2 className="size-5 animate-spin" aria-label={tx("Թարգմանվում է")} /> : result.error ? tx(result.text) : result.text}</div>
       {result.error && <Button variant="outline" className="mt-2" onClick={() => open(result.word, result.context)}>{tx("Կրկին փորձել")}</Button>}
       {!result.loading && !result.error && result.text && <Button variant={saved ? "secondary" : "outline"} className="mt-3 w-full" onClick={() => { const ok = addVocabularyEntry({ word: result.word, meaning: result.text, context: result.context }); if (ok) setSaved(true); }} disabled={saved}>
         {saved ? <Check className="mr-2 size-4" /> : <BookmarkPlus className="mr-2 size-4" />}{saved ? tx("Ավելացված է բառապաշարում") : tx("Ավելացնել բառապաշարում")}
@@ -62,7 +98,7 @@ export function PassageTranslation({ text }: { text: string }) {
   const load = async () => {
     setVisible(true);
     setLoading(true);
-    try { setResult(await translate({ data: { text, kind: "passage", context: "" } })); }
+    try { setResult(await translate({ data: { text, kind: "passage", context: "", language: "hy" } })); }
     catch { setResult({ text: "Չհաջողվեց թարգմանել։", error: true }); }
     finally { setLoading(false); }
   };
