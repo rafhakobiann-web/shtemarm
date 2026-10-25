@@ -12,29 +12,35 @@ const SYSTEM = `Դու Shtemarm կայքի օգնականն ես։ Shtemarm-ը �
 Պատասխանիր միայն ԳՐԱԿԱՆ ՀԱՅԵՐԵՆՈՎ՝ ճիշտ քերականությամբ և կետադրությամբ։ Անգլերեն բառերը և օրինակները թող մնան անգլերեն։
 Մի օգտագործիր markdown նշաններ՝ աստղանիշ (*), դիեզ (#), ստորակետ-գիծ ցուցակների համար, ընդգծում, թեք կամ թավ տառատեսակ։ Ցուցակ գրելու համար օգտագործիր «1.», «2.» համարակալումը։
 Եթե պետք է բառ ընդգծել, գրիր այն KaTeX-ով՝ $\\textbf{բառ}$։
-Բոլոր մաթեմատիկական արտահայտությունները, թվային բանաձևերը, հավասարումները, կոտորակները, աստիճանները, արմատները, եռանկյունաչափական ու երկրաչափական ֆունկցիաները գրիր միայն KaTeX-ով՝ $...$ տողամիջյան կամ $$...$$ առանձին տողում։ Օրինակ՝ $x^2 + 3x - 4 = 0$, $\\sin\\alpha$, $\\frac{a}{b}$, $\\sqrt{x}$, $\\log_2 8 = 3$։
+Բոլոր մաթեմատիկական արտահայտությունները, թվային բանաձևերը, հավասարումները, կոտորակները, աստիճանները, արմատները, եռանկյունաչափական ու երկրաչափական ֆունկցիաները գրիր միայն KaTeX-ով՝ $...$ տողամիջյան կամ $$...$$ առանձին տողում։
 Օգնիր հասկանալ թեման և կանոնները, բայց մի տուր պատրաստի պատասխաններ առանց բացատրության։
 Եթե որևէ փաստ վստահ չես, ասա դա և մի հորինիր։ Հարցերի համար, որոնք կապ չունեն կրթության հետ, քաղաքավարի հիշեցրու, որ օգնում ես միայն ուսման հարցերում։`;
 
-/** Safety net: remove markdown symbols the model may still produce. */
 const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
-
 type Msg = { role: "user" | "assistant"; content: string };
 
-async function callGroq(key: string, messages: Msg[]) {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+async function callOpenAICompatible(url: string, key: string, model: string, messages: Msg[], provider: string) {
+  const res = await fetch(url, {
     method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      ...(provider === "openrouter" ? { "HTTP-Referer": "https://shtemarm.lovable.app/", "X-Title": "Shtemarm" } : {}),
+    },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model,
       messages: [{ role: "system", content: SYSTEM }, ...messages],
       temperature: 0.3,
       max_tokens: 700,
     }),
   });
-  if (!res.ok) throw new Error(`groq ${res.status}`);
-  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  return clean(json.choices?.[0]?.message?.content ?? "");
+  if (!res.ok) throw new Error(`${provider} ${res.status}`);
+  const json = (await res.json()) as { choices?: { message?: { content?: string | { text?: string }[] } }[] };
+  const raw = json.choices?.[0]?.message?.content;
+  const answer = typeof raw === "string" ? raw : raw?.map((part) => part.text ?? "").join("") ?? "";
+  const result = clean(answer);
+  if (!result) throw new Error(`${provider} returned an empty response`);
+  return result;
 }
 
 async function callGemini(key: string, messages: Msg[]) {
@@ -52,43 +58,25 @@ async function callGemini(key: string, messages: Msg[]) {
   );
   if (!res.ok) throw new Error(`gemini ${res.status}`);
   const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  return clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "");
+  const answer = clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "");
+  if (!answer) throw new Error("gemini returned an empty response");
+  return answer;
 }
 
-
-/**
- * A no-key study fallback. It deliberately gives bounded, honest help instead of
- * pretending to be a full language model. This runs locally on the server.
- */
-function localStudyReply(messages: Msg[]): string {
-  const latest = messages.filter((m) => m.role === "user").at(-1)?.content.trim() ?? "";
-  const q = latest.toLocaleLowerCase("hy-AM");
-  if (!latest) return "Գրիր ուսումնական հարցը, և կփորձեմ օգնել հասանելի տեղային կանոններով։";
-  if (/^(բարև|բարեւ|ողջույն|hello|hi)\b/i.test(q)) {
-    return "Բարև։ Ես Shtemarm-ի ուսումնական օգնականն եմ։ Կարող եմ օգնել անգլերենի կանոնների, մաթեմատիկայի քայլերի և քննությանը պատրաստվելու կազմակերպման հարցում։ Գրիր կոնկրետ հարցը։";
+/** Bounded offline helper: useful for common study intents, honest about its limits. */
+function offlineStudyReply(messages: Msg[]) {
+  const question = messages[messages.length - 1]?.content.trim() ?? "";
+  const q = question.toLowerCase();
+  if (/^(hi|hello|hey|բարև|բարեւ|ողջույն)[!.? ]*$/i.test(question)) {
+    return "Բարև։ Ես Shtemarm-ի ուսումնական օգնականն եմ։ Կարող եմ օգնել անգլերենի, մաթեմատիկայի և քննություններին պատրաստվելու հարցերում։ Գրիր կոնկրետ հարցդ։";
   }
-  if (/\b(present simple|ներկա անորոշ|present simple)\b/i.test(q)) {
-    return "Present Simple-ը գործածվում է սովորությունների, կրկնվող գործողությունների և ընդհանուր փաստերի համար։ I/you/we/they-ի հետ օգտագործվում է բայի հիմնական ձևը, իսկ he/she/it-ի հետ՝ սովորաբար -s կամ -es։ Օրինակ՝ “She works every day.” Հարցական և ժխտական ձևերում սովորաբար օգտագործվում է do/does՝ “Does she work?” և “She doesn’t work.”";
+  if (/\b(since|for)\b/.test(q) && /tense|ժամանակ|grammar|քերական/.test(q)) {
+    return "Անգլերենում since-ը սովորաբար ցույց է տալիս գործողության սկզբնակետը, իսկ for-ը՝ տևողությունը։ Օրինակ՝ I have lived here since 2020 և I have lived here for three years։ Սա ընդհանուր կանոն է․ ուղարկիր ամբողջ նախադասությունը՝ համատեքստով ստուգելու համար։";
   }
-  if (/\b(present continuous|ներկա շարունակական)\b/i.test(q)) {
-    return "Present Continuous-ը նկարագրում է խոսելու պահին ընթացող կամ ժամանակավոր գործողություն։ Կառուցվածքը՝ am/is/are + բայի -ing ձևը։ Օրինակ՝ “They are studying now.” Ժխտականում ավելացվում է not, իսկ հարցականում am/is/are-ը դրվում է ենթակայից առաջ։";
+  if (/\b(a\s*\+\s*b|equation|հավասարում|solve|լուծել)\b/.test(q)) {
+    return "Կօգնեմ քայլ առ քայլ, բայց այս պահին հասանելի է միայն սահմանափակ տեղային ռեժիմը։ Ուղարկիր հավասարումը պարզ տեսքով, և նախ կփորձենք նույնականացնել անհայտը, ապա կատարել հակադարձ գործողությունները։ Այս ռեժիմը չի կարող երաշխավորել բոլոր խնդիրների լուծումը։";
   }
-  if (/\b(past simple|անցյալ անորոշ)\b/i.test(q)) {
-    return "Past Simple-ը գործածվում է անցյալում ավարտված գործողությունների համար։ Կանոնավոր բայերը սովորաբար ստանում են -ed, իսկ անկանոն բայերի ձևերը պետք է սովորել առանձին։ Հարցականում և ժխտականում օգտագործվում է did, որից հետո բայը մնում է հիմնական ձևով՝ “Did you go?” / “I didn’t go.”";
-  }
-  if (/\b(conditionals?|պայմանական նախադաս)\b/i.test(q)) {
-    return "Անգլերենի պայմանական նախադասությունների հիմնական ձևերը՝ Zero Conditional՝ if + Present Simple, Present Simple (ընդհանուր ճշմարտություն), First Conditional՝ if + Present Simple, will + բայի հիմնական ձև (իրատեսական ապագա), Second Conditional՝ if + Past Simple, would + բայի հիմնական ձև (երևակայական կամ քիչ հավանական իրավիճակ), Third Conditional՝ if + Past Perfect, would have + V3 (անցյալի չկայացած պայման)։ Սովորաբար if-մասում will չի օգտագործվում։";
-  }
-  if (/\b(articles?|a\/an|the|հոդեր|հոդը)\b/i.test(q)) {
-    return "Անգլերենում a/an-ը գործածվում է եզակի հաշվելի գոյականի հետ, երբ խոսքը որևէ մեկի կամ առաջին անգամ հիշատակվող առարկայի մասին է։ An-ը դրվում է ձայնավոր հնչյունով սկսվող բառից առաջ։ The-ը գործածվում է, երբ խոսողն ու լսողը գիտեն՝ կոնկրետ որ անձի կամ առարկայի մասին է խոսքը։ Ընդհանուր իմաստով հոգնակի հաշվելի և անհաշվելի գոյականների առաջ հոդ հաճախ չի դրվում։";
-  }
-  if (/\b(factor|factorization|քառակուսի հավասարում|հավասարում|equation)\b/i.test(q)) {
-    return "Հավասարում լուծելիս նախ պարզեցրու երկու կողմերը, ապա անհայտ պարունակող անդամները տեղափոխիր մի կողմ, իսկ հաստատունները՝ մյուս։ Կատարիր նույն գործողությունը հավասարման երկու կողմերում և վերջում ստուգիր ստացված արժեքը սկզբնական հավասարման մեջ։ Քառակուսի հավասարման համար կարող ես կիրառել արտադրիչների վերլուծությունը կամ դիսկրիմինանտի մեթոդը։ Եթե ուղարկես կոնկրետ հավասարումը, կփորձեմ ցույց տալ համապատասխան քայլերը։";
-  }
-  if (/\b(study plan|պլան|ինչպես սովորել|քննության պատրաստվել|պատրաստվել քննությանը)\b/i.test(q)) {
-    return "Սկսիր կարճ ախտորոշիչ թեստից, ապա բաժանիր սխալները ըստ թեմաների։ Ամեն օր հերթափոխիր երեք աշխատանք՝ կանոնի կրկնություն, հարցերի լուծում և սխալների վերլուծություն։ Շաբաթվա վերջում կրկնիր միայն այն թեմաները, որոնցում դեռ սխալվում ես, և ժամանակաչափով փորձնական թեստ կատարիր։";
-  }
-  return "Այս պահին արտաքին ԱԲ ծառայությունները հասանելի չեն, ուստի կարող եմ պատասխանել միայն սահմանափակ տեղային ուսումնական կանոններով։ Չեմ ուզում հորինել պատասխանը։ Ուղարկիր կոնկրետ հարցը կամ առաջադրանքի տեքստը՝ նշելով առարկան ու թեման, և կփորձեմ օգնել հասանելի կանոններով։";
+  return "Այս պահին ԱԲ մոդելները հասանելի չեն, ուստի չեմ ուզում հորինել պատասխան։ Փորձիր հարցը ձևակերպել որպես կոնկրետ ուսումնական խնդիր կամ օգտվիր Shtemarm-ի շտեմարաններից և պատասխանների բանալիներից։ Տեղային ռեժիմը սահմանափակ է և չի փոխարինում լիարժեք ԱԲ ուսուցչին։";
 }
 
 export const chatReply = createServerFn({ method: "POST" })
@@ -96,33 +84,30 @@ export const chatReply = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const groqKey = process.env["GROQ_API_KEY"];
     const geminiKey = process.env["GEMINI_API_KEY"];
-    if (!groqKey && !geminiKey) {
-      return { text: localStudyReply(data.messages), error: false, offline: true };
-    }
-    try {
-      let text = "";
-      if (groqKey) {
-        try {
-          text = await callGroq(groqKey, data.messages);
-        } catch {
-          if (geminiKey) {
-            try {
-              text = await callGemini(geminiKey, data.messages);
-            } catch {
-              text = "";
-            }
-          }
-        }
-      } else if (geminiKey) {
-        try {
-          text = await callGemini(geminiKey, data.messages);
-        } catch {
-          text = "";
-        }
+    const openRouterKey = process.env["OPENROUTER_API_KEY"];
+
+    // Try configured providers in sequence. One exhausted quota should not break the chat.
+    const providers: (() => Promise<string>)[] = [];
+    if (groqKey) providers.push(() => callOpenAICompatible(
+      "https://api.groq.com/openai/v1/chat/completions", groqKey, "llama-3.3-70b-versatile", data.messages, "groq",
+    ));
+    if (geminiKey) providers.push(() => callGemini(geminiKey, data.messages));
+    if (openRouterKey) providers.push(() => callOpenAICompatible(
+      "https://openrouter.ai/api/v1/chat/completions", openRouterKey, "openrouter/free", data.messages, "openrouter",
+    ));
+
+    for (const provider of providers) {
+      try {
+        const text = await provider();
+        return { text, error: false, offline: false };
+      } catch {
+        // Continue to the next configured provider on quota, network, or model errors.
       }
-      if (text) return { text, error: false };
-      return { text: localStudyReply(data.messages), error: false, offline: true };
-    } catch {
-      return { text: localStudyReply(data.messages), error: false, offline: true };
     }
+
+    return {
+      text: offlineStudyReply(data.messages),
+      error: false,
+      offline: true,
+    };
   });
