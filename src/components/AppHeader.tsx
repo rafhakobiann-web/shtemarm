@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -101,6 +101,9 @@ export function AppHeader() {
               <div className="space-y-1">
                 <Link to="/about" onClick={close} className={item}>
                   <Info className="size-4" />{t.about}
+                </Link>
+                <Link to="/vocabulary" onClick={close} className={item}>
+                  <Bookmark className="size-4" />{t.language === "English" ? "My vocabulary" : "Իմ բառապաշարը"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />Ուսումնական գործիքներ / Focus mode
