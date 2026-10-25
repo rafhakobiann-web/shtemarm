@@ -26,8 +26,8 @@ const TILE =
   "glass group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
 
 const MATH_BOOKS = [
-  { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/math/books/covers/matem-1.jpg" },
-  { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/math/books/covers/matem-2.jpg" },
+  { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/covers/math-1.svg" },
+  { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/covers/math-2.svg" },
 ] as const;
 
 function SubjectCover({ title, sub }: { title: string; sub: string }) {
