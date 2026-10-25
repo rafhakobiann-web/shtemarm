@@ -376,9 +376,6 @@ function BooksPage() {
                 <Button variant="sun" size="lg" asChild>
                   <Link to="/math"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
                 </Button>
-                <Button variant="outline" size="lg" onClick={() => setMode("pages")}>
-                  <BookText /> {tx("Էջերը՝ նկարներով")}
-                </Button>
               </div>
             </div>
           </div>
@@ -423,23 +420,6 @@ function BooksPage() {
             })}
               </div>
             </div>
-          ))}
-        </section>
-      )}
-
-      {bookId && mode === "pages" && !sectionKey && (
-        <section className="space-y-4">
-          <h1 className="text-xl font-bold">{tx(book?.title ?? "")}</h1>
-          {Array.from({ length: PAGE_COUNT[bookId] }, (_, i) => i + 1).map((pg) => (
-            <figure key={pg} className="space-y-1">
-              <img
-                src={`/math/books/${bookId}/p-${String(pg).padStart(3, "0")}.jpg`}
-                alt={tx("Էջ {n}", { n: pg })}
-                loading="lazy"
-                className="w-full rounded-xl border bg-white"
-              />
-              <figcaption className="text-center text-xs text-muted-foreground">{pg}</figcaption>
-            </figure>
           ))}
         </section>
       )}
