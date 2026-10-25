@@ -8,6 +8,7 @@ const textQuestionsPath = path.join(root, "public/data/math-text-questions.json"
 const textQuestions = JSON.parse(fs.readFileSync(textQuestionsPath, "utf8"));
 const failures = [];
 const summary = [];
+const sectionSummary = [];
 
 for (const [bookId, book] of Object.entries(index.books ?? {})) {
   let taskCount = 0;
@@ -26,6 +27,12 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
 
   for (const section of book.sections ?? []) {
     const numbers = [];
+    let sectionQuestions = 0;
+    let sectionTextPrompts = 0;
+    let sectionMissingPrompts = 0;
+    let choiceTasks = 0;
+    let typedTasks = 0;
+    let trueFalseTasks = 0;
     for (const task of section.tasks ?? []) {
       taskCount++;
       numbers.push(task.task);
@@ -37,14 +44,21 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
       questionCount += expected;
       const sectionKey = `${section.chapter}-${section.section}`;
       const taskQuestions = textQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? [];
+      const answers = task.answers ?? [];
+      if (answers.some((answer) => answer === "T" || answer === "F")) trueFalseTasks++;
+      else if (answers.some((answer) => typeof answer === "string" && !["1", "2", "3", "4"].includes(answer))) typedTasks++;
+      else choiceTasks++;
       for (let sub = 0; sub < expected; sub++) {
+        sectionQuestions++;
         // Null means transcription is still missing; retain a verified question from the index if present.
         const question = taskQuestions[sub] ?? task.questions?.[sub];
         if (typeof question?.prompt === "string" && question.prompt.trim()) {
           textPrompts++;
+          sectionTextPrompts++;
           if (Array.isArray(question.options) && question.options.length >= 4) completeChoiceSets++;
         } else {
           missingTextPrompts++;
+          sectionMissingPrompts++;
           if (missingPromptExamples.length < 12) missingPromptExamples.push(`${section.chapter}.${section.section} task ${task.task}, subquestion ${sub + 1}`);
         }
       }
@@ -76,6 +90,18 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
         failures.push(`${bookId} chapter ${section.chapter}, section ${section.section}: task numbering gap ${numbers[i - 1]} -> ${numbers[i]}`);
       }
     }
+    sectionSummary.push({
+      bookId,
+      section: `${section.chapter}-${section.section}`,
+      title: section.title,
+      tasks: numbers.length,
+      subquestions: sectionQuestions,
+      textPrompts: sectionTextPrompts,
+      missingTextPrompts: sectionMissingPrompts,
+      choiceTasks,
+      typedTasks,
+      trueFalseTasks,
+    });
   }
 
   if (invalidAnswers) failures.push(`${bookId}: ${invalidAnswers} blank or non-string answers`);
@@ -84,6 +110,7 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
 }
 
 console.table(summary);
+console.table(sectionSummary);
 if (failures.length) {
   console.error(`Math bank audit failed with ${failures.length} issue(s):`);
   for (const failure of failures) console.error(`- ${failure}`);
