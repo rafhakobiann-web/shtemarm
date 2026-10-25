@@ -30,8 +30,8 @@ export const HISTORY_BOOKS = [
 /** Biology books. Ids 31–34 map to public/data/bio-book{1..4}.json. Only unlocked books are playable. */
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.webp", locked: false },
-  { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.webp", locked: true },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս երրորդ", cover: "/covers/bio-3.webp", locked: true },
+  { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.webp", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս երրորդ", cover: "/covers/bio-3.webp", locked: false },
   { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.webp", locked: true },
 ] as const;
 
