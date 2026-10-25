@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, BookText, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
+import { ArrowLeft, BookOpen, BookText, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { useTx } from "@/lib/lang";
@@ -237,7 +237,7 @@ function BooksPage() {
   }, [q.data]);
   const [bookId, setBookId] = useState<string | null>(null);
   const [sectionKey, setSectionKey] = useState<string | null>(null);
-  const [mode, setMode] = useState<"chapters" | "pages">("chapters");
+  const [mode, setMode] = useState<"chapters" | "pages" | "pdf">("chapters");
 
   // Keep the open book / section in the URL, so a reload returns to the same place.
   useEffect(() => {
@@ -245,12 +245,13 @@ function BooksPage() {
     if (sp.get("book")) setBookId(sp.get("book"));
     if (sp.get("sec")) setSectionKey(sp.get("sec"));
     if (sp.get("mode") === "pages") setMode("pages");
+    if (sp.get("mode") === "pdf") setMode("pdf");
   }, []);
   useEffect(() => {
     const sp = new URLSearchParams();
     if (bookId) sp.set("book", bookId);
     if (sectionKey) sp.set("sec", sectionKey);
-    if (mode === "pages") sp.set("mode", "pages");
+    if (mode !== "chapters") sp.set("mode", mode);
     const qs = sp.toString();
     window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
   }, [bookId, sectionKey, mode]);
@@ -287,7 +288,7 @@ function BooksPage() {
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գրքերը։")}</p>;
 
-  const back = () => (sectionKey ? setSectionKey(null) : mode === "pages" ? setMode("chapters") : setBookId(null));
+  const back = () => (sectionKey ? setSectionKey(null) : mode !== "chapters" ? setMode("chapters") : setBookId(null));
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-5xl">
@@ -356,8 +357,11 @@ function BooksPage() {
                 <Button variant="sun" size="lg" asChild>
                   <Link to="/math"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
                 </Button>
+                <Button variant="outline" size="lg" onClick={() => setMode("pdf")}>
+                  <BookOpen /> {tx("Ամբողջ PDF-ը")}
+                </Button>
                 <Button variant="outline" size="lg" onClick={() => setMode("pages")}>
-                  <BookText /> {tx("Էջեր")}
+                  <BookText /> {tx("Էջերը՝ նկարներով")}
                 </Button>
               </div>
             </div>
@@ -404,6 +408,36 @@ function BooksPage() {
               </div>
             </div>
           ))}
+        </section>
+      )}
+
+      {bookId && mode === "pdf" && !sectionKey && (
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl font-bold">{tx(book?.title ?? "")} · {tx("Ամբողջական շտեմարան")}</h1>
+              <p className="text-sm text-muted-foreground">{tx("Բնօրինակ PDF-ը ցուցադրվում է հենց Shtemarm-ի էջում։ Արտաքին կայք չի բացվում։")}</p>
+            </div>
+            <a
+              href={`/math/books/${bookId}.pdf`}
+              download={`${bookId}.pdf`}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold hover:bg-muted"
+            >
+              <BookOpen className="size-4" /> {tx("Ներբեռնել PDF-ը")}
+            </a>
+          </div>
+          <div className="overflow-hidden rounded-2xl border bg-muted">
+            <iframe
+              key={bookId}
+              src={`/math/books/${bookId}.pdf#toolbar=1&navpanes=0&view=FitH`}
+              title={tx(book?.title ?? "Մաթեմատիկայի շտեմարան")}
+              className="h-[78vh] min-h-[520px] w-full bg-white"
+              loading="lazy"
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {tx("Եթե PDF-ը չի ցուցադրվում ձեր դիտարկիչում, օգտագործեք «Ներբեռնել PDF-ը» կոճակը։")}
+          </p>
         </section>
       )}
 
