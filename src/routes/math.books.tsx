@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
@@ -426,7 +426,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {tx(section.title)}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection([t])} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenTask([t])} />
           ))}
         </section>
       )}
