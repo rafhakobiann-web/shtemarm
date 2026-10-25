@@ -188,7 +188,11 @@ export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
     const selected: ExamItem[] = [];
     for (const [sectionNo, points] of EXAM_BLUEPRINT) {
       const section = book.sections.find((s) => s.n === sectionNo);
-      const units = pickPoints(section, points);
+      // The first section is a single complete reading passage worth ten points.
+      const reading = sectionNo === 1
+        ? shuffle((section?.units ?? []).filter((unit) => unitPoints(unit) === 10 && unit.passage.trim().length > 0)).slice(0, 1)
+        : [];
+      const units = sectionNo === 1 && reading.length === 1 ? reading : pickPoints(section, points);
       if (units.reduce((sum, unit) => sum + unitPoints(unit), 0) !== points) {
         throw new Error(`Բաժին ${sectionNo}-ում բավարար հարցեր չկան քննության կառուցվածքը լրացնելու համար։`);
       }
