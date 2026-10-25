@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
 });
 
 const TILE =
-  "glass group block overflow-hidden rounded-3xl shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+  "glass group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
 
 const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/math/books/covers/matem-1.jpg" },
@@ -50,22 +50,22 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
           : "from-indigo-950 via-indigo-800 to-sky-500";
   const badge = isMath ? "01" : isBiology ? "02" : isHistory ? "03" : isArmenian ? "04" : "05";
   return (
-    <div className={`relative grid size-full min-h-44 place-items-center overflow-hidden bg-gradient-to-br ${palette} p-4 text-white sm:min-h-52`} aria-label={subject}>
+    <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-gradient-to-br ${palette} p-3 text-white sm:p-4`} aria-label={subject}>
       <div aria-hidden="true" className="absolute -right-8 -top-8 size-36 rounded-full border border-white/20" />
       <div aria-hidden="true" className="absolute -right-1 top-1 size-24 rounded-full border border-white/15" />
       <div aria-hidden="true" className="absolute -bottom-10 -left-8 size-36 rounded-full border-[18px] border-white/10" />
       <div aria-hidden="true" className="absolute inset-x-4 top-4 h-px bg-white/25" />
-      <div className="relative z-10 flex h-full w-full flex-col justify-between gap-5">
+      <div className="relative z-10 flex min-h-0 w-full flex-col justify-between gap-3 sm:gap-4">
         <div className="flex items-start justify-between gap-2">
           <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold tracking-[0.2em]">SHTEMARM</span>
           <span className="text-xs font-bold tracking-[0.2em] text-white/65">{badge}</span>
         </div>
         <div className="flex flex-col items-start gap-3">
-          <span className="grid size-14 place-items-center rounded-2xl border border-white/25 bg-white/10 shadow-lg backdrop-blur-sm">
-            <Icon className="size-8" strokeWidth={1.4} aria-hidden="true" />
+          <span className="grid size-11 shrink-0 place-items-center rounded-2xl border border-white/25 bg-white/10 shadow-lg backdrop-blur-sm sm:size-12">
+            <Icon className="size-6 sm:size-7" strokeWidth={1.4} aria-hidden="true" />
           </span>
-          <h4 className="max-w-full text-pretty text-base font-black leading-snug tracking-wide text-white sm:text-lg">{subject}</h4>
-          <p className="text-[10px] font-semibold tracking-[0.16em] text-white/75">{sub.toLocaleUpperCase("hy-AM")}</p>
+          <h4 className="line-clamp-3 max-w-full break-words text-pretty text-sm font-black leading-snug tracking-wide text-white sm:text-base">{subject}</h4>
+          <p className="line-clamp-2 break-words text-[9px] font-semibold tracking-[0.08em] text-white/75 sm:text-[10px]">{sub.toLocaleUpperCase("hy-AM")}</p>
         </div>
         <div className="h-1 w-full overflow-hidden rounded-full bg-white/20"><div className="h-full w-1/3 rounded-full bg-white/80" /></div>
       </div>
@@ -76,12 +76,12 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
     <>
-      <div className="cover-frame relative aspect-[3/4] overflow-hidden bg-muted" data-original-cover={cover}>
+      <div className="cover-frame relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-muted sm:aspect-[3/4]" data-original-cover={cover}>
         <SubjectCover title={title} sub={sub} />
       </div>
-      <div className="space-y-1 p-4">
-        <h3 className="text-base font-bold leading-snug">{title}</h3>
-        <p className="text-xs text-muted-foreground">{sub}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-3 sm:p-4">
+        <h3 className="line-clamp-2 min-h-[2.7em] break-words text-sm font-bold leading-snug sm:text-base">{title}</h3>
+        <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
       </div>
     </>
   );
@@ -91,7 +91,7 @@ function SubjectRow({ title, children, beta = false }: { title: string; children
   return (
     <div className="space-y-4">
       <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{children}</div>
+      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">{children}</div>
     </div>
   );
 }
@@ -141,7 +141,7 @@ function EnglishSubject() {
       <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ, պաշտոնական քննություններ և թեստերի կազմիչ")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4">
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
@@ -407,7 +407,7 @@ function Index() {
           {ARMENIAN_BOOKS.map((b) => <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}><TileBody cover={b.cover} title={b.title} sub={b.sub} /></Link>)}
         </SubjectRow>
         <SubjectRow title={tx("Կենսաբանություն")} beta>
-          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[3/4] flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
+          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary sm:aspect-[3/4]"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
           {BIO_BOOKS.map((b) =>
             b.locked ? (
               <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
