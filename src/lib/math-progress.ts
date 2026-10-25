@@ -71,8 +71,8 @@ export function isShortAnswer(answer: string) {
 }
 
 /** A task uses typed answers if any answer is not a choice/true-false label. Call per task, not for the whole section. */
-export function isOpenTask(tasks: { answers: string[] | null }[]) {
-  return tasks.some((t) => t.answers?.some((a) => isShortAnswer(a)) ?? false);
+export function isOpenTask(task: { answers: string[] | null }) {
+  return task.answers?.some((answer) => isShortAnswer(answer)) ?? false;
 }
 
 function normalizeNumber(v: string) {
