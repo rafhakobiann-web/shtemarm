@@ -303,7 +303,25 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-12 py-6">
+    <div className="mx-auto max-w-6xl space-y-10 py-4 sm:py-6">
+      <section className="relative isolate overflow-hidden rounded-[2rem] border bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 px-5 py-7 text-white shadow-xl sm:px-9 sm:py-10">
+        <div aria-hidden="true" className="absolute -right-16 -top-20 -z-10 size-64 rounded-full border-[24px] border-white/5" />
+        <div aria-hidden="true" className="absolute -bottom-24 right-1/4 -z-10 size-64 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="max-w-2xl space-y-4">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold tracking-wide text-cyan-100"><Sparkles className="size-4" /> SHTEMARM · STUDY SMARTER</p>
+          <h1 className="text-3xl font-black leading-tight sm:text-5xl">{tx("Քո հաջորդ քայլը՝ դեպի քննության հաջողություն")}</h1>
+          <p className="max-w-xl text-sm leading-relaxed text-blue-100 sm:text-base">{tx("Գտիր ճիշտ շտեմարանը, սովորիր թեմաներով, անցիր փորձնական քննություններ և հետևիր առաջընթացիդ՝ մեկ հարմար վայրում։")}</p>
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Link to="/" search={{ subject: "english" }} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5"><BookOpen className="size-4" />{tx("Սկսել սովորել")}</Link>
+            <Link to="/mini-games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"><Brain className="size-4" />{tx("Մինի խաղեր")}</Link>
+          </div>
+        </div>
+        <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:absolute sm:bottom-8 sm:right-8 sm:mt-0 sm:w-56 sm:border-l sm:border-t-0 sm:pl-5">
+          <div><p className="text-xl font-black sm:text-2xl">5</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
+          <div><p className="text-xl font-black sm:text-2xl">2</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մաթ. գիրք")}</p></div>
+          <div><p className="text-xl font-black sm:text-2xl">24/7</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մուտք")}</p></div>
+        </div>
+      </section>
       <section className="space-y-8">
         <div className="space-y-2">
           <p className="text-lg font-bold text-primary">
