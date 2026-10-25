@@ -70,9 +70,9 @@ export function isShortAnswer(answer: string) {
   return !isOptionAnswer(answer);
 }
 
-/** A section is typed-answer if any of its answers is not an option label; such sections never show choice buttons. */
-export function isOpenSection(tasks: { answers: string[] | null }[]) {
-  return tasks.some((t) => t.answers?.some((a) => isShortAnswer(a)) ?? false);
+/** A task uses typed answers if any answer is not a choice/true-false label. Call per task, not for the whole section. */
+export function isOpenTask(task: { answers: string[] | null }) {
+  return task.answers?.some((answer) => isShortAnswer(answer)) ?? false;
 }
 
 function normalizeNumber(v: string) {

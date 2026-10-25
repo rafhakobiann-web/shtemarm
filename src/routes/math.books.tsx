@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
@@ -113,16 +113,6 @@ function CropSegment({ src, s }: { src: string; s: Segment }) {
   );
 }
 
-function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
-  return (
-    <div className="space-y-2">
-      {segments.map((s, i) => (
-        <CropSegment key={i} s={s} src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`} />
-      ))}
-    </div>
-  );
-}
-
 function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: number; saved?: string; correct?: string; onAnswer: (id: string, value: string) => void }) {
   const tx = useTx();
   const [draft, setDraft] = useState("");
@@ -162,7 +152,7 @@ function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: nu
   );
 }
 
-function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
+function SourceTaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
   return (
     <div className="space-y-2">
       {segments.map((s, i) => (
@@ -186,7 +176,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div>}{(!task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><TaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div>}{(!task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -426,7 +416,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {tx(section.title)}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenSection([t])} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenTask(t)} />
           ))}
         </section>
       )}
