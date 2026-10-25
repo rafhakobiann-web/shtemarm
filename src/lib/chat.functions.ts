@@ -142,14 +142,11 @@ export const chatReply = createServerFn({ method: "POST" })
       };
     }
 
-    const failures: string[] = [];
     for (const provider of providers) {
       try {
         const text = await provider.run();
         if (text) return { text, error: false, provider: provider.name };
-        failures.push(provider.name + ": empty response");
       } catch {
-        failures.push(provider.name + ": unavailable");
       }
     }
 
