@@ -30,15 +30,54 @@ const MATH_BOOKS = [
   { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/math/books/covers/matem-2.jpg" },
 ] as const;
 
+function SubjectCover({ title, sub }: { title: string; sub: string }) {
+  const text = `${title} ${sub}`.toLowerCase();
+  const isMath = text.includes("մաթեմատիկ") || text.includes("matem");
+  const isBiology = text.includes("կենսաբան") || text.includes("bio");
+  const isHistory = text.includes("պատմ");
+  const isArmenian = text.includes("հայոց լեզու") || text.includes("գրական") || text.includes("armenian");
+  const isEnglish = text.includes("անգլերեն") || text.includes("շտեմարան") || text.includes("english");
+  const subject = isMath ? "ՄԱԹԵՄԱՏԻԿԱ" : isBiology ? "ԿԵՆՍԱԲԱՆՈՒԹՅՈՒՆ" : isHistory ? "ՀԱՅՈՑ ՊԱՏՄՈՒԹՅՈՒՆ" : isArmenian ? "ՀԱՅՈՑ ԼԵԶՈՒ ԵՎ ԳՐԱԿԱՆՈՒԹՅՈՒՆ" : isEnglish ? "ԱՆԳԼԵՐԵՆ" : title.toLocaleUpperCase("hy-AM");
+  const Icon = isMath ? Calculator : isBiology ? Dna : isHistory || isArmenian || isEnglish ? BookOpen : Brain;
+  const palette = isMath
+    ? "from-blue-950 via-blue-800 to-cyan-600"
+    : isBiology
+      ? "from-emerald-950 via-emerald-800 to-lime-600"
+      : isHistory
+        ? "from-orange-950 via-amber-800 to-orange-500"
+        : isArmenian
+          ? "from-violet-950 via-purple-800 to-fuchsia-500"
+          : "from-indigo-950 via-indigo-800 to-sky-500";
+  const badge = isMath ? "01" : isBiology ? "02" : isHistory ? "03" : isArmenian ? "04" : "05";
+  return (
+    <div className={`relative grid size-full min-h-44 place-items-center overflow-hidden bg-gradient-to-br ${palette} p-4 text-white sm:min-h-52`} aria-label={subject}>
+      <div aria-hidden="true" className="absolute -right-8 -top-8 size-36 rounded-full border border-white/20" />
+      <div aria-hidden="true" className="absolute -right-1 top-1 size-24 rounded-full border border-white/15" />
+      <div aria-hidden="true" className="absolute -bottom-10 -left-8 size-36 rounded-full border-[18px] border-white/10" />
+      <div aria-hidden="true" className="absolute inset-x-4 top-4 h-px bg-white/25" />
+      <div className="relative z-10 flex h-full w-full flex-col justify-between gap-5">
+        <div className="flex items-start justify-between gap-2">
+          <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold tracking-[0.2em]">SHTEMARM</span>
+          <span className="text-xs font-bold tracking-[0.2em] text-white/65">{badge}</span>
+        </div>
+        <div className="flex flex-col items-start gap-3">
+          <span className="grid size-14 place-items-center rounded-2xl border border-white/25 bg-white/10 shadow-lg backdrop-blur-sm">
+            <Icon className="size-8" strokeWidth={1.4} aria-hidden="true" />
+          </span>
+          <h4 className="max-w-full text-pretty text-base font-black leading-snug tracking-wide text-white sm:text-lg">{subject}</h4>
+          <p className="text-[10px] font-semibold tracking-[0.16em] text-white/75">{sub.toLocaleUpperCase("hy-AM")}</p>
+        </div>
+        <div className="h-1 w-full overflow-hidden rounded-full bg-white/20"><div className="h-full w-1/3 rounded-full bg-white/80" /></div>
+      </div>
+    </div>
+  );
+}
+
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
     <>
       <div className="cover-frame relative aspect-[3/4] overflow-hidden bg-muted">
-        {cover ? (
-          <img src={cover} alt={title} loading="lazy" className="size-full object-cover transition duration-300 group-hover:scale-105" />
-        ) : (
-          <div className="cover-placeholder grid size-full place-items-center bg-gradient-to-br from-primary/10 via-muted to-secondary text-primary/65"><BookOpen className="size-12 sm:size-16" strokeWidth={1.35} aria-hidden="true" /></div>
-        )}
+        <SubjectCover title={title} sub={sub} />
       </div>
       <div className="space-y-1 p-4">
         <h3 className="text-base font-bold leading-snug">{title}</h3>
