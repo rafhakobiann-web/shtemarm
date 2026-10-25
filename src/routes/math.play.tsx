@@ -77,7 +77,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
   const items: Item[] = [];
   for (const t of sec.tasks) {
     const subs = t.answers ? t.answers.length : t.sub_count;
-    const open = isOpenTask([t]);
+    const open = isOpenTask(t);
     for (let i = 0; i < subs; i++) {
       items.push({
         id: `${bookId}:${chapter}:${section}:${t.task}:${i + 1}`,
