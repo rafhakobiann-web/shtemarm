@@ -52,13 +52,24 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       if (id === request.current) setResult({ word, context, text: "Չհաջողվեց թարգմանել։", loading: false, error: true });
     }
   };
-  const changeLanguage = (next: TranslationLanguage) => {
+  const changeLanguage = async (next: TranslationLanguage) => {
     setLanguage(next);
-    if (result) {
-      const cached = readCached(result.word, next);
-      setSaved(false);
-      if (cached) setResult({ ...result, text: cached, loading: false, error: false });
-      else void open(result.word, result.context);
+    if (!result) return;
+    const id = ++request.current;
+    setSaved(false);
+    const cached = readCached(result.word, next);
+    if (cached) {
+      setResult({ ...result, text: cached, loading: false, error: false });
+      return;
+    }
+    setResult({ ...result, text: "", loading: true, error: false });
+    try {
+      const data: TranslationInput = { text: result.word, kind: "word", context: result.context.slice(0, 2000), language: next };
+      const response = await translate({ data });
+      if (!response.error) saveCached(result.word, next, response.text);
+      if (id === request.current) setResult({ ...result, ...response, loading: false });
+    } catch {
+      if (id === request.current) setResult({ ...result, text: "Չհաջողվեց թարգմանել։", loading: false, error: true });
     }
   };
   return <TranslationContext.Provider value={open}>
