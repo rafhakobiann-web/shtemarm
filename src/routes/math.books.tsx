@@ -172,7 +172,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><TaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div>}{(!task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><TaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
