@@ -113,16 +113,6 @@ function CropSegment({ src, s }: { src: string; s: Segment }) {
   );
 }
 
-function TaskCrop({ book, segments }: { book: string; segments: Segment[] }) {
-  return (
-    <div className="space-y-2">
-      {segments.map((s, i) => (
-        <CropSegment key={i} s={s} src={`/math/books/${book}/p-${String(s.page).padStart(3, "0")}.jpg`} />
-      ))}
-    </div>
-  );
-}
-
 function ShortAnswerRow({ id, n, saved, correct, onAnswer }: { id: string; n: number; saved?: string; correct?: string; onAnswer: (id: string, value: string) => void }) {
   const tx = useTx();
   const [draft, setDraft] = useState("");
