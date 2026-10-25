@@ -371,7 +371,7 @@ function BooksPage() {
         </section>
       )}
 
-      {bookId && book && !sectionKey && mode === "chapters" && (
+      {bookId && book && !sectionKey && (
         <section className="space-y-8">
           <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
             <div className="hidden md:block"><MathBookCover bookId={bookId} /></div>
