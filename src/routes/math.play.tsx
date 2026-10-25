@@ -148,18 +148,23 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
   }
 
   const isTrueFalse = correct === "T" || correct === "F";
-  if (!isTrueFalse && (!item.options || item.options.length < 4)) {
-    return (
-      <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">
-        {tx("Այս հարցի պատասխանների տարբերակները դեռ մշակվում են։ Ընտրության կոճակները կհայտնվեն, երբ բոլոր տարբերակները մուտքագրվեն։")}
-      </p>
-    );
-  }
+  // Some source-book items have their original wording/options visible in the scanned
+  // page crop, while the optional text transcription is still incomplete. Keep those
+  // questions playable: the learner can read the source image and select option 1–4.
+  const missingOptionText = !isTrueFalse && (!item.options || item.options.length < 4);
   const choices: [string, string][] = isTrueFalse
     ? [["T", "Ճիշտ է"], ["F", "Սխալ է"]]
-    : item.options!.slice(0, 4).map((option, i) => [String(i + 1), option]);
+    : missingOptionText
+      ? [["1", ""], ["2", ""], ["3", ""], ["4", ""]]
+      : item.options!.slice(0, 4).map((option, i) => [String(i + 1), option]);
   return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+    <div className="space-y-2">
+      {missingOptionText && (
+        <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">
+          {tx("Տարբերակների տեքստը կարդա վերևի գրքի նկարից, ապա ընտրիր համապատասխան համարը։")}
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
         const isCorrectBtn = answered && correct === c;
         const isWrongBtn = value === c && correct !== c;
@@ -179,6 +184,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
           </button>
         );
       })}
+      </div>
     </div>
   );
 }
