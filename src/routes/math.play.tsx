@@ -5,7 +5,7 @@ import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
-import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
+import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/play")({
@@ -77,7 +77,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
   const items: Item[] = [];
   for (const t of sec.tasks) {
     const subs = t.answers ? t.answers.length : t.sub_count;
-    const open = isOpenSection([t]);
+    const open = isOpenTask([t]);
     for (let i = 0; i < subs; i++) {
       items.push({
         id: `${bookId}:${chapter}:${section}:${t.task}:${i + 1}`,
