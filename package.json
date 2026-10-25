@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate:math": "node scripts/validate-math-books.mjs"
+    "validate:math": "node scripts/validate-math-books.mjs",
+    "audit:math": "node scripts/audit-math-bank.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
