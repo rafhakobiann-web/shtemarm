@@ -426,7 +426,7 @@ function BooksPage() {
         <section className="space-y-4">
           <p className="text-sm font-bold">{tx("Բաժին {n}", { n: section.section })}. {tx(section.title)}</p>
           {section.tasks.map((t) => (
-            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenTask([t])} />
+            <TaskCard key={t.task} bookId={bookId} bookNo={bookNo} sec={section} task={t} saved={progress.answers} onAnswer={setAnswer} shortSection={isOpenTask(t)} />
           ))}
         </section>
       )}
