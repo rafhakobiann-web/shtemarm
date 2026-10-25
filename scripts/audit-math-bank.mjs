@@ -4,6 +4,8 @@ import path from "node:path";
 const root = process.cwd();
 const indexPath = path.join(root, "public/data/math-books-index.json");
 const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+const textQuestionsPath = path.join(root, "public/data/math-text-questions.json");
+const textQuestions = JSON.parse(fs.readFileSync(textQuestionsPath, "utf8"));
 const failures = [];
 const summary = [];
 
@@ -16,6 +18,10 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
   let missingAnswers = 0;
   let missingSegments = 0;
   let duplicateTaskIds = 0;
+  let textPrompts = 0;
+  let completeChoiceSets = 0;
+  let missingTextPrompts = 0;
+  const missingPromptExamples = [];
   const seenTasks = new Set();
 
   for (const section of book.sections ?? []) {
@@ -29,6 +35,18 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
 
       const expected = Number.isInteger(task.sub_count) ? task.sub_count : (task.answers?.length ?? 0);
       questionCount += expected;
+      const sectionKey = `${section.chapter}-${section.section}`;
+      const taskQuestions = textQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? task.questions ?? [];
+      for (let sub = 0; sub < expected; sub++) {
+        const question = taskQuestions[sub];
+        if (typeof question?.prompt === "string" && question.prompt.trim()) {
+          textPrompts++;
+          if (Array.isArray(question.options) && question.options.length >= 4) completeChoiceSets++;
+        } else {
+          missingTextPrompts++;
+          if (missingPromptExamples.length < 12) missingPromptExamples.push(`${section.chapter}.${section.section} task ${task.task}, subquestion ${sub + 1}`);
+        }
+      }
       if (!Array.isArray(task.answers) || task.answers.length !== expected) {
         missingAnswers += Math.max(1, expected - (task.answers?.length ?? 0));
         failures.push(`${bookId} ${id}: expected ${expected} answers, found ${task.answers?.length ?? 0}`);
@@ -61,7 +79,7 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
 
   if (invalidAnswers) failures.push(`${bookId}: ${invalidAnswers} blank or non-string answers`);
   if (duplicateTaskIds) failures.push(`${bookId}: ${duplicateTaskIds} duplicate task IDs`);
-  summary.push({ bookId, sections: book.sections?.length ?? 0, tasks: taskCount, subquestions: questionCount, answers: answerCount, sourcePages: pageRefs.size, missingAnswers, missingSegments, duplicateTaskIds });
+  summary.push({ bookId, sections: book.sections?.length ?? 0, tasks: taskCount, subquestions: questionCount, answers: answerCount, textPrompts, completeChoiceSets, missingTextPrompts, missingPromptExamples, sourcePages: pageRefs.size, missingAnswers, missingSegments, duplicateTaskIds });
 }
 
 console.table(summary);
@@ -70,5 +88,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log("Math bank audit passed: answer counts, task numbering, source crop references, and source page images are complete.");
+  console.log("Math bank structure passed: answer counts, task numbering, source crop references, and source page images are complete.");
+  console.log("Text-prompt coverage is reported separately. Missing text prompts still display the original source crop in the practice UI; they are not counted as completed transcriptions.");
 }
