@@ -25,7 +25,6 @@ type Index = { books: Record<string, BookData> };
 
 const PAGE_W = 467.76;
 const BOOK_IDS = ["matem-1", "matem-2"] as const;
-const PAGE_COUNT: Record<string, number> = { "matem-1": 288, "matem-2": 320 };
 
 function MathBookCover({ bookId, compact = false }: { bookId: string; compact?: boolean }) {
   const tx = useTx();
@@ -172,10 +171,8 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   return (
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      {!task.questions && !task.sub_segments && <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս առաջադրանքի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
-      {task.questions && <p className="text-sm text-muted-foreground">{tx("Տեքստային տարբերակ")}</p>}
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։")}</p>}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div> : <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><TaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -205,16 +202,6 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           }
           const chosen = saved[id];
           const optionTexts = task.questions?.[i]?.options;
-          if (!isTF && (!optionTexts || optionTexts.length < 4)) {
-            return (
-              <Fragment key={n}>
-                <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">
-                  {tx("Այս հարցի պատասխանների տարբերակները դեռ մշակվում են։ Ընտրության կոճակները կհայտնվեն, երբ բոլոր տարբերակները մուտքագրվեն։")}
-                </p>
-                {explainFor()}
-              </Fragment>
-            );
-          }
           const choices = isTF ? ["T", "F"] : ["1", "2", "3", "4"];
           return (
             <Fragment key={n}>
@@ -266,23 +253,20 @@ function BooksPage() {
   }, [q.data]);
   const [bookId, setBookId] = useState<string | null>(null);
   const [sectionKey, setSectionKey] = useState<string | null>(null);
-  const [mode, setMode] = useState<"chapters" | "pages">("chapters");
 
   // Keep the open book / section in the URL, so a reload returns to the same place.
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     if (sp.get("book")) setBookId(sp.get("book"));
     if (sp.get("sec")) setSectionKey(sp.get("sec"));
-    if (sp.get("mode") === "pages") setMode("pages");
   }, []);
   useEffect(() => {
     const sp = new URLSearchParams();
     if (bookId) sp.set("book", bookId);
     if (sectionKey) sp.set("sec", sectionKey);
-    if (mode !== "chapters") sp.set("mode", mode);
     const qs = sp.toString();
     window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
-  }, [bookId, sectionKey, mode]);
+  }, [bookId, sectionKey]);
   const { progress, setAnswer } = useMathProgress();
   const answered = (prefix: string) => Object.keys(progress.answers).filter((k) => k.startsWith(prefix));
   const correctIn = (prefix: string) =>
@@ -316,7 +300,7 @@ function BooksPage() {
   if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
   if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գրքերը։")}</p>;
 
-  const back = () => (sectionKey ? setSectionKey(null) : mode !== "chapters" ? setMode("chapters") : setBookId(null));
+  const back = () => (sectionKey ? setSectionKey(null) : setBookId(null));
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-5xl">
