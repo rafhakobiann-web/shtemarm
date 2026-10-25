@@ -133,15 +133,16 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
 
 function expandForTest(item: ExamItem): ExamItem[] {
   const unit = item.unit;
-  if ((unit.kind === "mc" || unit.kind === "num") && unit.questions.length > 1) {
+  if (unit.kind === "mc" && unit.questions.length > 1) {
     return unit.questions.map((question) => ({
       section: item.section,
-      unit: {
-        ...unit,
-        id: `${unit.id}-q${question.n}`,
-        label: question.n,
-        questions: [question],
-      },
+      unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
+    }));
+  }
+  if (unit.kind === "num" && unit.questions.length > 1) {
+    return unit.questions.map((question) => ({
+      section: item.section,
+      unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
     }));
   }
   return [item];
@@ -212,4 +213,4 @@ export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
     throw new Error("Չհաջողվեց կազմել անհրաժեշտ միավորներով քննություն։ Փորձիր մեկ այլ շտեմարան։");
   }
   return ordered(book, selected);
-}}
+}
