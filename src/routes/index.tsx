@@ -229,11 +229,11 @@ function ArmenianSubject() {
         <h2 className="text-xl font-black">{tx("Ինտերակտիվ հարցաշար")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
-            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("32 հարց · 4 թեմատիկ բաժին")} />
+            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու · Փորձնական հարցաշար")} sub={tx("64 հարց · 4 թեմատիկ բաժին")} />
           </Link>
           <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Արագ փորձնական քննություն")} sub={tx("Խառը հարցեր՝ բառագիտությունից, ձևաբանությունից և շարահյուսությունից")} icon={<Trophy className="size-5" />} />
         </div>
-        <p className="text-sm text-muted-foreground">{tx("Այս 32 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
+        <p className="text-sm text-muted-foreground">{tx("Այս 64 հարցը նոր կազմված ուսումնական օրինակներ են, ոչ թե պաշտոնական թեստերից բառացի արտագրություններ։ Ստուգիր նաև պաշտոնական նյութերը ստորև։")}</p>
       </section>
       <section className="space-y-4">
         <h2 className="text-xl font-black">{tx("Պաշտոնական թեստեր և պատասխաններ")}</h2>
@@ -246,7 +246,7 @@ function ArmenianSubject() {
         <ExamTile href="https://dimord.am/public/tests" title={tx("ԳԹԿ պաշտոնական թեստերի էջ")} sub={tx("Պաշտոնական քննությունների թեստերի և պատասխանների հրապարակման էջ")} icon={<Trophy className="size-5" />} />
         <ExamTile href="https://test.am/pdf.php?page=17" title={tx("Շտեմարանների և քննությունների արխիվ")} sub={tx("Լրացուցիչ աղբյուրներ՝ հաջորդ հարցաշարերը ստուգելու համար")} icon={<ClipboardCheck className="size-5" />} />
       </div>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Ինտերակտիվ հարցերն ու ավտոմատ գնահատումը դեռ պատրաստ չեն այս առարկայի համար․ չենք ցուցադրում չստուգված պատասխաններ որպես ճիշտ։")}</p>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Ինտերակտիվ հարցաշարը և ավտոմատ գնահատումը հասանելի են։ Հարցերը մեր կազմած ուսումնական օրինակներն են, իսկ պաշտոնական թեստերի էջերը բացվում են առանձին՝ սկզբնաղբյուրը պահպանելու համար։")}</p>
     </div>
   );
 }
@@ -406,6 +406,7 @@ function Index() {
           />
           <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · 70 հարց")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("64 հարց՝ 4 թեմատիկ բաժնից")} icon={<BookOpen className="size-5" />} />
         </div>
       </section>
       <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
