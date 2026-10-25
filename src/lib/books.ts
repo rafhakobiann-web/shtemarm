@@ -15,29 +15,29 @@ export const secTitle = (s: { n: number; title?: string; label?: string }, tx: T
 export type Book = { id: number; sections: Section[] };
 
 export const BOOKS = [
-  { id: 1, title: "Շտեմարան 1", sub: "Մաս I · 2017", cover: "/covers/en-1.jpg" },
-  { id: 2, title: "Շտեմարան 2", sub: "Մաս II · 2017", cover: "/covers/en-2.webp" },
-  { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: "/covers/en-3.webp" },
+  { id: 1, title: "Շտեմարան 1", sub: "Մաս I · 2017", cover: "/covers/english-1.svg" },
+  { id: 2, title: "Շտեմարան 2", sub: "Մաս II · 2017", cover: "/covers/english-2.svg" },
+  { id: 3, title: "Շտեմարան 3", sub: "Մաս III · 2018", cover: "/covers/english-3.svg" },
 ] as const;
 
 /** Armenian history question books. Ids 21–23 map to public/data/history-book{1..3}.json. */
 export const HISTORY_BOOKS = [
-  { id: 21, title: "Հայոց պատմություն", sub: "Գիրք առաջին", cover: "/covers/hist-1.webp" },
-  { id: 22, title: "Հայոց պատմություն", sub: "Գիրք երկրորդ", cover: "/covers/hist-2.webp" },
-  { id: 23, title: "Հայոց պատմություն", sub: "Գիրք երրորդ", cover: "/covers/hist-3.webp" },
+  { id: 21, title: "Հայոց պատմություն", sub: "Գիրք առաջին", cover: "/covers/history-1.svg" },
+  { id: 22, title: "Հայոց պատմություն", sub: "Գիրք երկրորդ", cover: "/covers/history-2.svg" },
+  { id: 23, title: "Հայոց պատմություն", sub: "Գիրք երրորդ", cover: "/covers/history-3.svg" },
 ] as const;
 
 /** Biology books. Ids 31–34 map to public/data/bio-book{1..4}.json. Only unlocked books are playable. */
 export const BIO_BOOKS = [
-  { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.webp", locked: false },
-  { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.webp", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս երրորդ", cover: "/covers/bio-3.webp", locked: true },
-  { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.webp", locked: true },
+  { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
+  { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս երրորդ", cover: "/covers/bio-3.svg", locked: true },
+  { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.svg", locked: true },
 ] as const;
 
 /** Original Armenian-language practice bank; official past-paper links are shown separately. */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 32 հարց", cover: "/covers/armenian-1.svg" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 32 հարց", cover: "/covers/armenian-language.svg" },
 ] as const;
 
 /** Every playable book page, English, history, biology and Armenian language. */
