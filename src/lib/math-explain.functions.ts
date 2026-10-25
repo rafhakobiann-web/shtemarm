@@ -53,6 +53,19 @@ ${wrong ? "2. Ինչու է աշակերտի ընտրածը սխալ՝ կոնկ�
 ${d.chosen !== null ? `Աշակերտի պատասխանը: ${valueLabel(d.kind, d.chosen)}` : "Աշակերտը չի պատասխանել։"}`;
 }
 
+function offlineMathExplanation(data: Input) {
+  const answer = valueLabel(data.kind, data.correct);
+  const selected = data.chosen === null ? "" : data.chosen === data.correct
+    ? "\\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
+    : `\\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
+  return {
+    text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\\n\\nՏեղային պահուստային ռեժիմում հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
+    cached: false,
+    error: false,
+    offline: true,
+  };
+}
+
 async function callGemini(key: string, prompt: string, pages: string[]) {
   const parts = [
     { text: prompt },
@@ -114,27 +127,22 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
     // The key covers the item, the answers and the exact page images. Changing any of them
     // produces a new key, so a request with other images can never overwrite the real explanation.
     const cacheKey = await sha256Hex(["math-v1", data.item, data.kind, data.correct, data.chosen ?? "", ...data.pages]);
-    const { data: cached } = await supabaseAdmin
-      .from("explanation_cache")
-      .select("explanation")
-      .eq("cache_key", cacheKey)
-      .maybeSingle();
+    let cached: { explanation: string } | null = null;
+    try {
+      const result = await supabaseAdmin
+        .from("explanation_cache")
+        .select("explanation")
+        .eq("cache_key", cacheKey)
+        .maybeSingle();
+      cached = result.data;
+    } catch {
+      // Cache is optional; do not let it disable the explanation feature.
+    }
     if (cached) return { text: cached.explanation, cached: true, error: false };
 
     const geminiKey = process.env["GEMINI_API_KEY"];
     const groqKey = process.env["GROQ_API_KEY"];
-    if (!geminiKey && !groqKey) {
-      const answer = valueLabel(data.kind, data.correct);
-      const selected = data.chosen === null ? "" : data.chosen === data.correct
-        ? "\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
-        : `\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
-      return {
-        text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\n\nԱյս պահին հասանելի է միայն տեղային պահուստային բացատրությունը․ առանց ԱԲ ծառայության հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
-        cached: false,
-        error: false,
-        offline: true,
-      };
-    }
+    if (!geminiKey && !groqKey) return offlineMathExplanation(data);
 
     const prompt = buildPrompt(data);
     try {
@@ -142,8 +150,8 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
         ? await callGemini(geminiKey, prompt, data.pages)
         : await callGroq(groqKey!, prompt, data.pages);
 
-      if (res.status !== 200) return { text: explanationError(res.status), error: true };
-      if (!res.text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։", error: true };
+      if (res.status !== 200) return offlineMathExplanation(data);
+      if (!res.text) return offlineMathExplanation(data);
 
       await supabaseAdmin
         .from("explanation_cache")
@@ -151,6 +159,6 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
 
       return { text: res.text, cached: false, error: false };
     } catch {
-      return { text: "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։", error: true };
+      return offlineMathExplanation(data);
     }
   });
