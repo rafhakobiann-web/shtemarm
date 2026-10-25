@@ -43,6 +43,22 @@ async function callOpenAICompatible(url: string, key: string, model: string, mes
   return result;
 }
 
+async function callOpenRouter(key: string, messages: Msg[]) {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-OpenRouter-Title": "Shtemarm" },
+    body: JSON.stringify({
+      model: "openrouter/free",
+      messages: [{ role: "system", content: SYSTEM }, ...messages],
+      temperature: 0.3,
+      max_tokens: 700,
+    }),
+  });
+  if (!res.ok) throw new Error(`openrouter ${res.status}`);
+  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+  return clean(json.choices?.[0]?.message?.content ?? "");
+}
+
 async function callGemini(key: string, messages: Msg[]) {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`,
@@ -85,29 +101,61 @@ export const chatReply = createServerFn({ method: "POST" })
     const groqKey = process.env["GROQ_API_KEY"];
     const geminiKey = process.env["GEMINI_API_KEY"];
     const openRouterKey = process.env["OPENROUTER_API_KEY"];
+    const zAiKey = process.env["Z_AI_KEY"];
 
-    // Try configured providers in sequence. One exhausted quota should not break the chat.
-    const providers: (() => Promise<string>)[] = [];
-    if (groqKey) providers.push(() => callOpenAICompatible(
-      "https://api.groq.com/openai/v1/chat/completions", groqKey, "llama-3.3-70b-versatile", data.messages, "groq",
-    ));
-    if (geminiKey) providers.push(() => callGemini(geminiKey, data.messages));
-    if (openRouterKey) providers.push(() => callOpenAICompatible(
-      "https://openrouter.ai/api/v1/chat/completions", openRouterKey, "openrouter/free", data.messages, "openrouter",
-    ));
+    // Try configured providers in order. OpenRouter is explicitly pinned to its
+    // free-model router so this fallback does not intentionally select paid models.
+    const providers: { name: string; run: () => Promise<string> }[] = [];
+    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, data.messages) });
+    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, data.messages) });
+    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, data.messages) });
 
+    // Z.ai pricing and model access depend on the user's account. Only enable it
+    // when an explicit model is configured, avoiding accidental paid model usage.
+    const zAiModel = process.env["Z_AI_MODEL"];
+    if (zAiKey && zAiModel) {
+      providers.push({
+        name: "Z.ai",
+        run: async () => {
+          const res = await fetch("https://api.z.ai/api/paas/v4/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${zAiKey}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: zAiModel,
+              messages: [{ role: "system", content: SYSTEM }, ...data.messages],
+              temperature: 0.3,
+              max_tokens: 700,
+            }),
+          });
+          if (!res.ok) throw new Error(`z.ai ${res.status}`);
+          const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+          return clean(json.choices?.[0]?.message?.content ?? "");
+        },
+      });
+    }
+
+    if (providers.length === 0) {
+      return {
+        text: "ԱԲ ծառայությունները միացված չեն։ Այս պահին կարող եք օգտվել շտեմարանների թեստերից և տեղային ուսումնական գործիքներից։",
+        error: true,
+        offline: true,
+      };
+    }
+
+    const failures: string[] = [];
     for (const provider of providers) {
       try {
-        const text = await provider();
-        return { text, error: false, offline: false };
+        const text = await provider.run();
+        if (text) return { text, error: false, provider: provider.name };
+        failures.push(provider.name + ": empty response");
       } catch {
-        // Continue to the next configured provider on quota, network, or model errors.
+        failures.push(provider.name + ": unavailable");
       }
     }
 
     return {
-      text: offlineStudyReply(data.messages),
-      error: false,
+      text: "ԱԲ մատակարարներն այս պահին հասանելի չեն կամ սահմանաչափը լրացել է։ Փորձեք ավելի ուշ, կամ օգտվեք կայքի սովորական թեստերից և պատասխանների ստուգումից։",
+      error: true,
       offline: true,
     };
   });
