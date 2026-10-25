@@ -95,13 +95,13 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
       }
 
       if (!res! || !res.ok || !res.body) {
-        return { text: explanationError(res!?.status ?? 500), error: true };
+        return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
       }
 
       const result = isGroq ? await readGroqStream(res.body) : await readGeminiStream(res.body);
       
-      if (result.blocked) return { text: "Ծառայությունը մերժեց այս բացատրության ստեղծումը։", error: true };
-      if (!result.text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։", error: true };
+      if (result.blocked) return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
+      if (!result.text) return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
 
       // Store in the background so the learner gets the explanation without waiting for the write.
       supabaseAdmin
@@ -111,6 +111,6 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
 
       return { text: result.text, cached: false, error: false };
     } catch {
-      return { text: "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։", error: true };
+      return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
     }
   });
