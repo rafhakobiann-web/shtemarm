@@ -6,6 +6,7 @@ import { useTx } from "@/lib/lang";
 import { translateEnglish } from "@/lib/translate.functions";
 import { englishTokens, TRANSLATION_LANGUAGES, type TranslationInput, type TranslationLanguage } from "@/lib/translation";
 import { addVocabularyEntry } from "@/lib/vocabulary";
+import { getDictionaryTranslation } from "@/lib/word-dictionary";
 
 const TranslationContext = createContext<((word: string, context: string) => void) | null>(null);
 const CACHE_PREFIX = "shtemarm-word-translation-v2:";
@@ -41,8 +42,13 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     const id = ++request.current;
     setSaved(false);
     const cached = readCached(word, language);
-    setResult({ word, context, text: cached ?? "", loading: !cached, error: false });
-    if (cached) return;
+    const dictionaryMeaning = getDictionaryTranslation(word, language);
+    const savedMeaning = cached ?? dictionaryMeaning;
+    setResult({ word, context, text: savedMeaning ?? "", loading: !savedMeaning, error: false });
+    if (savedMeaning) {
+      if (!cached && dictionaryMeaning) saveCached(word, language, dictionaryMeaning);
+      return;
+    }
     const data: TranslationInput = { text: word, kind: "word", context: context.slice(0, 2000), language };
     try {
       const response = await translate({ data });
