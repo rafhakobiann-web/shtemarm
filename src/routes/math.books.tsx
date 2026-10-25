@@ -382,6 +382,16 @@ function BooksPage() {
                 <Button variant="outline" size="lg" onClick={() => setMode("pages")}>
                   <BookText /> {tx("Էջերը՝ նկարներով")}
                 </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <a href={bookId === "matem-1" ? "/math/books/matem-1.pdf" : "/math/books/matem-2.pdf"} target="_blank" rel="noreferrer">
+                    <BookText /> {tx("Բացել ամբողջ PDF գիրքը")}
+                  </a>
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <a href={bookId === "matem-1" ? "/math/books/matem-1.pdf" : "/math/books/matem-2.pdf"} download>
+                    <BookText /> {tx("Ներբեռնել PDF-ը")}
+                  </a>
+                </Button>
               </div>
             </div>
           </div>
