@@ -278,7 +278,6 @@ function HistoryBookPage() {
   const answeredCount = round.filter((x) => progress.answers[qid(x)] !== undefined).length;
   const current = it ? progress.answers[qid(it)] : undefined;
   const finished = !it || (index === round.length - 1 && current !== undefined);
-  const gameOver = lives <= 0;
 
   const onPick = (c: string) => {
     if (!it || current !== undefined) return;
@@ -309,9 +308,9 @@ function HistoryBookPage() {
         <span className="flex items-center gap-1 text-sm font-black text-amber-600"><Zap className="size-5" /> ×{streak}</span>
       </div>
 
-      {gameOver || finished ? (
+      {finished ? (
         <section className="space-y-3 rounded-[28px] border border-white/60 bg-white/55 p-6 text-center shadow-[0_8px_32px_rgba(30,58,138,0.12)] backdrop-blur-xl">
-          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
+          <p className="text-xl font-black">{tx("Բաժինն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">{tx("Ճիշտ՝ {correct} / {answered}", { correct: round.filter((x) => progress.answers[qid(x)] === x.answer).length, answered: answeredCount })}</p>
           <Button className="w-full" onClick={() => { setIndex(0); setLives(LIVES); setStreak(0); setRound(section.items); }}>{tx("Նորից")}</Button>
         </section>
@@ -323,7 +322,7 @@ function HistoryBookPage() {
           </div>
           <div className="rounded-[24px] border border-white/70 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">
             <p className="mb-4 text-base font-semibold leading-relaxed">{it.num}. {it.stem}</p>
-            <AnswerRow q={it} chosen={current} locked={lives <= 0} onPick={onPick} />
+            <AnswerRow q={it} chosen={current} locked={false} onPick={onPick} />
             {current !== undefined && (
               <Button className="mt-4 h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
             )}
