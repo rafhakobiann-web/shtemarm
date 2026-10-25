@@ -298,7 +298,6 @@ function PlayPage() {
   const it = round[index];
   const answeredCount = round.filter((x) => progress.answers[x.id] !== undefined).length;
   const current = it ? progress.answers[it.id] : undefined;
-  const gameOver = lives <= 0;
   const finished = !it || (index === round.length - 1 && current !== undefined);
   const short = it ? it.open || it.answer === undefined || isShortAnswer(it.answer) : false;
 
@@ -309,7 +308,7 @@ function PlayPage() {
       setStreak((s) => s + 1);
     } else {
       setStreak(0);
-      setLives((l) => l - 1);
+      setLives((l) => Math.max(0, l - 1));
     }
   };
 
@@ -332,9 +331,9 @@ function PlayPage() {
         </span>
       </div>
 
-      {gameOver || finished ? (
+      {finished ? (
         <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
-          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
+          <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">
             {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
           </p>
@@ -361,7 +360,7 @@ function PlayPage() {
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
             </div>
-            <AnswerBlock item={it} value={current} locked={lives <= 0} onAnswer={onAnswer} />
+            <AnswerBlock item={it} value={current} locked={false} onAnswer={onAnswer} />
             {current !== undefined && (
               <MathExplain
                 item={it.id}
