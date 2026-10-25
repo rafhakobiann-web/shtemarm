@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
+import { MobileNav } from "@/components/MobileNav";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -142,6 +143,7 @@ function RootComponent() {
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <TranslationProvider><Outlet /></TranslationProvider>
       </main>
+      <MobileNav />
       <Toaster />
     </QueryClientProvider>
   );
