@@ -100,3 +100,30 @@ export async function readGroqStream(body: ReadableStream<Uint8Array>) {
 
   return { text: text.trim(), blocked: false };
 }
+/**
+ * No-key fallback: deterministic and always available. This is intentionally
+ * transparent about its limits instead of inventing grammar rules or reasoning.
+ */
+export function offlineEnglishExplanation(input: ExplanationInput) {
+  const lines = [
+    `Պաշտոնական ճիշտ պատասխանը՝ ${input.correct}։`,
+  ];
+  if (input.chosen) {
+    lines.push(input.chosen === input.correct
+      ? "Քո ընտրությունը համընկնում է պատասխանների բանալու հետ։"
+      : `Քո ընտրած պատասխանը՝ ${input.chosen}, չի համընկնում պաշտոնական պատասխանի հետ։`);
+  }
+  const text = `${input.question} ${input.passage}`.toLowerCase();
+  const rules: Array<[RegExp, string]> = [
+    [/\\b(if|unless)\\b.*\\b(would have|could have|might have)\\b|\\bwould have\\b.*\\bif\\b/, "Ստուգիր երրորդ պայմանական նախադասության կառուցվածքը՝ If + Past Perfect, would have + past participle։"],
+    [/\\b(since|for)\\b/, "Since-ը սովորաբար նշում է սկզբնակետը, իսկ for-ը՝ ժամանակահատվածը։ Ընտրիր ժամանակաձևը՝ ըստ ամբողջ նախադասության իմաստի։"],
+    [/\\b(than|the most|more)\\b/, "Համեմատության դեպքում ուշադրություն դարձրու comparative/superlative ձևին և than/the most նշաններին։"],
+    [/\\b(by the time|already|yet|just|ever|never)\\b/, "Ժամանակային հուշող բառերը կարող են օգնել ընտրել ճիշտ ժամանակաձևը, բայց ստուգիր նաև նախադասության ամբողջ համատեքստը։"],
+    [/\\b(passive|was built|is made|were written)\\b/, "Կրավորական սեռում օգտագործվում է համապատասխան ժամանակաձևով be + past participle (V3) կառուցվածքը։"],
+    [/\\b(a|an|the)\\b/, "Հոդ ընտրելիս ստուգիր՝ խոսքը որևէ բանի մասին առաջին անգամ է, ընդհանուր իմաստով, թե կոնկրետ ու արդեն հայտնի առարկայի մասին։"],
+  ];
+  const rule = rules.find(([pattern]) => pattern.test(text));
+  if (rule) lines.push(rule[1]);
+  lines.push("Սա տեղային՝ առանց ԱԲ ծառայության աշխատող օգնություն է․ այն չի կարող բոլոր հարցերի համար վստահորեն վերականգնել մանրամասն հիմնավորումը։ Ամբողջական բացատրության համար անհրաժեշտ է նախապես պահպանված բացատրություն կամ միացված ԱԲ ծառայություն։");
+  return lines.join("\\n\\n");
+}
