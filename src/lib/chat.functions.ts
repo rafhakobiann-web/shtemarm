@@ -55,13 +55,49 @@ async function callGemini(key: string, messages: Msg[]) {
   return clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "");
 }
 
+
+/**
+ * A no-key study fallback. It deliberately gives bounded, honest help instead of
+ * pretending to be a full language model. This runs locally on the server.
+ */
+function localStudyReply(messages: Msg[]): string {
+  const latest = messages.filter((m) => m.role === "user").at(-1)?.content.trim() ?? "";
+  const q = latest.toLocaleLowerCase("hy-AM");
+  if (!latest) return "Գրիր ուսումնական հարցը, և կփորձեմ օգնել հասանելի տեղային կանոններով։";
+  if (/^(բարև|բարեւ|ողջույն|hello|hi)\b/i.test(q)) {
+    return "Բարև։ Ես Shtemarm-ի ուսումնական օգնականն եմ։ Կարող եմ օգնել անգլերենի կանոնների, մաթեմատիկայի քայլերի և քննությանը պատրաստվելու կազմակերպման հարցում։ Գրիր կոնկրետ հարցը։";
+  }
+  if (/\b(present simple|ներկա անորոշ|present simple)\b/i.test(q)) {
+    return "Present Simple-ը գործածվում է սովորությունների, կրկնվող գործողությունների և ընդհանուր փաստերի համար։ I/you/we/they-ի հետ օգտագործվում է բայի հիմնական ձևը, իսկ he/she/it-ի հետ՝ սովորաբար -s կամ -es։ Օրինակ՝ “She works every day.” Հարցական և ժխտական ձևերում սովորաբար օգտագործվում է do/does՝ “Does she work?” և “She doesn’t work.”";
+  }
+  if (/\b(present continuous|ներկա շարունակական)\b/i.test(q)) {
+    return "Present Continuous-ը նկարագրում է խոսելու պահին ընթացող կամ ժամանակավոր գործողություն։ Կառուցվածքը՝ am/is/are + բայի -ing ձևը։ Օրինակ՝ “They are studying now.” Ժխտականում ավելացվում է not, իսկ հարցականում am/is/are-ը դրվում է ենթակայից առաջ։";
+  }
+  if (/\b(past simple|անցյալ անորոշ)\b/i.test(q)) {
+    return "Past Simple-ը գործածվում է անցյալում ավարտված գործողությունների համար։ Կանոնավոր բայերը սովորաբար ստանում են -ed, իսկ անկանոն բայերի ձևերը պետք է սովորել առանձին։ Հարցականում և ժխտականում օգտագործվում է did, որից հետո բայը մնում է հիմնական ձևով՝ “Did you go?” / “I didn’t go.”";
+  }
+  if (/\b(conditionals?|պայմանական նախադաս)\b/i.test(q)) {
+    return "Անգլերենի պայմանական նախադասությունների հիմնական ձևերը՝ Zero Conditional՝ if + Present Simple, Present Simple (ընդհանուր ճշմարտություն), First Conditional՝ if + Present Simple, will + բայի հիմնական ձև (իրատեսական ապագա), Second Conditional՝ if + Past Simple, would + բայի հիմնական ձև (երևակայական կամ քիչ հավանական իրավիճակ), Third Conditional՝ if + Past Perfect, would have + V3 (անցյալի չկայացած պայման)։ Սովորաբար if-մասում will չի օգտագործվում։";
+  }
+  if (/\b(articles?|a\/an|the|հոդեր|հոդը)\b/i.test(q)) {
+    return "Անգլերենում a/an-ը գործածվում է եզակի հաշվելի գոյականի հետ, երբ խոսքը որևէ մեկի կամ առաջին անգամ հիշատակվող առարկայի մասին է։ An-ը դրվում է ձայնավոր հնչյունով սկսվող բառից առաջ։ The-ը գործածվում է, երբ խոսողն ու լսողը գիտեն՝ կոնկրետ որ անձի կամ առարկայի մասին է խոսքը։ Ընդհանուր իմաստով հոգնակի հաշվելի և անհաշվելի գոյականների առաջ հոդ հաճախ չի դրվում։";
+  }
+  if (/\b(factor|factorization|քառակուսի հավասարում|հավասարում|equation)\b/i.test(q)) {
+    return "Հավասարում լուծելիս նախ պարզեցրու երկու կողմերը, ապա անհայտ պարունակող անդամները տեղափոխիր մի կողմ, իսկ հաստատունները՝ մյուս։ Կատարիր նույն գործողությունը հավասարման երկու կողմերում և վերջում ստուգիր ստացված արժեքը սկզբնական հավասարման մեջ։ Քառակուսի հավասարման համար կարող ես կիրառել արտադրիչների վերլուծությունը կամ դիսկրիմինանտի մեթոդը։ Եթե ուղարկես կոնկրետ հավասարումը, կփորձեմ ցույց տալ համապատասխան քայլերը։";
+  }
+  if (/\b(study plan|պլան|ինչպես սովորել|քննության պատրաստվել|պատրաստվել քննությանը)\b/i.test(q)) {
+    return "Սկսիր կարճ ախտորոշիչ թեստից, ապա բաժանիր սխալները ըստ թեմաների։ Ամեն օր հերթափոխիր երեք աշխատանք՝ կանոնի կրկնություն, հարցերի լուծում և սխալների վերլուծություն։ Շաբաթվա վերջում կրկնիր միայն այն թեմաները, որոնցում դեռ սխալվում ես, և ժամանակաչափով փորձնական թեստ կատարիր։";
+  }
+  return "Այս պահին արտաքին ԱԲ ծառայությունները հասանելի չեն, ուստի կարող եմ պատասխանել միայն սահմանափակ տեղային ուսումնական կանոններով։ Չեմ ուզում հորինել պատասխանը։ Ուղարկիր կոնկրետ հարցը կամ առաջադրանքի տեքստը՝ նշելով առարկան ու թեման, և կփորձեմ օգնել հասանելի կանոններով։";
+}
+
 export const chatReply = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     const groqKey = process.env["GROQ_API_KEY"];
     const geminiKey = process.env["GEMINI_API_KEY"];
     if (!groqKey && !geminiKey) {
-      return { text: "Չատբոտը միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։", error: true };
+      return { text: localStudyReply(data.messages), error: false, offline: true };
     }
     try {
       let text = "";
@@ -69,15 +105,24 @@ export const chatReply = createServerFn({ method: "POST" })
         try {
           text = await callGroq(groqKey, data.messages);
         } catch {
-          if (geminiKey) text = await callGemini(geminiKey, data.messages);
-          else throw new Error("groq failed");
+          if (geminiKey) {
+            try {
+              text = await callGemini(geminiKey, data.messages);
+            } catch {
+              text = "";
+            }
+          }
         }
       } else if (geminiKey) {
-        text = await callGemini(geminiKey, data.messages);
+        try {
+          text = await callGemini(geminiKey, data.messages);
+        } catch {
+          text = "";
+        }
       }
-      if (!text) return { text: "Ծառայությունը դատարկ պատասխան վերադարձրեց։ Փորձեք կրկին։", error: true };
-      return { text, error: false };
+      if (text) return { text, error: false };
+      return { text: localStudyReply(data.messages), error: false, offline: true };
     } catch {
-      return { text: "Չհաջողվեց պատասխանել։ Փորձեք ավելի ուշ։", error: true };
+      return { text: localStudyReply(data.messages), error: false, offline: true };
     }
   });
