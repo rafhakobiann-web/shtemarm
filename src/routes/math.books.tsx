@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenSection } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, BookOpen, BookText, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
+import { ArrowLeft, BookOpen, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { useTx } from "@/lib/lang";
@@ -26,6 +26,38 @@ type Index = { books: Record<string, BookData> };
 const PAGE_W = 467.76;
 const BOOK_IDS = ["matem-1", "matem-2"] as const;
 const PAGE_COUNT: Record<string, number> = { "matem-1": 288, "matem-2": 320 };
+
+function MathBookCover({ bookId, compact = false }: { bookId: string; compact?: boolean }) {
+  const tx = useTx();
+  const part = bookId === "matem-1" ? "01" : "02";
+  return (
+    <div
+      role="img"
+      aria-label={tx("Մաթեմատիկա · Մաս {n}", { n: part === "01" ? 1 : 2 })}
+      className={`relative isolate flex w-full flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-slate-950 via-blue-900 to-cyan-600 text-white shadow-lg ${compact ? "aspect-[3/4] p-3 sm:p-4" : "aspect-[3/4] p-5"}`}
+    >
+      <div aria-hidden="true" className="absolute -right-8 -top-8 -z-10 size-36 rounded-full border border-white/25" />
+      <div aria-hidden="true" className="absolute -bottom-10 -left-10 -z-10 size-40 rounded-full border-[18px] border-cyan-200/15" />
+      <div className="flex items-center justify-between gap-2 border-b border-white/25 pb-2">
+        <span className="text-[9px] font-black tracking-[0.2em]">SHTEMARM</span>
+        <span className="text-xs font-bold tracking-widest text-cyan-100">{part}</span>
+      </div>
+      <div className="space-y-3">
+        <div className="grid size-11 place-items-center rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm">
+          <Calculator className="size-6" strokeWidth={1.5} aria-hidden="true" />
+        </div>
+        <h3 className={`font-black leading-tight tracking-wide ${compact ? "text-sm" : "text-xl"}`}>{tx("ՄԱԹԵՄԱՏԻԿԱ")}</h3>
+        <p className="text-xs font-semibold text-cyan-100">{tx("ՇՏԵՄԱՐԱՆ · ՄԱՍ {n}", { n: part === "01" ? 1 : 2 })}</p>
+      </div>
+      <div className="space-y-2">
+        <div className="grid grid-cols-4 gap-1.5 opacity-70" aria-hidden="true">
+          {["x²", "π", "√x", "∑"].map((symbol) => <span key={symbol} className="grid aspect-square place-items-center rounded-md border border-white/30 bg-white/10 text-xs font-bold">{symbol}</span>)}
+        </div>
+        <div className="h-1 rounded-full bg-white/25"><div className="h-full w-2/3 rounded-full bg-cyan-200" /></div>
+      </div>
+    </div>
+  );
+}
 
 function useIndex() {
   return useQuery({
@@ -317,12 +349,7 @@ function BooksPage() {
                   className="shadow-card group overflow-hidden rounded-2xl border bg-card text-left transition-transform hover:-translate-y-1"
                 >
                   <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 p-4">
-                    <img
-                      src={`/math/books/covers/${id}.jpg`}
-                      alt={tx("Մաթեմատիկա · Մաս {n} շապիկ", { n: i + 1 })}
-                      loading="lazy"
-                      className="aspect-[3/4] w-full rounded-lg object-cover"
-                    />
+                    <MathBookCover bookId={id} compact />
                     <div className="min-w-0 space-y-2">
                       <h3 className="text-lg font-bold">{tx("Մաթեմատիկա • Մաս {n}", { n: i + 1 })}</h3>
                       <p className="text-sm text-muted-foreground">{tx("Շտեմարան · {place} · {n} հարց", { place: tx(i === 0 ? "Երևան 2019" : "Երևան 2020"), n: total })}</p>
@@ -342,11 +369,7 @@ function BooksPage() {
       {bookId && book && !sectionKey && mode === "chapters" && (
         <section className="space-y-8">
           <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
-            <img
-              src={`/math/books/covers/${bookId}.jpg`}
-              alt={tx(book.title)}
-              className="shadow-card hidden aspect-[3/4] w-full rounded-xl object-cover md:block"
-            />
+            <div className="hidden md:block"><MathBookCover bookId={bookId} /></div>
             <div className="space-y-4">
               <h1 className="text-3xl font-black sm:text-4xl">{tx(book.title)}</h1>
               <p className="text-muted-foreground">{tx("Շտեմարան · {place}", { place: tx(bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020") })}</p>
