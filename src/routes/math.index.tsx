@@ -128,7 +128,11 @@ function useIndex() {
             if (!target) continue;
             for (const [taskId, questions] of Object.entries(tasks)) {
               const task = target.tasks.find((t) => t.task === Number(taskId));
-              if (task) task.questions = questions;
+              if (!task) continue;
+              // A null transcription means "not yet transcribed", not "erase the source-book question".
+              // Keep any verified question already embedded in the index for those subquestions.
+              const count = Math.max(task.questions?.length ?? 0, questions.length);
+              task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
             }
           }
         }
