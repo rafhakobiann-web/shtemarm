@@ -531,25 +531,7 @@ function MathPage() {
             ))}
           </div>
 
-          <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5" aria-labelledby="math-pdf-books">
-            <div className="space-y-1">
-              <h2 id="math-pdf-books" className="text-lg font-bold">{tx("Բնօրինակ շտեմարանները՝ PDF ձևաչափով")}</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">{tx("Այս երկու ամբողջական PDF-երը հենց կայքում պահված են։ Կարող ես բացել կամ ներբեռնել դրանք՝ առանց արտաքին կայք վերահղվելու։ Թեստի հարցերն ընտրվում են նույն գրքերի առաջադրանքներից։")}</p>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <a href="/math/books/matem-1.pdf" target="_blank" rel="noreferrer" className="group rounded-xl border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40">
-                <span className="block font-semibold">{tx("Մաթեմատիկա · Մաս 1")}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{tx("Ամբողջական PDF · 288 էջ")}</span>
-                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">{tx("Բացել PDF-ը")} ↗</span>
-              </a>
-              <a href="/math/books/matem-2.pdf" target="_blank" rel="noreferrer" className="group rounded-xl border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40">
-                <span className="block font-semibold">{tx("Մաթեմատիկա · Մաս 2")}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{tx("Ամբողջական PDF · 320 էջ")}</span>
-                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">{tx("Բացել PDF-ը")} ↗</span>
-              </a>
-            </div>
-            <p className="text-xs text-muted-foreground">{tx("Յուրաքանչյուր առաջադրանք թեստում ցուցադրվում է բնօրինակ գրքի էջից, իսկ պատասխանը ստուգվում է գրքի պատասխանների հիման վրա։")}</p>
-          </section>
+          <p className="rounded-xl border bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">{tx("Առաջադրանքների բնօրինակ էջերը ցուցադրվում են անմիջապես յուրաքանչյուր հարցի հետ․ այլևս պետք չէ առանձին PDF գիրք բացել։")}</p>
 
           <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
             {mode === "exam" ? (
@@ -693,17 +675,19 @@ function MathPage() {
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 {tx("{book} · Գլուխ {c} · Բաժին {s} · Առաջադրանք {t}", { book: tx(BOOK_NAMES[g.first.book]), c: g.first.chapter, s: g.first.section, t: g.first.task })}
               </p>
-              <TaskCrop book={g.first.book} segments={g.first.segments} />
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {g.rows.map((it) => (
-                  <AnswerRow
+                  <div key={it.id} className="space-y-2 rounded-2xl bg-muted/20 p-2 sm:p-3">
+                    <TaskCrop book={it.book} segments={it.segments} />
+                    <AnswerRow
                     key={it.id}
                     item={it}
                     n={numbers.get(it.id) ?? 0}
                     value={answers[it.id]}
                     submitted={submitted}
                     onPick={(v) => setAnswers((a) => ({ ...a, [it.id]: v }))}
-                  />
+                    />
+                  </div>
                 ))}
               </div>
             </section>
