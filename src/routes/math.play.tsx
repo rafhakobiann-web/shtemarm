@@ -44,7 +44,10 @@ function useIndex() {
             if (!target) continue;
             for (const [taskId, questions] of Object.entries(tasks)) {
               const task = target.tasks.find((t) => t.task === Number(taskId));
-              if (task) task.questions = questions;
+              if (!task) continue;
+              // Preserve verified index questions when the separate transcription bank has null placeholders.
+              const count = Math.max(task.questions?.length ?? 0, questions.length);
+              task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
             }
           }
         }
