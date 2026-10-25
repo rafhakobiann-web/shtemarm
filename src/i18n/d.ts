@@ -23,6 +23,8 @@ export const dict_d: Record<string, string> = {
   "Արհեստական բանականության սահմանաչափը ժամանակավորապես սպառվել է․ փորձեք ավելի ուշ։ Պահված բացատրությունները հասանելի են։": "The AI usage limit has been reached for now. Please try again later. Saved explanations are still available.",
   "ԱԲ բանալին կամ հասանելիությունը պետք է ստուգի կայքի պատասխանատուն։": "The site administrator needs to check the AI key or its access.",
   "Բացատրությունների ընտրված ծառայությունը հասանելի չէ կամ բացատրությունը դեռևս ավելացված չէ բազայում։": "The selected explanation service is unavailable, or this explanation has not been added to the database yet.",
+  "Բացատրություն": "Explanation",
+  "Ստանալ բացատրություն": "Get explanation",
   "Չհաջողվեց ստանալ բացատրությունը․ փորձեք ավելի ուշ։": "Could not get the explanation. Please try again later.",
   "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։": "To turn on explanations, the site administrator must add a Groq or Gemini key.",
   "Ծառայությունը մերժեց այս բացատրության ստեղծումը։": "The service refused to create this explanation.",
