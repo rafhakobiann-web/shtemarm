@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { translationKey, TRANSLATION_LANGUAGES } from "./translation";
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { translationKey, TRANSLATION_LANGUAGES, type TranslationLanguage } from "./translation";
 
-const languageCodes = TRANSLATION_LANGUAGES.map((language) => language.code) as [string, ...string[]];
+const languageCodes = TRANSLATION_LANGUAGES.map((language) => language.code) as [TranslationLanguage, ...TranslationLanguage[]];
 const Input = z.object({
   text: z.string().trim().min(1).max(16000),
   kind: z.enum(["word", "passage"]),
