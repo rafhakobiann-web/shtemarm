@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
 });
 
 const TILE =
-  "glass group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+  "glass group flex h-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/70 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
 
 const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/covers/math-1.svg" },
@@ -91,7 +91,7 @@ function SubjectRow({ title, children, beta = false }: { title: string; children
   return (
     <div className="space-y-4">
       <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
-      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">{children}</div>
+      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
     </div>
   );
 }
@@ -303,8 +303,8 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 py-4 sm:py-6">
-      <section className="relative isolate overflow-hidden rounded-[2rem] border bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 px-5 py-7 text-white shadow-xl sm:px-9 sm:py-10">
+    <div className="mx-auto max-w-7xl space-y-8 py-3 sm:space-y-10 sm:py-6">
+      <section className="relative isolate grid overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 px-5 py-7 text-white shadow-xl sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.6fr)_minmax(240px,0.8fr)] lg:items-end lg:gap-8 lg:px-10">
         <div aria-hidden="true" className="absolute -right-16 -top-20 -z-10 size-64 rounded-full border-[24px] border-white/5" />
         <div aria-hidden="true" className="absolute -bottom-24 right-1/4 -z-10 size-64 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="max-w-2xl space-y-4">
@@ -316,7 +316,7 @@ function Index() {
             <Link to="/mini-games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"><Brain className="size-4" />{tx("Մինի խաղեր")}</Link>
           </div>
         </div>
-        <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:absolute sm:bottom-8 sm:right-8 sm:mt-0 sm:w-56 sm:border-l sm:border-t-0 sm:pl-5">
+        <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:gap-3 lg:mt-0 lg:self-end lg:rounded-2xl lg:border lg:border-white/15 lg:bg-white/5 lg:p-4 lg:backdrop-blur-sm">
           <div><p className="text-xl font-black sm:text-2xl">5</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
           <div><p className="text-xl font-black sm:text-2xl">2</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մաթ. գիրք")}</p></div>
           <div><p className="text-xl font-black sm:text-2xl">24/7</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մուտք")}</p></div>
@@ -329,7 +329,7 @@ function Index() {
           </p>
           <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+            <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
               <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
@@ -361,7 +361,7 @@ function Index() {
             const answered = values.length;
             const accuracy = answered ? Math.round((right / answered) * 100) : 0;
             return (
-              <section className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6" aria-label={tx("Առաջընթացի վերլուծություն")}>
+              <section className="rounded-[1.5rem] border border-border/70 bg-card p-5 shadow-sm sm:p-6 lg:p-7" aria-label={tx("Առաջընթացի վերլուծություն")}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <h3 className="flex items-center gap-2 text-lg font-black"><Trophy className="size-5 text-primary" />{tx("Առաջընթացի վերլուծություն")}</h3>
@@ -444,7 +444,7 @@ function Index() {
 
       <section className="space-y-6">
         <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
           <ExamTile
             to="/test/$bookId" params={{ bookId: "all" }}
             search={{ mode: "exam", style: "classic" }}
