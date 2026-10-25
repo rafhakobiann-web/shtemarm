@@ -212,7 +212,8 @@ function BiologySubject() {
       </section>
       <section className="space-y-4">
         <h2 className="text-xl font-black">{tx("Պաշտոնական քննության նմուշներ")}</h2>
-        <ExamTile href="https://test.am/pdf.php?page=13" title={tx("Կենսաբանության պաշտոնական թեստեր")} sub={tx("Բացիր հրապարակված թեստերն ու պատասխանները՝ համեմատելու և լրացուցիչ պատրաստվելու համար")} icon={<BookOpen className="size-5" />} />
+        <ExamTile href="https://test.am/pdf.php?page=17" title={tx("2026 թ․ հունիսյան քննություններ")} sub={tx("Կենսաբանության պաշտոնական թեստեր և պատասխաններ")} icon={<BookOpen className="size-5" />} />
+        <ExamTile href="https://test.am/pdf.php?page=13" title={tx("2026 թ․ հունվար–փետրվարի քննություններ")} sub={tx("Նախորդ փուլի կենսաբանության թեստեր և պատասխաններ")} icon={<ClipboardCheck className="size-5" />} />
       </section>
       <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ այս պահին հասանելի են առաջին երկու մասերի տվյալները։ Մյուս մասերը կավելացվեն միայն հարցերն ու պատասխանները ստուգելուց հետո։")}</p>
     </div>
@@ -237,13 +238,13 @@ function ArmenianSubject() {
       <section className="space-y-4">
         <h2 className="text-xl font-black">{tx("Պաշտոնական թեստեր և պատասխաններ")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile href="https://test.am/pdf.php?page=13" title={tx("2026 թ․ քննությունների նյութեր")} sub={tx("Հայոց լեզու և հայ գրականություն, կենսաբանություն և այլ առարկաներ")} icon={<BookOpen className="size-5" />} />
-          <ExamTile href="https://test.am/pdf.php?page=94" title={tx("Շտեմարաններից կազմված թեստեր")} sub={tx("Նմուշային միասնական քննություններ և պատասխաններ")} icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile href="https://test.am/pdf.php?page=17" title={tx("2026 թ․ հունիսյան քննություններ")} sub={tx("Հայոց լեզվի և գրականության թեստեր 1–4 և պաշտոնական պատասխաններ")} icon={<BookOpen className="size-5" />} />
+          <ExamTile href="https://test.am/pdf.php?page=13" title={tx("2026 թ․ հունվար–փետրվարի քննություններ")} sub={tx("Հայոց լեզվի և գրականության թեստեր և պատասխաններ")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
       <div className="grid gap-4 sm:grid-cols-2">
-        <ExamTile href="https://test.am/pdf.php?page=13" title={tx("Պաշտոնական քննության նմուշներ")} sub={tx("Բացել հրապարակված քննության նյութերը")} icon={<Trophy className="size-5" />} />
-        <ExamTile href="https://test.am/pdf.php?page=110" title={tx("Շտեմարանների նյութեր")} sub={tx("Աղբյուրային նյութեր՝ հետագա թվայնացման համար")} icon={<ClipboardCheck className="size-5" />} />
+        <ExamTile href="https://dimord.am/public/tests" title={tx("ԳԹԿ պաշտոնական թեստերի էջ")} sub={tx("Պաշտոնական քննությունների թեստերի և պատասխանների հրապարակման էջ")} icon={<Trophy className="size-5" />} />
+        <ExamTile href="https://test.am/pdf.php?page=17" title={tx("Շտեմարանների և քննությունների արխիվ")} sub={tx("Լրացուցիչ աղբյուրներ՝ հաջորդ հարցաշարերը ստուգելու համար")} icon={<ClipboardCheck className="size-5" />} />
       </div>
       <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Ինտերակտիվ հարցերն ու ավտոմատ գնահատումը դեռ պատրաստ չեն այս առարկայի համար․ չենք ցուցադրում չստուգված պատասխաններ որպես ճիշտ։")}</p>
     </div>
