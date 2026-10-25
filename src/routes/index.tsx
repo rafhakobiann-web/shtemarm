@@ -76,7 +76,7 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
     <>
-      <div className="cover-frame relative aspect-[3/4] overflow-hidden bg-muted">
+      <div className="cover-frame relative aspect-[3/4] overflow-hidden bg-muted" data-original-cover={cover}>
         <SubjectCover title={title} sub={sub} />
       </div>
       <div className="space-y-1 p-4">
