@@ -124,7 +124,16 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
     const geminiKey = process.env["GEMINI_API_KEY"];
     const groqKey = process.env["GROQ_API_KEY"];
     if (!geminiKey && !groqKey) {
-      return { text: "Բացատրությունները միացնելու համար կայքի պատասխանատուն պետք է ավելացնի Groq-ի կամ Gemini-ի բանալին։", error: true };
+      const answer = valueLabel(data.kind, data.correct);
+      const selected = data.chosen === null ? "" : data.chosen === data.correct
+        ? "\\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
+        : `\\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
+      return {
+        text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\\n\\nԱյս պահին հասանելի է միայն տեղային պահուստային բացատրությունը․ առանց ԱԲ ծառայության հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
+        cached: false,
+        error: false,
+        offline: true,
+      };
     }
 
     const prompt = buildPrompt(data);
