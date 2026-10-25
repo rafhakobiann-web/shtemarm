@@ -160,7 +160,7 @@ const bookNo = (bookId: string) => Number(bookId.split("-")[1]);
 function sectionItems(bookId: string, sec: IndexSection): Item[] {
   const out: Item[] = [];
   for (const t of sec.tasks) {
-    const open = isOpenTask([t]);
+    const open = isOpenTask(t);
     const subs = t.answers ? t.answers.length : t.sub_count;
     for (let i = 0; i < subs; i++) {
       const answer = t.answers?.[i];
