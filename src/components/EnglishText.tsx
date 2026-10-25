@@ -64,8 +64,11 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     const id = ++request.current;
     setSaved(false);
     const cached = readCached(result.word, next);
-    if (cached) {
-      setResult({ ...result, text: cached, loading: false, error: false });
+    const dictionaryMeaning = getDictionaryTranslation(result.word, next);
+    const savedMeaning = cached ?? dictionaryMeaning;
+    if (savedMeaning) {
+      if (!cached && dictionaryMeaning) saveCached(result.word, next, dictionaryMeaning);
+      setResult({ ...result, text: savedMeaning, loading: false, error: false });
       return;
     }
     setResult({ ...result, text: "", loading: true, error: false });
