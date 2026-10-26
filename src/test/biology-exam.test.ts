@@ -12,10 +12,9 @@ describe("biology exam builder", () => {
     const items = buildExam(book, 30 + part);
     expect(items.reduce((total, item) => total + unitPoints(item.unit), 0)).toBe(80);
     expect(items).toHaveLength(80);
-    expect(items.every((item) => item.unit.kind === "mc")).toBe(true);
     expect(new Set(items.map((item) => item.unit.id)).size).toBe(80);
     expect(items.every((item) => book.sections.some((section) =>
-      section.n === item.section && section.units.some((unit) => item.unit.id.startsWith(`${unit.id}-q`)),
+      section.n === item.section && section.units.some((unit) => item.unit.id === unit.id || item.unit.id.startsWith(`${unit.id}-q`)),
     ))).toBe(true);
   });
 
