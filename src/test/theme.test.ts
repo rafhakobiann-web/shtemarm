@@ -40,7 +40,7 @@ describe("persisted user appearance", () => {
     cleanup();
     resetAppearance();
     expect(localStorage.getItem(APPEARANCE_KEY)).toBeNull();
-    expect(document.documentElement.dataset.surface).toBe("classic");
+    expect(document.documentElement.dataset.surface).toBe("liquid");
   });
   it("renders OS mode without throwing if browser matchMedia is absent", () => {
     expect(["light", "dark"]).toContain(resolvedTheme({ ...DEFAULT_APPEARANCE }));
