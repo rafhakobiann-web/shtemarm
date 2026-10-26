@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-type Prompt = { prompt: string; options: string[] } | null;
+type Prompt = { prompt: string; options: string[]; adapted?: boolean; expected?: string } | null;
 type Task = {
   task: number;
   sub_count: number;
@@ -68,4 +68,40 @@ describe("math source bank integrity", () => {
       }
     }
   });
+  it("contains 196 original practice variants with answer-compatible labels and preserved source tasks", () => {
+    const batch = overlays[1];
+    for (const [bookId, sectionId, expectedCount] of [
+      ["matem-1", "2-2", 76],
+      ["matem-2", "1-10", 120],
+    ] as const) {
+      const [chapter, sectionNo] = sectionId.split("-").map(Number);
+      const section = index.books[bookId].sections.find((s) => s.chapter === chapter && s.section === sectionNo);
+      expect(section).toBeDefined();
+      const tasks = batch[bookId]?.[sectionId] ?? {};
+      expect(Object.values(tasks).reduce((n, questions) => n + questions.length, 0)).toBe(expectedCount);
+      for (const [taskId, questions] of Object.entries(tasks)) {
+        const task = section?.tasks.find((t) => t.task === Number(taskId));
+        expect(task).toBeDefined();
+        expect(questions).toHaveLength(task?.sub_count);
+        for (const [i, question] of questions.entries()) {
+          expect(question?.adapted).toBe(true);
+          expect(question?.expected).toBeDefined();
+          expect(question?.options).toHaveLength(4);
+          expect(new Set(question?.options).size).toBe(4);
+          if (bookId === "matem-1") {
+            expect(question?.expected).toBe(task?.answers?.[i]);
+            // Some tasks use numeric text input; the others must place the answer at its label index.
+            const correct = Number(task?.answers?.[i]);
+            if (correct >= 1 && correct <= 4) expect(question?.options[correct - 1]).toBe(String(correct));
+          } else {
+            const correct = Number(task?.answers?.[i]);
+            expect(correct).toBeGreaterThanOrEqual(1);
+            expect(correct).toBeLessThanOrEqual(4);
+            expect(question?.options[correct - 1]).toBe(question?.expected);
+          }
+        }
+      }
+    }
+  });
+
 });
