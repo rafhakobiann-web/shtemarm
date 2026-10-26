@@ -2,6 +2,14 @@
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
 
+## 🧮 October 26, 2026 — Math test improvements
+- 🧩 The 65-question exam builder now loads the second transcription batch too, matching the practice-game question bank.
+- 🧮 Numeric answer checking now accepts reordered multi-select statement answers while rejecting duplicate selections.
+- 🔁 Fixed math-game replay so previous saved answers are cleared for that round instead of silently blocking new answers.
+- 🧪 Added regression tests for math scoring and source-bank integrity, including section/task references, answer counts, source page images, and both transcription overlays.
+- 🔎 Updated the math-bank audit to report prompt coverage across both transcription batches.
+- 🚦 **Validation pending:** these new tests have been committed but have not been run successfully in this environment; the current Vercel build-rate limit remains a separate deployment blocker.
+
 ## 🟣 October 26, 2026 — English vocabulary expansion
 - 📚 Added **1,104 English–Armenian dictionary entries** in two commits: 649, then 455.
 - 🧹 Existing dictionary keys were excluded during those additions to reduce duplicates.
