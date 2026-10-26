@@ -1,0 +1,36 @@
+name: Check history and biology updates
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/History*'
+      - 'src/components/Biology*'
+      - 'src/lib/history*'
+      - 'src/lib/books.ts'
+      - 'src/routes/history.tsx'
+      - 'src/routes/biology.tsx'
+      - 'src/routes/index.tsx'
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/test/history.test.tsx'
+      - 'src/test/biology.test.tsx'
+      - 'scripts/sync-official-exams*'
+      - 'public/data/*-official-catalog.json'
+      - '.github/workflows/*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - run: bun install --frozen-lockfile
+      - run: node --test scripts/sync-official-exams.test.mjs
+      - run: bunx vitest run src/test/history.test.tsx src/test/biology.test.tsx src/test/scoring.test.ts
+      - run: bun run build
