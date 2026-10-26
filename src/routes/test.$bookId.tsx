@@ -90,6 +90,7 @@ function Setup(p: {
   const tx = useTx();
   const lang = useLang();
   const isHistory = isHistoryId(p.bookId);
+  const isBiology = isBiologyId(p.bookId);
   const [tab, setTab] = useState<"exam" | "custom" | "random">(isHistory && p.initial === "exam" ? "custom" : p.initial);
   const [secs, setSecs] = useState<number[]>(p.section ? [p.section] : [1, 2, 3]);
   const [count, setCount] = useState(p.section ? 10 : 20);
