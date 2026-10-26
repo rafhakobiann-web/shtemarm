@@ -4,8 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen, SlidersHorizontal, Trophy, Clock3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HistorySession } from "@/components/HistorySession";
+import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
 import {
   loadHistoryBank,
+  loadHistoryBooks,
   loadHistoryTests,
   selectHistoryUnits,
   type HistoryEntry,
@@ -25,13 +27,18 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
     queryFn: loadHistoryBank,
     staleTime: Infinity,
   });
+  const books = useQuery({
+    queryKey: ["history-books-all"],
+    queryFn: loadHistoryBooks,
+    staleTime: Infinity,
+  });
   const samples = useQuery({
     queryKey: ["history-tests"],
     queryFn: loadHistoryTests,
     staleTime: Infinity,
   });
   const { progress } = useHistoryProgress();
-  const [source, setSource] = useState(initialTest ? `test-${initialTest}` : "bank");
+  const [source, setSource] = useState(initialTest ? `test-${initialTest}` : "books");
   const [sections, setSections] = useState<string[]>([]);
   const [kinds, setKinds] = useState<Unit["kind"][]>(KINDS);
   const [count, setCount] = useState(initialTest ? 70 : 20);
@@ -44,12 +51,14 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
     () =>
       source === "bank"
         ? (bank.data ?? [])
-        : (samples.data?.tests ?? [])
-            .filter((t) => source === "samples" || source === `test-${t.id}`)
-            .flatMap((t) =>
-              t.tasks.map((unit) => ({ unit, source: `test-${t.id}`, section: `Թեստ ${t.id}` })),
-            ),
-    [source, bank.data, samples.data],
+        : source === "books" || source.startsWith("book-")
+          ? (books.data ?? []).filter((e) => source === "books" || e.source === source)
+          : (samples.data?.tests ?? [])
+              .filter((t) => source === "samples" || source === `test-${t.id}`)
+              .flatMap((t) =>
+                t.tasks.map((unit) => ({ unit, source: `test-${t.id}`, section: `Թեստ ${t.id}` })),
+              ),
+    [source, bank.data, books.data, samples.data],
   );
   const sectionNames = [...new Set(entries.map((e) => e.section))];
   const availableKinds = KINDS.filter((k) => entries.some((e) => e.unit.kind === k));
@@ -57,8 +66,9 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
     (e) => (!sections.length || sections.includes(e.section)) && kinds.includes(e.unit.kind),
   );
   const available = new Set(pool.map((e) => e.unit.id)).size;
-  const loading = source === "bank" ? bank.isPending : samples.isPending;
-  const failed = source === "bank" ? bank.isError : samples.isError;
+  const active = source === "bank" ? bank : source === "books" || source.startsWith("book-") ? books : samples;
+  const loading = active.isPending;
+  const failed = active.isError;
   const valid =
     !loading &&
     !failed &&
@@ -115,7 +125,7 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           {[
-            [BookOpen, bank.data?.length ?? "—", "Շտեմարանի հարցեր"],
+            [BookOpen, books.data?.length ?? "—", "Երեք գրքերի առաջադրանքներ"],
             [Trophy, samples.data?.tests.length ?? "—", "Նմուշային թեստեր"],
             [Clock3, progress.exams.length, "Ավարտված փորձեր"],
           ].map(([Icon, value, label]) => {
@@ -152,7 +162,11 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
           <label className="block space-y-2">
             <span className="text-sm font-bold">{tx("Հարցերի աղբյուր")}</span>
             <select className={field} value={source} onChange={(e) => changeSource(e.target.value)}>
-              <option value="bank">{tx("Շտեմարան 1 · հասանելի հարցեր")}</option>
+              <option value="books">{tx("Բոլոր երեք շտեմարանները")}</option>
+              {[1, 2, 3].map((n) => (
+                <option key={n} value={`book-${n}`}>{tx("Գիրք {n}", { n })}</option>
+              ))}
+              <option value="bank">{tx("Առաջին գրքի ստուգված հարցաշար")}</option>
               <option value="samples">{tx("Բոլոր նմուշային թեստերը")}</option>
               {[1, 2, 3, 4].map((n) => (
                 <option key={n} value={`test-${n}`}>
@@ -168,7 +182,7 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
               <p>{tx("Չհաջողվեց բեռնել հարցերը։")}</p>
               <Button
                 variant="outline"
-                onClick={() => void (source === "bank" ? bank.refetch() : samples.refetch())}
+                onClick={() => void active.refetch()}
               >
                 {tx("Կրկին փորձել")}
               </Button>
@@ -231,6 +245,14 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
               </fieldset>
             </>
           )}
+          <div className="flex flex-wrap gap-2">
+            {[20, 40, 70].map((n) => (
+              <Button key={n} size="sm" variant={count === n ? "default" : "outline"}
+                disabled={n > available} onClick={() => setCount(n)}>
+                {tx("{n} առաջադրանք", { n })}
+              </Button>
+            ))}
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span className="text-sm font-bold">{tx("Առաջադրանքների քանակ")}</span>
@@ -348,9 +370,7 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
               </Link>
             ))}
             <p className="text-xs text-muted-foreground">
-              {tx(
-                "Անհատական թեստերի աղբյուրը՝ առաջին գրքի հասանելի հարցերն ու չորս նմուշային թեստերը։",
-              )}
+              {tx("Կազմիչը ներառում է երեք գրքերի հասանելի հարցերն ու չորս առանձին նմուշային թեստերը։")}
             </p>
           </section>
           {progress.exams.length > 0 && (
@@ -366,14 +386,7 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
               ))}
             </section>
           )}
-          <a
-            href="https://test.am/pdf.php?page=13"
-            target="_blank"
-            rel="noreferrer"
-            className="block px-3 text-sm text-primary underline underline-offset-4"
-          >
-            {tx("Պաշտոնական քննությունների աղբյուր")}
-          </a>
+          <HistoryOfficialPapers />
         </aside>
       </div>
     </div>
