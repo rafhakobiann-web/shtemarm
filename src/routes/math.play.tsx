@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathContent } from "@/components/MathText";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
@@ -327,6 +328,9 @@ function PlayPage() {
                 task={tx("Առաջադրանք {task}, հարց {sub}", { task: it.task, sub: it.sub })}
                 correct={it.answer ?? ""}
                 chosen={current}
+                question={it.prompt}
+                options={it.options}
+                nativeSource={!!it.transcription}
               />
             )}
             {current !== undefined && (
