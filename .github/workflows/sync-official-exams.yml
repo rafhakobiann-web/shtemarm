@@ -2,8 +2,6 @@ name: Sync official exam archive
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17 5 * * *"
 
 permissions:
   contents: write
