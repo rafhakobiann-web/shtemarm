@@ -35,6 +35,17 @@ async function loadCards(subject:AssessmentSubject):Promise<Card[]>{
   const entries=books.flatMap((book,i)=>historyBookEntries(book,source.books[i]!));
   return entries.map(e=>asCard(e.unit,e.section)).filter((v):v is Card=>v!==null);
 }
+function readKnown(subject:AssessmentSubject):Record<string,boolean>{
+  if(typeof window==="undefined")return {};
+  try{
+    const v=JSON.parse(window.localStorage.getItem("shtemarm-flashcards-"+subject)||"{}");
+    if(!v || typeof v!=="object" || Array.isArray(v))return {};
+    return Object.fromEntries(Object.entries(v).filter(([k,value])=>k.length<200 && typeof value==="boolean")) as Record<string,boolean>;
+  }catch{return {};}
+}
+function saveKnown(subject:AssessmentSubject,known:Record<string,boolean>){
+  try{window.localStorage.setItem("shtemarm-flashcards-"+subject,JSON.stringify(known));}catch{/* The current practice session still works. */}
+}
 function FlashcardsPage(){
   const tx=useTx();
   const [subject,setSubject]=useState<AssessmentSubject>("biology");
@@ -42,7 +53,7 @@ function FlashcardsPage(){
   const [selected,setSelected]=useState<string[]>([]);
   const [index,setIndex]=useState(0);
   const [revealed,setRevealed]=useState(false);
-  const [known,setKnown]=useState<Record<string,boolean>>({});
+  const [known,setKnown]=useState<Record<string,boolean>>(()=>readKnown("biology"));
   const [onlyMissed,setOnlyMissed]=useState(false);
   const result=useQuery({queryKey:["flashcards-v1",subject],queryFn:()=>loadCards(subject),staleTime:Infinity});
   const all=result.data??[];
@@ -53,11 +64,16 @@ function FlashcardsPage(){
     // retry deliberately changes the set; cards remain stable while studying
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[all,selected,retry,onlyMissed]);
+  const knownCount=Object.values(known).filter(Boolean).length;
   const current=cards[index]??null;
   const done=cards.length>0 && index>=cards.length;
   const answer=(success:boolean)=>{
     if(!current)return;
-    setKnown(p=>({...p,[current.id]:success}));
+    setKnown(p=>{
+      const next={...p,[current.id]:success};
+      saveKnown(subject,next);
+      return next;
+    });
     setIndex(i=>i+1);setRevealed(false);
   };
   const restart=()=>{setRetry(n=>n+1);setIndex(0);setRevealed(false);};
@@ -71,11 +87,13 @@ function FlashcardsPage(){
     <div className="no-print grid gap-4 rounded-3xl border bg-card p-5 sm:grid-cols-2">
       <label className="space-y-2"><span className="text-sm font-bold">{tx("Առարկա")}</span>
         <select className="h-12 w-full rounded-xl border bg-background px-3" value={subject} onChange={e=>{
-          setSubject(e.target.value as AssessmentSubject);setSelected([]);setKnown({});setOnlyMissed(false);restart();
+          const next=e.target.value as AssessmentSubject;
+          setSubject(next);setSelected([]);setKnown(readKnown(next));setOnlyMissed(false);restart();
         }}>{ASSESSMENT_SOURCES.map(s=><option key={s.key} value={s.key}>{tx(s.label)}</option>)}</select>
       </label>
       <div className="space-y-2">
         <p className="text-sm font-bold">{tx("Կրկնություն")}</p>
+        <p className="text-xs text-muted-foreground">{tx("Հիշված քարտեր")}՝ {knownCount}</p>
         <label className="flex items-center gap-2 rounded-xl border p-3 text-sm"><input type="checkbox" checked={onlyMissed}
           onChange={e=>{setOnlyMissed(e.target.checked);setIndex(0);setRevealed(false)}}/>
           {tx("Միայն չիմացած քարտերը")}</label>
