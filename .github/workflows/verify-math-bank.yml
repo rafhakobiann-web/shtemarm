@@ -1,0 +1,33 @@
+name: Verify Mathematics bank integrity
+
+on:
+  pull_request:
+    paths:
+      - 'public/data/math-text-questions.json'
+      - 'public/data/math-text-questions-extra.json'
+      - 'public/data/math-transcriptions/**'
+      - 'src/lib/math-bank.ts'
+      - 'src/test/math-transcriptions.test.tsx'
+      - 'scripts/validate-math-transcriptions.mjs'
+      - '.github/workflows/verify-math-bank.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  math-bank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Validate every math text question and native transcription
+        run: bun run validate:math:text
+      - name: Run math conflict regression tests
+        run: bunx vitest run src/test/math-transcriptions.test.tsx
+      - name: Verify production build
+        run: bun run build
