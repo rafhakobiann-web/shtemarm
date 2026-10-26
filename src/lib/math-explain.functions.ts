@@ -11,7 +11,9 @@ const Input = z.object({
   task: z.string().max(200),
   correct: z.string().max(40),
   chosen: z.string().max(40).nullable(),
-  pages: z.array(PageImage).min(1).max(3),
+  pages: z.array(PageImage).max(3),
+  question: z.string().max(3500),
+  options: z.array(z.string().max(450)).max(6),
 });
 
 type Input = z.infer<typeof Input>;
@@ -39,15 +41,16 @@ function buildPrompt(d: Input) {
         : "Սա բաց պատասխանով հարց է։ Ճիշտ պատասխանը պաշտոնական է և ՃԻՇՏ Է․ մի վիճարկիր այն։";
 
   return `Դու մաթեմատիկայի փորձառու ուսուցիչ ես, որը հայ աշակերտներին պատրաստում է միասնական քննությանը։
-Կցված են շտեմարանի էջերի նկարները։ Գտիր հարցը «${d.task}» առաջադրանքում՝ նշված ենթահարցի համարով, և բացատրիր լուծումը։
+Պայման․ ${d.question || "Պայմանի տեքստը բացակայում է․ օգտագործիր կցված նկարները։"}\nՏարբերակներ․ ${d.options.map((o,i) => (i+1)+") "+o).join("; ")}\n${d.pages.length ? "Բնօրինակ էջերի նկարներն էլ կցված են․ գտիր նշված ենթահարցը։" : "Օգտագործիր տրված պայմանը․ մի հորինիր տվյալներ։"}\nԱռաջադրանք՝ ${d.task}։
 ${optionNote}
-Գրիր ՀԱՅԵՐԵՆՈՎ, ճշգրիտ և հասկանալի (120–250 բառ)։ Բանաձևերը գրիր պարզ տեքստով (օրինակ՝ x^2, sqrt(5), 3/4)։ Եթե խնդիրը պահանջում է գծագիր, երկրաչափական պատկեր, կոորդինատային հարթություն, ֆունկցիայի գրաֆիկ կամ կառուցվածքային սխեմա, ավելացրու համապատասխան ASCII գծագիրը առանձին \`\`\`text բլոկում։ Գծագիրը պետք է համապատասխանի հենց տվյալ խնդրին․ մի հորինիր կետեր, չափեր կամ գրաֆիկի ձև։ Եթե ճշգրիտ գծագիր հնարավոր չէ կազմել միայն տրված տվյալներից, բացատրիր՝ ինչն է պետք նշել գծագրի վրա։
-Կառուցվածքը (առանց վերնագրերի, կարճ պարբերություններով).
-1. Ինչու է ճիշտ պատասխանը ճիշտ՝ լուծման քայլերով։
-${wrong ? "2. Ինչու է աշակերտի ընտրածը սխալ՝ կոնկրետ պատճառով։" : "2. Աշակերտը ճիշտ է պատասխանել․ հաստատիր դա և համառոտ նշիր ամենակարևոր քայլը։"}
-3. ${d.kind === "open" ? "Եթե աշակերտի պատասխանը ճիշտ չէ, նշիր հաճախակի սխալը։" : "Յուրաքանչյուր մյուս տարբերակի համար մեկ նախադասությամբ՝ ինչու այն սխալ է։"}
-4. Մեկ կարճ «Հիշիր»՝ օգտակար խորհուրդ։
-Ընդգծումների համար օգտագործիր **բառ**։ Մի կրկնիր հարցի տեքստն ամբողջությամբ։
+Գրիր ԳՐԱԿԱՆ ՀԱՅԵՐԵՆՈՎ, հասկանալի և մանրամասն (150–320 բառ)։ Պատասխանի բանալին մի օգտագործիր որպես միակ հիմնավորում․ լուծիր հարցն ու ստուգիր արդյունքը։ Եթե հարցը նկարի կամ տվյալների պակասի պատճառով չի լուծվում, մի հորինիր քայլեր։
+Բոլոր մաթեմատիկական արտահայտությունները գրիր LaTeX-ով՝ $...$ կամ $$...$$։ Օգտագործիր \frac, \sqrt, \pi, \sin, \cos, \lim և անհրաժեշտության դեպքում \begin{aligned}։ Գրիր ձևափոխությունները առանձին տողերով ու ճիշտ փակիր LaTeX հրամանները։ ASCII գծագիր մի ավելացրու։
+Բացատրությունը բաժանիր համարակալված պարբերությունների․ 1. Տրված է, 2. Քայլ առ քայլ լուծում, 3. Ստուգում և ճիշտ տարբերակ, 4. Սխալի պատճառը, 5. Հիշիր՝ օգտակար կանոն։
+Եթե հիմնավորված գծագիրն օգտակար է, ավարտին ավելացրու մեկ code fence, որի լեզուն diagram է, իսկ ներսում միայն վավեր JSON՝ առանց մեկնաբանությունների։
+Ֆունկցիայի գրաֆիկի JSON՝ {"type":"function","shape":"linear","a":2,"b":1,"c":0,"xmin":-5,"xmax":5,"title":"y=2x+1"}։ shape=linear նշանակում է y=ax+b, quadratic՝ y=ax^2+bx+c, sine՝ y=a*sin(bx)+c։
+Եռանկյան JSON՝ {"type":"triangle","labels":["A","B","C"],"sides":["c","a","b"],"title":"ABC եռանկյուն"}։
+Շրջանագծի JSON՝ {"type":"circle","radius":"r","title":"Շրջանագիծ"}։
+Մի ավելացրու գծագիր, եթե խնդրի տվյալներից այն ճշգրիտ չի բխում։ Այլ ձևաչափերով HTML, SVG կամ կատարվող կոդ մի գրիր։
 
 Ճիշտ պատասխան: ${valueLabel(d.kind, d.correct)}
 ${d.chosen !== null ? `Աշակերտի պատասխանը: ${valueLabel(d.kind, d.chosen)}` : "Աշակերտը չի պատասխանել։"}`;
@@ -71,12 +74,12 @@ async function callGemini(key: string, prompt: string, pages: string[]) {
     { text: prompt },
     ...pages.map((p) => ({ inline_data: { mime_type: "image/jpeg", data: p.split(",")[1] } })),
   ];
-  for (const model of ["gemini-3.5-flash", "gemini-3.5-flash-lite"]) {
+  for (const model of ["gemini-3.8-flash", "gemini-3.5-flash-lite"]) {
     const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({ contents: [{ role: "user", parts }] }),
       },
     );
@@ -92,7 +95,7 @@ async function callGemini(key: string, prompt: string, pages: string[]) {
         .join("");
       return { status: 200, text: text.trim() };
     }
-    if (r.status !== 503 && r.status !== 429) return { status: r.status, text: "" };
+    if (![400, 404, 429, 503].includes(r.status)) return { status: r.status, text: "" };
   }
   return { status: 429, text: "" };
 }
@@ -123,10 +126,11 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (!data.pages.length && !data.question.trim()) return { text: "Առաջադրանքի պայմանը չի բեռնվել։", cached: false, error: true };
 
     // The key covers the item, the answers and the exact page images. Changing any of them
     // produces a new key, so a request with other images can never overwrite the real explanation.
-    const cacheKey = await sha256Hex(["math-v1", data.item, data.kind, data.correct, data.chosen ?? "", ...data.pages]);
+    const cacheKey = await sha256Hex(["math-v2", data.item, data.kind, data.correct, data.chosen ?? "", data.question, ...data.options, ...data.pages]);
     let cached: { explanation: string } | null = null;
     try {
       const result = await supabaseAdmin
