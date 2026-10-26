@@ -80,3 +80,29 @@ export function RichText({ text, katex, display = false }: { text: string; katex
     }
   })}</>;
 }
+
+
+/** Small, conservative upgrade for pre-existing Unicode math bank strings.
+ * Explicit TeX delimiters always take precedence over this formatter.
+ */
+export function enhanceMathText(text: string): string {
+  return text.replace(/(\b[A-Za-z]\s*[²³⁴⁵]|√\([0-9a-zA-Z+\- ]+\)|(?<![0-9A-Za-z])\d+\/\d+(?![0-9A-Za-z]))/g, match => {
+    if (match.startsWith("√(")) return "$\\sqrt{" + match.slice(2,-1) + "}$";
+    if (match.includes("/")) {
+      const [a,b]=match.split("/");
+      return "$\\frac{" + a + "}{" + b + "}$";
+    }
+    const power = { "²":"2","³":"3","⁴":"4","⁵":"5" } as Record<string,string>;
+    const head = match.trim().slice(0,-1), suffix = match.trim().slice(-1);
+    return "$" + head + "^{" + power[suffix] + "}$";
+  });
+}
+
+/** Plain existing questions gain TeX fractions/powers; explicit $...$ stays intact. */
+export function MathContent({ text }: { text: string }) {
+  const katex=useKatex();
+  const parts=splitMath(text);
+  return <>{parts.map((piece,i) => piece.math
+    ? <RichText key={i} text={(piece.display?"$$":"$") + piece.text + (piece.display?"$$":"$")} katex={katex}/>
+    : <RichText key={i} text={enhanceMathText(piece.text)} katex={katex}/>)}</>;
+}
