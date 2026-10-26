@@ -91,7 +91,7 @@ function SubjectRow({ title, children, beta = false }: { title: string; children
   return (
     <div className="space-y-4">
       <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
-      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
+      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-3 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
     </div>
   );
 }
@@ -339,6 +339,7 @@ function Index() {
         <Link to="/level-test/$level" params={{level:"placement"}} className={card}><span className={iconClass}><GraduationCap className="size-6"/></span><span className="font-bold">{tx("Անգլերենի մակարդակի ստուգում")}</span></Link>
         <Link to="/mini-games" className={card}><span className={iconClass}><Brain className="size-6"/></span><span className="font-bold">{tx("Ուսումնական խաղեր")}</span></Link>
         <Link to="/study-tools" className={card}><span className={iconClass}><Sparkles className="size-6"/></span><span className="font-bold">{tx("Կենտրոնացում և առաջընթաց")}</span></Link>
+        <Link to="/flashcards" className={card}><span className={iconClass}><BookOpen className="size-6"/></span><span className="font-bold">{tx("Հիշողության քարտեր")}</span></Link>
       </div>
     </section>
     <section className="space-y-4" aria-label={tx("Քննություն")}>
