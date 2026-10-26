@@ -4,6 +4,8 @@
 
 ## 🧮 October 26, 2026 — Math test improvements
 - 🧩 The 65-question exam builder now loads the second transcription batch too, matching the practice-game question bank.
+- 🖼️ Math practice now shows the original book-page crop when a question has not yet been transcribed, rather than displaying a misleading placeholder.
+- ⚠️ Custom-test failures now show a custom-test-specific message instead of incorrectly referring to the 65-question exam.
 - 🧮 Numeric answer checking now accepts reordered multi-select statement answers while rejecting duplicate selections.
 - 🔁 Fixed math-game replay so previous saved answers are cleared for that round instead of silently blocking new answers.
 - 🧪 Added regression tests for math scoring and source-bank integrity, including section/task references, answer counts, source page images, and both transcription overlays.
