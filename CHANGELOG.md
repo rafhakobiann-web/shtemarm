@@ -8,6 +8,7 @@
 - ⚠️ Custom-test failures now show a custom-test-specific message instead of incorrectly referring to the 65-question exam.
 - 🧮 Numeric answer checking now accepts reordered multi-select statement answers while rejecting duplicate selections.
 - 🔁 Fixed math-game replay so previous saved answers are cleared for that round instead of silently blocking new answers.
+- ❤️ Made the math game's three lives functional: the round ends when they run out and reveals the last missed answer with an explanation.
 - 🧪 Added regression tests for math scoring and source-bank integrity, including section/task references, answer counts, source page images, and both transcription overlays.
 - 🔎 Updated the math-bank audit to report prompt coverage across both transcription batches.
 - 🚦 **Validation pending:** these new tests have been committed but have not been run successfully in this environment; the current Vercel build-rate limit remains a separate deployment blocker.
