@@ -543,6 +543,13 @@ function MathPage() {
             available={BOOK_IDS.reduce((total, id) => total + (index.books[id]?.sections ?? []).reduce((sum, sec) => sum + sectionItems(id, sec).length, 0), 0)}
             icon={<Trophy className="size-5" />}
           />
+          <section className="rounded-2xl border bg-muted/40 p-4 text-sm leading-relaxed">
+            <p className="font-bold">{tx("ԳԹԿ-ի 2027 թ. մաթեմատիկայի ուղեցույց")}</p>
+            <p className="mt-1 text-muted-foreground">{tx("Այս էջի 65 հարցանոց տարբերակը շտեմարանային փորձնական թեստ է։ ԳԹԿ-ի նոր ուղեցույցի հիմնական առաջադրանքների բաժանումն ու գնահատումը պետք է վերարտադրել առանձին, ոչ թե 65 պատահական հարցն անվանել պաշտոնական քննություն։")}</p>
+            <a className="mt-2 inline-block font-semibold text-primary underline underline-offset-2"
+              href="https://escs.gov.am/api/assets/0043d629-5784-4c17-ab41-c91c09a2e8eb"
+              target="_blank" rel="noopener noreferrer">{tx("Բացել պաշտոնական ուղեցույցը")}</a>
+          </section>
           <ExamBuilderTitle />
           {examError && <p role="alert" className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-medium text-destructive">{examError}</p>}
           {progress.exams[0] && (
