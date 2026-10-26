@@ -99,7 +99,7 @@ export async function generateExplanation(
   if (keys.gemini) {
     // On text, one fast Gemini request is enough before trying Groq;
     // on visual math, try the more capable Flash only if the lite model fails.
-    const result = await gemini(prompt, keys.gemini, images, !!keys.groq && images.length === 0);
+    const result = await gemini(prompt, keys.gemini, images, options.fast || (!!keys.groq && images.length === 0));
     if (result.ok) return result;
     if (failure === "unavailable") failure = result.reason;
   }
