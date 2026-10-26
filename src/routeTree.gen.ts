@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalcRouteImport } from './routes/calc'
@@ -35,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudyToolsRoute = StudyToolsRouteImport.update({
@@ -116,6 +122,7 @@ const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/changelog': typeof ChangelogRoute
   '/study-tools': typeof StudyToolsRoute
   '/auth': typeof AuthRoute
   '/calc': typeof CalcRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/changelog': typeof ChangelogRoute
   '/study-tools': typeof StudyToolsRoute
   '/auth': typeof AuthRoute
   '/calc': typeof CalcRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/about': typeof AboutRoute
+  '/changelog': typeof ChangelogRoute
   '/study-tools': typeof StudyToolsRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/changelog'
     | '/calc'
     | '/chat'
     | '/feedback'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/changelog'
     | '/calc'
     | '/chat'
     | '/feedback'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/changelog'
     | '/auth'
     | '/calc'
     | '/chat'
@@ -250,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -370,6 +389,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ChangelogRoute: ChangelogRoute,
   StudyToolsRoute: StudyToolsRoute,
   AuthRoute: AuthRoute,
   CalcRoute: CalcRoute,

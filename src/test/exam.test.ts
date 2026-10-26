@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildExam, buildCustom, EXAM_BLUEPRINT, unitPoints, type Book } from "@/lib/books";
@@ -38,5 +38,26 @@ describe("exam structure and points", () => {
     const items = buildCustom(load(1), [1], 7);
     expect(items.reduce((sum, i) => sum + unitPoints(i.unit), 0)).toBe(7);
     expect(items.every(i => i.unit.passage.length > 0)).toBe(true);
+  });
+  it("keeps expanded multi-question items in original book and question order", () => {
+    const question = (n: string) => ({ n, stem: `Question ${n}`, options: { A: "A", B: "B" }, answer: "A" });
+    const book: Book = {
+      id: 99,
+      sections: [{
+        n: 1, instr_en: "Choose", instr_hy: "Ընտրեք",
+        units: [
+          { id: "first", label: "First", kind: "mc", passage: "", questions: [question("1"), question("2")] },
+          { id: "second", label: "Second", kind: "mc", passage: "", questions: [question("1"), question("2")] },
+        ],
+      }],
+    };
+    const random = vi.spyOn(Math, "random").mockReturnValue(0);
+    try {
+      const items = buildCustom(book, [1], 3);
+      const ids = items.map((item) => item.unit.id);
+      expect(ids).toEqual(["first-q2", "second-q1", "second-q2"]);
+    } finally {
+      random.mockRestore();
+    }
   });
 });

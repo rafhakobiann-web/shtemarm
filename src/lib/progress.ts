@@ -29,10 +29,23 @@ function load() {
 
 let syncTimer: ReturnType<typeof setTimeout> | undefined;
 function persist() {
-  localStorage.setItem(KEY, JSON.stringify(state));
+  // Progress must remain usable even when storage is blocked or its quota is exhausted.
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(state));
+    } catch {
+      // Keep the in-memory copy; storage can fail in private or restricted browser contexts.
+    }
+  }
   subs.forEach((f) => f());
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(pushRemote, 1500);
+  if (typeof window !== "undefined") {
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => {
+      void pushRemote().catch(() => {
+        // Local progress remains available when authentication or the network is unavailable.
+      });
+    }, 1500);
+  }
 }
 
 export function update(fn: (p: Progress) => Progress) {
