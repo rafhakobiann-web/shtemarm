@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { explanationError } from "./explanation";
 
 // Page images are sent as JPEG data URLs by the browser; each is ~50–70 KB on disk.
 const PageImage = z.string().regex(/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/).max(400_000);
@@ -62,114 +61,49 @@ function offlineMathExplanation(data: Input) {
     ? "\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
     : `\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
   return {
-    text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\\n\\nՏեղային պահուստային ռեժիմում հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
+    text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\n\nՏեղային պահուստային ռեժիմում հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
     cached: false,
     error: false,
     offline: true,
   };
 }
 
-async function callGemini(key: string, prompt: string, pages: string[]) {
-  const parts = [
-    { text: prompt },
-    ...pages.map((p) => ({ inline_data: { mime_type: "image/jpeg", data: p.split(",")[1] } })),
-  ];
-  for (const model of ["gemini-3.8-flash", "gemini-3.5-flash-lite"]) {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body: JSON.stringify({ contents: [{ role: "user", parts }] }),
-      },
-    );
-    if (r.ok) {
-      const j = (await r.json()) as {
-        promptFeedback?: { blockReason?: string };
-        candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[];
-      };
-      if (j.promptFeedback?.blockReason) return { status: 403, text: "" };
-      const text = (j.candidates?.[0]?.content?.parts ?? [])
-        .filter((p) => !p.thought)
-        .map((p) => p.text ?? "")
-        .join("");
-      return { status: 200, text: text.trim() };
-    }
-    if (![400, 404, 429, 503].includes(r.status)) return { status: r.status, text: "" };
-  }
-  return { status: 429, text: "" };
-}
-
-async function callGroq(key: string, prompt: string, pages: string[]) {
-  const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            ...pages.map((p) => ({ type: "image_url", image_url: { url: p } })),
-          ],
-        },
-      ],
-    }),
-  });
-  if (!r.ok) return { status: r.status, text: "" };
-  const j = (await r.json()) as { choices?: { message?: { content?: string } }[] };
-  return { status: 200, text: (j.choices?.[0]?.message?.content ?? "").trim() };
-}
-
 export const explainMathAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    if (!data.pages.length && !data.question.trim()) return { text: "Առաջադրանքի պայմանը չի բեռնվել։", cached: false, error: true };
+    const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
+    const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
+    if (!data.pages.length && !data.question.trim())
+      return { text: "Առաջադրանքի պայմանը բացակայում է․ խնդրում ենք փորձել մեկ այլ հարց։", cached: false, error: true, offline: true };
 
-    // The key covers the item, the answers and the exact page images. Changing any of them
-    // produces a new key, so a request with other images can never overwrite the real explanation.
-    const cacheKey = await sha256Hex(["math-v2", data.item, data.kind, data.correct, data.chosen ?? "", data.question, ...data.options, ...data.pages]);
-    let cached: { explanation: string } | null = null;
-    try {
-      const result = await supabaseAdmin
-        .from("explanation_cache")
-        .select("explanation")
-        .eq("cache_key", cacheKey)
-        .maybeSingle();
-      cached = result.data;
-    } catch {
-      // Cache is optional; do not let it disable the explanation feature.
-    }
-    if (cached) return { text: cached.explanation, cached: true, error: false };
+    const cacheKey = await sha256Hex([
+      "math-v3", data.item, data.kind, data.correct, data.chosen ?? "",
+      data.question, ...data.options, ...data.pages,
+    ]);
+    const cached = await getSavedExplanation(cacheKey);
+    if (cached) return { text: cached, cached: true, error: false, offline: false };
 
     const geminiKey = process.env["GEMINI_API_KEY"];
     const groqKey = process.env["GROQ_API_KEY"];
-    if (!geminiKey && !groqKey) return offlineMathExplanation(data);
+    const usingImages = data.pages.length > 0 && !!geminiKey;
+    const textAvailable = !!data.question.trim();
+    // A text-only Groq model must not be asked to hallucinate from unseen scans.
+    const ai = usingImages || textAvailable
+      ? await generateExplanation(
+        buildPrompt({ ...data, pages: usingImages ? data.pages : [] }),
+        { gemini: geminiKey, groq: groqKey },
+        usingImages ? data.pages : [],
+      )
+      : { ok: false as const, reason: "requires_vision" as const };
 
-    const prompt = buildPrompt(data);
-    try {
-      let res = geminiKey
-        ? await callGemini(geminiKey, prompt, data.pages)
-        : { status: 503, text: "" };
-      // A single misconfigured or rate-limited provider must not disable the
-      // second configured provider. No extra requests if the first succeeds.
-      if ((res.status !== 200 || !res.text) && groqKey) {
-        try { res = await callGroq(groqKey, prompt, data.pages); }
-        catch { /* Preserve a usable offline explanation. */ }
-      }
-      if (res.status !== 200) return offlineMathExplanation(data);
-      if (!res.text) return offlineMathExplanation(data);
-
-      try {
-        await supabaseAdmin
-          .from("explanation_cache")
-          .upsert({ cache_key: cacheKey, explanation: res.text }, { onConflict: "cache_key" });
-      } catch { /* Cache failure must not erase a successful explanation. */ }
-
-      return { text: res.text, cached: false, error: false };
-    } catch {
-      return offlineMathExplanation(data);
+    if (ai.ok) {
+      await saveExplanation(cacheKey, ai.text);
+      return { text: ai.text, cached: false, error: false, offline: false };
     }
+    const offline = offlineMathExplanation(data);
+    return {
+      ...offline,
+      error: true,
+      text: errorToUser(ai.reason) + "\n\n" + offline.text,
+    };
   });
