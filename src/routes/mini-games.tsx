@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Brain, CheckCircle2, Gamepad2, RotateCcw, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Brain, Gamepad2, RotateCcw, Sparkles, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/mini-games")({ component: MiniGamesPage });
