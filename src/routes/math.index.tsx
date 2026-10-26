@@ -153,6 +153,29 @@ function useIndex() {
           // The transcription bank is supplementary; a failed response must not crash math pages.
         }
       }
+      // Apply the additional verified transcription batch here too, so custom and
+      // 65-question exams use the same complete prompt bank as the practice game.
+      try {
+        const extraResponse = await fetch("/data/math-text-questions-extra.json", { signal: AbortSignal.timeout(4000) });
+        if (extraResponse.ok) {
+          const extra = await extraResponse.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+          for (const [bookId, sections] of Object.entries(extra)) {
+            for (const [sectionId, tasks] of Object.entries(sections)) {
+              const [chapter, section] = sectionId.split("-").map(Number);
+              const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
+              if (!target) continue;
+              for (const [taskId, questions] of Object.entries(tasks)) {
+                const task = target.tasks.find((t) => t.task === Number(taskId));
+                if (!task) continue;
+                const count = Math.max(task.questions?.length ?? 0, questions.length);
+                task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
+              }
+            }
+          }
+        }
+      } catch {
+        // The second transcription batch is optional; source-page images remain available.
+      }
       return index;
     },
     staleTime: Infinity,
