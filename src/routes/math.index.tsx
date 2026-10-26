@@ -529,7 +529,7 @@ function MathPage() {
             title={tx("Մաթեմատիկա · Քննությունների կազմիչ")}
             description={tx("Երկու շտեմարաններից ընտրիր 65 հարցանոց փորձնական քննություն կամ կազմիր անհատական թեստ։ Ընտրիր բաժինները, ժամանակը և հերթականությունը։")}
             sources={tx("2 շտեմարան")}
-            available={Object.values(index.books).reduce((n, book) => n + book.sections.reduce((a, sec) => a + sectionItems(book.title === index.books["matem-1"]?.title ? "matem-1" : "matem-2", sec).length, 0), 0)}
+            available={BOOK_IDS.reduce((total, id) => total + (index.books[id]?.sections ?? []).reduce((sum, sec) => sum + sectionItems(id, sec).length, 0), 0)}
             icon={<Trophy className="size-5" />}
           />
           <ExamBuilderTitle />
