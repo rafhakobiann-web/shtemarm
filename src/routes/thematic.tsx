@@ -10,7 +10,7 @@ import { useTx } from "@/lib/lang";
 import { update } from "@/lib/progress";
 
 const OPTIONS = [
-  { id: "biology", label: "Կենսաբանություն", books: [31,32] },
+  { id: "biology", label: "Կենսաբանություն", books: [31,32,35] },
   { id: "english", label: "Անգլերեն", books: [1,2,3] },
   { id: "history", label: "Հայոց պատմություն", books: [21,22,23] },
   { id: "armenian", label: "Հայոց լեզու և հայ գրականություն", books: [41] },
@@ -87,7 +87,7 @@ export function ThematicBuilder() {
         <label className="space-y-2"><span className="block text-sm font-bold">{tx("Հարցերի աղբյուր")}</span>
           <select className={input} value={source} onChange={e=>{setSource(e.target.value);setSelected([]);setError("");}}>
             <option value="all">{tx("Բոլոր հասանելի գրքերը")}</option>
-            {config.books.map((id,i)=><option key={id} value={String(id)}>{tx("Շտեմարան {n}",{n:i+1})}</option>)}
+            {config.books.map((id,i)=><option key={id} value={String(id)}>{tx(id===35?"Լրացուցիչ թեմատիկ վարժություններ":"Շտեմարան {n}",{n:i+1})}</option>)}
           </select>
         </label>
       </div>
