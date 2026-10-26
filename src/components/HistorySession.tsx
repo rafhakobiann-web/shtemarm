@@ -11,12 +11,14 @@ export function HistorySession({
   minutes,
   practice,
   onExit,
+  recordResult,
 }: {
   units: Unit[];
   title: string;
   minutes: number;
   practice: boolean;
   onExit: () => void;
+  recordResult?: (correct: number, total: number) => void;
 }) {
   const tx = useTx();
   const { addExam } = useHistoryProgress();
@@ -36,8 +38,9 @@ export function HistorySession({
     saved.current = true;
     setFinished(true);
     setConfirm(false);
-    addExam(score, total);
-  }, [score, total, addExam]);
+    if (recordResult) recordResult(score, total);
+    else addExam(score, total);
+  }, [score, total, addExam, recordResult]);
   useEffect(() => {
     if (!deadline || finished) return;
     const tick = () => {
