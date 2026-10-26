@@ -1,3 +1,5 @@
+import { EXTRA_ENGLISH_LEVEL_QUESTIONS } from "./levelTestPracticeExtras";
+
 /** Original, illustrative CEFR-style practice items for Shtemarm.
  * These are not copied from British Council or Cambridge. Review before publication.
  * Add a level by adding an entry to ENGLISH_LEVELS and a matching bank below.
@@ -21,7 +23,7 @@ export const ENGLISH_LEVELS: LevelConfig[] = [
   { id: "c1", title: "C1", subtitle: "Advanced", description: "Բարձր մակարդակ" },
 ];
 const q = (id: string, skill: LevelQuestion["skill"], prompt: string, options: LevelQuestion["options"], answerIndex: number, explanation: string, passage?: string): LevelQuestion => ({ id, type: "choice", skill, prompt, options, answerIndex, explanation, ...(passage ? { passage } : {}) });
-export const LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = {
+const CORE_LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = {
   a1: [
     q("a1-01","grammar","My sister ___ a student.",["am","is","are","be"],1,"Use ‘is’ with he, she, or it."),
     q("a1-02","vocabulary","Which word means the opposite of ‘big’?",["long","small","tall","wide"],1,"‘Small’ is the opposite of ‘big’."),
@@ -74,12 +76,42 @@ export const LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = {
   ],
 };
 
+/** Fixed-length assessments: students cannot change these values. */
+export const LEVEL_TEST_LENGTH = 15;
+export const PLACEMENT_TEST_LENGTH = 25;
+export const LEVEL_TEST_QUESTIONS: Record<string, LevelQuestion[]> = Object.fromEntries(
+  ENGLISH_LEVELS.map(({ id }) => [id, [
+    ...(CORE_LEVEL_TEST_QUESTIONS[id] ?? []),
+    ...(EXTRA_ENGLISH_LEVEL_QUESTIONS[id as keyof typeof EXTRA_ENGLISH_LEVEL_QUESTIONS] ?? []),
+  ]]),
+);
+
+/** Fisher-Yates: preserve unique questions and avoid random-sort bias. */
+function shuffled<T>(items: readonly T[], random: () => number = Math.random): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.min(i, Math.max(0, Math.floor(random() * (i+1))));
+    [copy[i], copy[j]] = [copy[j]!,copy[i]!];
+  }
+  return copy;
+}
 export function getLevel(levelId: string) {
   return ENGLISH_LEVELS.find((level) => level.id === levelId.toLowerCase());
 }
-
-export function selectLevelQuestions(levelId: string, count: number) {
+export function selectLevelQuestions(levelId: string, random: () => number = Math.random) {
   const bank = LEVEL_TEST_QUESTIONS[levelId.toLowerCase()] ?? [];
-  if (!Number.isInteger(count) || count < 1 || count > bank.length) throw new Error("Invalid question count");
-  return bank.slice(0, count);
+  if (bank.length < LEVEL_TEST_LENGTH) throw new Error("Insufficient level-test question bank");
+  // Every new attempt uses the same test length but a fresh set of items.
+  return shuffled(bank, random).slice(0, LEVEL_TEST_LENGTH);
+}
+export function selectPlacementQuestions(random: () => number = Math.random) {
+  const perLevel = PLACEMENT_TEST_LENGTH / ENGLISH_LEVELS.length;
+  if (!Number.isInteger(perLevel)) throw new Error("Invalid placement blueprint");
+  const items: LevelQuestion[] = [];
+  for (const level of ENGLISH_LEVELS) {
+    const bank = LEVEL_TEST_QUESTIONS[level.id] ?? [];
+    if (bank.length < perLevel) throw new Error("Insufficient placement bank");
+    items.push(...shuffled(bank, random).slice(0, perLevel));
+  }
+  return shuffled(items, random);
 }
