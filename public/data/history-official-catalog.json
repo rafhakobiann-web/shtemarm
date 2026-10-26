@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-26T10:00:00Z",
+  "papers": [
+    {
+      "id": "gtc-remote-2026",
+      "title": "2026 · Հոկտեմբերի 26 · Հեռակա քննություն",
+      "date": "2026-10-26",
+      "sourceUrl": "https://dimord.am/public/tests",
+      "sourceLabel": "ԳԹԿ",
+      "status": "pending",
+      "links": []
+    },
+    {
+      "id": "2026-july",
+      "title": "2026 · Հուլիս · 3-րդ փուլ (Երևան և Տավուշ)",
+      "date": "2026-07-01",
+      "sourceUrl": "https://test.am/pdf.php?page=90",
+      "sourceLabel": "Թեստ.am · ԳԹԿ-ի նյութերի արխիվ",
+      "status": "published",
+      "links": []
+    },
+    {
+      "id": "2026-june",
+      "title": "2026 · Հունիս · 2-րդ փուլ",
+      "date": "2026-06-01",
+      "sourceUrl": "https://test.am/pdf.php?page=17",
+      "sourceLabel": "Թեստ.am · ԳԹԿ-ի նյութերի արխիվ",
+      "status": "published",
+      "links": []
+    },
+    {
+      "id": "2026-winter",
+      "title": "2026 · Հունվար–փետրվար · 1-ին փուլ",
+      "date": "2026-02-08",
+      "sourceUrl": "https://test.am/pdf.php?page=13",
+      "sourceLabel": "Թեստ.am · ԳԹԿ-ի նյութերի արխիվ",
+      "status": "published",
+      "links": []
+    }
+  ]
+}
