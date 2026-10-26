@@ -23,7 +23,8 @@ const updates = [
     items: [
       { emoji: "📚", en: "Added 1,104 English–Armenian vocabulary entries across two commits (649 + 455).", hy: "Երկու commit-ով ավելացվել է անգլերեն-հայերեն բառարանի 1,104 նոր գրառում (649 + 455)։" },
       { emoji: "🧹", en: "Kept existing dictionary keys out of the additions to reduce duplicate entries.", hy: "Նոր գրառումները ավելացնելիս խուսափել ենք բառարանում արդեն առկա բանալիների կրկնությունից։" },
-      { emoji: "🛠️", en: "Fixed a missing comma in the expanded dictionary that caused the Vercel production build to fail; a fresh deployment is still needed to confirm the build passes.", hy: "Ուղղվել է ընդլայնված բառարանի բացակայող ստորակետը, որի պատճառով Vercel-ի արտադրական build-ը ձախողվում էր․ հաջողությունը հաստատելու համար անհրաժեշտ է նոր deployment։" },
+      { emoji: "🛠️", en: "Fixed generated-test ordering and made progress persistence resilient to browser-storage and remote-sync failures.", hy: "Ուղղվել է կազմվող թեստերի հարցերի հերթականությունը, իսկ առաջընթացի պահպանումը պաշտպանվել է դիտարկչի պահեստավորման և հեռավար համաժամացման խափանումներից։" },
+      { emoji: "🧪", en: "Added scoring regression tests for multiple-choice, numeric, set, sequence and matching answers; execution still needs a successful build/test run.", hy: "Ավելացվել են բազմընտրանի, թվային, բազմության, հաջորդականության և համապատասխանեցման պատասխանների ստուգողական թեստեր․ դրանք գործարկելու համար դեռ պետք է հաջող build/test։" },
       { emoji: "🔎", en: "Next: compare all three English books against the dictionary and verify the exact remaining word count.", hy: "Հաջորդը՝ համեմատել անգլերենի երեք գրքերը բառարանի հետ և ճշտել չթարգմանված բառերի իրական քանակը։" },
     ],
   },
