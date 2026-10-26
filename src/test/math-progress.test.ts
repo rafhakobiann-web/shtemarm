@@ -2,7 +2,8 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { isOpenTask, isOptionAnswer, isRight, useMathProgress } from "@/lib/math-progress";
 
-describe("math answer handling", () => {\n  beforeEach(() => localStorage.clear());
+describe("math answer handling", () => {
+  beforeEach(() => localStorage.clear());
   it("normalizes numeric formatting without changing the value", () => {
     expect(isRight("1 200", "1200")).toBe(true);
     expect(isRight("1,5", "1.5")).toBe(true);
