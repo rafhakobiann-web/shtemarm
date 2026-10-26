@@ -259,6 +259,7 @@ function PlayPage() {
   const [streak, setStreak] = useState(0);
   const [testAnswers, setTestAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     if (!section.items.length) return;
@@ -268,6 +269,7 @@ function PlayPage() {
     setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
+    setGameOver(false);
   }, [section.items, isTest]);
 
   if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
@@ -322,7 +324,7 @@ function PlayPage() {
   const it = round[index];
   const answeredCount = round.filter((x) => progress.answers[x.id] !== undefined).length;
   const current = it ? progress.answers[it.id] : undefined;
-  const finished = !it || (index === round.length - 1 && current !== undefined);
+  const finished = !it || gameOver || (index === round.length - 1 && current !== undefined);
   const short = it ? it.open || it.answer === undefined || isShortAnswer(it.answer) : false;
 
   const onAnswer = (v: string) => {
@@ -333,6 +335,7 @@ function PlayPage() {
     } else {
       setStreak(0);
       setLives((l) => Math.max(0, l - 1));
+      if (lives <= 1) setGameOver(true);
     }
   };
 
@@ -357,15 +360,31 @@ function PlayPage() {
 
       {finished ? (
         <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
-          <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
+          <p className="text-xl font-black">{tx(gameOver ? "Կյանքերը սպառվեցին" : "Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">
             {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
           </p>
+          {gameOver && it && current !== undefined && (
+            <div className="space-y-2 rounded-2xl border p-4 text-left">
+              <p className="font-semibold">{it.prompt ?? tx("Վերջին հարցը")}</p>
+              <p className="text-sm">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: it.answer ?? "—" })}</p>
+              <MathExplain
+                item={it.id}
+                bookId={it.bookId}
+                pages={taskPages(it.segments)}
+                kind={it.open ? "open" : it.answer === "T" || it.answer === "F" ? "tf" : "choice"}
+                task={tx("Առաջադրանք {task}, հարց {sub}", { task: it.task, sub: it.sub })}
+                correct={it.answer ?? ""}
+                chosen={current}
+              />
+            </div>
+          )}
           <Button className="w-full" onClick={() => {
             clearAnswers(section.items.map((item) => item.id));
             setIndex(0);
             setLives(LIVES);
             setStreak(0);
+            setGameOver(false);
             setRound(shuffle(section.items));
           }}>{tx("Նորից")}</Button>
         </section>
