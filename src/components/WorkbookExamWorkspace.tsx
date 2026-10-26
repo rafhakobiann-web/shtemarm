@@ -14,7 +14,13 @@ type Active = { units: Unit[]; title: string; minutes: number; practice: boolean
 const kindOrder: Unit["kind"][] = ["mc", "set", "seq", "match", "num"];
 const field = "h-12 w-full min-w-0 rounded-xl border bg-background px-3 text-sm";
 
-export function WorkbookExamWorkspace({ subject }: { subject: WorkbookSubject }) {
+export function WorkbookExamWorkspace({
+  subject, initialBook, initialSection,
+}: {
+  subject: WorkbookSubject;
+  initialBook?: number | undefined;
+  initialSection?: number | undefined;
+}) {
   const tx = useTx();
   const english = subject === "english";
   const name = tx(english ? "Անգլերեն" : "Հայոց լեզու և գրականություն");
@@ -23,9 +29,9 @@ export function WorkbookExamWorkspace({ subject }: { subject: WorkbookSubject })
     queryFn: () => loadWorkbookSources(subject),
     staleTime: Infinity,
   });
-  const [source, setSource] = useState("all");
+  const [source, setSource] = useState(initialBook && english && [1, 2, 3].includes(initialBook) ? String(initialBook) : "all");
   const [mode, setMode] = useState<"full" | "custom">("custom");
-  const [sections, setSections] = useState<string[]>([]);
+  const [sections, setSections] = useState<string[] | null>(initialSection ? null : []);
   const [kinds, setKinds] = useState<Unit["kind"][]>(kindOrder);
   const [count, setCount] = useState(20);
   const [minutes, setMinutes] = useState(0);
@@ -40,9 +46,15 @@ export function WorkbookExamWorkspace({ subject }: { subject: WorkbookSubject })
     [allEntries, source],
   );
   const names = [...new Set(scoped.map((e) => e.section))];
+  const initialSections = initialSection
+    ? [...new Set(scoped
+      .filter((entry) => entry.unit.id.startsWith("book-" + (english ? (initialBook ?? 1) : 41) + ":" + initialSection + ":"))
+      .map((entry) => entry.section))]
+    : [];
+  const selectedSections = sections ?? initialSections;
   const availableKinds = kindOrder.filter((kind) => scoped.some((e) => e.unit.kind === kind));
   const pool = scoped.filter(
-    (entry) => (!sections.length || sections.includes(entry.section)) && kinds.includes(entry.unit.kind),
+    (entry) => (!selectedSections.length || selectedSections.includes(entry.section)) && kinds.includes(entry.unit.kind),
   );
   const available = new Set(pool.map((entry) => entry.unit.id)).size;
   const validCustom = Number.isInteger(count) && count > 0 && count <= available;
@@ -145,14 +157,14 @@ export function WorkbookExamWorkspace({ subject }: { subject: WorkbookSubject })
                   {names.map((section) => (
                     <label key={section} className="flex cursor-pointer items-start gap-2 rounded-lg p-2 text-sm hover:bg-muted">
                       <input className="mt-1 size-4 shrink-0 accent-primary" type="checkbox"
-                        checked={sections.includes(section)}
+                        checked={selectedSections.includes(section)}
                         onChange={(e) => setSections((old) =>
-                          e.target.checked ? [...old, section] : old.filter((value) => value !== section))} />
+                          e.target.checked ? [...(old ?? selectedSections), section] : (old ?? selectedSections).filter((value) => value !== section))} />
                       <span>{section}</span>
                     </label>
                   ))}
                 </div>
-                {sections.length > 0 && (
+                {selectedSections.length > 0 && (
                   <Button size="sm" variant="ghost" onClick={() => setSections([])}>{tx("Ընտրել բոլոր բաժինները")}</Button>
                 )}
               </fieldset>
