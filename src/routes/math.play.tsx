@@ -302,7 +302,7 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
+            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <div className="space-y-2"><p className="text-sm text-muted-foreground">{tx("Հարցի տեքստային տարբերակը դեռ մշակվում է․ օգտվիր գրքի բնօրինակ առաջադրանքից։")}</p><Crop bookId={it.bookId} segments={it.segments} /></div>}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
@@ -380,7 +380,7 @@ function PlayPage() {
             </p>
           </div>
 
-          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
+          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <div className="space-y-2"><p className="text-sm text-muted-foreground">{tx("Հարցի տեքստային տարբերակը դեռ մշակվում է․ օգտվիր գրքի բնօրինակ առաջադրանքից։")}</p><Crop bookId={it.bookId} segments={it.segments} /></div>}
 
           <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
