@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Noto Sans Armenian", "Manrope", system-ui, sans-serif;
-  --font-display: "Noto Sans Armenian", "Unbounded", sans-serif;
+  --font-sans: "Noto Sans Armenian", "Noto Sans", system-ui, sans-serif;
+  --font-display: "Noto Sans Armenian", "Noto Sans", sans-serif;
   --font-reading: "Literata", "Noto Serif Armenian", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --radius-sm: calc(var(--radius) - 4px);
@@ -479,4 +479,12 @@ html.user-high-contrast[data-surface="liquid"] body { background-image: none; }
   html[data-surface="liquid"] :is(.bg-card, .site-mobile-nav, .glass) {
     transition: background-color 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
   }
+}
+
+/* Lightweight readable Armenian/Cyrillic text, with no heavy animated glass on small screens. */
+html:lang(hy) body { font-family: "Noto Sans Armenian", "Noto Sans", sans-serif; }
+html:lang(ru) body { font-family: "Noto Sans", "Noto Sans Armenian", sans-serif; }
+@media (max-width: 640px), (prefers-reduced-motion: reduce) {
+  .glass, .site-header { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .glass { background: var(--color-card); }
 }
