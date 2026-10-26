@@ -23,11 +23,11 @@ export const Route = createFileRoute("/math/")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
-type IndexSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
-type Index = { books: Record<string, { title: string; sections: IndexSection[] }> };
+export type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
+export type IndexSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
+export type Index = { books: Record<string, { title: string; sections: IndexSection[] }> };
 type Kind = "choice" | "tf" | "open";
-type Item = {
+export type Item = {
   id: string;
   book: string;
   chapter: number;
@@ -236,7 +236,7 @@ function byBookOrder(a: Item, b: Item) {
 }
 
 /** Build a balanced 65-question practice exam: 32 from one book and 33 from the other. */
-function pickSample(index: Index, excluded: Set<string>): Item[] {
+export function pickSample(index: Index, excluded: Set<string>): Item[] {
   const targets = shuffle([
     { bookId: BOOK_IDS[0], count: 32 },
     { bookId: BOOK_IDS[1], count: 33 },
@@ -304,7 +304,7 @@ function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[
 }
 
 /** Custom test: whole tasks while they fit, then the first sub-questions of the next task to reach `count` exactly. */
-function buildCustom(index: Index, books: string[], keys: Set<string>, count: number): Item[] {
+export function buildCustom(index: Index, books: string[], keys: Set<string>, count: number): Item[] {
   const out: Item[] = [];
   for (const g of shuffle(selectedGroups(index, books, keys))) {
     const room = count - out.length;
