@@ -154,15 +154,13 @@ function EnglishSubject() {
         <div className="grid gap-4 sm:grid-cols-2">
           <ExamTile to="/level-test/$level" params={{ level: "placement" }} title={tx("Ստուգել անգլերենի մակարդակս")} sub={tx("Խառը հարցեր՝ A1–C1 · մոտավոր գնահատում")} icon={<Brain className="size-5" />} />
           <ExamTile
-            to="/test/$bookId" params={{ bookId: "all" }}
-            search={{ mode: "exam", style: "classic" }}
+            to="/exam/$subject" params={{ subject: "english" }}
             title={tx("Քննություն")}
-            sub={tx("80 հարց՝ իրական քննության կառուցվածքով")}
+            sub={tx("13 բաժին · 80 միավոր · կարգավորվող թեստ")}
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
-            to="/test/$bookId" params={{ bookId: "all" }}
-            search={{ mode: "custom", style: "game" }}
+            to="/exam/$subject" params={{ subject: "english" }}
             title={tx("Թեստերի կազմիչ")}
             sub={tx("Ընտրիր բաժինները և հարցերի քանակը")}
             icon={<ClipboardCheck className="size-5" />}
@@ -191,7 +189,7 @@ function MathSubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("65 հարց՝ երկու շտեմարաններից")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/math" search={{ mode: "custom" }} title={tx("Թեստերի կազմիչ")} sub={tx("Ընտրիր բաժինները և հարցերի քանակը")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
@@ -273,8 +271,8 @@ function ArmenianSubject() {
           <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
             <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու և գրականություն")} sub={tx("8 բաժին · 96 հարց · պատասխանների ավտոմատ ստուգում")} />
           </Link>
-          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Փորձնական քննություն")} sub={tx("Խառը հարցեր բոլոր 8 բաժիններից")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "custom", style: "classic" }} title={tx("Կազմել սեփական թեստ")} sub={tx("Ընտրիր բաժինը և վարժվիր ըստ թեմայի")} icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Փորձնական քննություն")} sub={tx("Խառը հարցեր բոլոր 8 բաժիններից")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Կազմել սեփական թեստ")} sub={tx("Ընտրիր բաժինը և վարժվիր ըստ թեմայի")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
       <section className="rounded-2xl border bg-card p-4 text-sm text-muted-foreground">
@@ -443,23 +441,21 @@ function Index() {
         <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
           <ExamTile
-            to="/test/$bookId" params={{ bookId: "all" }}
-            search={{ mode: "exam", style: "classic" }}
+            to="/exam/$subject" params={{ subject: "english" }}
             title={tx("Քննություն")}
-            sub={tx("Անգլերեն · 80 հարց՝ իրական քննության կառուցվածքով")}
+            sub={tx("Անգլերեն · 13 բաժին · 80 միավոր")}
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
-            to="/test/$bookId" params={{ bookId: "all" }}
-            search={{ mode: "custom", style: "game" }}
+            to="/exam/$subject" params={{ subject: "english" }}
             title={tx("Անգլերեն · Կազմել թեստ")}
             sub={tx("Ընտրիր բաժինները և քանակը")}
             icon={<ClipboardCheck className="size-5" />}
           />
-          <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
-          <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("64 հարց՝ 4 թեմատիկ բաժնից")} icon={<BookOpen className="size-5" />} />
+          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("8 բաժնից կազմվող անհատական թեստ")} icon={<BookOpen className="size-5" />} />
         </div>
       </section>
       <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
