@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
+import { MathQuestionText } from "@/components/MathQuestionText";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
@@ -19,86 +20,17 @@ export const Route = createFileRoute("/math/play")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
+type BookTask = MathBookTask;
 type BookSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: BookSection[] }> };
-type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean; prompt?: string; options?: string[] };
+type Item = { id: string; bookId: string; task: number; sub: number; subs: number; segments: Segment[]; answer: string | undefined; open: boolean; prompt?: string | undefined; options?: string[] | undefined; transcription?: MathTranscriptionRef | undefined };
 
 const PAGE_W = 467.76;
 const TEST_SIZE = 20;
 const LIVES = 3;
 
 function useIndex() {
-  return useQuery({
-    queryKey: ["math-books-index"],
-    queryFn: async (): Promise<Index> => {
-      // Load the essential index first so an optional transcription request cannot
-      // keep the entire math page stuck on its loading spinner.
-      const r = await fetch("/data/math-books-index.json");
-      if (!r.ok) throw new Error("load failed");
-      const index: Index = await r.json();
-
-      // The text bank is supplementary. Abort it if the server never responds.
-      let textR: Response | null = null;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      try {
-        textR = await fetch("/data/math-text-questions.json", { signal: controller.signal });
-      } catch {
-        textR = null;
-      } finally {
-        clearTimeout(timeoutId);
-      }
-      if (textR?.ok) {
-        try {
-          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
-
-        for (const [bookId, sections] of Object.entries(extra)) {
-          for (const [sectionId, tasks] of Object.entries(sections)) {
-            const [chapter, section] = sectionId.split("-").map(Number);
-            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
-            if (!target) continue;
-            for (const [taskId, questions] of Object.entries(tasks)) {
-              const task = target.tasks.find((t) => t.task === Number(taskId));
-              if (!task) continue;
-              // Preserve verified index questions when the separate transcription bank has null placeholders.
-              const count = Math.max(task.questions?.length ?? 0, questions.length);
-              task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
-            }
-          }
-        }
-        } catch {
-          // The transcription bank is supplementary; a failed response must not crash math pages.
-        }
-      }
-      // Load the next verified transcription batch separately so the large index
-      // and the existing bank remain intact. Missing entries in the overlay never
-      // erase questions that are already present.
-      try {
-        const extraResponse = await fetch("/data/math-text-questions-extra.json", { signal: AbortSignal.timeout(4000) });
-        if (extraResponse.ok) {
-          const extra = await extraResponse.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
-          for (const [bookId, sections] of Object.entries(extra)) {
-            for (const [sectionId, tasks] of Object.entries(sections)) {
-              const [chapter, section] = sectionId.split("-").map(Number);
-              const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
-              if (!target) continue;
-              for (const [taskId, questions] of Object.entries(tasks)) {
-                const task = target.tasks.find((t) => t.task === Number(taskId));
-                if (!task) continue;
-                const count = Math.max(task.questions?.length ?? 0, questions.length);
-                task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
-              }
-            }
-          }
-        }
-      } catch {
-        // A later transcription batch is optional and must never break Math.
-      }
-      return index;
-    },
-    staleTime: Infinity,
-  });
+  return useMathBookIndex();
 }
 
 function shuffle<T>(a: T[]): T[] {
@@ -133,6 +65,7 @@ function sectionItems(index: Index, bookId: string, chapter: number, section: nu
         open,
         prompt: t.questions?.[i]?.prompt,
         options: t.questions?.[i]?.options,
+        transcription: t.questions?.[i]?.transcription,
       });
     }
   }
@@ -302,7 +235,7 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
+            {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
@@ -377,7 +310,7 @@ function PlayPage() {
             </p>
           </div>
 
-          {it.prompt ? <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{it.prompt}</p></div> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Այս հարցի տեքստը դեռ մշակվում է։ Նկարի փոխարեն տեքստային տարբերակը կհայտնվի լրացնելուց հետո։")}</p>}
+          {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
 
           <div className="space-y-4 rounded-2xl border bg-card p-3 sm:rounded-3xl sm:p-5">
             <div className="flex items-center gap-3">
@@ -407,3 +340,4 @@ function PlayPage() {
     </div>
   );
 }
+

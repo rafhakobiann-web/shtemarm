@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
+import { MathQuestionText } from "@/components/MathQuestionText";
 import { ArrowLeft, Loader2, Timer, RefreshCw, Trophy, ListChecks } from "lucide-react";
 import { useMathProgress, isRight, isOpenTask } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/math/")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
+type BookTask = MathBookTask;
 type IndexSection = { chapter: number; section: number; title: string; tasks: BookTask[] };
 type Index = { books: Record<string, { title: string; sections: IndexSection[] }> };
 type Kind = "choice" | "tf" | "open";
@@ -39,8 +40,8 @@ type Item = {
   split?: boolean;
   answer: string;
   kind: Kind;
-  prompt?: string;
-  options?: string[];
+  prompt?: string | undefined;
+  options?: string[] | undefined; transcription?: MathTranscriptionRef | undefined;
 };
 
 const PAGE_W = 467.76;
@@ -110,53 +111,7 @@ function sectionTitle(bookId: string, chapter: number, section: number) {
 // Keep this as a 65-question practice test drawn from both source books, not an asserted official blueprint.
 
 function useIndex() {
-  return useQuery({
-    queryKey: ["math-books-index"],
-    queryFn: async (): Promise<Index> => {
-      // Load the essential index first so an optional transcription request cannot
-      // keep the entire math page stuck on its loading spinner.
-      const r = await fetch("/data/math-books-index.json");
-      if (!r.ok) throw new Error("load failed");
-      const index: Index = await r.json();
-
-      // The text bank is supplementary. Abort it if the server never responds.
-      let textR: Response | null = null;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      try {
-        textR = await fetch("/data/math-text-questions.json", { signal: controller.signal });
-      } catch {
-        textR = null;
-      } finally {
-        clearTimeout(timeoutId);
-      }
-      if (textR?.ok) {
-        try {
-          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
-
-        for (const [bookId, sections] of Object.entries(extra)) {
-          for (const [sectionId, tasks] of Object.entries(sections)) {
-            const [chapter, section] = sectionId.split("-").map(Number);
-            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
-            if (!target) continue;
-            for (const [taskId, questions] of Object.entries(tasks)) {
-              const task = target.tasks.find((t) => t.task === Number(taskId));
-              if (!task) continue;
-              // A null transcription means "not yet transcribed", not "erase the source-book question".
-              // Keep any verified question already embedded in the index for those subquestions.
-              const count = Math.max(task.questions?.length ?? 0, questions.length);
-              task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
-            }
-          }
-        }
-        } catch {
-          // The transcription bank is supplementary; a failed response must not crash math pages.
-        }
-      }
-      return index;
-    },
-    staleTime: Infinity,
-  });
+  return useMathBookIndex();
 }
 
 function shuffle<T>(a: T[]): T[] {
@@ -196,6 +151,7 @@ function sectionItems(bookId: string, sec: IndexSection): Item[] {
         kind,
         prompt: t.questions?.[i]?.prompt,
         options: t.questions?.[i]?.options,
+        transcription: t.questions?.[i]?.transcription,
       });
     }
   }
@@ -385,7 +341,7 @@ function AnswerRow({
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
         <span className="text-xs text-muted-foreground">{tx("Առաջադրանք {n}, կետ {m}/{k}", { n: item.task, m: item.sub, k: item.subs })}</span>
       </div>
-      {item.prompt && <p className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base">{item.prompt}</p>}
+      {item.prompt && <MathQuestionText question={{ prompt: item.prompt, transcription: item.transcription }} />}
 
       {item.kind === "open" ? (
         <input
@@ -744,3 +700,4 @@ function MathPage() {
     </div>
   );
 }
+

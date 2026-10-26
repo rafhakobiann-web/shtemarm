@@ -71,7 +71,8 @@ export function isShortAnswer(answer: string) {
 }
 
 /** A task uses typed answers if any answer is not a choice/true-false label. Call per task, not for the whole section. */
-export function isOpenTask(task: { answers: string[] | null }) {
+export function isOpenTask(task: { answers: string[] | null; answer_type?: "choice" | "open" | "tf" }) {
+  if (task.answer_type) return task.answer_type === "open";
   return task.answers?.some((answer) => isShortAnswer(answer)) ?? false;
 }
 
@@ -96,3 +97,4 @@ export function isRight(answer: string, value: string) {
   const nv = Number(v);
   return a !== "" && v !== "" && !Number.isNaN(na) && !Number.isNaN(nv) && Math.abs(na - nv) < 1e-9;
 }
+

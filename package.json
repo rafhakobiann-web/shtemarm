@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate:math": "node scripts/validate-math-books.mjs",
-    "audit:math": "node scripts/audit-math-bank.mjs"
+    "audit:math": "node scripts/audit-math-bank.mjs",
+    "validate:math:text": "node scripts/validate-math-transcriptions.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"

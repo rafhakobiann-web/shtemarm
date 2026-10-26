@@ -1,7 +1,8 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMathBookIndex, type MathBookTask } from "@/lib/math-bank";
+import { MathQuestionText } from "@/components/MathQuestionText";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/math/books")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
+type BookTask = MathBookTask;
 type BookSection = { chapter: number; section: number; title: string; pages: [number, number]; tasks: BookTask[] };
 type BookData = { title: string; sections: BookSection[] };
 type Index = { books: Record<string, BookData> };
@@ -59,75 +60,7 @@ function MathBookCover({ bookId, compact = false }: { bookId: string; compact?: 
 }
 
 function useIndex() {
-  return useQuery({
-    queryKey: ["math-books-index"],
-    queryFn: async (): Promise<Index> => {
-      // Load the essential index first so an optional transcription request cannot
-      // keep the entire math page stuck on its loading spinner.
-      const r = await fetch("/data/math-books-index.json");
-      if (!r.ok) throw new Error("load failed");
-      const index: Index = await r.json();
-
-      // The text bank is supplementary. Abort it if the server never responds.
-      let textR: Response | null = null;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      try {
-        textR = await fetch("/data/math-text-questions.json", { signal: controller.signal });
-      } catch {
-        textR = null;
-      } finally {
-        clearTimeout(timeoutId);
-      }
-      if (textR?.ok) {
-        try {
-          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
-
-        for (const [bookId, sections] of Object.entries(extra)) {
-          for (const [sectionId, tasks] of Object.entries(sections)) {
-            const [chapter, section] = sectionId.split("-").map(Number);
-            const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
-            if (!target) continue;
-            for (const [taskId, questions] of Object.entries(tasks)) {
-              const task = target.tasks.find((t) => t.task === Number(taskId));
-              if (!task) continue;
-              const count = Math.max(task.questions?.length ?? 0, questions.length);
-              task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
-            }
-          }
-        }
-        } catch {
-          // The transcription bank is supplementary; a failed response must not crash math pages.
-        }
-      }
-      // Load the next verified transcription batch separately so the large index
-      // and the existing bank remain intact. Missing entries in the overlay never
-      // erase questions that are already present.
-      try {
-        const extraResponse = await fetch("/data/math-text-questions-extra.json", { signal: AbortSignal.timeout(4000) });
-        if (extraResponse.ok) {
-          const extra = await extraResponse.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
-          for (const [bookId, sections] of Object.entries(extra)) {
-            for (const [sectionId, tasks] of Object.entries(sections)) {
-              const [chapter, section] = sectionId.split("-").map(Number);
-              const target = index.books[bookId]?.sections.find((s) => s.chapter === chapter && s.section === section);
-              if (!target) continue;
-              for (const [taskId, questions] of Object.entries(tasks)) {
-                const task = target.tasks.find((t) => t.task === Number(taskId));
-                if (!task) continue;
-                const count = Math.max(task.questions?.length ?? 0, questions.length);
-                task.questions = Array.from({ length: count }, (_, i) => questions[i] ?? task.questions?.[i] ?? null);
-              }
-            }
-          }
-        }
-      } catch {
-        // A later transcription batch is optional and must never break Math.
-      }
-      return index;
-    },
-    staleTime: Infinity,
-  });
+  return useMathBookIndex();
 }
 
 function CropSegment({ src, s }: { src: string; s: Segment }) {
@@ -221,7 +154,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div>}{(!task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <MathQuestionText question={task.questions[i]!} />}{(!task.questions?.[i]?.prompt) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
@@ -468,3 +401,4 @@ function BooksPage() {
     </div>
   );
 }
+

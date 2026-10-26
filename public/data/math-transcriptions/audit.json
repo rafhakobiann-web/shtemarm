@@ -1,0 +1,339 @@
+{
+  "format": 1,
+  "method": "PDF Unicode extraction with positioned text and mathematical rules",
+  "added": 3532,
+  "source_sha256": {
+    "matem-1": "8c5a28bd86a0133377a7c375fb161bbf909b0dcc68685e0435767c7291d748d8",
+    "matem-2": "e344f5bd01882a5d8ac5de6dddbd7e9e3b65f124b37dc3d0f14c7368f11fa074"
+  },
+  "sections": [
+    {
+      "book": "matem-1",
+      "section": "2-1",
+      "tasks": 21,
+      "added": 64
+    },
+    {
+      "book": "matem-1",
+      "section": "2-2",
+      "tasks": 19,
+      "added": 76
+    },
+    {
+      "book": "matem-1",
+      "section": "2-3",
+      "tasks": 19,
+      "added": 76
+    },
+    {
+      "book": "matem-1",
+      "section": "2-4",
+      "tasks": 23,
+      "added": 92
+    },
+    {
+      "book": "matem-1",
+      "section": "2-5",
+      "tasks": 35,
+      "added": 140
+    },
+    {
+      "book": "matem-1",
+      "section": "2-6",
+      "tasks": 43,
+      "added": 172
+    },
+    {
+      "book": "matem-1",
+      "section": "2-7",
+      "tasks": 29,
+      "added": 116
+    },
+    {
+      "book": "matem-1",
+      "section": "2-8",
+      "tasks": 50,
+      "added": 100
+    },
+    {
+      "book": "matem-1",
+      "section": "3-1",
+      "tasks": 26,
+      "added": 156
+    },
+    {
+      "book": "matem-1",
+      "section": "3-2",
+      "tasks": 40,
+      "added": 240
+    },
+    {
+      "book": "matem-1",
+      "section": "3-3",
+      "tasks": 27,
+      "added": 162
+    },
+    {
+      "book": "matem-1",
+      "section": "3-4",
+      "tasks": 25,
+      "added": 150
+    },
+    {
+      "book": "matem-2",
+      "section": "1-10",
+      "tasks": 30,
+      "added": 88
+    },
+    {
+      "book": "matem-2",
+      "section": "2-1",
+      "tasks": 25,
+      "added": 100
+    },
+    {
+      "book": "matem-2",
+      "section": "2-2",
+      "tasks": 47,
+      "added": 188
+    },
+    {
+      "book": "matem-2",
+      "section": "2-3",
+      "tasks": 40,
+      "added": 160
+    },
+    {
+      "book": "matem-2",
+      "section": "2-4",
+      "tasks": 22,
+      "added": 88
+    },
+    {
+      "book": "matem-2",
+      "section": "2-5",
+      "tasks": 43,
+      "added": 172
+    },
+    {
+      "book": "matem-2",
+      "section": "2-6",
+      "tasks": 29,
+      "added": 116
+    },
+    {
+      "book": "matem-2",
+      "section": "2-7",
+      "tasks": 21,
+      "added": 84
+    },
+    {
+      "book": "matem-2",
+      "section": "2-8",
+      "tasks": 40,
+      "added": 80
+    },
+    {
+      "book": "matem-2",
+      "section": "3-1",
+      "tasks": 16,
+      "added": 96
+    },
+    {
+      "book": "matem-2",
+      "section": "3-2",
+      "tasks": 22,
+      "added": 132
+    },
+    {
+      "book": "matem-2",
+      "section": "3-3",
+      "tasks": 14,
+      "added": 84
+    },
+    {
+      "book": "matem-2",
+      "section": "3-4",
+      "tasks": 40,
+      "added": 240
+    },
+    {
+      "book": "matem-2",
+      "section": "3-5",
+      "tasks": 30,
+      "added": 180
+    },
+    {
+      "book": "matem-2",
+      "section": "3-6",
+      "tasks": 30,
+      "added": 180
+    }
+  ],
+  "numbering_corrections": [
+    {
+      "book": "matem-1",
+      "section": "3-1",
+      "task": 4,
+      "printed_task": 3,
+      "page": 236
+    },
+    {
+      "book": "matem-1",
+      "section": "3-2",
+      "task": 2,
+      "printed_task": 3,
+      "page": 247
+    },
+    {
+      "book": "matem-1",
+      "section": "3-2",
+      "task": 3,
+      "printed_task": 4,
+      "page": 247
+    }
+  ],
+  "raster_assets": [
+    {
+      "id": "194-688",
+      "page": 194,
+      "xref": 688,
+      "bbox": [
+        56.650001525878906,
+        92.75003051757812,
+        324.1000061035156,
+        312.35003662109375
+      ],
+      "width": 742,
+      "height": 609,
+      "book": "matem-1"
+    },
+    {
+      "id": "230-803",
+      "page": 230,
+      "xref": 803,
+      "bbox": [
+        115.80000305175781,
+        430.7000427246094,
+        122.5,
+        447.10003662109375
+      ],
+      "width": 9,
+      "height": 22,
+      "book": "matem-1"
+    },
+    {
+      "id": "249-866",
+      "page": 249,
+      "xref": 866,
+      "bbox": [
+        229.6999969482422,
+        356.4000244140625,
+        233.3000030517578,
+        372.85003662109375
+      ],
+      "width": 6,
+      "height": 22,
+      "book": "matem-1"
+    },
+    {
+      "id": "203-704",
+      "page": 203,
+      "xref": 704,
+      "bbox": [
+        78.5999984741211,
+        173.4000244140625,
+        333.3500061035156,
+        315.2500305175781
+      ],
+      "width": 707,
+      "height": 394,
+      "book": "matem-2"
+    },
+    {
+      "id": "284-961",
+      "page": 284,
+      "xref": 961,
+      "bbox": [
+        110.6500015258789,
+        271.5500183105469,
+        395.5,
+        505.5500183105469
+      ],
+      "width": 1518,
+      "height": 1247,
+      "book": "matem-2"
+    },
+    {
+      "id": "285-966",
+      "page": 285,
+      "xref": 966,
+      "bbox": [
+        78.5999984741211,
+        263.5000305175781,
+        339.6000061035156,
+        461.4000244140625
+      ],
+      "width": 1405,
+      "height": 1065,
+      "book": "matem-2"
+    },
+    {
+      "id": "289-981",
+      "page": 289,
+      "xref": 981,
+      "bbox": [
+        60.54999923706055,
+        95.75003051757812,
+        202.3000030517578,
+        203.75003051757812
+      ],
+      "width": 433,
+      "height": 330,
+      "book": "matem-2"
+    },
+    {
+      "id": "290-985",
+      "page": 290,
+      "xref": 985,
+      "bbox": [
+        76.5999984741211,
+        115.95001220703125,
+        232.60000610351562,
+        224.70001220703125
+      ],
+      "width": 476,
+      "height": 332,
+      "book": "matem-2"
+    },
+    {
+      "id": "293-995",
+      "page": 293,
+      "xref": 995,
+      "bbox": [
+        57.599998474121094,
+        208.2000274658203,
+        64.29999542236328,
+        224.75003051757812
+      ],
+      "width": 9,
+      "height": 22,
+      "book": "matem-2"
+    },
+    {
+      "id": "306-1038",
+      "page": 306,
+      "xref": 1038,
+      "bbox": [
+        394.29998779296875,
+        125.15000915527344,
+        403.29998779296875,
+        141.70001220703125
+      ],
+      "width": 12,
+      "height": 22,
+      "book": "matem-2"
+    }
+  ],
+  "total_text_questions": 5676
+}
