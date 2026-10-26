@@ -4,6 +4,7 @@ import { useTx } from "@/lib/lang";
 import { ArrowLeft, Brain, CheckCircle2, Gamepad2, RotateCcw, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { TrueFalseGame, MatchingGame } from "@/components/AdditionalMiniGames";
 
 export const Route = createFileRoute("/mini-games")({ component: MiniGamesPage });
 
@@ -16,7 +17,7 @@ const QUESTIONS = [
   { q: "Որքա՞ն է 9²-ը։", choices: ["18", "81", "72", "90"], answer: "81", kind: "Մաթեմատիկա" },
   { q: "Ո՞ր օրգանն է ապահովում արյան շրջանառությունը։", choices: ["Լյարդ", "Սիրտ", "Թոք", "Երիկամ"], answer: "Սիրտ", kind: "Կենսաբանություն" },
   { q: "Choose the correct sentence.", choices: ["I has a book.", "I have a book.", "I having book.", "I am have a book."], answer: "I have a book.", kind: "English" },
-  { q: "Որքա՞ն է 3/4-ի 100%-ը 80-ից։", choices: ["40", "50", "60", "70"], answer: "60", kind: "Մաթեմատիկա" },
+  { q: "Որքա՞ն է 80-ի 3/4-ը։", choices: ["40", "50", "60", "70"], answer: "60", kind: "Մաթեմատիկա" },
   { q: "Ի՞նչ է ուսումնասիրում բուսաբանությունը։", choices: ["Կենդանիները", "Բույսերը", "Աստղերը", "Հանքանյութերը"], answer: "Բույսերը", kind: "Կենսաբանություն" },
   { q: "Ո՞րն է «արագ» բառի հոմանիշը։", choices: ["դանդաղ", "շուտափույթ", "ծանր", "հանգիստ"], answer: "շուտափույթ", kind: "Հայոց լեզու" },
   { q: "What is the past tense of 'write'?", choices: ["writed", "written", "wrote", "writes"], answer: "wrote", kind: "English" },
@@ -28,16 +29,33 @@ const QUESTIONS = [
   { q: "Choose: If I ___ time, I will call you.", choices: ["have", "had", "will have", "having"], answer: "have", kind: "English" },
   { q: "Որքա՞ն է 25 × 4 − 10։", choices: ["80", "90", "100", "110"], answer: "90", kind: "Մաթեմատիկա" },
   { q: "Ո՞րն է «գեղեցիկ» բառի հականիշը։", choices: ["հմայիչ", "տգեղ", "սիրուն", "նրբագեղ"], answer: "տգեղ", kind: "Հայոց լեզու" },
+  { q: "Որքա՞ն է 144-ի քառակուսի արմատը։", choices: ["10", "11", "12", "14"], answer: "12", kind: "Մաթեմատիկա" },
+  { q: "Ո՞րն է բջջի ժառանգական նյութը կրող մոլեկուլներից հիմնականը։", choices: ["Ջուր", "ԴՆԹ", "Գլյուկոզ", "Օսլա"], answer: "ԴՆԹ", kind: "Կենսաբանություն" },
+  { q: "Choose the correct form: They ___ already left.", choices: ["has", "have", "had been", "is"], answer: "have", kind: "English" },
+  { q: "Որքա՞ն է 7 × (5 + 3)։", choices: ["35", "45", "56", "63"], answer: "56", kind: "Մաթեմատիկա" },
+  { q: "Ի՞նչ է կոչվում կենդանի օրգանիզմների կառուցվածքային հիմնական միավորը։", choices: ["Հյուսվածք", "Օրգան", "Բջիջ", "Օրգանիզմ"], answer: "Բջիջ", kind: "Կենսաբանություն" },
+  { q: "Choose the opposite of 'generous'.", choices: ["kind", "selfish", "polite", "helpful"], answer: "selfish", kind: "English" },
+  { q: "Որքա՞ն է 5-ի խորանարդը։", choices: ["15", "25", "125", "625"], answer: "125", kind: "Մաթեմատիկա" },
+  { q: "Ո՞ր համակարգն է տեղափոխում թթվածինն ու սննդանյութերը մարդու մարմնում։", choices: ["Արյունատար", "Նյարդային", "Մարսողական", "Շնչառական"], answer: "Արյունատար", kind: "Կենսաբանություն" },
+  { q: "Choose: Neither of the answers ___ correct.", choices: ["are", "were", "is", "have"], answer: "is", kind: "English" },
+  { q: "Որքա՞ն է 18-ի և 24-ի ամենամեծ ընդհանուր բաժանարարը։", choices: ["2", "4", "6", "12"], answer: "6", kind: "Մաթեմատիկա" },
+  { q: "Ո՞ր օրգանոիդներում է տեղի ունենում ֆոտոսինթեզը։", choices: ["Միտոքոնդրիումներում", "Քլորոպլաստներում", "Լիզոսոմներում", "Ռիբոսոմներում"], answer: "Քլորոպլաստներում", kind: "Կենսաբանություն" },
+  { q: "Which word best completes: I am interested ___ biology.", choices: ["at", "with", "in", "on"], answer: "in", kind: "English" },
 ];
 
 function MiniGamesPage() {
+  const [game,setGame]=useState<"quiz"|"truefalse"|"matching">("quiz");
   const tx = useTx();
   const [mode, setMode] = useState<"mixed" | "math" | "english" | "biology">("mixed");
   const [attempt, setAttempt] = useState(0);
   const questions = useMemo(() => {
     const pool = QUESTIONS.filter(q => mode === "mixed" || (mode === "math" ? q.kind === "Մաթեմատիկա" : mode === "english" ? q.kind === "English" : q.kind === "Կենսաբանություն"));
-    return [...pool].sort((a,b) => (a.q.length + attempt * 7) % 13 - (b.q.length + attempt * 7) % 13);
-  }, [mode, attempt]);
+    // A real Fisher–Yates shuffle, with no repeated question within a round.
+    const copy=[...pool];
+    for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j]!,copy[i]!];}
+    return copy;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode,attempt]);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [score, setScore] = useState(0);
@@ -59,23 +77,33 @@ function MiniGamesPage() {
       <div className="flex items-center gap-3"><span className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary"><Gamepad2 className="size-6"/></span><div><p className="text-sm font-bold text-primary">Սովորիր խաղալով</p><h1 className="text-3xl font-black sm:text-4xl">Մինի խաղեր</h1></div></div>
       <p className="mt-4 max-w-2xl text-muted-foreground">Կարճ հարցաշարեր՝ գիտելիքները կրկնելու, արագ մտածելու և միավորներ հավաքելու համար։</p>
     </section>
-    <div className="flex flex-wrap gap-2" aria-label={tx("Խաղի տեսակ")}>
+    <nav aria-label={tx("Խաղի ընտրություն")} className="grid gap-2 rounded-2xl border bg-card p-2 sm:grid-cols-3">
+      {([
+        ["quiz","Արագ վիկտորինա"],
+        ["truefalse","Ճիշտ թե սխալ"],
+        ["matching","Համապատասխանեցում"],
+      ] as const).map(([id,label])=><Button key={id} size="lg" variant={game===id?"default":"ghost"}
+          onClick={()=>{setGame(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);}}>{tx(label)}</Button>)}
+    </nav>
+    <div className="flex flex-wrap gap-2" aria-label={tx("Առարկայի ընտրություն")}>
       {([["mixed","Բոլոր առարկաները"],["math","Մաթեմատիկա"],["english","English"],["biology","Կենսաբանություն"]] as const).map(([id,label]) =>
         <Button key={id} variant={mode === id ? "default" : "outline"} onClick={() => {setMode(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);}}>{tx(label)}</Button>)}
     </div>
-    <section className="mx-auto max-w-2xl rounded-3xl border bg-card p-5 shadow-sm sm:p-8">
-      {finished ? <div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary"/><h2 className="text-2xl font-black">Խաղն ավարտվեց։</h2><p className="text-muted-foreground">Քո արդյունքը՝ {score} / {QUESTIONS.length}</p><Button onClick={restart}><RotateCcw className="mr-2 size-4"/>Կրկին խաղալ</Button></div> : <>
-        <div className="mb-6 flex items-center justify-between gap-3"><span className="rounded-full bg-muted px-3 py-1 text-sm font-bold">{question.kind}</span><span className="text-sm text-muted-foreground">{index + 1} / {QUESTIONS.length}</span></div>
-        <div className="mb-6 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{width: ((index + 1) / QUESTIONS.length * 100) + "%"}}/></div>
+    {game==="truefalse" ? <TrueFalseGame key={mode+"-"+game} subject={mode==="mixed"?"all":mode==="math"?"Մաթեմատիկա":mode==="english"?"English":"Կենսաբանություն"}/>
+      : game==="matching" ? <MatchingGame key={mode+"-"+game} subject={mode==="mixed"?"all":mode==="math"?"Մաթեմատիկա":mode==="english"?"English":"Կենսաբանություն"}/>
+      : <section className="mx-auto max-w-2xl rounded-3xl border bg-card p-5 shadow-sm sm:p-8">
+      {finished ? <div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary"/><h2 className="text-2xl font-black">Խաղն ավարտվեց։</h2><p className="text-muted-foreground">Քո արդյունքը՝ {score} / {questions.length}</p><Button onClick={restart}><RotateCcw className="mr-2 size-4"/>Կրկին խաղալ</Button></div> : <>
+        <div className="mb-6 flex items-center justify-between gap-3"><span className="rounded-full bg-muted px-3 py-1 text-sm font-bold">{question.kind}</span><span className="text-sm text-muted-foreground">{index + 1} / {questions.length}</span></div>
+        <div className="mb-6 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{width: ((index + 1) / questions.length * 100) + "%"}}/></div>
         <h2 className="mb-6 text-xl font-bold leading-relaxed sm:text-2xl">{question.q}</h2>
         <div className="grid gap-3 sm:grid-cols-2">{question.choices.map((choice) => {
           const correct = picked !== null && choice === question.answer;
           const wrong = picked === choice && choice !== question.answer;
           return <button key={choice} type="button" onClick={() => choose(choice)} disabled={picked !== null} className={`min-h-14 rounded-2xl border p-4 text-left font-semibold transition hover:border-primary disabled:cursor-default ${correct ? "border-emerald-500 bg-emerald-500/10" : wrong ? "border-destructive bg-destructive/10" : "bg-background"}`}>{choice}</button>;
         })}</div>
-        {picked !== null && <div className="mt-5 space-y-4"><p className="font-semibold">{picked === question.answer ? "Ճիշտ է։ Լավ աշխատանք։" : `Ճիշտ պատասխանն է՝ ${question.answer}`}</p><Button className="w-full" onClick={next}>{index === QUESTIONS.length - 1 ? "Տեսնել արդյունքը" : "Հաջորդ հարցը"}</Button></div>}
+        {picked !== null && <div className="mt-5 space-y-4"><p className="font-semibold">{picked === question.answer ? "Ճիշտ է։ Լավ աշխատանք։" : `Ճիշտ պատասխանն է՝ ${question.answer}`}</p><Button className="w-full" onClick={next}>{index === questions.length - 1 ? "Տեսնել արդյունքը" : "Հաջորդ հարցը"}</Button></div>}
       </>}
-    </section>
+    </section>}
     <p className="flex items-center justify-center gap-2 text-center text-sm text-muted-foreground"><Brain className="size-4"/><Sparkles className="size-4"/> Ընտրիր առարկան և ստուգիր գիտելիքներդ ընդլայնված հարցաշարով։</p>
   </main>;
 }
