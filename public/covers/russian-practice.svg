@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" role="img" aria-label="РУССКИЙ ЯЗЫК">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#413368"/><stop offset="1" stop-color="#9a5fd6"/></linearGradient></defs>
+<rect width="400" height="540" rx="24" fill="url(#g)"/>
+<circle cx="368" cy="55" r="135" fill="none" stroke="white" stroke-opacity=".14" stroke-width="12"/>
+<circle cx="46" cy="485" r="130" fill="none" stroke="white" stroke-opacity=".15" stroke-width="24"/>
+<text x="35" y="57" font-family="sans-serif" font-size="20" font-weight="700" fill="white">SHTEMARM</text>
+<rect x="35" y="100" width="330" height="1" fill="white" opacity=".4"/>
+<rect x="50" y="155" width="300" height="165" rx="26" fill="white" opacity=".10"/>
+<text x="200" y="256" text-anchor="middle" font-family="sans-serif" font-size="51" fill="white" font-weight="700">А Б В</text>
+<text x="34" y="383" font-family="sans-serif" font-size="30" font-weight="700" fill="white">РУССКИЙ ЯЗЫК</text>
+<text x="34" y="422" font-family="sans-serif" font-size="20" fill="#fff" opacity=".86">ՈՒՍՈՒՄՆԱԿԱՆ ՀԱՐՑԱՇԱՐ</text>
+<text x="34" y="489" font-family="sans-serif" font-size="18" fill="#fff" opacity=".82">Սկզբնական 12 հարց · 2026</text></svg>
