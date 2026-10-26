@@ -69,6 +69,7 @@ export function AppHeader() {
                 <Link to="/study-tools" onClick={close} className={item}><Timer className="size-4"/>{lang==="ru" ? "Инструменты обучения" : lang==="en" ? "Study tools" : "Ուսումնական գործիքներ"}</Link>
                 <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4"/>{lang==="ru" ? "Учебные игры" : lang==="en" ? "Study games" : "Ուսումնական խաղեր"}</Link>
                 <Link to="/vocabulary" onClick={close} className={item}><Bookmark className="size-4"/>{lang==="ru" ? "Мои слова" : lang==="en" ? "My vocabulary" : "Իմ բառապաշարը"}</Link>
+                <Link to="/flashcards" onClick={close} className={item}><BookOpen className="size-4"/>{lang==="ru" ? "Карточки для повторения" : lang==="en" ? "Flashcards" : "Հիշողության քարտեր"}</Link>
               </div>
               <div className="space-y-1 border-t pt-3">
                 <p className="px-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{lang==="ru"?"Помощь и информация":lang==="en"?"Help and info":"Օգնություն և տեղեկություն"}</p>
