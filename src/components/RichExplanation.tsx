@@ -47,7 +47,7 @@ export function RichExplanation({ text, error = false }: { text: string; error?:
       <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary"><Sparkles className="size-5"/></span>
       <h3 className="text-base font-black">{tx("Բացատրություն · քայլ առ քայլ")}</h3>
     </header>
-    {splitExplanation(text.replace(/\\n/g,"\n")).map((block,i) => {
+    {splitExplanation(text).map((block,i) => {
       if (block.kind === "diagram") {
         const diagram = readDiagram(block.value);
         return diagram ? <MathDiagram key={i} spec={diagram} /> : null;
