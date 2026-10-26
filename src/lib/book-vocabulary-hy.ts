@@ -3545,7 +3545,7 @@ export const BOOK_VOCABULARY_HY: Record<string, string> = {
   "peasant": "գյուղացի",
   "babysitting": "երեխա պահելը",
   "cultivate": "մշակել",
-  "terraced": "աստիճանաձև"
+  "terraced": "աստիճանաձև",
   "ability": "կարողություն",
   "able": "ունակ",
   "absence": "բացակայություն",
