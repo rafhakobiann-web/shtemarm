@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Noto Sans Armenian", "Manrope", system-ui, sans-serif;
-  --font-display: "Noto Sans Armenian", "Unbounded", sans-serif;
-  --font-reading: "Literata", "Noto Serif Armenian", Georgia, serif;
+  --font-sans: "Inter", "Noto Sans Armenian", system-ui, sans-serif;
+  --font-display: "Inter", "Noto Sans Armenian", sans-serif;
+  --font-reading: "Noto Serif Armenian", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -137,7 +137,7 @@
 
   /* Keep Armenian glyphs readable and consistent across the entire interface. */
   :lang(hy), :lang(hy) body, :lang(hy) button, :lang(hy) input, :lang(hy) textarea, :lang(hy) select {
-    font-family: "Noto Sans Armenian", "DejaVu Sans", system-ui, sans-serif;
+    font-family: "Noto Sans Armenian", "Inter", system-ui, sans-serif;
     font-synthesis: none;
   }
   :lang(hy) h1, :lang(hy) h2, :lang(hy) h3, :lang(hy) h4, :lang(hy) .font-display {
@@ -146,7 +146,7 @@
     line-height: 1.35;
   }
   :lang(hy) .passage {
-    font-family: "Noto Serif Armenian", "Noto Sans Armenian", serif;
+    font-family: "Noto Serif Armenian", "Noto Sans Armenian", Georgia, serif;
     line-height: 1.8;
   }
 }
@@ -478,5 +478,59 @@ html.user-high-contrast[data-surface="liquid"] body { background-image: none; }
 @media (prefers-reduced-motion: no-preference) {
   html[data-surface="liquid"] :is(.bg-card, .site-mobile-nav, .glass) {
     transition: background-color 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+  }
+}
+
+
+/* 2026 mobile rendering and Armenian type polish.
+ * Frosted blur only for the few floating shells; hundreds of book/question
+ * cards no longer require a separate GPU backdrop composition pass. */
+html[data-surface="liquid"] .bg-card {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: color-mix(in srgb, var(--card) 91%, transparent);
+}
+html[data-surface="liquid"] .site-header,
+html[data-surface="liquid"] .site-mobile-nav,
+html[data-surface="liquid"] .site-settings-sheet {
+  --glass-blur-amount: 11px;
+}
+html[lang="hy"] {
+  font-synthesis: none;
+  font-kerning: normal;
+}
+html[lang="hy"] h1,
+html[lang="hy"] h2,
+html[lang="hy"] h3,
+html[lang="hy"] .font-display {
+  font-family: "Noto Sans Armenian", "Inter", system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  overflow-wrap: break-word;
+}
+html[lang="hy"] .passage,
+html[lang="hy"] article p {
+  font-family: "Noto Serif Armenian", "Noto Sans Armenian", Georgia, serif;
+  line-height: 1.75;
+}
+html[lang="ru"] {
+  font-family: "Inter", "Noto Sans Armenian", system-ui, sans-serif;
+}
+@media (max-width: 768px) {
+  body { background-attachment: scroll !important; }
+  html[data-surface="liquid"] :is(.glass, .site-header, .site-mobile-nav, .site-settings-sheet) {
+    -webkit-backdrop-filter: blur(8px) saturate(125%);
+    backdrop-filter: blur(8px) saturate(125%);
+  }
+  html[data-surface="liquid"] :is(.bg-card, .glass) {
+    transition-property: border-color, background-color;
+    transition-duration: 140ms;
+  }
+}
+@media (prefers-reduced-motion: reduce), (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] :is(.bg-card, .glass, .site-header, .site-mobile-nav, .site-settings-sheet) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

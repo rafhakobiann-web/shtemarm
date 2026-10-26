@@ -91,7 +91,7 @@ function SubjectRow({ title, children, beta = false }: { title: string; children
   return (
     <div className="space-y-4">
       <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
-      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
+      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-3 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
     </div>
   );
 }
@@ -285,206 +285,74 @@ function ArmenianSubject() {
 }
 
 function Index() {
-  const tx = useTx();
-  const progress = useProgress();
-  const { subject } = Route.useSearch();
-  const [name, setName] = useState<string | null>(null);
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setName((data.user?.user_metadata?.username as string | undefined) ?? null));
-  }, []);
-  if (subject === "english") return <EnglishSubject />;
-  if (subject === "math") return <MathSubject />;
-  if (subject === "history") return <HistorySubject />;
-  if (subject === "biology") return <BiologySubject />;
-  if (subject === "armenian") return <ArmenianSubject />;
+  const tx=useTx();
+  const {subject}=Route.useSearch();
+  if(subject==="english")return <EnglishSubject/>;
+  if(subject==="math")return <MathSubject/>;
+  if(subject==="history")return <HistorySubject/>;
+  if(subject==="biology")return <BiologySubject/>;
+  if(subject==="armenian")return <ArmenianSubject/>;
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-8 py-3 sm:space-y-10 sm:py-6">
-      <section className="relative isolate grid overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 px-5 py-7 text-white shadow-xl sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.6fr)_minmax(240px,0.8fr)] lg:items-end lg:gap-8 lg:px-10">
-        <div aria-hidden="true" className="absolute -right-16 -top-20 -z-10 size-64 rounded-full border-[24px] border-white/5" />
-        <div aria-hidden="true" className="absolute -bottom-24 right-1/4 -z-10 size-64 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="max-w-2xl space-y-4">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold tracking-wide text-cyan-100"><Sparkles className="size-4" /> SHTEMARM · STUDY SMARTER</p>
-          <h1 className="text-3xl font-black leading-tight sm:text-5xl">{tx("Քո հաջորդ քայլը՝ դեպի քննության հաջողություն")}</h1>
-          <p className="max-w-xl text-sm leading-relaxed text-blue-100 sm:text-base">{tx("Գտիր ճիշտ շտեմարանը, սովորիր թեմաներով, անցիր փորձնական քննություններ և հետևիր առաջընթացիդ՝ մեկ հարմար վայրում։")}</p>
-          <div className="flex flex-wrap gap-3 pt-1">
-            <Link to="/" search={{ subject: "english" }} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5"><BookOpen className="size-4" />{tx("Սկսել սովորել")}</Link>
-            <Link to="/mini-games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"><Brain className="size-4" />{tx("Մինի խաղեր")}</Link>
-          </div>
+  const card="group flex min-h-28 items-center gap-4 rounded-3xl border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-muted/30 focus-visible:outline-2 focus-visible:outline-primary";
+  const iconClass="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary";
+  return <main className="mx-auto max-w-7xl space-y-8 py-3 pb-16 sm:space-y-10 sm:py-6">
+    <section className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 p-6 text-white sm:p-10">
+      <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 -z-10 size-64 rounded-full border-[24px] border-white/5"/>
+      <div className="relative max-w-3xl space-y-4">
+        <p className="text-xs font-black tracking-wide text-blue-200">SHTEMARM · STUDY SMARTER</p>
+        <h1 className="text-3xl font-black leading-snug sm:text-5xl">{tx("Սովորիր, փորձիր, առաջադիմիր")}</h1>
+        <p className="max-w-2xl leading-relaxed text-blue-100">{tx("Ընտրիր առարկան, սովորիր թեմաներով և ստուգիր գիտելիքներդ՝ առանց ավելորդ քայլերի։")}</p>
+        <div className="flex flex-wrap gap-2 pt-2">
+          <Link to="/thematic" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 font-bold text-slate-900">
+            <ClipboardCheck className="size-4"/>{tx("Կազմել թեմատիկ աշխատանք")}
+          </Link>
+          <Link to="/mini-games" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2 font-bold text-white">
+            <Brain className="size-4"/>{tx("Ուսումնական խաղեր")}
+          </Link>
         </div>
-        <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:gap-3 lg:mt-0 lg:self-end lg:rounded-2xl lg:border lg:border-white/15 lg:bg-white/5 lg:p-4 lg:backdrop-blur-sm">
-          <div><p className="text-xl font-black sm:text-2xl">9</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
-          <div><p className="text-xl font-black sm:text-2xl">2</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մաթ. գիրք")}</p></div>
-          <div><p className="text-xl font-black sm:text-2xl">24/7</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մուտք")}</p></div>
-        </div>
-      </section>
-      <section className="space-y-8">
-        <div className="space-y-2">
-          <p className="text-lg font-bold text-primary">
-            {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
-          </p>
-          <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
-            </div>
-            <div className="rounded-2xl border bg-card p-4 shadow-sm">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><CheckCircle2 className="size-4 text-success" aria-hidden="true" />{tx("Ճիշտ պատասխաններ")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 1).length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Ընդհանուր պատասխանված հարցերից")}</p>
-            </div>
-            <div className="rounded-2xl border bg-card p-4 shadow-sm">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><RotateCcw className="size-4 text-amber-600" aria-hidden="true" />{tx("Կրկնելու հարցեր")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 0).length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Անհատական առաջարկ")}</p>
-            </div>
-          </div>
-          {Object.values(progress.answers).some((v) => v === 0) && (
-            <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-bold">{tx("Առաջարկ քեզ համար")}</p>
-                <p className="text-sm text-muted-foreground">{tx("Կրկնիր նախկինում սխալ պատասխանած հարցերը, հետո նորից ստուգիր առաջընթացդ։")}</p>
-              </div>
-              <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
-            </div>
-          )}
-          {(() => {
-            const values = Object.values(progress.answers);
-            const right = values.filter((v) => v === 1).length;
-            const wrong = values.filter((v) => v === 0).length;
-            const answered = values.length;
-            const accuracy = answered ? Math.round((right / answered) * 100) : 0;
-            return (
-              <section className="rounded-[1.5rem] border border-border/70 bg-card p-5 shadow-sm sm:p-6 lg:p-7" aria-label={tx("Առաջընթացի վերլուծություն")}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="flex items-center gap-2 text-lg font-black"><Trophy className="size-5 text-primary" />{tx("Առաջընթացի վերլուծություն")}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{tx("Տես՝ ինչն է արդեն լավ ստացվում և ինչն է պետք կրկնել։")}</p>
-                  </div>
-                  <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-black text-primary">{accuracy}% {tx("ճշտություն")}</span>
-                </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-success transition-[width] duration-500" style={{ width: String(accuracy) + "%" }} />
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-success/8 p-4">
-                    <p className="flex items-center gap-2 font-bold text-success"><CheckCircle2 className="size-4" />{tx("Ուժեղ կողմեր")}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{answered ? tx("Դու արդեն ճիշտ ես պատասխանել {n} հարցի։ Շարունակի՛ր պահպանել այս արդյունքը։", { n: right }) : tx("Երբ սկսես լուծել հարցեր, այստեղ կերևան ճիշտ պատասխաններդ և ձեռք բերած հմտությունները։")}</p>
-                  </div>
-                  <div className="rounded-2xl bg-amber-500/8 p-4">
-                    <p className="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-300"><RotateCcw className="size-4" />{tx("Կրկնելու կարիք ունեն")}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{wrong ? tx("Կա {n} սխալ պատասխան․ կրկնիր այդ հարցերը և փորձիր նորից։", { n: wrong }) : tx("Առայժմ սխալ պատասխաններ չկան։ Նոր թեստեր լուծիր՝ բացերը բացահայտելու համար։")}</p>
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">{tx("Վերլուծությունը հիմնված է պահված պատասխանների վրա և դեռ չի դասակարգում առանձին թեմաները։")}</p>
-              </section>
-            );
-          })()}
-          <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
-        </div>
-
-        <SubjectRow title={tx("Անգլերեն")}>
-          {BOOKS.map((b) => (
-            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
-            </Link>
-          ))}
-        </SubjectRow>
-
-        <SubjectRow title={tx("Մաթեմատիկա")}>
-          {MATH_BOOKS.map((b) => (
-            <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
-              <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
-            </Link>
-          ))}
-        </SubjectRow>
-
-        <SubjectRow title={tx("Հայոց պատմություն")}>
-          {HISTORY_BOOKS.map((h) => (
-            <Link key={h.id} to="/book/$bookId" params={{ bookId: String(h.id) }} className={TILE}>
-              <TileBody cover={h.cover} title={h.title} sub={h.sub} />
-            </Link>
-          ))}
-        </SubjectRow>
-
-        <SubjectRow title={tx("Հայոց լեզու և հայ գրականություն")} beta>
-          <Link to="/" search={{ subject: "armenian" }} className={TILE}><TileBody title={tx("Հայոց լեզու · Թեստեր")} sub={tx("Հարցաշար և պաշտոնական նմուշներ")} /></Link>
-          {ARMENIAN_BOOKS.map((b) => <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}><TileBody cover={b.cover} title={b.title} sub={b.sub} /></Link>)}
-        </SubjectRow>
-        <SubjectRow title={tx("Կենսաբանություն")} beta>
-          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary sm:aspect-[3/4]"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
-          {BIO_BOOKS.map((b) =>
-            b.locked ? (
-              <div key={b.id} aria-disabled="true" className={`${TILE} cursor-not-allowed opacity-60`}>
-                <TileBody cover={b.cover} title={b.title} sub={b.sub} />
-                <p className="px-4 pb-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Շուտով")}</p>
-              </div>
-            ) : (
-              <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
-                <TileBody cover={b.cover} title={b.title} sub={b.sub} />
-              </Link>
-            ),
-          )}
-        </SubjectRow>
-        <SubjectRow title={tx("Ֆիզիկա · Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta>
-          {STARTER_SUBJECT_BOOKS.map((b) => {
-            const subject = ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number, string>)[b.id]!;
-            return (
-              <Link key={b.id} to="/subject/$subject" params={{ subject }} className={TILE}>
-                <TileBody cover={b.cover} title={tx(b.title)} sub={tx("Ուսումնական 12 հարց · ԳԹԿ 2027 ուղեցույց")} />
-              </Link>
-            );
-          })}
-        </SubjectRow>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">{tx("Կենսաբանություն · Թեստեր")}</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/biology" title={tx("Կենսաբանություն · Կազմել թեստ")} sub={tx("Բաժիններ, հարցատեսակներ, ժամաչափ և առաջադրանքների քանակ")} icon={<Dna className="size-5" />} />
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
-          <ExamTile
-            to="/exam/$subject" params={{ subject: "english" }}
-            title={tx("Քննություն")}
-            sub={tx("Անգլերեն · 13 բաժին · 80 միավոր")}
-            icon={<Trophy className="size-5" />}
-          />
-          <ExamTile
-            to="/exam/$subject" params={{ subject: "english" }}
-            title={tx("Անգլերեն · Կազմել թեստ")}
-            sub={tx("Ընտրիր բաժինները և քանակը")}
-            icon={<ClipboardCheck className="size-5" />}
-          />
-          <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
-          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
-          {STARTER_SUBJECT_BOOKS.map((b) => (
-            <ExamTile key={b.id} to="/subject/$subject"
-              params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[b.id]! }}
-              title={tx(b.title)} sub={tx("Ուսումնական հարցեր և ԳԹԿ-ի 2027 ուղեցույց")}
-              icon={<BookOpen className="size-5" />} />
-          ))}
-        </div>
-      </section>
-      <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
-        <div>
-          <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{tx("Սխալ գտե՞ր, ունե՞ս գաղափար։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:shadow-md"><MessageCircle className="size-4" aria-hidden="true" />{tx("Գրել մեզ")}</Link>
-          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Calculator className="size-4" aria-hidden="true" />{tx("Բացել հաշվիչը")}</Link>
-        </div>
-      </section>
-    </div>
-  );
+      </div>
+    </section>
+    <section className="space-y-4" aria-label={tx("Առարկաներ")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-2xl font-black">{tx("Ընտրիր առարկան")}</h2>
+        <p className="text-sm text-muted-foreground">{tx("Գրքերը, թեմաներն ու թեստերը՝ ըստ առարկաների")}</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Link to="/" search={{subject:"english"}} className={card}><span className={iconClass}><BookOpen className="size-6"/></span><span className="font-bold">{tx("Անգլերեն")}</span></Link>
+        <Link to="/" search={{subject:"math"}} className={card}><span className={iconClass}><Calculator className="size-6"/></span><span className="font-bold">{tx("Մաթեմատիկա")}</span></Link>
+        <Link to="/" search={{subject:"history"}} className={card}><span className={iconClass}><BookOpen className="size-6"/></span><span className="font-bold">{tx("Հայոց պատմություն")}</span></Link>
+        <Link to="/" search={{subject:"armenian"}} className={card}><span className={iconClass}><BookOpen className="size-6"/></span><span className="font-bold">{tx("Հայոց լեզու և հայ գրականություն")}</span></Link>
+        <Link to="/" search={{subject:"biology"}} className={card}><span className={iconClass}><Dna className="size-6"/></span><span className="font-bold">{tx("Կենսաբանություն")}</span></Link>
+        {STARTER_SUBJECT_BOOKS.map(b=><Link key={b.id} to="/subject/$subject"
+          params={{subject:({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[b.id]!}}
+          className={card}>
+          <span className={iconClass}><BookOpen className="size-6"/></span>
+          <span className="min-w-0"><strong className="block">{tx(b.title)}</strong>
+            <span className="mt-1 block text-xs text-muted-foreground">{tx("Ուսումնական հարցաշար")}</span></span>
+        </Link>)}
+      </div>
+    </section>
+    <section className="space-y-4" aria-label={tx("Ուսումնական գործիքներ")}>
+      <h2 className="text-2xl font-black">{tx("Սովորելու և ստուգելու գործիքներ")}</h2>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Link to="/thematic" className={card}><span className={iconClass}><ClipboardCheck className="size-6"/></span><span className="font-bold">{tx("Թեմատիկ և ամփոփիչ աշխատանքներ")}</span></Link>
+        <Link to="/level-test/$level" params={{level:"placement"}} className={card}><span className={iconClass}><GraduationCap className="size-6"/></span><span className="font-bold">{tx("Անգլերենի մակարդակի ստուգում")}</span></Link>
+        <Link to="/mini-games" className={card}><span className={iconClass}><Brain className="size-6"/></span><span className="font-bold">{tx("Ուսումնական խաղեր")}</span></Link>
+        <Link to="/study-tools" className={card}><span className={iconClass}><Sparkles className="size-6"/></span><span className="font-bold">{tx("Կենտրոնացում և առաջընթաց")}</span></Link>
+        <Link to="/flashcards" className={card}><span className={iconClass}><BookOpen className="size-6"/></span><span className="font-bold">{tx("Հիշողության քարտեր")}</span></Link>
+      </div>
+    </section>
+    <section className="space-y-4" aria-label={tx("Քննություն")}>
+      <h2 className="text-2xl font-black">{tx("Փորձնական քննություններ")}</h2>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ExamTile to="/exam/$subject" params={{subject:"english"}} title={tx("Անգլերեն")} sub={tx("Շտեմարանային քննություն")} icon={<BookOpen className="size-5"/>}/>
+        <ExamTile to="/math" title={tx("Մաթեմատիկա")} sub={tx("65 հարցանոց փորձնական թեստ")} icon={<Calculator className="size-5"/>}/>
+        <ExamTile to="/history" title={tx("Հայոց պատմություն")} sub={tx("Ընտրովի քննություն")} icon={<Trophy className="size-5"/>}/>
+        <ExamTile to="/biology" title={tx("Կենսաբանություն")} sub={tx("Քննություն և թեմատիկ հարցեր")} icon={<Dna className="size-5"/>}/>
+      </div>
+    </section>
+    <p className="border-t pt-4 text-center text-sm text-muted-foreground">
+      {tx("Սխա՞լ ես նկատել կամ առաջարկ ունես։")} <Link to="/feedback" className="font-bold text-primary underline underline-offset-2">{tx("Գրիր մեզ")}</Link>
+    </p>
+  </main>;
 }
-

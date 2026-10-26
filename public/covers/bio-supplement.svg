@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" role="img" aria-label="Կենսաբանություն․ թեմատիկ վարժություններ">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#064e3b"/><stop offset="1" stop-color="#059669"/></linearGradient></defs><rect width="400" height="540" rx="24" fill="url(#g)"/>
+<circle cx="300" cy="130" r="110" fill="none" stroke="#ffffff" stroke-width="10" opacity=".13"/><circle cx="300" cy="130" r="70" fill="none" stroke="#ffffff" stroke-width="6" opacity=".23"/>
+<text x="34" y="62" font-family="sans-serif" font-size="20" font-weight="700" fill="#fff">SHTEMARM</text>
+<text x="34" y="260" font-family="sans-serif" font-size="26" font-weight="700" fill="#fff">ԿԵՆՍԱԲԱՆՈՒԹՅՈՒՆ</text>
+<text x="34" y="306" font-family="sans-serif" font-size="22" fill="#dcfce7">ԹԵՄԱՏԻԿ ՎԱՐԺՈՒԹՅՈՒՆՆԵՐ</text>
+<rect x="34" y="355" width="180" height="45" rx="16" fill="#fff" fill-opacity=".15"/>
+<text x="54" y="383" font-family="sans-serif" font-size="20" fill="#fff">48 հարց</text>
+<text x="34" y="475" font-family="sans-serif" font-size="17" fill="#dcfce7">Հեղինակային ուսումնական նյութ</text></svg>

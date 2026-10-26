@@ -28,6 +28,16 @@ const copy = {
     reset: "Վերականգնել լռելյայնը", close: "Փակել", subtitle: "Անհատականացրու քո ուսումնական միջավայրը",
     small: "Փոքր", normal: "Սովորական", large: "Մեծ", extraLarge: "Շատ մեծ", on: "Միացված", off: "Անջատված",
   },
+  ru: {
+    accessibility: "Доступность", settings: "Настройки", textSize: "Размер текста", contrast: "Высокая контрастность",
+    motion: "Уменьшить анимации", dock: "Расположение кнопок", left: "Слева", right: "Справа", appearance: "Внешний вид",
+    language: "Язык", accent: "Акцентный цвет", theme: "Цветовой режим", light: "Светлая", dark: "Тёмная", system: "Системная",
+    themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классическая", soft: "Мягкая",
+    glassStrength: "Степень прозрачности", subtle: "Низкая", balanced: "Умеренная", vivid: "Высокая",
+    blur: "Размытие фона", glassHelp: "При необходимости уменьшите прозрачность для лучшей читаемости и скорости.",
+    reset: "Сбросить", close: "Закрыть", subtitle: "Настройте сайт под себя",
+    small: "Мелкий", normal: "Стандартный", large: "Крупный", extraLarge: "Очень крупный", on: "Включено", off: "Выключено",
+  },
   en: {
     accessibility: "Accessibility", settings: "Settings", textSize: "Text size", contrast: "High contrast",
     motion: "Reduce animations", dock: "Floating buttons position", left: "Left", right: "Right", appearance: "Appearance",
@@ -62,7 +72,6 @@ export function PersonalizationControls() {
   const lang = useLang();
   const t = copy[lang];
   const [prefs, setPrefs] = useState<Preferences>(defaults);
-  const [accessOpen, setAccessOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const appearance = useAppearance();
 
@@ -86,21 +95,20 @@ export function PersonalizationControls() {
   return (
     <>
       <div className={`fixed ${floatingSide} bottom-24 z-40 flex flex-col gap-2 sm:bottom-6`}>
-        <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
-          <Accessibility className="size-5" />
-        </Button>
         <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.settings} title={t.settings} onClick={() => setSettingsOpen(true)}>
           <Settings2 className="size-5" />
         </Button>
       </div>
 
-      {accessOpen && (
-        <section aria-label={t.accessibility} className={`fixed ${floatingSide} bottom-52 z-40 w-[min(21rem,calc(100vw-2rem))] sm:bottom-32 rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-xl animate-pop`}>
-          <div className="mb-4 flex items-center gap-2">
-            <Accessibility className="size-5 text-primary" />
-            <h2 className="font-display font-black">{t.accessibility}</h2>
-            <button type="button" className="ml-auto rounded-lg px-2 py-1 text-sm text-muted-foreground hover:bg-muted" onClick={() => setAccessOpen(false)}>{t.close}</button>
-          </div>
+
+      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <SheetContent side="right" className="site-settings-sheet flex w-[min(26rem,96vw)] flex-col gap-6 overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2 font-display text-xl font-black"><MonitorCog className="size-5 text-primary" />{t.settings}</SheetTitle>
+            <SheetDescription>{t.subtitle}</SheetDescription>
+          </SheetHeader>
+          <section className="space-y-3 rounded-2xl border p-4">
+            <h3 className="flex items-center gap-2 text-sm font-black"><Accessibility className="size-4 text-primary"/>{t.accessibility}</h3>
           <div className="space-y-5">
             <div>
               <div className="mb-2 flex items-center justify-between gap-2"><label className="flex items-center gap-2 text-sm font-semibold"><Type className="size-4" />{t.textSize}</label><span className="text-xs font-bold tabular-nums text-muted-foreground">{prefs.textScale}%</span></div>
@@ -117,15 +125,7 @@ export function PersonalizationControls() {
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <SheetContent side="right" className="site-settings-sheet flex w-[min(26rem,96vw)] flex-col gap-6 overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2 font-display text-xl font-black"><MonitorCog className="size-5 text-primary" />{t.settings}</SheetTitle>
-            <SheetDescription>{t.subtitle}</SheetDescription>
-          </SheetHeader>
+          </section>
           <section className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.appearance}</h3>
             <fieldset className="space-y-2">
@@ -205,9 +205,10 @@ export function PersonalizationControls() {
           </section>
           <section className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.language}</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <Button type="button" variant={lang === "hy" ? "default" : "outline"} aria-pressed={lang === "hy"} onClick={() => changeLanguage("hy")}>Հայերեն</Button>
               <Button type="button" variant={lang === "en" ? "default" : "outline"} aria-pressed={lang === "en"} onClick={() => changeLanguage("en")}>English</Button>
+              <Button type="button" variant={lang === "ru" ? "default" : "outline"} aria-pressed={lang === "ru"} onClick={() => changeLanguage("ru")}>Русский</Button>
             </div>
             <p className="text-xs text-muted-foreground">{lang === "en" ? "Some subject content remains in its original language." : "Որոշ առարկայական նյութեր մնում են սկզբնական լեզվով։"}</p>
           </section>
