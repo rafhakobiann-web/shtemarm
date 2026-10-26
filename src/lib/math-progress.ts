@@ -92,6 +92,22 @@ export function isRight(answer: string, value: string) {
   const a = normalizeNumber(answer);
   const v = normalizeNumber(value);
   if (a === v) return true;
+
+  // Multi-select statement answers (e.g. "1,3,5") are sets, not sequences.
+  // Accept any order, but reject repeated selections such as "1,3,3,5".
+  const answerParts = a.split(",").map((part) => part.trim());
+  const valueParts = v.split(",").map((part) => part.trim());
+  if (answerParts.length > 1 && valueParts.length > 1) {
+    const isValidSet = (parts: string[]) =>
+      parts.every((part) => part !== "") &&
+      new Set(parts).size === parts.length &&
+      parts.every((part) => Number.isFinite(Number(part)));
+    if (isValidSet(answerParts) && isValidSet(valueParts)) {
+      return answerParts.length === valueParts.length &&
+        [...answerParts].sort().every((part, i) => part === [...valueParts].sort()[i]);
+    }
+  }
+
   const na = Number(a);
   const nv = Number(v);
   return a !== "" && v !== "" && !Number.isNaN(na) && !Number.isNaN(nv) && Math.abs(na - nv) < 1e-9;
