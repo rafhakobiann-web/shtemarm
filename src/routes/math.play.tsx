@@ -237,7 +237,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
 
 function PlayPage() {
   const q = useIndex();
-  const { progress, setAnswer, addExam } = useMathProgress();
+  const { progress, setAnswer, clearAnswers, addExam } = useMathProgress();
   const tx = useTx();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
 
@@ -362,8 +362,11 @@ function PlayPage() {
             {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
           </p>
           <Button className="w-full" onClick={() => {
-            setIndex(0); setLives(LIVES); setStreak(0);
-            setRound(section.items);
+            clearAnswers(section.items.map((item) => item.id));
+            setIndex(0);
+            setLives(LIVES);
+            setStreak(0);
+            setRound(shuffle(section.items));
           }}>{tx("Նորից")}</Button>
         </section>
       ) : (
