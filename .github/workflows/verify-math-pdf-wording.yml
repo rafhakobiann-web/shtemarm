@@ -1,0 +1,36 @@
+name: Verify Mathematics task wording from source PDFs
+
+on:
+  pull_request:
+    paths:
+      - 'public/math/books/matem-1.pdf'
+      - 'public/math/books/matem-2.pdf'
+      - 'public/data/math-books-index.json'
+      - 'public/data/math-transcriptions/**'
+      - 'scripts/verify-math-pdf-wording.py'
+      - '.github/workflows/verify-math-pdf-wording.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pdf-wording-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the pinned PDF text layer inspector
+        run: python -m pip install pymupdf==1.26.5
+      - name: Verify both source PDFs and check task requirements against pages
+        run: python scripts/verify-math-pdf-wording.py
+      - name: Upload items needing manual page-by-page visual comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathematics-pdf-source-audit
+          path: public/data/math-pdf-source-audit.json
+          if-no-files-found: ignore
