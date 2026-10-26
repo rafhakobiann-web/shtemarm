@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathDemandReference } from "@/components/MathDemandReference";
 import { MathContent } from "@/components/MathText";
 import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -236,7 +237,9 @@ function PlayPage() {
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
-            {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
+            <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
+            <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
+        {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
             <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}

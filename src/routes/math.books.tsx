@@ -3,6 +3,7 @@ import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathDemandReference } from "@/components/MathDemandReference";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
@@ -153,6 +154,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   return (
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <MathDemandReference bookId={bookId} segments={task.segments} />
       <div className="space-y-2">
         {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <MathQuestionText question={task.questions[i]!} />}{(!task.questions?.[i]?.prompt) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
@@ -171,6 +173,9 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                 task={`Առաջադրանք ${task.task}, հարց ${n}`}
                 correct={correct}
                 chosen={chosenValue}
+                question={task.questions?.[i]?.prompt}
+                options={task.questions?.[i]?.options}
+                nativeSource={!!task.questions?.[i]?.transcription}
               />
             );
           };
