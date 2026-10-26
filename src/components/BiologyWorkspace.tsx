@@ -17,10 +17,13 @@ const fieldClass = "h-12 w-full rounded-xl border bg-background px-3 text-sm";
 type Attempt = { units: Unit[]; title: string; minutes: number; practice: boolean };
 
 async function loadBiologyEntries(): Promise<HistoryEntry[]> {
-  const [first, second] = await Promise.all([loadBook(31), loadBook(32)]);
+  const [first, second, supplement] = await Promise.all([loadBook(31), loadBook(32), loadBook(35)]);
   return [
     ...historyBookEntries(first, 1),
     ...historyBookEntries(second, 2),
+    ...historyBookEntries(supplement, 35).map(entry => ({
+      ...entry, section: entry.section.replace(/^Գիրք 35 · /, "Լրացուցիչ վարժություններ · "),
+    })),
   ];
 }
 
@@ -28,7 +31,7 @@ async function loadBiologyEntries(): Promise<HistoryEntry[]> {
 export function BiologyWorkspace() {
   const tx = useTx();
   const data = useQuery({
-    queryKey: ["biology-configurable-pool-v1"],
+    queryKey: ["biology-configurable-pool-v2"],
     queryFn: loadBiologyEntries,
     staleTime: Infinity,
   });
@@ -63,7 +66,7 @@ export function BiologyWorkspace() {
             ...p,
             exams: [...p.exams, {
               date: new Date().toISOString(),
-              book: source === "book-2" ? 32 : 31,
+              book: source === "book-35" ? 35 : source === "book-2" ? 32 : 31,
               score,
               total,
             }].slice(-50),
@@ -78,7 +81,7 @@ export function BiologyWorkspace() {
         subject={tx("Կենսաբանություն")}
         title={tx("Կենսաբանություն · Քննությունների կազմիչ")}
         description={tx("Ընտրիր շտեմարանները, բաժինները, հարցերի քանակն ու տեսակները, ժամանակն ու ռեժիմը։ Ավարտելուց հետո վերանայիր պատասխանները։")}
-        sources={tx("2 շտեմարան")}
+        sources={tx("2 շտեմարան և թեմատիկ լրացուցիչ վարժություններ")}
         available={data.data?.length}
         icon={<Dna className="size-5" />}
       />
@@ -96,6 +99,7 @@ export function BiologyWorkspace() {
               <option value="all">{tx("Երկու շտեմարանները միասին")}</option>
               <option value="book-1">{tx("Շտեմարան 1")}</option>
               <option value="book-2">{tx("Շտեմարան 2")}</option>
+              <option value="book-35">{tx("Լրացուցիչ թեմատիկ վարժություններ · 48 հարց")}</option>
             </select>
           </label>
           {data.isPending ? <p role="status">{tx("Հարցերը բեռնվում են…")}</p> : data.isError ? (
@@ -197,6 +201,10 @@ export function BiologyWorkspace() {
                 {tx("Շտեմարան {n} · բոլոր բաժինները", { n })}
               </Link>
             ))}
+            <Link to="/book/$bookId" params={{ bookId: "35" }}
+              className="block rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm font-semibold hover:bg-emerald-500/10">
+              {tx("Լրացուցիչ թեմատիկ վարժություններ · 48 հարց")}
+            </Link>
             <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բնօրինակները նշված են պաշտոնական աղբյուրների արխիվում։ Դրանց հարցերը դեռ չեն ներմուծվել կայք։")}</p>
             <a className="block text-xs font-semibold text-primary underline" href="https://test.am/pdf.php?page=111" target="_blank" rel="noopener noreferrer">
               {tx("ԳԹԿ-ի 4 մասերի արխիվ")}
