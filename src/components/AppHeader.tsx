@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
+import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,18 +16,14 @@ export function AppHeader() {
   const t = useT();
   const lang = useLang();
   const [email, setEmail] = useState<string | null>(null);
-  const [theme, setTheme] = useState<Theme>("light");
+  const appearance = useAppearance();
+  const [hydrated, setHydrated] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setTheme(readTheme());
     initLang();
+    setHydrated(true);
   }, []);
-  const setThemeMode = (next: Theme) => {
-    setTheme(next);
-    applyTheme(next);
-    saveTheme(next);
-  };
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
@@ -38,7 +34,7 @@ export function AppHeader() {
   const item = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-muted";
 
   return (
-    <header className="sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
+    <header className="site-header sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
@@ -48,8 +44,8 @@ export function AppHeader() {
           <div className="flex items-center gap-1.5" title={t.darkMode}>
             <Sun className="size-4 text-sun" aria-hidden />
             <Switch
-              checked={theme === "dark"}
-              onCheckedChange={(v) => setThemeMode(v ? "dark" : "light")}
+              checked={hydrated && resolvedTheme(appearance) === "dark"}
+              onCheckedChange={(v) => setAppearance({ mode: v ? "dark" : "light" })}
               aria-label={t.darkMode}
             />
             <Moon className="size-4 text-muted-foreground" aria-hidden />
