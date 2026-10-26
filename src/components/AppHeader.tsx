@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { initLang, setLang, useLang, useT, type Lang } from "@/lib/lang";
 
-const LANG_NAMES: Record<Lang, string> = { hy: "Հայերեն", en: "English" };
+const LANG_NAMES: Record<Lang, string> = { hy: "Հայերեն", en: "English", ru: "Русский" };
 
 export function AppHeader() {
   const p = useProgress();
@@ -100,18 +100,18 @@ export function AppHeader() {
 
               <div className="space-y-1">
                 <Link to="/changelog" onClick={close} className={item}>
-                  <History className="size-4" />{lang === "en" ? "Changelog" : "Փոփոխությունների մատյան"}
+                  <History className="size-4" />{lang === "hy" ? "Փոփոխությունների մատյան" : lang === "ru" ? "История изменений" : "Changelog"}
                 </Link>
                 <Link to="/about" onClick={close} className={item}>
                   <Info className="size-4" />{t.about}
                 </Link>
                 <Link to="/vocabulary" onClick={close} className={item}>
-                  <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : "Իմ բառապաշարը"}
+                  <Bookmark className="size-4" />{lang === "hy" ? "Իմ բառապաշարը" : lang === "ru" ? "Мой словарь" : "My vocabulary"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />Ուսումնական գործիքներ / Focus mode
                 </Link>
-                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />Մինի խաղեր</Link>
+                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "hy" ? "Մինի խաղեր" : lang === "ru" ? "Мини-игры" : "Mini-games"}</Link>
                 <Link to="/chat" onClick={close} className={item}>
                   <MessageSquare className="size-4" />{t.chat}
                 </Link>
@@ -127,8 +127,8 @@ export function AppHeader() {
                 <p className="flex items-center gap-2 px-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   <Languages className="size-4" />{t.language}
                 </p>
-                <div className="grid grid-cols-2 gap-2" role="group" aria-label={t.language}>
-                  {(["hy", "en"] as const).map((l) => (
+                <div className="grid grid-cols-3 gap-2" role="group" aria-label={t.language}>
+                  {(["hy", "en", "ru"] as const).map((l) => (
                     <Button
                       key={l}
                       variant={lang === l ? "default" : "outline"}
