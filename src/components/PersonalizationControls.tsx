@@ -95,7 +95,7 @@ export function PersonalizationControls() {
       </div>
 
       {accessOpen && (
-        <section aria-label={t.accessibility} className={`fixed ${floatingSide} bottom-52 z-40 w-[min(21rem,calc(100vw-2rem))] sm:bottom-32` rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-xl animate-pop`}>
+        <section aria-label={t.accessibility} className={`fixed ${floatingSide} bottom-52 z-40 w-[min(21rem,calc(100vw-2rem))] sm:bottom-32 rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-xl animate-pop`}>
           <div className="mb-4 flex items-center gap-2">
             <Accessibility className="size-5 text-primary" />
             <h2 className="font-display font-black">{t.accessibility}</h2>
