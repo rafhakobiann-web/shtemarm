@@ -15,11 +15,12 @@ const kindOrder: Unit["kind"][] = ["mc", "set", "seq", "match", "num"];
 const field = "h-12 w-full min-w-0 rounded-xl border bg-background px-3 text-sm";
 
 export function WorkbookExamWorkspace({
-  subject, initialBook, initialSection,
+  subject, initialBook, initialSection, initialMode,
 }: {
   subject: WorkbookSubject;
   initialBook?: number | undefined;
   initialSection?: number | undefined;
+  initialMode?: "full" | "custom" | undefined;
 }) {
   const tx = useTx();
   const english = subject === "english";
@@ -30,7 +31,7 @@ export function WorkbookExamWorkspace({
     staleTime: Infinity,
   });
   const [source, setSource] = useState(initialBook && english && [1, 2, 3].includes(initialBook) ? String(initialBook) : "all");
-  const [mode, setMode] = useState<"full" | "custom">("custom");
+  const [mode, setMode] = useState<"full" | "custom">(initialMode ?? "custom");
   const [sections, setSections] = useState<string[] | null>(initialSection ? null : []);
   const [kinds, setKinds] = useState<Unit["kind"][]>(kindOrder);
   const [count, setCount] = useState(20);
