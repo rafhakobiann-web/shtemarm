@@ -8,6 +8,9 @@
 - [x] Thorough explanations
 - [x] Section 7 split: texts, dialogues, part Բ
 - [x] Questions in book order
+- [x] Fix generated-test ordering to preserve original book and question order
+- [x] Keep progress updates working when browser storage fails; remote sync failures no longer interrupt local state
+- [ ] Run the scoring/order regression tests and confirm a production build after the Vercel build-rate limit clears
 - [ ] Current priority: direct Gemini explanations with durable cache; verify saved key (never promise unlimited usage)
 - [ ] Current priority: 2026 English exam blueprint, one passage with exactly 10 questions, selection and scoring regression tests
 - [ ] Current priority: English question/answer integrity audit and study/test bug fixes
