@@ -251,9 +251,11 @@ function BiologySubject() {
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {playable.map((b) => (
-            <ExamTile key={b.id} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "custom", style: "classic" }} title={tx("{part} · Թեստ", { part: b.sub })} sub={tx("Կազմիր թեստ տվյալ շտեմարանի հարցերից")} icon={<Dna className="size-5" />} />
+            <ExamTile key={`custom-${b.id}`} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "custom", style: "classic" }} title={tx("{part} · Թեմատիկ թեստ", { part: b.sub })} sub={tx("Կազմիր թեստ տվյալ շտեմարանի հարցերից")} icon={<Dna className="size-5" />} />
           ))}
-          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Փորձնական քննություն")} sub={tx("80 հարց՝ հասանելի կենսաբանության շտեմարանից, 3 ժամ")} icon={<Trophy className="size-5" />} />
+          {playable.map((b) => (
+            <ExamTile key={`exam-${b.id}`} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "exam", style: "classic" }} title={tx("{part} · Փորձնական քննություն", { part: b.sub })} sub={tx("80 հարց միայն այս գրքի հարցաշարից · 3 ժամ")} icon={<Trophy className="size-5" />} />
+          ))}
         </div>
       </section>
       <section className="space-y-4">
