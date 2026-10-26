@@ -162,10 +162,31 @@ function pickItems(items: ExamItem[], points: number): ExamItem[] {
 }
 
 function ordered(book: Book, items: ExamItem[]): ExamItem[] {
-  const positions = new Map<Unit, number>();
+  const unitPositions = new Map<string, number>();
+  const questionPositions = new Map<string, number>();
   let position = 0;
-  for (const section of book.sections) for (const unit of section.units) positions.set(unit, position++);
-  return [...items].sort((a, b) => (positions.get(a.unit) ?? 0) - (positions.get(b.unit) ?? 0));
+  for (const section of book.sections) {
+    for (const unit of section.units) {
+      unitPositions.set(unit.id, position++);
+      if (unit.kind === "mc" || unit.kind === "num") {
+        unit.questions.forEach((question, index) => {
+          questionPositions.set(`${unit.id}-q${question.n}`, index);
+        });
+      }
+    }
+  }
+  const sourceId = (id: string) => {
+    const questionMarker = id.lastIndexOf("-q");
+    return questionMarker > 0 ? id.slice(0, questionMarker) : id;
+  };
+  return [...items].sort((a, b) => {
+    const aSource = sourceId(a.unit.id);
+    const bSource = sourceId(b.unit.id);
+    const byUnit = (unitPositions.get(aSource) ?? Number.MAX_SAFE_INTEGER) -
+      (unitPositions.get(bSource) ?? Number.MAX_SAFE_INTEGER);
+    if (byUnit !== 0) return byUnit;
+    return (questionPositions.get(a.unit.id) ?? 0) - (questionPositions.get(b.unit.id) ?? 0);
+  });
 }
 
 /** Build a custom test with an exact point total from the chosen sections. */
