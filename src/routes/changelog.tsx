@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Bug, CheckCircle2, Clock3, Code2, Languages, Sparkles, Wrench } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, Clock3, Languages, Sparkles, Wrench } from "lucide-react";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/changelog")({
