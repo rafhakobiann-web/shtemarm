@@ -160,7 +160,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
               : "border-stone-300 hover:bg-muted"}`}
           >
             <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : `${c})`}</span>
-            <span className="font-medium">{tx(label)}</span>
+            <span className="min-w-0 flex-1 break-words font-medium"><MathContent text={tx(label)}/></span>
           </button>
         );
       })}
