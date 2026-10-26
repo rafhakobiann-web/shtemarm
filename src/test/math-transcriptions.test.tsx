@@ -6,6 +6,41 @@ import { NativeMathText } from "@/components/MathQuestionText";
 import { MATH_SOURCE_PLOTS } from "@/components/MathSourceDiagram";
 import fs from "node:fs";
 
+describe("Math Book 2 Section 3 stale PR #49 conflict regression", () => {
+  it("preserves all six questions added by the old branch in the current larger bank", () => {
+    const bank = JSON.parse(fs.readFileSync("public/data/math-text-questions.json", "utf8"));
+    const section = bank["matem-2"]?.["1-3"];
+    expect(section).toBeTruthy();
+
+    // task -> zero-based subquestion index. These were null on PR #49's
+    // old base, and resolving the conflict must never erase them or overwrite
+    // the thousands of newer transcriptions already present on main.
+    const positions = [
+      [4, 2],
+      [5, 3],
+      [21, 1],
+      [23, 3],
+      [24, 3],
+      [32, 2],
+    ] as const;
+    for (const [task, index] of positions) {
+      const question = section[String(task)]?.[index];
+      expect(question?.prompt?.trim(), `matem-2 / 1-3 / ${task} / ${index + 1}`).toBeTruthy();
+      expect(question?.options, `matem-2 / 1-3 / ${task} / ${index + 1}`).toHaveLength(4);
+      expect(question?.options.every((option: string) => option.trim().length > 0)).toBe(true);
+    }
+  });
+
+  it("retains the complete Math bank instead of replacing it with a stale 199 KB version", () => {
+    const raw = fs.readFileSync("public/data/math-text-questions.json", "utf8");
+    const bank = JSON.parse(raw);
+    expect(Buffer.byteLength(raw, "utf8")).toBeGreaterThan(1_000_000);
+    expect(bank["matem-1"]).toBeTruthy();
+    expect(bank["matem-2"]).toBeTruthy();
+    expect(raw).not.toMatch(/^<{7}|^={7}$|^>{7}/m);
+  });
+});
+
 describe("complete math transcriptions", () => {
   it("keeps chapter-2 answers typed even when every answer is 1–4", () => {
     expect(isOpenTask({ answer_type: "open", answers: ["1","2","3","4"] })).toBe(true);
