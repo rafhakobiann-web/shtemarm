@@ -47,6 +47,19 @@ export function useMathProgress() {
     });
   }, []);
 
+  const clearAnswers = useCallback((ids: string[]) => {
+    if (!ids.length) return;
+    const remove = new Set(ids);
+    setProgress((prev) => {
+      const answers = Object.fromEntries(
+        Object.entries(prev.answers).filter(([id]) => !remove.has(id)),
+      );
+      const next = { ...prev, answers };
+      write(next);
+      return next;
+    });
+  }, []);
+
   const addExam = useCallback((correct: number, total: number) => {
     setProgress((prev) => {
       const next = {
@@ -58,7 +71,7 @@ export function useMathProgress() {
     });
   }, []);
 
-  return { progress, setAnswer, addExam };
+  return { progress, setAnswer, clearAnswers, addExam };
 }
 
 /** Option answers: "1".."4" (choice), "T"/"F" (true/false). Anything else is a short answer. */
