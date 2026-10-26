@@ -1,3 +1,4 @@
+import { getDictionaryTranslation } from "./local-word-translation";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { translationKey, TRANSLATION_LANGUAGES, type TranslationLanguage } from "./translation";
@@ -15,6 +16,10 @@ const Input = z.object({
 export const translateEnglish = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
+    if (data.kind === "word") {
+      const local = getDictionaryTranslation(data.text, data.language);
+      if (local) return { text: local, error: false, cached: false };
+    }
     // Public learning content only; this privileged cache contains no account data.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const key = await translationKey(data);
@@ -77,3 +82,4 @@ export const translateEnglish = createServerFn({ method: "POST" })
       return { text: "Թարգմանությունը հասանելի չէ․ ստուգիր կապը և կրկին փորձիր։", error: true, cached: false };
     }
   });
+
