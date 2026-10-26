@@ -6,7 +6,7 @@ import { useTx } from "@/lib/lang";
 import { translateEnglish } from "@/lib/translate.functions";
 import { englishTokens, TRANSLATION_LANGUAGES, type TranslationInput, type TranslationLanguage } from "@/lib/translation";
 import { addVocabularyEntry } from "@/lib/vocabulary";
-import { getDictionaryTranslation } from "@/lib/word-dictionary";
+import { getDictionaryTranslation } from "@/lib/local-word-translation";
 
 const TranslationContext = createContext<((word: string, context: string) => void) | null>(null);
 const CACHE_PREFIX = "shtemarm-word-translation-v2:";
@@ -43,7 +43,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     setSaved(false);
     const cached = readCached(word, language);
     const dictionaryMeaning = getDictionaryTranslation(word, language);
-    const savedMeaning = cached ?? dictionaryMeaning;
+    const savedMeaning = dictionaryMeaning ?? cached;
     setResult({ word, context, text: savedMeaning ?? "", loading: !savedMeaning, error: false });
     if (savedMeaning) {
       if (!cached && dictionaryMeaning) saveCached(word, language, dictionaryMeaning);
@@ -65,7 +65,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     setSaved(false);
     const cached = readCached(result.word, next);
     const dictionaryMeaning = getDictionaryTranslation(result.word, next);
-    const savedMeaning = cached ?? dictionaryMeaning;
+    const savedMeaning = dictionaryMeaning ?? cached;
     if (savedMeaning) {
       if (!cached && dictionaryMeaning) saveCached(result.word, next, dictionaryMeaning);
       setResult({ ...result, text: savedMeaning, loading: false, error: false });
@@ -129,3 +129,4 @@ export function PassageTranslation({ text }: { text: string }) {
     {visible && result && <div role={result.error ? "alert" : "status"} lang={result.error ? undefined : "hy"} className="whitespace-pre-line rounded-lg border-l-4 border-primary bg-secondary/50 p-4 text-sm leading-relaxed">{result.error ? tx(result.text) : result.text}</div>}
   </div>;
 }
+
