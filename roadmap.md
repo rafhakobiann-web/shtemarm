@@ -16,6 +16,7 @@
 - [x] Show original book-page crops when math question transcription is missing
 - [x] Distinguish custom-test errors from 65-question exam-generation errors
 - [x] Add math answer-scoring and source-bank integrity regression tests
+- [x] Add automated CI checks for unit tests, math validation, bank audit, and production build
 - [x] Audit math prompt coverage across both transcription batches
 - [ ] Run the new math regression tests and math-bank audit; confirm production build when CI/build limits permit
 - [ ] Run the scoring/order regression tests and confirm a production build after the Vercel build-rate limit clears
