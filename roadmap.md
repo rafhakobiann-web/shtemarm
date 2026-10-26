@@ -13,6 +13,7 @@
 - [x] Load both math transcription batches in the 65-question exam builder
 - [x] Accept reordered math multi-select answers and reject duplicate selections
 - [x] Fix math-game replay by clearing prior answers for the replayed section
+- [x] Make the three-life math game end correctly and review the last missed answer
 - [x] Show original book-page crops when math question transcription is missing
 - [x] Distinguish custom-test errors from 65-question exam-generation errors
 - [x] Add math answer-scoring and source-bank integrity regression tests
