@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, RotateCcw, Trophy } from "lucide-react";
-import { ENGLISH_LEVELS, LEVEL_TEST_QUESTIONS, getLevel, selectLevelQuestions, type LevelQuestion } from "@/lib/levelTests";
+import { ENGLISH_LEVELS, getLevel, selectLevelQuestions, selectPlacementQuestions, LEVEL_TEST_LENGTH, PLACEMENT_TEST_LENGTH, type LevelQuestion } from "@/lib/levelTests";
+import { OFFICIAL_ENGLISH_PREPARATION } from "@/lib/officialEnglishPreparation";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
-import { Slider } from "@/components/ui/slider";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/level-test/$level")({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/level-test/$level")({
       { title: `Անգլերենի ${params.level.toUpperCase()} թեստ · Shtemarm` },
       { name: "description", content: "Ստուգիր անգլերենի գիտելիքներդ A1–C1 մակարդակների ուսումնական թեստերով։" },
       { property: "og:title", content: `Shtemarm · Անգլերենի ${params.level.toUpperCase()} թեստ` },
-      { property: "og:description", content: "Ընտրիր հարցերի քանակը և ստուգիր անգլերենի գիտելիքներդ։" },
+      { property: "og:description", content: "Անգլերենի հաստատուն քանակով, բազմազան ուսումնական հարցեր և պաշտոնական թեստերի աղբյուրներ։" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,24 +32,14 @@ function LevelTestPage() {
   const levelId = levelParam.toLowerCase();
   const placement = levelId === "placement";
   const level = getLevel(levelId) ?? (placement ? { id: "placement", title: "A1–C1", subtitle: "Placement assessment", description: "Գտիր անգլերենի մոտավոր մակարդակդ" } : undefined);
-  const bank = placement ? Object.values(LEVEL_TEST_QUESTIONS).flat() : LEVEL_TEST_QUESTIONS[levelId] ?? [];
-  const [count, setCount] = useState(placement ? Math.min(20, bank.length) : bank.length);
+  // Count is part of the exam blueprint, not a student-controlled setting.
+  const fixedCount = placement ? PLACEMENT_TEST_LENGTH : LEVEL_TEST_LENGTH;
+  const [attempt, setAttempt] = useState(0);
   const [started, setStarted] = useState(false);
   const questions = useMemo(() => {
-    if (!bank.length || count < 1 || count > bank.length) return [];
-    if (!placement) return selectLevelQuestions(levelId, count);
-    const shuffled = [...bank].sort(() => Math.random() - 0.5);
-    // Spread the placement test across all five levels before filling remaining slots.
-    const selected: LevelQuestion[] = [];
-    const used = new Set<string>();
-    for (const tier of ["a1", "a2", "b1", "b2", "c1"]) {
-      const tierQuestions = (LEVEL_TEST_QUESTIONS[tier] ?? []).sort(() => Math.random() - 0.5);
-      const item = tierQuestions.find((q) => !used.has(q.id));
-      if (item && selected.length < count) { selected.push(item); used.add(item.id); }
-    }
-    for (const item of shuffled) if (selected.length < count && !used.has(item.id)) { selected.push(item); used.add(item.id); }
-    return selected.sort(() => Math.random() - 0.5);
-  }, [levelId, count, placement]);
+    try { return placement ? selectPlacementQuestions() : selectLevelQuestions(levelId); }
+    catch { return []; }
+  }, [levelId, placement, attempt]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const correct = questions.filter((question) => answers[question.id] === question.answerIndex).length;
@@ -72,6 +62,7 @@ function LevelTestPage() {
     setAnswers({});
     setSubmitted(false);
     setStarted(false);
+    setAttempt(value => value + 1);
   };
 
   return (
@@ -92,9 +83,28 @@ function LevelTestPage() {
         <p className="mt-4 max-w-2xl text-sm opacity-90">{placement ? tx("Պատասխանիր տարբեր բարդության հարցերին։ Արդյունքը կտա մոտավոր մակարդակ և ցույց կտա՝ որ հարցերն են դժվար եղել։") : tx("Ընտրիր յուրաքանչյուր հարցի մեկ պատասխան։ Ավարտելուց հետո կտեսնես արդյունքը և ճիշտ պատասխանների բացատրությունները։")}</p>
       </section>
 
-      {!started && <section className="space-y-5 border-y py-6">
-        <div className="flex items-center justify-between"><label htmlFor="level-count" className="font-semibold">{tx("Հարցերի քանակը")}</label><strong>{count} / {bank.length}</strong></div>
-        <Slider id="level-count" aria-label={tx("Հարցերի քանակը")} min={1} max={bank.length} step={1} value={[count]} onValueChange={values => setCount(values[0] ?? bank.length)} />
+      <section className="space-y-3 rounded-3xl border bg-card p-5 sm:p-6" aria-label={tx("Պաշտոնական անգլերենի թեստերի աղբյուրներ")}>
+        <div>
+          <h2 className="text-lg font-black">{tx("Պաշտոնական նմուշներ և պատրաստման նյութեր")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{tx("Հետևյալ հղումները քննությունների կազմակերպիչների պաշտոնական նյութերն են։ Shtemarm-ի ներսի հարցերը նորաստեղծ, նմանատիպ ուսումնական օրինակներ են, ոչ արտոնագրված IELTS կամ Cambridge քննության հարցեր։")}</p>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {OFFICIAL_ENGLISH_PREPARATION.map(source => <a key={source.id} href={source.url}
+            target="_blank" rel="noopener noreferrer"
+            className="flex min-w-0 items-start justify-between gap-3 rounded-2xl border bg-muted/30 p-4 transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-primary">
+            <span className="min-w-0">
+              <span className="block font-bold">{source.name}</span>
+              <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{tx(source.label)}</span>
+            </span>
+            <span aria-hidden="true" className="shrink-0 text-primary">↗</span>
+          </a>)}
+        </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">{tx("IELTS-ի գնահատումը 0–9 սանդղակով է և ուղղակիորեն չի հավասարվում CEFR A1–C1 մակարդակներին։ Լսելը, գրելը և խոսելը այս ընտրովի թեստով չեն գնահատվում։")}</p>
+      </section>
+
+      {!started && <section className="space-y-4 rounded-3xl border bg-card p-5 sm:p-6">
+        <p className="font-semibold">{tx("Թեստի տևողությունը որոշվում է հարցերի հաստատուն քանակով․ {n} հարց։", { n: fixedCount })}</p>
+        <p className="text-sm text-muted-foreground">{tx("Հարցերն ընտրվում են պատահական՝ նույն քանակով, որպեսզի հաջորդ փորձը տարբերվի։ Դրանք Shtemarm-ի հեղինակային ուսումնական հարցեր են։")}</p>
         <Button size="lg" onClick={() => setStarted(true)}>{tx("Սկսել թեստը")}</Button>
       </section>}
 
@@ -110,7 +120,10 @@ function LevelTestPage() {
             <span className="text-2xl font-black text-primary">{Math.round((correct / questions.length) * 100)}%</span>
           </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(correct / questions.length) * 100}%` }} /></div>
-          <p className="mt-3 text-sm text-muted-foreground">{tx("Սա կարճ ուսումնական թեստ է, ոչ թե պաշտոնական մակարդակի հավաստագրում։")}</p>
+          {placement && <p className="mt-3 rounded-xl bg-primary/10 p-3 text-sm font-semibold">
+            {tx("Մոտավոր CEFR մակարդակ")}՝ {placementLevel(questions, answers)}
+          </p>}
+          <p className="mt-3 text-sm text-muted-foreground">{tx("Սա ուսումնական գնահատում է՝ հիմնված միայն ընտրովի և ընթերցանության հարցերի վրա․ ոչ Cambridge English-ի կամ IELTS-ի պաշտոնական գնահատում և ոչ հավաստագիր։")}</p>
           <Button className="mt-4" onClick={resetTest}><RotateCcw className="size-4" /> {tx("Կրկնել թեստը")}</Button>
         </section>
       )}
