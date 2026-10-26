@@ -5,6 +5,7 @@
 ## 🟣 October 26, 2026 — English vocabulary expansion
 - 📚 Added **1,104 English–Armenian dictionary entries** in two commits: 649, then 455.
 - 🧹 Existing dictionary keys were excluded during those additions to reduce duplicates.
+- 🛠️ Fixed a missing comma in the expanded dictionary that caused the Vercel production build to fail; a fresh deployment is still needed to confirm the build passes.
 - 🔎 **Still in progress:** audit all three English books against the dictionary and calculate the exact number of untranslated forms. The new-entry count is not a verified coverage percentage.
 
 ## 🔵 October 25, 2026 — Platform usability and fixes
