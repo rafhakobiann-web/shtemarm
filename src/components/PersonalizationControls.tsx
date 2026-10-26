@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Accessibility, Check, MonitorCog, Settings2, Type } from "lucide-react";
+import { Accessibility, Check, Droplets, Laptop, MonitorCog, Moon, Settings2, Sun, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { applyTheme, readTheme, saveTheme, type Theme } from "@/lib/theme";
+import { resetAppearance, setAppearance, useAppearance, type ColorMode, type SurfaceTheme, type GlassIntensity } from "@/lib/theme";
 import { setLang, useLang, type Lang } from "@/lib/lang";
 
 type Dock = "left" | "right";
@@ -24,14 +24,14 @@ const copy = {
   hy: {
     accessibility: "Մատչելիություն", settings: "Կարգավորումներ", textSize: "Տեքստի չափ", contrast: "Բարձր հակադրություն",
     motion: "Նվազեցնել անիմացիաները", dock: "Կոճակների դիրքը", left: "Ձախ", right: "Աջ", appearance: "Արտաքին տեսք",
-    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Մութ ռեժիմ", light: "Բաց", dark: "Մութ",
+    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Փափուկ", glassStrength: "Ապակու էֆեկտ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
     reset: "Վերականգնել լռելյայնը", close: "Փակել", subtitle: "Անհատականացրու քո ուսումնական միջավայրը",
     small: "Փոքր", normal: "Սովորական", large: "Մեծ", extraLarge: "Շատ մեծ", on: "Միացված", off: "Անջատված",
   },
   en: {
     accessibility: "Accessibility", settings: "Settings", textSize: "Text size", contrast: "High contrast",
     motion: "Reduce animations", dock: "Floating buttons position", left: "Left", right: "Right", appearance: "Appearance",
-    language: "Language", accent: "Accent color", theme: "Dark mode", light: "Light", dark: "Dark",
+    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Soft", glassStrength: "Glass strength", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
     reset: "Reset to defaults", close: "Close", subtitle: "Make your study space feel like yours",
     small: "Small", normal: "Default", large: "Large", extraLarge: "Extra large", on: "On", off: "Off",
   },
@@ -64,14 +64,12 @@ export function PersonalizationControls() {
   const [prefs, setPrefs] = useState<Preferences>(defaults);
   const [accessOpen, setAccessOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>("light");
+  const appearance = useAppearance();
 
   useEffect(() => {
     const next = readPreferences();
     setPrefs(next);
     applyPreferences(next);
-    const currentTheme = readTheme();
-    setTheme(currentTheme);
   }, []);
 
   const update = (patch: Partial<Preferences>) => {
@@ -82,17 +80,12 @@ export function PersonalizationControls() {
       return next;
     });
   };
-  const changeTheme = (next: Theme) => {
-    setTheme(next);
-    applyTheme(next);
-    saveTheme(next);
-  };
   const changeLanguage = (next: Lang) => setLang(next);
   const floatingSide = prefs.dock === "left" ? "left-4" : "right-4";
 
   return (
     <>
-      <div className={`fixed ${floatingSide} bottom-4 z-40 flex flex-col gap-2 sm:bottom-6`}>
+      <div className={`fixed ${floatingSide} bottom-24 z-40 flex flex-col gap-2 sm:bottom-6`}>
         <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
           <Accessibility className="size-5" />
         </Button>
@@ -102,7 +95,7 @@ export function PersonalizationControls() {
       </div>
 
       {accessOpen && (
-        <section aria-label={t.accessibility} className={`fixed ${floatingSide} bottom-32 z-40 w-[min(21rem,calc(100vw-2rem))] rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-xl animate-pop`}>
+        <section aria-label={t.accessibility} className={`fixed ${floatingSide} bottom-52 z-40 w-[min(21rem,calc(100vw-2rem))] sm:bottom-32 rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-xl animate-pop`}>
           <div className="mb-4 flex items-center gap-2">
             <Accessibility className="size-5 text-primary" />
             <h2 className="font-display font-black">{t.accessibility}</h2>
@@ -128,20 +121,77 @@ export function PersonalizationControls() {
       )}
 
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <SheetContent side="right" className="flex w-[min(24rem,94vw)] flex-col gap-6 overflow-y-auto">
+        <SheetContent side="right" className="site-settings-sheet flex w-[min(26rem,96vw)] flex-col gap-6 overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 font-display text-xl font-black"><MonitorCog className="size-5 text-primary" />{t.settings}</SheetTitle>
             <SheetDescription>{t.subtitle}</SheetDescription>
           </SheetHeader>
           <section className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.appearance}</h3>
-            <div className="flex items-center justify-between rounded-xl border p-3">
-              <span className="text-sm font-semibold">{t.theme}</span>
-              <div className="flex gap-2">
-                <Button type="button" size="sm" variant={theme === "light" ? "default" : "outline"} onClick={() => changeTheme("light")}>{t.light}</Button>
-                <Button type="button" size="sm" variant={theme === "dark" ? "default" : "outline"} onClick={() => changeTheme("dark")}>{t.dark}</Button>
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-semibold">{t.themes}</legend>
+              <div className="grid grid-cols-3 gap-2">
+                {(["classic", "soft", "liquid"] as SurfaceTheme[]).map((surface) => (
+                  <button key={surface} type="button" aria-pressed={appearance.surface === surface}
+                    onClick={() => setAppearance({ surface })}
+                    className={"group rounded-2xl border-2 p-1.5 text-left transition-colors " +
+                      (appearance.surface === surface ? "border-primary bg-primary/5" : "border-border hover:border-primary/50")}>
+                    <span aria-hidden="true" className={"relative block h-16 overflow-hidden rounded-xl " +
+                      (surface === "classic" ? "bg-slate-100" : surface === "soft" ? "bg-amber-50" : "bg-gradient-to-br from-sky-200 via-indigo-100 to-rose-100")}>
+                      <span className={"absolute left-2 right-2 top-2 h-3 rounded-lg " +
+                        (surface === "liquid" ? "border border-white/80 bg-white/50 shadow-sm backdrop-blur" : "bg-white")} />
+                      <span className={"absolute bottom-2 left-2 h-8 w-[45%] rounded-lg " +
+                        (surface === "classic" ? "bg-white shadow" : surface === "soft" ? "bg-white/95" : "border border-white/80 bg-white/50 shadow-md backdrop-blur")} />
+                      <span className={"absolute bottom-2 right-2 h-8 w-[35%] rounded-lg " +
+                        (surface === "liquid" ? "border border-white/80 bg-white/50 shadow-md backdrop-blur" : "bg-white/90")} />
+                    </span>
+                    <span className="mt-2 flex items-center justify-center gap-1 text-xs font-bold">
+                      {t[surface]}
+                      {appearance.surface === surface && <Check className="size-3.5 shrink-0 text-primary" />}
+                    </span>
+                  </button>
+                ))}
               </div>
-            </div>
+            </fieldset>
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-semibold">{t.theme}</legend>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  ["system", t.system, Laptop],
+                  ["light", t.light, Sun],
+                  ["dark", t.dark, Moon],
+                ] as const).map(([mode, label, Icon]) => (
+                  <Button type="button" key={mode} size="sm"
+                    className="min-w-0 gap-1 px-2 text-xs"
+                    aria-pressed={appearance.mode === mode}
+                    variant={appearance.mode === mode ? "default" : "outline"}
+                    onClick={() => setAppearance({ mode: mode as ColorMode })}>
+                    <Icon className="size-3.5" />{label}
+                  </Button>
+                ))}
+              </div>
+            </fieldset>
+            {appearance.surface === "liquid" && (
+              <section className="space-y-3 rounded-2xl border bg-muted/40 p-3">
+                <h4 className="flex items-center gap-2 text-sm font-bold">
+                  <Droplets className="size-4 text-primary" />{t.glassStrength}
+                </h4>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(["subtle", "balanced", "vivid"] as GlassIntensity[]).map((glass) => (
+                    <Button type="button" key={glass} size="sm"
+                      className="min-w-0 px-1 text-[11px]"
+                      variant={appearance.glass === glass ? "default" : "outline"}
+                      aria-pressed={appearance.glass === glass}
+                      onClick={() => setAppearance({ glass })}>{t[glass]}</Button>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="theme-blur" className="text-sm font-semibold">{t.blur}</label>
+                  <Switch id="theme-blur" checked={appearance.blur} onCheckedChange={(blur) => setAppearance({ blur })} />
+                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground">{t.glassHelp}</p>
+              </section>
+            )}
             <div className="rounded-xl border p-3">
               <p className="mb-3 text-sm font-semibold">{t.accent}</p>
               <div className="grid grid-cols-6 gap-2">
@@ -165,7 +215,7 @@ export function PersonalizationControls() {
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{lang === "en" ? "Accessibility" : "Մատչելիություն"}</h3>
             <Button type="button" variant="outline" className="w-full" onClick={() => { setSettingsOpen(false); setAccessOpen(true); }}><Accessibility className="mr-2 size-4" />{t.accessibility}</Button>
           </section>
-          <Button type="button" variant="outline" className="mt-auto w-full" onClick={() => { update(defaults); changeTheme("light"); setLang("hy"); }}>{t.reset}</Button>
+          <Button type="button" variant="outline" className="mt-auto w-full" onClick={() => { update(defaults); resetAppearance(); setLang("hy"); }}>{t.reset}</Button>
         </SheetContent>
       </Sheet>
     </>

@@ -19,7 +19,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { pullAndMerge } from "@/lib/progress";
 import { TranslationProvider } from "@/components/EnglishText";
-import { THEME_INIT_SCRIPT } from "@/lib/theme";
+import { THEME_INIT_SCRIPT, initAppearance } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -126,6 +126,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    return initAppearance();
+  }, []);
   useEffect(() => {
     pullAndMerge();
     const { data } = supabase.auth.onAuthStateChange((event) => {
