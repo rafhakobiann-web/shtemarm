@@ -1,0 +1,23 @@
+{
+  "subject": "Կենսաբանություն",
+  "referenceYear": 2019,
+  "sourceArchive": "https://test.am/pdf.php?page=111",
+  "formatGuide2027": "https://escs.gov.am/api/assets/53efbc2e-cbb3-41ef-bd52-8d6ea8db1f21",
+  "note": "ԳԹԿ-ի 3-րդ և 4-րդ շտեմարանները ցուցակագրված են, սակայն ամբողջական թվայնացված առաջադրանքները այս repository-ում չկան։ Առանց ստուգված բնօրինակների ու օգտագործման թույլտվության բովանդակություն չենք ներմուծում։",
+  "books": [
+    {
+      "id": 33,
+      "part": 3,
+      "status": "awaiting-verified-source",
+      "verifiedQuestions": 0,
+      "targetFile": "public/data/bio-book3.json"
+    },
+    {
+      "id": 34,
+      "part": 4,
+      "status": "awaiting-verified-source",
+      "verifiedQuestions": 0,
+      "targetFile": "public/data/bio-book4.json"
+    }
+  ]
+}
