@@ -248,7 +248,6 @@ export const WORD_DICTIONARY: Record<string, Meanings> = {
   "important": { hy:"կարևոր",ru:"важный",de:"wichtig",fr:"important",es:"importante",it:"importante",pt:"importante",en:"having great value or significance" },
   "company": { hy:"ընկերություն; ընկերակցություն",ru:"компания",de:"Unternehmen; Gesellschaft",fr:"entreprise; compagnie",es:"empresa; compañía",it:"azienda; compagnia",pt:"empresa; companhia",en:"a business or the state of being with others" },
   "earth": { hy:"Երկիր մոլորակ; հող",ru:"Земля; почва",de:"Erde; Boden",fr:"Terre; sol",es:"Tierra; suelo",it:"Terra; suolo",pt:"Terra; solo",en:"the planet we live on; soil" },
-  "quite": { hy:"բավականին; միանգամայն",ru:"довольно; вполне",de:"ziemlich; ganz",fr:"assez; tout à fait",es:"bastante; completamente",it:"abbastanza; del tutto",pt:"bastante; completamente",en:"to a certain degree or completely" },
 };
 
 export function getDictionaryTranslation(word: string, language: TranslationLanguage): string | null {
