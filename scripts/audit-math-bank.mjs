@@ -6,6 +6,8 @@ const indexPath = path.join(root, "public/data/math-books-index.json");
 const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
 const textQuestionsPath = path.join(root, "public/data/math-text-questions.json");
 const textQuestions = JSON.parse(fs.readFileSync(textQuestionsPath, "utf8"));
+const extraTextQuestionsPath = path.join(root, "public/data/math-text-questions-extra.json");
+const extraTextQuestions = JSON.parse(fs.readFileSync(extraTextQuestionsPath, "utf8"));
 const failures = [];
 const summary = [];
 const sectionSummary = [];
@@ -44,6 +46,7 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
       questionCount += expected;
       const sectionKey = `${section.chapter}-${section.section}`;
       const taskQuestions = textQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? [];
+      const extraTaskQuestions = extraTextQuestions[bookId]?.[sectionKey]?.[String(task.task)] ?? [];
       const answers = task.answers ?? [];
       if (answers.some((answer) => answer === "T" || answer === "F")) trueFalseTasks++;
       else if (answers.some((answer) => typeof answer === "string" && !["1", "2", "3", "4"].includes(answer))) typedTasks++;
@@ -51,7 +54,7 @@ for (const [bookId, book] of Object.entries(index.books ?? {})) {
       for (let sub = 0; sub < expected; sub++) {
         sectionQuestions++;
         // Null means transcription is still missing; retain a verified question from the index if present.
-        const question = taskQuestions[sub] ?? task.questions?.[sub];
+        const question = extraTaskQuestions[sub] ?? taskQuestions[sub] ?? task.questions?.[sub];
         if (typeof question?.prompt === "string" && question.prompt.trim()) {
           textPrompts++;
           sectionTextPrompts++;
