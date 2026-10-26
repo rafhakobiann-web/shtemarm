@@ -16,7 +16,7 @@ export const Route = createFileRoute("/chat")({
   component: ChatPage,
 });
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; failed?: boolean };
 
 import { useKatex, RichText } from "@/components/MathText";
 
@@ -35,15 +35,16 @@ function ChatPage() {
   const send = async (text: string) => {
     const content = text.trim();
     if (!content || loading) return;
-    const next: Msg[] = [...messages, { role: "user", content: content.slice(0, 2000) }];
+    // Keep error messages visible but never send them back as fake assistant context.
+    const next: Msg[] = [...messages.filter(m => !m.failed), { role: "user", content: content.slice(0, 2000) }];
     setMessages(next);
     setInput("");
     setLoading(true);
     try {
       const res = await chatReply({ data: { messages: next.slice(-20) } });
-      setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text }]);
+      setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error }]);
     } catch {
-      setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։") }]);
+      setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
     } finally {
       setLoading(false);
       setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
@@ -78,7 +79,7 @@ function ChatPage() {
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-2", m.role === "user" && "justify-end")}>
             {m.role === "assistant" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Bot className="size-4" /></span>}
-            <p className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.95rem] leading-relaxed", m.role === "user" ? "bg-secondary text-secondary-foreground" : "bg-card border")}>
+            <p className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.95rem] leading-relaxed", m.role === "user" ? "bg-secondary text-secondary-foreground" : m.failed ? "border border-destructive/40 bg-destructive/5 text-foreground" : "bg-card border")}>
               <RichText text={m.content} katex={katex} />
             </p>
             {m.role === "user" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted"><User className="size-4" /></span>}

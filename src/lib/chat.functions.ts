@@ -19,33 +19,23 @@ const SYSTEM = `Դու Shtemarm կայքի օգնականն ես։ Shtemarm-ը �
 const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
 type Msg = { role: "user" | "assistant"; content: string };
 
-async function callOpenAICompatible(url: string, key: string, model: string, messages: Msg[], provider: string) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-      ...(provider === "openrouter" ? { "HTTP-Referer": "https://shtemarm.lovable.app/", "X-Title": "Shtemarm" } : {}),
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "system", content: SYSTEM }, ...messages],
-      temperature: 0.3,
-      max_tokens: 700,
-    }),
-  });
-  if (!res.ok) throw new Error(`${provider} ${res.status}`);
-  const json = (await res.json()) as { choices?: { message?: { content?: string | { text?: string }[] } }[] };
-  const raw = json.choices?.[0]?.message?.content;
-  const answer = typeof raw === "string" ? raw : raw?.map((part) => part.text ?? "").join("") ?? "";
-  const result = clean(answer);
-  if (!result) throw new Error(`${provider} returned an empty response`);
-  return result;
+function promptForConversation(messages: Msg[]) {
+  // Treat client messages as conversation data, never as system instructions.
+  const history = messages.map((m) =>
+    (m.role === "assistant" ? "Ուսուցիչ՝ " : "Աշակերտ՝ ") + m.content
+  ).join("\n\n");
+  return SYSTEM + "\n\nՍտորև զրույցի պատմությունն է. շարունակիր՝ պատասխանելով վերջին հարցին։\n" + history + "\nՈւսուցիչ՝";
 }
-
+async function callGroq(key: string, messages: Msg[]) {
+  const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
+  const result = await generateExplanation(promptForConversation(messages), {groq:key}, [], {preferGroq:true, fast:true});
+  if (!result.ok) throw new Error(errorToUser(result.reason));
+  return clean(result.text);
+}
 async function callOpenRouter(key: string, messages: Msg[]) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
+    signal: AbortSignal.timeout(10000),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-OpenRouter-Title": "Shtemarm" },
     body: JSON.stringify({
       model: "openrouter/free",
@@ -60,23 +50,10 @@ async function callOpenRouter(key: string, messages: Msg[]) {
 }
 
 async function callGemini(key: string, messages: Msg[]) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM }] },
-        contents: messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
-        generationConfig: { temperature: 0.3, maxOutputTokens: 700 },
-      }),
-    },
-  );
-  if (!res.ok) throw new Error(`gemini ${res.status}`);
-  const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const answer = clean(json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "");
-  if (!answer) throw new Error("gemini returned an empty response");
-  return answer;
+  const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
+  const result = await generateExplanation(promptForConversation(messages), {gemini:key}, [], {fast:true});
+  if (!result.ok) throw new Error(errorToUser(result.reason));
+  return clean(result.text);
 }
 
 /** Bounded offline helper: useful for common study intents, honest about its limits. */
@@ -119,6 +96,7 @@ export const chatReply = createServerFn({ method: "POST" })
         run: async () => {
           const res = await fetch("https://api.z.ai/api/paas/v4/chat/completions", {
             method: "POST",
+            signal: AbortSignal.timeout(10000),
             headers: { Authorization: `Bearer ${zAiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
               model: zAiModel,
@@ -136,22 +114,26 @@ export const chatReply = createServerFn({ method: "POST" })
 
     if (providers.length === 0) {
       return {
-        text: "ԱԲ ծառայությունները միացված չեն։ Այս պահին կարող եք օգտվել շտեմարանների թեստերից և տեղային ուսումնական գործիքներից։",
+        text: "Չատբոտի սերվերում չի հայտնաբերվել GEMINI_API_KEY, GROQ_API_KEY կամ այլ ԱԲ ծառայության բանալի։ Lovable-ի գաղտնի բանալիները պետք է հասանելի լինեն գործող սերվերային ֆունկցիաներին։",
         error: true,
         offline: true,
       };
     }
 
+    const failures: string[] = [];
     for (const provider of providers) {
       try {
         const text = await provider.run();
         if (text) return { text, error: false, provider: provider.name };
-      } catch {
+      } catch (cause) {
+        // Never expose raw provider messages, tokens, or URLs to the browser.
+        const message = cause instanceof Error ? cause.message : "";
+        failures.push(/սահմանաչափ|rate|429/i.test(message) ? "rate" : /բանալ|401|403/i.test(message) ? "key" : "service");
       }
     }
 
     return {
-      text: "ԱԲ մատակարարներն այս պահին հասանելի չեն կամ սահմանաչափը լրացել է։ Փորձեք ավելի ուշ, կամ օգտվեք կայքի սովորական թեստերից և պատասխանների ստուգումից։",
+      text: failures.includes("key") ? "Չատբոտի ԱԲ բանալին մերժվել է։ Ստուգիր սերվերի բանալիների հասանելիությունն ու թույլտվությունները։" : failures.includes("rate") ? "Չատբոտի ԱԲ ծառայության սահմանաչափը լրացել է։ Փորձիր ավելի ուշ։" : "Չատբոտի ԱԲ ծառայությունները չեն արձագանքել։ Փորձիր կրկին կամ ստուգիր սերվերի կարգավորումները։",
       error: true,
       offline: true,
     };

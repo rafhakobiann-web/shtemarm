@@ -23,16 +23,16 @@ export function errorToUser(reason: Exclude<ExplanationResult,{ok:true}>["reason
   }
 }
 
-async function gemini(prompt: string, key: string, images: string[]): Promise<ExplanationResult> {
+async function gemini(prompt: string, key: string, images: string[], fastOnly = false): Promise<ExplanationResult> {
   const parts: Part[] = [{ text: prompt }, ...images.map(image => ({
     inline_data: { mime_type: "image/jpeg" as const, data: image.slice(image.indexOf(",") + 1) },
   }))];
   let reason: Exclude<ExplanationResult,{ok:true}>["reason"] = "unavailable";
-  for (const model of ["gemini-3.5-flash-lite", "gemini-3.8-flash"]) {
+  for (const model of fastOnly ? ["gemini-3.5-flash-lite"] : ["gemini-3.5-flash-lite", "gemini-3.8-flash"]) {
     try {
       const response = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent",
-        { method: "POST", signal: AbortSignal.timeout(18000),
+        { method: "POST", signal: AbortSignal.timeout(model === "gemini-3.5-flash-lite" ? 10000 : 12000),
           headers: { "Content-Type": "application/json", "x-goog-api-key": key },
           body: JSON.stringify({ contents: [{ role: "user", parts }],
             generationConfig: { maxOutputTokens: 1300 } }) },
@@ -54,15 +54,15 @@ async function gemini(prompt: string, key: string, images: string[]): Promise<Ex
   }
   return { ok:false, reason };
 }
-async function groq(prompt: string, key: string): Promise<ExplanationResult> {
+async function groq(prompt: string, key: string, fast = false): Promise<ExplanationResult> {
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method:"POST", signal:AbortSignal.timeout(18000),
+      method:"POST", signal:AbortSignal.timeout(11000),
       headers: { Authorization: "Bearer " + key, "Content-Type":"application/json" },
       body: JSON.stringify({
-        model:"openai/gpt-oss-120b",
+        model:fast ? "openai/gpt-oss-20b" : "openai/gpt-oss-120b",
         messages:[{role:"user",content:prompt}],
-        max_completion_tokens:1400,
+        max_completion_tokens:fast ? 800 : 1600,
         stream:false,
       }),
     });
@@ -80,22 +80,33 @@ async function groq(prompt: string, key: string): Promise<ExplanationResult> {
  * Only Gemini currently supports source page images in this implementation.
  * For plain text, prefer Gemini Flash-Lite, then Groq as fallback.
  */
+export type GenerationOptions = { preferGroq?: boolean; fast?: boolean };
+/** Prefer a working configured provider instead of trying every model before fallback.
+ * For image questions Gemini alone is used; Groq doesn't process page images here.
+ */
 export async function generateExplanation(
   prompt: string, keys: ProviderKeys, images: string[] = [],
+  options: GenerationOptions = {},
 ): Promise<ExplanationResult> {
-  if (!keys.gemini && !keys.groq) return { ok:false, reason:"no_key" };
-  if (images.length > 0 && !keys.gemini) return { ok:false, reason:"requires_vision" };
-  let failure: Exclude<ExplanationResult,{ok:true}>["reason"] = "unavailable";
+  if (!keys.gemini && !keys.groq) return { ok: false, reason: "no_key" };
+  if (images.length && !keys.gemini) return { ok: false, reason: "requires_vision" };
+  let failure: Extract<ExplanationResult, {ok: false}>["reason"] = "unavailable";
+  if (options.preferGroq && keys.groq && images.length === 0) {
+    const answer = await groq(prompt, keys.groq, options.fast);
+    if (answer.ok) return answer;
+    failure = answer.reason;
+  }
   if (keys.gemini) {
-    const r = await gemini(prompt,keys.gemini,images);
-    if (r.ok) return r;
-    failure = r.reason;
+    // On text, one fast Gemini request is enough before trying Groq;
+    // on visual math, try the more capable Flash only if the lite model fails.
+    const result = await gemini(prompt, keys.gemini, images, options.fast || (!!keys.groq && images.length === 0));
+    if (result.ok) return result;
+    if (failure === "unavailable") failure = result.reason;
   }
-  if (keys.groq && images.length === 0) {
-    const r = await groq(prompt,keys.groq);
-    if (r.ok) return r;
-    // Keep an actionable provider error when both fail; prioritize rate/keys.
-    if (failure === "unavailable" || failure === "no_key") failure = r.reason;
+  if (!options.preferGroq && keys.groq && images.length === 0) {
+    const answer = await groq(prompt, keys.groq, options.fast);
+    if (answer.ok) return answer;
+    if (failure === "unavailable") failure = answer.reason;
   }
-  return { ok:false, reason:failure };
+  return {ok: false, reason: failure};
 }
