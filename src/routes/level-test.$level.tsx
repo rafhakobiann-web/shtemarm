@@ -186,12 +186,15 @@ function LevelTestPage() {
 
 function placementLevel(questions: LevelQuestion[], answers: Record<string, number>) {
   const byLevel = ["a1", "a2", "b1", "b2", "c1"] as const;
-  let estimate = "A1";
+  // Require the student to show basic competence before assigning higher
+  // levels; an isolated lucky answer at C1 cannot override failures at A1.
+  let estimate = "A1 կամ ցածր";
   for (const tier of byLevel) {
     const tierQuestions = questions.filter((q) => q.id.startsWith(`${tier}-`));
-    if (!tierQuestions.length) continue;
+    if (!tierQuestions.length) break;
     const rate = tierQuestions.filter((q) => answers[q.id] === q.answerIndex).length / tierQuestions.length;
-    if (rate >= 0.6) estimate = tier.toUpperCase();
+    if (rate < 0.6) break;
+    estimate = tier.toUpperCase();
   }
   return estimate;
 }
