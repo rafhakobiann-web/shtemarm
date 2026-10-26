@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { MathQuestion, MathTranscriptionRef } from "@/lib/math-bank";
 import { useTx } from "@/lib/lang";
 import { MathSourceDiagram } from "@/components/MathSourceDiagram";
+import { MathContent } from "@/components/MathText";
 
 export type NativeMathBlock = {
   width: number; height: number;
@@ -54,6 +55,6 @@ function TranscribedQuestion({ reference }: { reference: MathTranscriptionRef })
 
 export function MathQuestionText({ question }: { question: Pick<MathQuestion, "prompt" | "transcription"> }) {
   return <div className="min-w-0 rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base">
-    {question.transcription ? <TranscribedQuestion reference={question.transcription} /> : <p className="whitespace-pre-line">{question.prompt}</p>}
+    {question.transcription ? <TranscribedQuestion reference={question.transcription} /> : <p className="whitespace-pre-line"><MathContent text={question.prompt}/></p>}
   </div>;
 }
