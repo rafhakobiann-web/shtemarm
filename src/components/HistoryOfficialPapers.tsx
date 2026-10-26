@@ -21,7 +21,7 @@ export function HistoryOfficialPapers({ subject = "history" }: { subject?: "hist
         </Button>
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        {tx("Քննական նյութերի պաշտոնական էջերն ու հրապարակված թեստերի հղումները։ Նոր նյութերը ստուգվում են ամեն օր։ Չհրապարակված թեստերը չեն ցուցադրվում որպես պատրաստ։")}
+        {tx("Քննական նյութերի պաշտոնական էջերն ու հրապարակված թեստերի հղումները։ Արխիվը թարմացվում է միայն ձեռքով իրականացված ստուգումից հետո։ Չհրապարակված թեստերը չեն ցուցադրվում որպես պատրաստ։")}
       </p>
       {catalog.isPending && <p role="status" className="text-sm">{tx("Բեռնվում է…")}</p>}
       {catalog.isError && (
