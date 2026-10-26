@@ -16,6 +16,7 @@
 - [x] Show original book-page crops when math question transcription is missing
 - [x] Distinguish custom-test errors from 65-question exam-generation errors
 - [x] Add math answer-scoring and source-bank integrity regression tests
+- [x] Add exam-builder tests for exact count, book quotas, deduplication, and custom-test ordering
 - [x] Add automated CI checks for unit tests, math validation, bank audit, and production build
 - [x] Audit math prompt coverage across both transcription batches
 - [ ] Run the new math regression tests and math-bank audit; confirm production build when CI/build limits permit
