@@ -10,7 +10,7 @@ export function MobileNav() {
       <Link to="/" className={base}><House className="size-5" /><span>{tx("Գլխավոր")}</span></Link>
       <Link to="/" search={{ subject: "english" }} className={base}><BookOpen className="size-5" /><span>{tx("Անգլերեն")}</span></Link>
       <Link to="/math" className={base}><Calculator className="size-5" /><span>{tx("Մաթեմատիկա")}</span></Link>
-      <Link to="/history" className={base}><History className="size-5" /><span>{tx("Պատմություն")}</span></Link>
+      <Link to="/history" className={base}><History className="size-5" /><span>{tx("Հայոց պատմություն")}</span></Link>
       <Link to="/mini-games" className={base}><Gamepad2 className="size-5" /><span>{tx("Խաղեր")}</span></Link>
     </nav>
   );
