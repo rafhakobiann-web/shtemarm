@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { initLang, setLang, useLang, useT, type Lang } from "@/lib/lang";
 
-const LANG_NAMES: Record<Lang, string> = { hy: "Հայերեն", en: "English" };
+const LANG_NAMES: Record<Lang, string> = { hy: "Հայերեն", en: "English", ru: "Русский" };
 
 export function AppHeader() {
   const p = useProgress();
@@ -41,7 +41,7 @@ export function AppHeader() {
           <span className="flex min-w-0 items-center gap-2"><span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span><span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span></span>
         </Link>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-3">
-          <div className="flex items-center gap-1.5" title={t.darkMode}>
+          <div className="hidden items-center gap-1.5 sm:flex" title={t.darkMode}>
             <Sun className="size-4 text-sun" aria-hidden />
             <Switch
               checked={hydrated && resolvedTheme(appearance) === "dark"}
@@ -50,11 +50,11 @@ export function AppHeader() {
             />
             <Moon className="size-4 text-muted-foreground" aria-hidden />
           </div>
-          <span className="flex items-center gap-1" title={t.streak}>
+          <span className="hidden items-center gap-1 md:flex" title={t.streak}>
             <Flame className="size-4 text-destructive" />
             {p.streak}
           </span>
-          <span className="flex items-center gap-1" title={t.points}>
+          <span className="hidden items-center gap-1 sm:flex" title={t.points}>
             <Star className="size-4 text-sun" />
             {p.xp}
             <span className="hidden text-muted-foreground md:inline">· {t.level} {level(p.xp)}</span>
@@ -96,18 +96,18 @@ export function AppHeader() {
 
               <div className="space-y-1">
                 <Link to="/changelog" onClick={close} className={item}>
-                  <History className="size-4" />{lang === "en" ? "Changelog" : "Փոփոխությունների մատյան"}
+                  <History className="size-4" />{lang === "en" ? "Changelog" : lang === "ru" ? "История изменений" : "Փոփոխությունների մատյան"}
                 </Link>
                 <Link to="/about" onClick={close} className={item}>
                   <Info className="size-4" />{t.about}
                 </Link>
                 <Link to="/vocabulary" onClick={close} className={item}>
-                  <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : "Իմ բառապաշարը"}
+                  <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : lang === "ru" ? "Мой словарь" : "Իմ բառապաշարը"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
-                  <Timer className="size-4" />Ուսումնական գործիքներ / Focus mode
+                  <Timer className="size-4" />{lang === "en" ? "Study tools / Focus" : lang === "ru" ? "Инструменты / Фокус" : "Ուսումնական գործիքներ / Կենտրոնացում"}
                 </Link>
-                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />Մինի խաղեր</Link>
+                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր"}</Link>
                 <Link to="/chat" onClick={close} className={item}>
                   <MessageSquare className="size-4" />{t.chat}
                 </Link>
@@ -123,8 +123,8 @@ export function AppHeader() {
                 <p className="flex items-center gap-2 px-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   <Languages className="size-4" />{t.language}
                 </p>
-                <div className="grid grid-cols-2 gap-2" role="group" aria-label={t.language}>
-                  {(["hy", "en"] as const).map((l) => (
+                <div className="grid grid-cols-3 gap-2" role="group" aria-label={t.language}>
+                  {(["hy", "en", "ru"] as const).map((l) => (
                     <Button
                       key={l}
                       variant={lang === l ? "default" : "outline"}
