@@ -1,7 +1,7 @@
 export type ExplanationInput = { instruction: string; passage: string; question: string; correct: string; chosen: string | null };
 
 export async function explanationKey(input: ExplanationInput) {
-  const bytes = new TextEncoder().encode(JSON.stringify(["gemini-v2", input.instruction, input.passage, input.question, input.correct, input.chosen]));
+  const bytes = new TextEncoder().encode(JSON.stringify(["rich-explanation-v3", input.instruction, input.passage, input.question, input.correct, input.chosen]));
   const hash = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
 }
