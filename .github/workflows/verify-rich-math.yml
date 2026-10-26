@@ -1,0 +1,34 @@
+name: Verify rich math and explanation quality
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/MathText.tsx'
+      - 'src/components/RichExplanation.tsx'
+      - 'src/components/MathDiagram.tsx'
+      - 'src/components/MathExplain.tsx'
+      - 'src/components/MathQuestionText.tsx'
+      - 'src/components/MathTools.tsx'
+      - 'src/components/UnitCard.tsx'
+      - 'src/lib/explanation.ts'
+      - 'src/lib/explain.functions.ts'
+      - 'src/lib/math-explain.functions.ts'
+      - 'src/routes/math.index.tsx'
+      - 'src/routes/math.play.tsx'
+      - 'src/test/rich-explanations.test.tsx'
+      - '.github/workflows/verify-rich-math.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/rich-explanations.test.tsx src/test/math-transcriptions.test.tsx src/test/scoring.test.ts
+      - run: bun run build
