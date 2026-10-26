@@ -217,7 +217,8 @@ function HistorySubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("70 հարց · Թեստ 1–4")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" search={{ custom: "true" }} title={tx("Անհատական թեստ")} sub={tx("Ընտրիր 3 գրքերից, 8 բաժիններից և հարցերի քանակը")} icon={<ClipboardCheck className="size-5" />} />
+          <ExamTile to="/history" title={tx("Պատրաստի քննություններ")} sub={tx("70 առաջադրանք · Թեստ 1–4")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
     </div>
