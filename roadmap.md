@@ -10,6 +10,12 @@
 - [x] Questions in book order
 - [x] Fix generated-test ordering to preserve original book and question order
 - [x] Keep progress updates working when browser storage fails; remote sync failures no longer interrupt local state
+- [x] Load both math transcription batches in the 65-question exam builder
+- [x] Accept reordered math multi-select answers and reject duplicate selections
+- [x] Fix math-game replay by clearing prior answers for the replayed section
+- [x] Add math answer-scoring and source-bank integrity regression tests
+- [x] Audit math prompt coverage across both transcription batches
+- [ ] Run the new math regression tests and math-bank audit; confirm production build when CI/build limits permit
 - [ ] Run the scoring/order regression tests and confirm a production build after the Vercel build-rate limit clears
 - [ ] Current priority: direct Gemini explanations with durable cache; verify saved key (never promise unlimited usage)
 - [ ] Current priority: 2026 English exam blueprint, one passage with exactly 10 questions, selection and scoring regression tests
