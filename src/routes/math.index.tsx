@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathContent } from "@/components/MathText";
 import { ArrowLeft, Loader2, Timer, RefreshCw, Trophy, ListChecks } from "lucide-react";
 import { useMathProgress, isRight, isOpenTask } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
@@ -376,7 +377,7 @@ function AnswerRow({
                   : "border-border bg-card hover:bg-muted",
                 )}
               >
-                {item.options?.[Number(opt) - 1] ?? tx(text)}
+                <MathContent text={item.options?.[Number(opt) - 1] ?? tx(text)}/>
               </button>
             );
           })}
@@ -402,6 +403,9 @@ function AnswerRow({
           task={tx("Առաջադրանք {task}, հարց {sub}", { task: item.task, sub: item.sub })}
           correct={item.answer}
           chosen={value ?? null}
+          question={item.prompt}
+          options={item.options}
+          nativeSource={!!item.transcription}
         />
       )}
     </div>
