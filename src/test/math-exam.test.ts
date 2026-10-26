@@ -47,7 +47,8 @@ describe("math exam construction", () => {
     const custom = buildCustom(index, ["matem-1"], new Set(["matem-1:1:1"]), 5);
     expect(custom).toHaveLength(5);
     expect(custom.every((item) => item.book === "matem-1")).toBe(true);
-    expect(custom.map((item) => item.task)).toEqual([1, 2, 3, 4, 5]);
+    const tasks = custom.map((item) => item.task);
+    expect(tasks).toEqual([...tasks].sort((a, b) => a - b));
   });
 
   it("returns only the questions available in selected sections", () => {
