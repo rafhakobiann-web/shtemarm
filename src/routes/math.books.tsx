@@ -18,7 +18,7 @@ export const Route = createFileRoute("/math/books")({
 });
 
 type Segment = { page: number; y0: number; y1: number };
-type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[] } | null)[] };
+type BookTask = { task: number; segments: Segment[]; answers: string[] | null; sub_count: number; sub_segments?: Segment[][]; questions?: ({ prompt: string; options: string[]; adapted?: boolean; expected?: string } | null)[] };
 type BookSection = { chapter: number; section: number; title: string; pages: [number, number]; tasks: BookTask[] };
 type BookData = { title: string; sections: BookSection[] };
 type Index = { books: Record<string, BookData> };
@@ -81,7 +81,7 @@ function useIndex() {
       }
       if (textR?.ok) {
         try {
-          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+          const extra = await textR.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[]; adapted?: boolean; expected?: string } | null)[]>>>;
 
         for (const [bookId, sections] of Object.entries(extra)) {
           for (const [sectionId, tasks] of Object.entries(sections)) {
@@ -106,7 +106,7 @@ function useIndex() {
       try {
         const extraResponse = await fetch("/data/math-text-questions-extra.json", { signal: AbortSignal.timeout(4000) });
         if (extraResponse.ok) {
-          const extra = await extraResponse.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[] } | null)[]>>>;
+          const extra = await extraResponse.json() as Record<string, Record<string, Record<string, ({ prompt: string; options: string[]; adapted?: boolean; expected?: string } | null)[]>>>;
           for (const [bookId, sections] of Object.entries(extra)) {
             for (const [sectionId, tasks] of Object.entries(sections)) {
               const [chapter, section] = sectionId.split("-").map(Number);
@@ -221,7 +221,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
       <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className="space-y-2">
-        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base"><p className="font-semibold">{task.questions[i].prompt}</p></div>}{(!task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
+        {Array.from({ length: subs }, (_, i) => (<Fragment key={`sub-${i}`}>{task.questions?.[i]?.prompt && <div className="rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base">{task.questions[i].adapted && <p className="mb-2 text-xs font-bold text-amber-700">{tx("Հեղինակային լրացուցիչ հարց (ոչ գրքի բնօրինակը)")}</p>}<p className="font-semibold">{task.questions[i].prompt}</p></div>}{(task.questions?.[i]?.adapted || !task.questions?.[i]?.prompt || !task.questions?.[i]?.options || task.questions[i].options.length < 4) && <div className="space-y-2"><p className="text-xs text-muted-foreground">{tx("Առաջադրանքի բնօրինակը՝ շտեմարանի էջից")}</p><SourceTaskCrop book={bookId} segments={task.sub_segments?.[i] ?? task.segments} /></div>}{(() => {
           const n = i + 1;
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
