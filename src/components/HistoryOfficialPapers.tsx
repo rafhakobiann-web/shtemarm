@@ -4,18 +4,18 @@ import { Button } from "@/components/ui/button";
 import { loadHistoryOfficialCatalog } from "@/lib/history-official";
 import { useTx } from "@/lib/lang";
 
-export function HistoryOfficialPapers() {
+export function HistoryOfficialPapers({ subject = "history" }: { subject?: "history" | "biology" }) {
   const tx = useTx();
   const catalog = useQuery({
-    queryKey: ["history-official-catalog-v1"],
-    queryFn: loadHistoryOfficialCatalog,
+    queryKey: ["official-catalog-v1", subject],
+    queryFn: () => loadHistoryOfficialCatalog(subject),
     staleTime: 15 * 60 * 1000,
   });
   const papers = catalog.data?.papers ?? [];
   return (
     <section className="space-y-3 rounded-3xl border bg-card p-5" aria-label="Պաշտոնական քննական նյութեր">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-black">{tx("2026 · Քննությունների արխիվ")}</h2>
+        <h2 className="font-black">{tx(subject === "history" ? "Հայոց պատմություն · Քննությունների արխիվ" : "Կենսաբանություն · Քննությունների արխիվ")}</h2>
         <Button size="icon" variant="ghost" onClick={() => void catalog.refetch()} aria-label={tx("Թարմացնել աղբյուրները")}>
           <RefreshCw className="size-4" />
         </Button>
@@ -60,7 +60,7 @@ export function HistoryOfficialPapers() {
         </div>
       ))}
       <p className="text-xs text-muted-foreground">
-        {tx("Արխիվային հղումները կարող են պահանջել մուտք աղբյուրի կայքում։ Նյութերի հրապարակումը և նոր հարցերի ներմուծումը տարբեր գործընթացներ են։")}
+        {tx("Արխիվային հղումները կարող են պահանջել մուտք աղբյուրի կայքում։ Պաշտոնական PDF-ի հրապարակումը ինքնաշխատ չի ավելացնում դրա հարցերը կայքի շտեմարանին։")}
       </p>
       <a href="https://escs.gov.am/articles/news/183" target="_blank" rel="noopener noreferrer"
         className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline">
