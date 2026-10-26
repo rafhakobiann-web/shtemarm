@@ -243,10 +243,8 @@ function BiologySubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {playable.map((b) => (
-            <ExamTile key={b.id} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "custom", style: "classic" }} title={tx("{part} · Թեստ", { part: b.sub })} sub={tx("Կազմիր թեստ տվյալ շտեմարանի հարցերից")} icon={<Dna className="size-5" />} />
-          ))}
-          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Քննություն")} sub={tx("Փորձնական քննություն հասանելի հարցաշարից")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/biology" title={tx("Կենսաբանություն · Անհատական թեստ")} sub={tx("Ընտրիր երկու գրքից, բաժիններից, քանակից և ժամանակից")} icon={<Dna className="size-5" />} />
+          <ExamTile to="/biology" title={tx("Կենսաբանություն · Փորձնական քննություն")} sub={tx("80 առաջադրանքի ընտրություն՝ շտեմարանի հարցերից")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
       <section className="space-y-4">
@@ -437,8 +435,7 @@ function Index() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Կենսաբանություն · Թեստեր")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "custom", style: "classic" }} title={tx("Կենսաբանություն · Մաս 1")} sub={tx("Կազմիր թեստ առաջին գրքի հարցերից")} icon={<Dna className="size-5" />} />
-          <ExamTile to="/test/$bookId" params={{ bookId: "32" }} search={{ mode: "custom", style: "classic" }} title={tx("Կենսաբանություն · Մաս 2")} sub={tx("Կազմիր թեստ երկրորդ գրքի հարցերից")} icon={<Dna className="size-5" />} />
+          <ExamTile to="/biology" title={tx("Կենսաբանություն · Կազմել թեստ")} sub={tx("Բաժիններ, հարցատեսակներ, ժամաչափ և առաջադրանքների քանակ")} icon={<Dna className="size-5" />} />
         </div>
       </section>
 
@@ -461,6 +458,7 @@ function Index() {
           />
           <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
           <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("64 հարց՝ 4 թեմատիկ բաժնից")} icon={<BookOpen className="size-5" />} />
         </div>
       </section>

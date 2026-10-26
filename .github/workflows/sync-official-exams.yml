@@ -1,0 +1,42 @@
+name: Sync official exam archive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: official-exams-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'rafhakobiann-web/shtemarm'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate exam updater
+        run: node --test scripts/sync-official-exams.test.mjs
+      - name: Check official GTC publications
+        run: node scripts/sync-official-exams.mjs
+      - name: Publish updated trusted links
+        run: |
+          if git diff --quiet -- public/data/history-official-catalog.json public/data/biology-official-catalog.json; then
+            echo "No new official documents"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/history-official-catalog.json public/data/biology-official-catalog.json
+          git commit -m "Update official Armenian History and Biology exam links"
+          git push origin HEAD:main

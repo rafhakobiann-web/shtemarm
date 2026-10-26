@@ -44,6 +44,8 @@ function BookPage() {
             <Button variant="game" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
+              ) : id >= 31 && id <= 32 ? (
+                <Link to="/biology"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
                 <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
                   <Trophy /> {tx("Քննություն")}
@@ -51,9 +53,15 @@ function BookPage() {
               )}
             </Button>
             <Button variant="sun" size="lg" asChild>
-              <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
-                <ClipboardCheck /> {tx("Կազմել թեստ")}
-              </Link>
+              {id >= 21 && id <= 23 ? (
+                <Link to="/history"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : id >= 31 && id <= 32 ? (
+                <Link to="/biology"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : (
+                <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
+                  <ClipboardCheck /> {tx("Կազմել թեստ")}
+                </Link>
+              )}
             </Button>
           </div>
         </div>
