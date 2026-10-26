@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, SlidersHorizontal, Trophy, Clock3 } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
 import { HistorySession } from "@/components/HistorySession";
 import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
 import {
@@ -111,54 +112,20 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
     );
   return (
     <div className="mx-auto max-w-6xl space-y-8 pb-12">
-      <header className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-9">
-        <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
-        <p className="mb-3 flex items-center gap-2 text-sm font-bold text-primary">
-          <BookOpen className="size-4" />
-          {tx("Սովորիր քո տեմպով")}
-        </p>
-        <h1 className="text-3xl font-black sm:text-4xl">{tx("Հայոց պատմություն")}</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">
-          {tx(
-            "Ընտրիր բաժինները, կազմիր քո թեստը և վերանայիր սխալները։ Քննության ընթացքում պատասխանները կարող ես փոխել մինչև ավարտելը։",
-          )}
-        </p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          {[
-            [BookOpen, books.data?.length ?? "—", "Երեք գրքերի առաջադրանքներ"],
-            [Trophy, samples.data?.tests.length ?? "—", "Նմուշային թեստեր"],
-            [Clock3, progress.exams.length, "Ավարտված փորձեր"],
-          ].map(([Icon, value, label]) => {
-            const I = Icon as typeof BookOpen;
-            return (
-              <div
-                key={String(label)}
-                className="flex items-center gap-3 rounded-2xl bg-muted/60 p-4"
-              >
-                <I className="size-5 shrink-0 text-primary" />
-                <div>
-                  <p className="text-xl font-black">{String(value)}</p>
-                  <p className="text-xs text-muted-foreground">{tx(String(label))}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </header>
+      <ExamHero
+        subject={tx("Հայոց պատմություն")}
+        title={tx("Հայոց պատմություն · Քննությունների կազմիչ")}
+        description={tx("Ընտրիր շտեմարանները, բաժինները, առաջադրանքների քանակը, ժամանակն ու ռեժիմը։ Ավարտելուց հետո վերանայիր պատասխանները։")}
+        sources={tx("3 շտեմարան · 4 նմուշ")}
+        available={books.data?.length}
+        icon={<BookOpen className="size-5" />}
+      />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <section
           id="history-builder"
-          className="min-w-0 space-y-6 rounded-3xl border bg-card p-5 sm:p-7"
+          className="min-w-0 space-y-6 rounded-3xl border bg-card p-5 shadow-sm sm:p-7"
         >
-          <div>
-            <h2 className="flex items-center gap-2 text-xl font-black">
-              <SlidersHorizontal className="size-5" />
-              {tx("Կազմել անհատական թեստ")}
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {tx("Բոլոր կարգավորումները ընտրում ես դու։")}
-            </p>
-          </div>
+          <ExamBuilderTitle />
           <label className="block space-y-2">
             <span className="text-sm font-bold">{tx("Հարցերի աղբյուր")}</span>
             <select className={field} value={source} onChange={(e) => changeSource(e.target.value)}>

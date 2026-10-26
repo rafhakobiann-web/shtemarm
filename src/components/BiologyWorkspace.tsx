@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Dna, SlidersHorizontal } from "lucide-react";
+import { BookOpen, Dna } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
 import { HistorySession } from "@/components/HistorySession";
 import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
 import { KIND_HY, loadBook, type Unit } from "@/lib/books";
@@ -72,21 +73,17 @@ export function BiologyWorkspace() {
   }
   return (
     <div className="mx-auto max-w-6xl space-y-6 pb-12">
-      <header className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-9">
-        <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-emerald-500/10 blur-3xl" />
-        <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary"><Dna className="size-5" /> Shtemarm</p>
-        <h1 className="text-3xl font-black">{tx("Կենսաբանություն · Քննությունների կազմիչ")}</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">
-          {tx("Ընտրիր գիրքը, բաժինները, հարցերի քանակն ու տեսակները։ Կարող ես լուծել պատահական թեստ կամ ստուգել քեզ ուսուցման ռեժիմում։")}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <span className="rounded-xl bg-muted px-4 py-2">{tx("Հասանելի հարցեր՝ {n}", { n: data.data?.length ?? 0 })}</span>
-          <span className="rounded-xl bg-muted px-4 py-2">{tx("Գրքեր՝ 1 և 2")}</span>
-        </div>
-      </header>
+      <ExamHero
+        subject={tx("Կենսաբանություն")}
+        title={tx("Կենսաբանություն · Քննությունների կազմիչ")}
+        description={tx("Ընտրիր շտեմարանները, բաժինները, հարցերի քանակն ու տեսակները, ժամանակն ու ռեժիմը։ Ավարտելուց հետո վերանայիր պատասխանները։")}
+        sources={tx("2 շտեմարան")}
+        available={data.data?.length}
+        icon={<Dna className="size-5" />}
+      />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="min-w-0 space-y-5 rounded-3xl border bg-card p-5 sm:p-7">
-          <h2 className="flex items-center gap-2 text-xl font-black"><SlidersHorizontal className="size-5" />{tx("Կազմել անհատական թեստ")}</h2>
+          <ExamBuilderTitle />
           <label className="block space-y-2">
             <span className="text-sm font-bold">{tx("Հարցերի աղբյուր")}</span>
             <select className={fieldClass} value={source} onChange={(e) => {

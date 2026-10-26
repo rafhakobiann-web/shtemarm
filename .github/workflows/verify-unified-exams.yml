@@ -1,0 +1,33 @@
+name: Verify unified exam interfaces
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/ExamDesign.tsx'
+      - 'src/components/WorkbookExamWorkspace.tsx'
+      - 'src/components/HistoryWorkspace.tsx'
+      - 'src/components/BiologyWorkspace.tsx'
+      - 'src/lib/workbook-exams.ts'
+      - 'src/routes/exam.$subject.tsx'
+      - 'src/routes/math.index.tsx'
+      - 'src/routes/index.tsx'
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/test/workbook-exams.test.ts'
+      - '.github/workflows/verify-unified-exams.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/workbook-exams.test.ts src/test/history.test.tsx src/test/biology.test.tsx src/test/exam.test.ts src/test/scoring.test.ts
+      - run: bun run build

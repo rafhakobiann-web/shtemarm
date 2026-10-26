@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
 import { ArrowLeft, Loader2, Timer, RefreshCw, Trophy, ListChecks } from "lucide-react";
 import { useMathProgress, isRight, isOpenTask } from "@/lib/math-progress";
 import { Button } from "@/components/ui/button";
+import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
 import { Slider } from "@/components/ui/slider";
 import { z } from "zod";
 import { MathExplain, taskPages } from "@/components/MathExplain";
@@ -220,13 +221,13 @@ function pickSample(index: Index, excluded: Set<string>): Item[] {
   return shuffle(picked);
 }
 /** Items of the chosen sections, grouped by task so a task's sub-questions are picked together. */
-function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[][] {
+function selectedGroups(index: Index, books: string[], keys: Set<string>, kinds: ReadonlySet<Kind>): Item[][] {
   const groups: Item[][] = [];
   for (const bookId of books) {
     for (const sec of index.books[bookId]?.sections ?? []) {
       if (!keys.has(sectionKey(bookId, sec))) continue;
       const byTask = new Map<number, Item[]>();
-      for (const it of sectionItems(bookId, sec)) {
+      for (const it of sectionItems(bookId, sec).filter((item) => kinds.has(item.kind))) {
         if (!byTask.has(it.task)) byTask.set(it.task, []);
         byTask.get(it.task)!.push(it);
       }
@@ -237,9 +238,9 @@ function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[
 }
 
 /** Custom test: whole tasks while they fit, then the first sub-questions of the next task to reach `count` exactly. */
-function buildCustom(index: Index, books: string[], keys: Set<string>, count: number): Item[] {
+function buildCustom(index: Index, books: string[], keys: Set<string>, count: number, kinds: ReadonlySet<Kind>): Item[] {
   const out: Item[] = [];
-  for (const g of shuffle(selectedGroups(index, books, keys))) {
+  for (const g of shuffle(selectedGroups(index, books, keys, kinds))) {
     const room = count - out.length;
     if (room <= 0) break;
     out.push(...g.slice(0, room));
@@ -322,12 +323,14 @@ function AnswerRow({
   value,
   submitted,
   onPick,
+  onCheck,
 }: {
   item: Item;
   n: number;
   value: string | undefined;
   submitted: boolean;
   onPick: (v: string) => void;
+  onCheck?: (() => void) | undefined;
 }) {
   const tx = useTx();
   const answered = value !== undefined && value !== "";
@@ -380,6 +383,11 @@ function AnswerRow({
         </div>
       )}
 
+      {!submitted && onCheck && (
+        <Button variant="outline" size="sm" disabled={!answered} onClick={onCheck}>
+          {tx("Ստուգել պատասխանը")}
+        </Button>
+      )}
       {submitted && (
         <p className={cn("text-sm font-bold", ok ? "text-emerald-700" : "text-red-700")}>
           {ok ? tx("Ճիշտ է ✓") : tx("Ճիշտ պատասխանը՝ {answer}", { answer: answerLabel(item, tx) })}
@@ -411,6 +419,10 @@ function MathPage() {
   const [books, setBooks] = useState<string[]>([...BOOK_IDS]);
   const [keys, setKeys] = useState<Set<string> | null>(null);
   const [count, setCount] = useState(20);
+  const [minutes, setMinutes] = useState(180);
+  const [orderRandom, setOrderRandom] = useState(false);
+  const [kinds, setKinds] = useState<Kind[]>(["choice", "tf", "open"]);
+  const [practice, setPractice] = useState(false);
 
   // Running test
   const [exam, setExam] = useState<Item[] | null>(null);
@@ -418,13 +430,27 @@ function MathPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [startedAt, setStartedAt] = useState<number | null>(null);
   const [timerOn, setTimerOn] = useState(false);
+  const [confirmFinish, setConfirmFinish] = useState(false);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const recorded = useRef(false);
 
   useEffect(() => {
-    if (!timerOn) return;
-    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [timerOn]);
+    if (!timerOn || startedAt === null) return;
+    const tick = () => setSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [timerOn, startedAt]);
+
+  useEffect(() => {
+    if (!exam || submitted || !minutes || seconds < minutes * 60 || recorded.current) return;
+    recorded.current = true;
+    setSubmitted(true);
+    setTimerOn(false);
+    addExam(exam.filter((x) => !!answers[x.id] && isRight(x.answer, answers[x.id])).length, exam.length);
+  }, [exam, submitted, minutes, seconds, answers, addExam]);
 
   // Every section is selected by default.
   const allKeys = useMemo(() => {
@@ -437,8 +463,8 @@ function MathPage() {
 
   const available = useMemo(() => {
     if (!q.data) return 0;
-    return selectedGroups(q.data, books, selectedKeys).reduce((n, g) => n + g.length, 0);
-  }, [q.data, books, selectedKeys]);
+    return selectedGroups(q.data, books, selectedKeys, new Set(kinds)).reduce((n, g) => n + g.length, 0);
+  }, [q.data, books, selectedKeys, kinds]);
   const maxCount = Math.max(1, Math.min(100, available));
   const shownCount = Math.min(count, maxCount);
 
@@ -448,22 +474,30 @@ function MathPage() {
 
   function begin(items: Item[]) {
     setExamError(null);
-    setExam(items);
+    setExam(orderRandom ? shuffle(items) : items);
     setAnswers({});
+    setChecked({});
     setSubmitted(false);
+    setConfirmFinish(false);
+    recorded.current = false;
     setSeconds(0);
+    setStartedAt(Date.now());
     setTimerOn(true);
   }
 
   function start() {
     setExamError(null);
+    if (!Number.isInteger(minutes) || minutes < 0 || minutes > 300) {
+      setExamError(tx("Ժամանակը պետք է լինի 0-ից 300 ամբողջ րոպե։"));
+      return;
+    }
     try {
       if (mode === "exam") {
         const picked = pickSample(index, readLast());
         writeLast(picked.map((p) => p.id));
         begin(picked);
       } else {
-        const picked = buildCustom(index, books, selectedKeys, shownCount);
+        const picked = buildCustom(index, books, selectedKeys, shownCount, new Set(kinds));
         if (picked.length !== shownCount) {
           setExamError(tx("Ընտրված բաժիններում բավարար պատասխանելի հարցեր չկան։ Փոխիր բաժինները կամ հարցերի քանակը։"));
           return;
@@ -476,8 +510,10 @@ function MathPage() {
   }
 
   function finish() {
-    if (!exam) return;
+    if (!exam || recorded.current) return;
+    recorded.current = true;
     setSubmitted(true);
+    setConfirmFinish(false);
     setTimerOn(false);
     addExam(exam.filter(correctOf).length, exam.length);
   }
@@ -486,6 +522,7 @@ function MathPage() {
   const correct = exam ? exam.filter(correctOf).length : 0;
   const answeredCount = exam ? exam.filter((x) => answers[x.id] !== undefined && answers[x.id] !== "").length : 0;
   const numbers = new Map((exam ?? []).map((it, i) => [it.id, i + 1]));
+  const displaySeconds = minutes ? Math.max(0, minutes * 60 - seconds) : seconds;
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
@@ -498,7 +535,15 @@ function MathPage() {
 
       {!exam ? (
         <>
-          <h1 className="text-2xl font-black sm:text-3xl">{tx("Մաթեմատիկայի թեստ")}</h1>
+          <ExamHero
+            subject={tx("Մաթեմատիկա")}
+            title={tx("Մաթեմատիկա · Քննությունների կազմիչ")}
+            description={tx("Երկու շտեմարաններից ընտրիր 65 հարցանոց փորձնական քննություն կամ կազմիր անհատական թեստ։ Ընտրիր բաժինները, ժամանակը և հերթականությունը։")}
+            sources={tx("2 շտեմարան")}
+            available={BOOK_IDS.reduce((total, id) => total + (index.books[id]?.sections ?? []).reduce((sum, sec) => sum + sectionItems(id, sec).length, 0), 0)}
+            icon={<Trophy className="size-5" />}
+          />
+          <ExamBuilderTitle />
           {examError && <p role="alert" className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-medium text-destructive">{examError}</p>}
           {progress.exams[0] && (
             <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
@@ -529,7 +574,7 @@ function MathPage() {
 
           <p className="rounded-xl border bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">{tx("Առաջադրանքների բնօրինակ էջերը ցուցադրվում են անմիջապես յուրաքանչյուր հարցի հետ․ այլևս պետք չէ առանձին PDF գիրք բացել։")}</p>
 
-          <div className="shadow-card space-y-5 rounded-2xl border bg-card p-5">
+          <div className="space-y-5 rounded-3xl border bg-card p-5 shadow-sm sm:p-7">
             {mode === "exam" ? (
               <p className="text-sm leading-relaxed">
                 {tx("{n} հարց՝ պատահական ընտրված երկու մաթեմատիկայի շտեմարաններից։ Սա փորձնական թեստ է, ոչ թե հաստատված պաշտոնական քննության կառուցվածքի պատճեն։", { n: EXAM_SIZE })}
@@ -604,6 +649,23 @@ function MathPage() {
                   ))}
                 </div>
 
+                <fieldset className="space-y-2">
+                  <legend className="text-sm font-bold">{tx("Առաջադրանքի տեսակները")}</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {([
+                      ["choice", "Ընտրովի պատասխանով"],
+                      ["tf", "Ճիշտ կամ սխալ"],
+                      ["open", "Կարճ թվային պատասխանով"],
+                    ] as const).map(([kind, label]) => (
+                      <label key={kind} className="flex items-center gap-2 rounded-xl border p-3 text-sm">
+                        <input type="checkbox" className="size-4 accent-primary" checked={kinds.includes(kind)}
+                          onChange={(e) => setKinds((old) => e.target.checked
+                            ? [...old, kind] : old.filter((value) => value !== kind))} />
+                        {tx(label)}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
                 <div className="space-y-3">
                   <p className="text-sm font-semibold">
                     {tx("Հարցերի քանակը՝ {n}", { n: shownCount })} <span className="font-normal text-muted-foreground">· {tx("հասանելի է՝ {n}", { n: available })}</span>
@@ -628,12 +690,39 @@ function MathPage() {
               </>
             )}
 
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-2">
+                <span className="text-sm font-bold">{tx("Ռեժիմ")}</span>
+                <select value={practice ? "practice" : "exam"}
+                  onChange={(e) => setPractice(e.target.value === "practice")}
+                  className="h-12 w-full rounded-xl border bg-background px-3 text-sm">
+                  <option value="exam">{tx("Քննություն · ստուգել վերջում")}</option>
+                  <option value="practice">{tx("Ուսուցում · ստուգել յուրաքանչյուր հարցը")}</option>
+                </select>
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-bold">{tx("Ժամանակ · րոպե")}</span>
+                <input type="number" min={0} max={300} value={minutes}
+                  onChange={(e) => setMinutes(Number(e.target.value))}
+                  className="h-12 w-full rounded-xl border bg-background px-3 text-sm" />
+                <span className="block text-xs text-muted-foreground">{tx("0 = առանց սահմանափակման")}</span>
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-bold">{tx("Հերթականություն")}</span>
+                <select value={orderRandom ? "random" : "ordered"}
+                  onChange={(e) => setOrderRandom(e.target.value === "random")}
+                  className="h-12 w-full rounded-xl border bg-background px-3 text-sm">
+                  <option value="ordered">{tx("Գրքի հերթականությամբ")}</option>
+                  <option value="random">{tx("Պատահական")}</option>
+                </select>
+              </label>
+            </div>
             {mode === "custom" && available === 0 && (
               <p className="rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-800">{tx("Ընտրիր առնվազն մեկ բաժին՝ թեստը սկսելու համար։")}</p>
             )}
             <Button
               className="h-12 w-full rounded-2xl"
-              disabled={mode === "custom" && available === 0}
+              disabled={(mode === "custom" && available === 0) || !Number.isInteger(minutes) || minutes < 0 || minutes > 300}
               onClick={start}
             >
               {tx("Սկսել · {n} հարց", { n: mode === "custom" ? shownCount : EXAM_SIZE })}
@@ -652,10 +741,10 @@ function MathPage() {
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1 font-mono text-sm">
                 <Timer className="size-4" />
-                {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}
+                {Math.floor(displaySeconds / 60)}:{String(displaySeconds % 60).padStart(2, "0")}
               </span>
               {!submitted ? (
-                <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={finish}>{tx("Ավարտել")}</Button>
+                <Button onClick={() => setConfirmFinish(true)}>{tx("Ավարտել")}</Button>
               ) : (
                 <Button variant="outline" onClick={() => setExam(null)}>
                   <RefreshCw className="mr-1 size-4" /> {tx("Նոր թեստ")}
@@ -663,6 +752,16 @@ function MathPage() {
               )}
             </div>
           </div>
+
+          {confirmFinish && !submitted && (
+            <div role="alertdialog" aria-modal="false" className="space-y-3 rounded-2xl border border-primary/40 bg-card p-4 shadow-sm">
+              <p className="font-semibold">{tx("Ավարտե՞լ թեստը։ Չպատասխանած հարցերը կստանան 0 միավոր։")}</p>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={finish}>{tx("Այո, ավարտել")}</Button>
+                <Button variant="outline" onClick={() => setConfirmFinish(false)}>{tx("Շարունակել")}</Button>
+              </div>
+            </div>
+          )}
 
           <MathTools />
 
@@ -680,8 +779,9 @@ function MathPage() {
                     item={it}
                     n={numbers.get(it.id) ?? 0}
                     value={answers[it.id]}
-                    submitted={submitted}
-                    onPick={(v) => setAnswers((a) => ({ ...a, [it.id]: v }))}
+                    submitted={submitted || (practice && !!checked[it.id])}
+                    onPick={(v) => { if (!submitted && !checked[it.id]) setAnswers((a) => ({ ...a, [it.id]: v })); }}
+                    onCheck={practice && !submitted ? () => setChecked((a) => ({ ...a, [it.id]: true })) : undefined}
                     />
                   </div>
                 ))}
@@ -690,10 +790,12 @@ function MathPage() {
           ))}
 
           {!submitted && (
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={finish}>{tx("Ավարտել")}</Button>
+            <Button className="w-full" onClick={() => setConfirmFinish(true)}>{tx("Ավարտել և տեսնել արդյունքը")}</Button>
           )}
           {submitted && (
-            <p className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">{tx("Արդյունք՝ {c} / {t}", { c: correct, t: exam.length })}</p>
+            <p role="status" className="rounded-2xl bg-muted/60 p-4 text-center text-sm font-semibold">
+              {tx("Արդյունք՝ {c} / {t}", { c: correct, t: exam.length })} · {Math.round((correct / exam.length) * 100)}%
+            </p>
           )}
         </>
       )}

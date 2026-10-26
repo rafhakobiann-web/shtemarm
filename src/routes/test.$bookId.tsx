@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Loader2, Timer, Trophy, Shuffle, ListChecks } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
+import { WorkbookExamWorkspace } from "@/components/WorkbookExamWorkspace";
+import { HistoryWorkspace } from "@/components/HistoryWorkspace";
+import { BiologyWorkspace } from "@/components/BiologyWorkspace";
 import { buildCustom, buildExam, shuffle, unitPoints, type Unit } from "@/lib/books";
 import { recordAnswer, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
@@ -54,6 +57,19 @@ function TestPage() {
   const [style, setStyle] = useState<Style>(initStyle);
   const [items, setItems] = useState<Item[] | null>(null);
   const [kind, setKind] = useState<"exam" | "custom">(mode);
+
+  const parsedId = Number(bookId);
+  if (bookId === "all" || [1, 2, 3, 41].includes(parsedId)) {
+    return <WorkbookExamWorkspace
+      key={bookId + ":" + (section ?? "") + ":" + mode}
+      subject={parsedId === 41 ? "armenian" : "english"}
+      initialBook={parsedId >= 1 && parsedId <= 3 ? parsedId : undefined}
+      initialSection={section}
+      initialMode={mode === "exam" ? "full" : "custom"}
+    />;
+  }
+  if (parsedId >= 21 && parsedId <= 23) return <HistoryWorkspace key={bookId} />;
+  if (parsedId >= 31 && parsedId <= 32) return <BiologyWorkspace key={bookId} />;
 
   if (!book) return error ? <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} /> : <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
   if (items) return <Runner book={book} items={items} kind={kind} bookId={bookId} style={style} onExit={() => setItems(null)} />;
