@@ -89,25 +89,27 @@ function normalizeNumber(v: string) {
  * so a typed "2" matches an answer of "2" even though "2" is also an option label.
  */
 export function isRight(answer: string, value: string) {
-  const a = normalizeNumber(answer);
-  const v = normalizeNumber(value);
-  if (a === v) return true;
-
-  // Multi-select statement answers (e.g. "1,3,5") are sets, not sequences.
-  // Accept any order, but reject repeated selections such as "1,3,3,5".
-  const answerParts = a.split(",").map((part) => part.trim());
-  const valueParts = v.split(",").map((part) => part.trim());
-  if (answerParts.length > 1 && valueParts.length > 1) {
+  // Comma-separated selections are sets (e.g. "1,3,5"). Detect them before
+  // decimal-comma normalization, which is used for ordinary numeric answers.
+  const rawAnswer = answer.trim().replace(/[−–]/g, "-");
+  const rawValue = value.trim().replace(/[−–]/g, "-");
+  const answerParts = rawAnswer.split(",").map((part) => part.replace(/\s+/g, ""));
+  const valueParts = rawValue.split(",").map((part) => part.replace(/\s+/g, ""));
+  if (answerParts.length > 2 && valueParts.length > 2) {
     const isValidSet = (parts: string[]) =>
-      parts.every((part) => part !== "") &&
-      new Set(parts).size === parts.length &&
-      parts.every((part) => Number.isFinite(Number(part)));
+      parts.every((part) => part !== "" && Number.isFinite(Number(part))) &&
+      new Set(parts).size === parts.length;
     if (isValidSet(answerParts) && isValidSet(valueParts)) {
-      return answerParts.length === valueParts.length &&
-        [...answerParts].sort().every((part, i) => part === [...valueParts].sort()[i]);
+      const sortedAnswer = [...answerParts].sort();
+      const sortedValue = [...valueParts].sort();
+      return sortedAnswer.length === sortedValue.length &&
+        sortedAnswer.every((part, i) => part === sortedValue[i]);
     }
   }
 
+  const a = normalizeNumber(answer);
+  const v = normalizeNumber(value);
+  if (a === v) return true;
   const na = Number(a);
   const nv = Number(v);
   return a !== "" && v !== "" && !Number.isNaN(na) && !Number.isNaN(nv) && Math.abs(na - nv) < 1e-9;
