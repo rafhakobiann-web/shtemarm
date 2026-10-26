@@ -177,7 +177,7 @@ function MathSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} beta />
+      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -397,7 +397,7 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title={tx("Մաթեմատիկա")} beta>
+        <SubjectRow title={tx("Մաթեմատիկա")}>
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
               <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
