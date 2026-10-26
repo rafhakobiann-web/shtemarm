@@ -57,7 +57,7 @@ export function splitMath(text: string): Piece[] {
   return text.split(delimiter).filter(Boolean).map((part) => {
     const display = (part.startsWith("$$") && part.endsWith("$$")) ||
       (part.startsWith("\\[") && part.endsWith("\\]"));
-    const inline = (part.startsWith("$") && part.endsWith("$")) ||
+    const inline = display || (part.startsWith("$") && part.endsWith("$")) ||
       (part.startsWith("\\(") && part.endsWith("\\)"));
     return { text: inline ? part.slice(display ? 2 : part.startsWith("\\") ? 2 : 1, display ? -2 : part.startsWith("\\") ? -2 : -1) : part, math: inline, display };
   });
