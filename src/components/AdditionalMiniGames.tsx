@@ -75,12 +75,11 @@ export function MatchingGame({subject}:{subject:GameSubject}){
   const tx=useTx();
   const [round,setRound]=useState(0);
   const pairs=useMemo(()=>mix(MATCH_PAIRS.filter(p=>subject==="all"||p.subject===subject)).slice(0,6),[subject,round]);
-  const [rightItems,setRightItems]=useState(()=>mix(pairs.map(p=>p.right)));
   const [left,setLeft]=useState<string|null>(null);
   const [matched,setMatched]=useState<string[]>([]);
   const [mistakes,setMistakes]=useState(0);
   const [feedback,setFeedback]=useState("");
-  const reset=()=>{setRound(n=>n+1);setLeft(null);setMatched([]);setMistakes(0);setFeedback("");setRightItems(mix(pairs.map(p=>p.right)))};
+  const reset=()=>{setRound(n=>n+1);setLeft(null);setMatched([]);setMistakes(0);setFeedback("")};
   // Reseed answer choices whenever the subject or round changes.
   const right=useMemo(()=>mix(pairs.map(p=>p.right)),[pairs]);
   const complete=pairs.length>0&&matched.length===pairs.length;
