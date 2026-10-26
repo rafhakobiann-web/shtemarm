@@ -221,13 +221,13 @@ function pickSample(index: Index, excluded: Set<string>): Item[] {
   return shuffle(picked);
 }
 /** Items of the chosen sections, grouped by task so a task's sub-questions are picked together. */
-function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[][] {
+function selectedGroups(index: Index, books: string[], keys: Set<string>, kinds: ReadonlySet<Kind>): Item[][] {
   const groups: Item[][] = [];
   for (const bookId of books) {
     for (const sec of index.books[bookId]?.sections ?? []) {
       if (!keys.has(sectionKey(bookId, sec))) continue;
       const byTask = new Map<number, Item[]>();
-      for (const it of sectionItems(bookId, sec)) {
+      for (const it of sectionItems(bookId, sec).filter((item) => kinds.has(item.kind))) {
         if (!byTask.has(it.task)) byTask.set(it.task, []);
         byTask.get(it.task)!.push(it);
       }
@@ -238,9 +238,9 @@ function selectedGroups(index: Index, books: string[], keys: Set<string>): Item[
 }
 
 /** Custom test: whole tasks while they fit, then the first sub-questions of the next task to reach `count` exactly. */
-function buildCustom(index: Index, books: string[], keys: Set<string>, count: number): Item[] {
+function buildCustom(index: Index, books: string[], keys: Set<string>, count: number, kinds: ReadonlySet<Kind>): Item[] {
   const out: Item[] = [];
-  for (const g of shuffle(selectedGroups(index, books, keys))) {
+  for (const g of shuffle(selectedGroups(index, books, keys, kinds))) {
     const room = count - out.length;
     if (room <= 0) break;
     out.push(...g.slice(0, room));
@@ -323,12 +323,14 @@ function AnswerRow({
   value,
   submitted,
   onPick,
+  onCheck,
 }: {
   item: Item;
   n: number;
   value: string | undefined;
   submitted: boolean;
   onPick: (v: string) => void;
+  onCheck?: (() => void) | undefined;
 }) {
   const tx = useTx();
   const answered = value !== undefined && value !== "";
@@ -381,6 +383,11 @@ function AnswerRow({
         </div>
       )}
 
+      {!submitted && onCheck && (
+        <Button variant="outline" size="sm" disabled={!answered} onClick={onCheck}>
+          {tx("Ստուգել պատասխանը")}
+        </Button>
+      )}
       {submitted && (
         <p className={cn("text-sm font-bold", ok ? "text-emerald-700" : "text-red-700")}>
           {ok ? tx("Ճիշտ է ✓") : tx("Ճիշտ պատասխանը՝ {answer}", { answer: answerLabel(item, tx) })}
@@ -414,6 +421,8 @@ function MathPage() {
   const [count, setCount] = useState(20);
   const [minutes, setMinutes] = useState(180);
   const [orderRandom, setOrderRandom] = useState(false);
+  const [kinds, setKinds] = useState<Kind[]>(["choice", "tf", "open"]);
+  const [practice, setPractice] = useState(false);
 
   // Running test
   const [exam, setExam] = useState<Item[] | null>(null);
@@ -424,6 +433,7 @@ function MathPage() {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [timerOn, setTimerOn] = useState(false);
   const [confirmFinish, setConfirmFinish] = useState(false);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
   const recorded = useRef(false);
 
   useEffect(() => {
@@ -453,8 +463,8 @@ function MathPage() {
 
   const available = useMemo(() => {
     if (!q.data) return 0;
-    return selectedGroups(q.data, books, selectedKeys).reduce((n, g) => n + g.length, 0);
-  }, [q.data, books, selectedKeys]);
+    return selectedGroups(q.data, books, selectedKeys, new Set(kinds)).reduce((n, g) => n + g.length, 0);
+  }, [q.data, books, selectedKeys, kinds]);
   const maxCount = Math.max(1, Math.min(100, available));
   const shownCount = Math.min(count, maxCount);
 
@@ -466,6 +476,7 @@ function MathPage() {
     setExamError(null);
     setExam(orderRandom ? shuffle(items) : items);
     setAnswers({});
+    setChecked({});
     setSubmitted(false);
     setConfirmFinish(false);
     recorded.current = false;
@@ -486,7 +497,7 @@ function MathPage() {
         writeLast(picked.map((p) => p.id));
         begin(picked);
       } else {
-        const picked = buildCustom(index, books, selectedKeys, shownCount);
+        const picked = buildCustom(index, books, selectedKeys, shownCount, new Set(kinds));
         if (picked.length !== shownCount) {
           setExamError(tx("Ընտրված բաժիններում բավարար պատասխանելի հարցեր չկան։ Փոխիր բաժինները կամ հարցերի քանակը։"));
           return;
@@ -638,6 +649,23 @@ function MathPage() {
                   ))}
                 </div>
 
+                <fieldset className="space-y-2">
+                  <legend className="text-sm font-bold">{tx("Առաջադրանքի տեսակները")}</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {([
+                      ["choice", "Ընտրովի պատասխանով"],
+                      ["tf", "Ճիշտ կամ սխալ"],
+                      ["open", "Կարճ թվային պատասխանով"],
+                    ] as const).map(([kind, label]) => (
+                      <label key={kind} className="flex items-center gap-2 rounded-xl border p-3 text-sm">
+                        <input type="checkbox" className="size-4 accent-primary" checked={kinds.includes(kind)}
+                          onChange={(e) => setKinds((old) => e.target.checked
+                            ? [...old, kind] : old.filter((value) => value !== kind))} />
+                        {tx(label)}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
                 <div className="space-y-3">
                   <p className="text-sm font-semibold">
                     {tx("Հարցերի քանակը՝ {n}", { n: shownCount })} <span className="font-normal text-muted-foreground">· {tx("հասանելի է՝ {n}", { n: available })}</span>
@@ -663,6 +691,15 @@ function MathPage() {
             )}
 
             <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-2">
+                <span className="text-sm font-bold">{tx("Ռեժիմ")}</span>
+                <select value={practice ? "practice" : "exam"}
+                  onChange={(e) => setPractice(e.target.value === "practice")}
+                  className="h-12 w-full rounded-xl border bg-background px-3 text-sm">
+                  <option value="exam">{tx("Քննություն · ստուգել վերջում")}</option>
+                  <option value="practice">{tx("Ուսուցում · ստուգել յուրաքանչյուր հարցը")}</option>
+                </select>
+              </label>
               <label className="space-y-2">
                 <span className="text-sm font-bold">{tx("Ժամանակ · րոպե")}</span>
                 <input type="number" min={0} max={300} value={minutes}
@@ -742,8 +779,9 @@ function MathPage() {
                     item={it}
                     n={numbers.get(it.id) ?? 0}
                     value={answers[it.id]}
-                    submitted={submitted}
-                    onPick={(v) => setAnswers((a) => ({ ...a, [it.id]: v }))}
+                    submitted={submitted || (practice && !!checked[it.id])}
+                    onPick={(v) => { if (!submitted && !checked[it.id]) setAnswers((a) => ({ ...a, [it.id]: v })); }}
+                    onCheck={practice && !submitted ? () => setChecked((a) => ({ ...a, [it.id]: true })) : undefined}
                     />
                   </div>
                 ))}
