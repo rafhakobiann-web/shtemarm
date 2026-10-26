@@ -3,58 +3,71 @@ import { useCallback, useEffect, useState } from "react";
 const KEY = "history-progress-v1";
 
 export type ExamResult = { date: string; correct: number; total: number };
-export type MathProgress = {
+export type HistoryProgress = {
   /** key: `${bookId}:${chapter}:${section}:${task}:${sub}` → chosen value ("1".."4" or "T"/"F") */
   answers: Record<string, string>;
   exams: ExamResult[];
 };
 
-const EMPTY: MathProgress = { answers: {}, exams: [] };
+const EMPTY: HistoryProgress = { answers: {}, exams: [] };
+let memory = EMPTY;
+const UPDATED = "history-progress-updated";
 
-function read(): MathProgress {
+function read(): HistoryProgress {
   try {
     const raw = typeof window !== "undefined" ? window.localStorage.getItem(KEY) : null;
-    if (!raw) return EMPTY;
+    if (!raw) return memory;
     const parsed = JSON.parse(raw);
-    return { answers: parsed.answers ?? {}, exams: Array.isArray(parsed.exams) ? parsed.exams : [] };
+    return {
+      answers: parsed.answers ?? {},
+      exams: Array.isArray(parsed.exams) ? parsed.exams : [],
+    };
   } catch {
-    return EMPTY;
+    return memory;
   }
 }
 
-function write(p: MathProgress) {
+function write(p: HistoryProgress) {
+  memory = p;
   try {
     window.localStorage.setItem(KEY, JSON.stringify(p));
   } catch {
     /* storage unavailable (private mode / quota): progress stays for this visit only */
   }
+  window.dispatchEvent(new Event(UPDATED));
 }
 
 export function useHistoryProgress() {
-  const [progress, setProgress] = useState<MathProgress>(EMPTY);
+  const [progress, setProgress] = useState<HistoryProgress>(EMPTY);
 
   useEffect(() => {
-    setProgress(read());
+    const refresh = () => setProgress(read());
+    const sync = (event: StorageEvent) => {
+      if (event.key === KEY || event.key === null) {
+        memory = EMPTY;
+        refresh();
+      }
+    };
+    refresh();
+    window.addEventListener(UPDATED, refresh);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(UPDATED, refresh);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
-  /** Records the first answer for a sub-question; later taps on the same sub-question are ignored. */
   const setAnswer = useCallback((id: string, value: string) => {
-    setProgress((prev) => {
-      if (prev.answers[id] !== undefined) return prev;
-      const next = { ...prev, answers: { ...prev.answers, [id]: value } };
-      write(next);
-      return next;
-    });
+    const prev = read();
+    if (prev.answers[id] !== undefined) return;
+    write({ ...prev, answers: { ...prev.answers, [id]: value } });
   }, []);
 
   const addExam = useCallback((correct: number, total: number) => {
-    setProgress((prev) => {
-      const next = {
-        ...prev,
-        exams: [{ date: new Date().toISOString(), correct, total }, ...prev.exams].slice(0, 20),
-      };
-      write(next);
-      return next;
+    const prev = read();
+    write({
+      ...prev,
+      exams: [{ date: new Date().toISOString(), correct, total }, ...prev.exams].slice(0, 20),
     });
   }, []);
 
@@ -76,12 +89,7 @@ export function isOpenSection(tasks: { answers: string[] | null }[]) {
 }
 
 function normalizeNumber(v: string) {
-  return v
-    .trim()
-    .replace(/\s+/g, "")
-    .replace(/[−–]/g, "-")
-    .replace(",", ".")
-    .replace(/%$/, "");
+  return v.trim().replace(/\s+/g, "").replace(/[−–]/g, "-").replace(",", ".").replace(/%$/, "");
 }
 
 /**

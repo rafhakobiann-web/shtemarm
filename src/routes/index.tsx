@@ -217,7 +217,7 @@ function HistorySubject() {
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("70 հարց · Թեստ 1–4")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Քո ընտրած հարցերը, ժամանակը և ռեժիմը")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
     </div>
@@ -460,7 +460,7 @@ function Index() {
             icon={<ClipboardCheck className="size-5" />}
           />
           <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարց՝ քննության կառուցվածքով")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · 70 հարց")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/test/$bookId" params={{ bookId: "41" }} search={{ mode: "exam", style: "classic" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("64 հարց՝ 4 թեմատիկ բաժնից")} icon={<BookOpen className="size-5" />} />
         </div>
       </section>
@@ -477,3 +477,4 @@ function Index() {
     </div>
   );
 }
+
