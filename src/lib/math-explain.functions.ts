@@ -59,8 +59,8 @@ ${d.chosen !== null ? `Աշակերտի պատասխանը: ${valueLabel(d.kind,
 function offlineMathExplanation(data: Input) {
   const answer = valueLabel(data.kind, data.correct);
   const selected = data.chosen === null ? "" : data.chosen === data.correct
-    ? "\\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
-    : `\\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
+    ? "\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
+    : `\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
   return {
     text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\\n\\nՏեղային պահուստային ռեժիմում հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
     cached: false,
@@ -150,16 +150,23 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
 
     const prompt = buildPrompt(data);
     try {
-      const res = geminiKey
+      let res = geminiKey
         ? await callGemini(geminiKey, prompt, data.pages)
-        : await callGroq(groqKey!, prompt, data.pages);
-
+        : { status: 503, text: "" };
+      // A single misconfigured or rate-limited provider must not disable the
+      // second configured provider. No extra requests if the first succeeds.
+      if ((res.status !== 200 || !res.text) && groqKey) {
+        try { res = await callGroq(groqKey, prompt, data.pages); }
+        catch { /* Preserve a usable offline explanation. */ }
+      }
       if (res.status !== 200) return offlineMathExplanation(data);
       if (!res.text) return offlineMathExplanation(data);
 
-      await supabaseAdmin
-        .from("explanation_cache")
-        .upsert({ cache_key: cacheKey, explanation: res.text }, { onConflict: "cache_key" });
+      try {
+        await supabaseAdmin
+          .from("explanation_cache")
+          .upsert({ cache_key: cacheKey, explanation: res.text }, { onConflict: "cache_key" });
+      } catch { /* Cache failure must not erase a successful explanation. */ }
 
       return { text: res.text, cached: false, error: false };
     } catch {
