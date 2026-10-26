@@ -69,22 +69,23 @@ function qid(q: Question) {
   return `${q.book}:${q.source_run}:${q.num}`;
 }
 
-function AnswerRow({ q, chosen, locked, onPick }: { q: Question; chosen?: string; locked: boolean; onPick: (c: string) => void }) {
+function AnswerRow({ q, chosen, locked, reveal, allowChange = false, onPick }: { q: Question; chosen?: string; locked: boolean; reveal: boolean; allowChange?: boolean; onPick: (c: string) => void }) {
   return (
     <div className="grid gap-2">
       {Object.entries(q.options).map(([k, text]) => {
-        const isRight = chosen !== undefined && k === q.answer;
-        const isWrong = chosen === k && k !== q.answer;
+        const isRight = reveal && k === q.answer;
+        const isWrong = reveal && chosen === k && k !== q.answer;
         return (
           <button
             key={k}
             type="button"
-            disabled={locked || chosen !== undefined}
+            disabled={locked || (!allowChange && chosen !== undefined)}
             onClick={() => onPick(k)}
+            aria-pressed={chosen === k}
             className={`flex w-full items-start gap-3 rounded-2xl border-2 bg-white px-4 py-3 text-left text-sm transition ${
               isRight ? "border-emerald-600 bg-emerald-50 text-emerald-900"
               : isWrong ? "border-red-500 bg-red-50 text-red-800"
-              : "border-stone-300 hover:bg-stone-50"}`}
+              : chosen === k ? "border-primary bg-secondary" : "border-stone-300 hover:bg-stone-50"}`}
           >
             <span className="w-6 shrink-0 font-bold text-stone-500">{k})</span>
             <span>{text}</span>
@@ -259,7 +260,7 @@ function HistoryBookPage() {
           <section key={qid(it)} className="space-y-3 rounded-3xl border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{idx + 1} / {round.length}</p>
             <p className="text-sm font-semibold">{it.stem}</p>
-            <AnswerRow q={it} chosen={submitted ? testAnswers[qid(it)] : testAnswers[qid(it)]} locked={submitted} onPick={(c) => setTestAnswers((a) => ({ ...a, [qid(it)]: c }))} />
+            <AnswerRow q={it} chosen={testAnswers[qid(it)]} locked={submitted} reveal={submitted} allowChange onPick={(c) => setTestAnswers((a) => ({ ...a, [qid(it)]: c }))} />
           </section>
         ))}
         {!submitted ? (
@@ -320,7 +321,7 @@ function HistoryBookPage() {
           </div>
           <div className="rounded-[24px] border border-white/70 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">
             <p className="mb-4 text-base font-semibold leading-relaxed">{it.num}. {it.stem}</p>
-            <AnswerRow q={it} chosen={current} locked={false} onPick={onPick} />
+            <AnswerRow q={it} chosen={current} locked={false} reveal={current !== undefined} onPick={onPick} />
             {current !== undefined && (
               <Button className="mt-4 h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
             )}
