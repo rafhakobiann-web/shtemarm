@@ -1,7 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { DICT } from "@/i18n";
+import { RU_DICT } from "@/i18n/ru";
 
-export type Lang = "hy" | "en";
+export type Lang = "hy" | "en" | "ru";
 
 const KEY = "shtemarm-lang";
 
@@ -11,7 +12,7 @@ const listeners = new Set<() => void>();
 function readStored(): Lang {
   try {
     const v = window.localStorage.getItem(KEY);
-    if (v === "hy" || v === "en") return v;
+    if (v === "hy" || v === "en" || v === "ru") return v;
   } catch {
     // storage unavailable (private window, blocked site data)
   }
@@ -68,6 +69,14 @@ export const MENU_TEXT = {
     openMenu: "Բացել մենյուն",
     home: "Գլխավոր էջ",
   },
+  ru: {
+    menu: "Меню", subjects: "Предметы", english: "Английский", math: "Математика",
+    armenianLang: "Армянский язык", biology: "Биология", history: "История Армении",
+    soon: "Скоро", about: "О проекте", chat: "ИИ-помощник", calc: "Калькулятор",
+    feedback: "Обратная связь", account: "Войти / Профиль", language: "Язык",
+    darkMode: "Тёмная тема", streak: "Дней подряд", points: "Баллы", level: "Уровень",
+    openMenu: "Открыть меню", home: "Главная",
+  },
   en: {
     menu: "Menu",
     subjects: "Subjects",
@@ -102,7 +111,7 @@ export function useT() {
  * Placeholders like {n} are filled from vars in both languages.
  */
 export function translate(lang: Lang, hy: string, vars?: Record<string, string | number>): string {
-  const base = lang === "en" ? (DICT[hy] ?? hy) : hy;
+  const base = lang === "ru" ? (RU_DICT[hy] ?? DICT[hy] ?? hy) : lang === "en" ? (DICT[hy] ?? hy) : hy;
   if (!vars) return base;
   return base.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 }
