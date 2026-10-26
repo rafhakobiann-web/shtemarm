@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathDemandReference } from "@/components/MathDemandReference";
 import { MathContent } from "@/components/MathText";
 import { ArrowLeft, Loader2, Timer, RefreshCw, Trophy, ListChecks } from "lucide-react";
 import { useMathProgress, isRight, isOpenTask } from "@/lib/math-progress";
@@ -345,6 +346,7 @@ function AnswerRow({
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{n}</span>
         <span className="text-xs text-muted-foreground">{tx("Առաջադրանք {n}, կետ {m}/{k}", { n: item.task, m: item.sub, k: item.subs })}</span>
       </div>
+      <MathDemandReference bookId={item.book} segments={item.segments} compact />
       {item.prompt && <MathQuestionText question={{ prompt: item.prompt, transcription: item.transcription }} />}
 
       {item.kind === "open" ? (
