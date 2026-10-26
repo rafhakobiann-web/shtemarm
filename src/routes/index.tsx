@@ -227,16 +227,23 @@ function HistorySubject() {
 function BiologySubject() {
   const tx = useTx();
   const playable = BIO_BOOKS.filter((b) => !b.locked);
+  const pending = BIO_BOOKS.filter((b) => b.locked);
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
       <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
       <section className="space-y-6">
-        <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <h2 className="text-xl font-black sm:text-2xl">{tx("Կենսաբանության շտեմարաններ")}</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {playable.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
             </Link>
+          ))}
+          {pending.map((b) => (
+            <div key={b.id} aria-disabled="true" className="flex cursor-not-allowed flex-col overflow-hidden rounded-[1.5rem] border border-dashed border-border bg-muted/30 opacity-75">
+              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              <p className="px-4 pb-4 text-xs font-semibold text-muted-foreground">{tx("Գրքի հարցաշարը դեռ պատրաստ չէ կայքում։")}</p>
+            </div>
           ))}
         </div>
       </section>
@@ -246,7 +253,7 @@ function BiologySubject() {
           {playable.map((b) => (
             <ExamTile key={b.id} to="/test/$bookId" params={{ bookId: String(b.id) }} search={{ mode: "custom", style: "classic" }} title={tx("{part} · Թեստ", { part: b.sub })} sub={tx("Կազմիր թեստ տվյալ շտեմարանի հարցերից")} icon={<Dna className="size-5" />} />
           ))}
-          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Քննություն")} sub={tx("Փորձնական քննություն հասանելի հարցաշարից")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/test/$bookId" params={{ bookId: "31" }} search={{ mode: "exam", style: "classic" }} title={tx("Կենսաբանություն · Փորձնական քննություն")} sub={tx("80 հարց՝ հասանելի կենսաբանության շտեմարանից, 3 ժամ")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
       <section className="space-y-4">
@@ -259,7 +266,7 @@ function BiologySubject() {
           <ExamTile href="https://www.olymp.am/hy/node/1465" title={tx("Կենսաբանության օլիմպիադա · 2026")} sub={tx("Լրացուցիչ բարդ առաջադրանքներ և պաշտոնական լուծումներ")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ այս պահին հասանելի են առաջին երկու մասերի տվյալները։ Մյուս մասերը կավելացվեն միայն հարցերն ու պատասխանները ստուգելուց հետո։")}</p>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Մաս 3-ի և 4-ի հարցաշարերը դեռ պետք է ավելացվեն ու ստուգվեն։ Դրանք միացված կլինեն, երբ տվյալները պատրաստ լինեն, որպեսզի չբացվեն դատարկ կամ սխալ քննություններ։")}</p>
     </div>
   );
 }
