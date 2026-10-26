@@ -3341,5 +3341,16 @@ export const BOOK_VOCABULARY_HY: Record<string, string> = {
   "pharmacist": "դեղագործ",
   "monitoring": "վերահսկում",
   "indicator": "ցուցիչ",
-  "cleanliness": "մաքրություն"
+  "cleanliness": "մաքրություն",
+  "astronomically": "աստղաբաշխորեն",
+  "tide": "մակընթացություն; տեղատվություն",
+  "migrating": "չվող; տեղափոխվող",
+  "mimicry": "նմանակում",
+  "venom": "թույն",
+  "venomous": "թունավոր",
+  "fangs": "ժանիքներ",
+  "furry": "մորթե",
+  "erupting": "ժայթքող",
+  "valleys": "հովիտներ",
+  "ravine": "ձորակ"
 };
