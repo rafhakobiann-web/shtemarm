@@ -35,6 +35,16 @@ const copy = {
     reset: "Reset to defaults", close: "Close", subtitle: "Make your study space feel like yours",
     small: "Small", normal: "Default", large: "Large", extraLarge: "Extra large", on: "On", off: "Off",
   },
+  ru: {
+    accessibility: "Специальные возможности", settings: "Настройки", textSize: "Размер текста", contrast: "Высокая контрастность",
+    motion: "Меньше анимаций", dock: "Положение кнопок", left: "Слева", right: "Справа", appearance: "Внешний вид",
+    language: "Язык", accent: "Цветовой акцент", theme: "Цветовая тема", light: "Светлая", dark: "Тёмная",
+    system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Мягкая",
+    glassStrength: "Интенсивность стекла", subtle: "Низкая", balanced: "Средняя", vivid: "Высокая",
+    blur: "Размытие фона", glassHelp: "Для более быстрой работы можно уменьшить эффект размытия или отключить его.",
+    reset: "Сбросить настройки", close: "Закрыть", subtitle: "Настройте удобную учебную среду",
+    small: "Маленький", normal: "Обычный", large: "Большой", extraLarge: "Очень большой", on: "Вкл.", off: "Выкл.",
+  },
 } as const;
 
 function savePreferences(value: Preferences) {
@@ -205,14 +215,15 @@ export function PersonalizationControls() {
           </section>
           <section className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.language}</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant={lang === "hy" ? "default" : "outline"} aria-pressed={lang === "hy"} onClick={() => changeLanguage("hy")}>Հայերեն</Button>
-              <Button type="button" variant={lang === "en" ? "default" : "outline"} aria-pressed={lang === "en"} onClick={() => changeLanguage("en")}>English</Button>
+            <div className="grid grid-cols-3 gap-2">
+              <Button type="button" size="sm" variant={lang === "hy" ? "default" : "outline"} aria-pressed={lang === "hy"} onClick={() => changeLanguage("hy")}>Հայերեն</Button>
+              <Button type="button" size="sm" variant={lang === "en" ? "default" : "outline"} aria-pressed={lang === "en"} onClick={() => changeLanguage("en")}>English</Button>
+              <Button type="button" size="sm" variant={lang === "ru" ? "default" : "outline"} aria-pressed={lang === "ru"} onClick={() => changeLanguage("ru")}>Русский</Button>
             </div>
-            <p className="text-xs text-muted-foreground">{lang === "en" ? "Some subject content remains in its original language." : "Որոշ առարկայական նյութեր մնում են սկզբնական լեզվով։"}</p>
+            <p className="text-xs text-muted-foreground">{lang === "en" ? "Question-book content remains in its original language." : lang === "ru" ? "Тексты заданий в сборниках сохраняют язык оригинала. Непереведённые элементы интерфейса временно отображаются на армянском." : "Շտեմարանների առաջադրանքները պահպանվում են բնօրինակ լեզվով։"}</p>
           </section>
           <section className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{lang === "en" ? "Accessibility" : "Մատչելիություն"}</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.accessibility}</h3>
             <Button type="button" variant="outline" className="w-full" onClick={() => { setSettingsOpen(false); setAccessOpen(true); }}><Accessibility className="mr-2 size-4" />{t.accessibility}</Button>
           </section>
           <Button type="button" variant="outline" className="mt-auto w-full" onClick={() => { update(defaults); resetAppearance(); setLang("hy"); }}>{t.reset}</Button>
