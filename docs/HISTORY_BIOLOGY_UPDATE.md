@@ -9,9 +9,9 @@
 
 ## Official exam archive automation
 - Sources are clearly attributed, not embedded as copied PDFs. The June and July 2026 archives link to their listing pages. The October 2026 official listing currently shows no download links for Biology (22 October) or History (26 October).
-- `scripts/sync-official-exams.mjs` reads the official GTC index at https://dimord.am/public/tests daily through `.github/workflows/sync-official-exams.yml`, and recognizes only exact Biology / Armenian History rows and HTTPS links served by official testing authority domains.
+- `scripts/sync-official-exams.mjs` reads the official GTC index at https://dimord.am/public/tests only when manually triggered through `.github/workflows/sync-official-exams.yml`, and recognizes only exact Biology / Armenian History rows and HTTPS links served by official testing authority domains.
 - The script saves a new catalog revision only when source content materially changes; it never downgrades published papers to pending. If the site layout changes, it fails without updating the JSON. It does **not** transcribe or ingest exam contents automatically: answer-key checking and question extraction require verification and usage rights.
-- The workflow starts working after this change is merged into the repository's **default branch** and GitHub Actions is enabled. Repository settings must permit `GITHUB_TOKEN` to push to `main`; restrictive branch protection may require a PR-based update policy instead. Vercel will deploy the new archive metadata when it builds the updated branch.
+- The workflow has **no scheduled trigger**. Run it on demand from GitHub Actions → Sync official exam archive → Run workflow. Repository settings must permit `GITHUB_TOKEN` to push to `main`; restrictive branch protection may require a PR-based update policy instead. Vercel will deploy the new archive metadata when it builds the updated branch.
 
 ## Validation
 - `node --test scripts/sync-official-exams.test.mjs`
