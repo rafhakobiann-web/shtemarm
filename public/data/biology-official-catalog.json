@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-26T10:00:00Z",
+  "papers": [
+    {
+      "id": "gtc-remote-2026",
+      "title": "2026 · Հեռակա ընդունելության քննություն",
+      "date": "2026-10-22",
+      "sourceUrl": "https://dimord.am/public/tests",
+      "sourceLabel": "ԳԹԿ · dimord.am",
+      "status": "pending",
+      "links": []
+    },
+    {
+      "id": "2026-july",
+      "title": "2026 · Հուլիս · 3-րդ փուլ",
+      "date": "2026-07-01",
+      "sourceUrl": "https://test.am/pdf.php?page=90",
+      "sourceLabel": "Թեստ.am · արխիվ",
+      "status": "published",
+      "links": []
+    },
+    {
+      "id": "2026-june",
+      "title": "2026 · Հունիս · 2-րդ փուլ",
+      "date": "2026-06-01",
+      "sourceUrl": "https://test.am/pdf.php?page=17",
+      "sourceLabel": "Թեստ.am · արխիվ",
+      "status": "published",
+      "links": []
+    },
+    {
+      "id": "2019-official-banks",
+      "title": "Կենսաբանության շտեմարաններ · 4 մաս (2019)",
+      "date": "2019-01-01",
+      "sourceUrl": "https://test.am/pdf.php?page=111",
+      "sourceLabel": "Թեստ.am · ԳԹԿ-ի արխիվ",
+      "status": "published",
+      "links": []
+    }
+  ]
+}
