@@ -36,6 +36,14 @@ export function makeWorkbookExam(
   const choices = books.filter((book) => source === "all" || String(book.id) === source);
   if (!choices.length) throw new Error("Քննության համար հասանելի շտեմարան չկա։");
   const selected = random ? choices[Math.floor(Math.random() * choices.length)] : choices[0];
+  if (subject === "armenian") {
+    // Official 2027 Armenian exam = 70 TASKS worth 80 points. The current
+    // practice bank lacks the mandatory short-answer and six-claim items,
+    // so this is explicitly a 70-task PRACTICE set (70 achievable points),
+    // never a fake GTC-compliant 80-point exam.
+    const pool = workbookEntries([selected]);
+    return { units: selectHistoryUnits(pool, 70, random), bookId: 41 };
+  }
   const items = buildExam(selected, selected.id);
   return {
     units: items.map(({ unit }) => ({ ...unit, id: `exam-${selected.id}:${unit.id}` })),
