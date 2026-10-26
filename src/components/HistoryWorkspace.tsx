@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
+import { GtcGuidePanel } from "@/components/GtcGuidePanel";
 import { HistorySession } from "@/components/HistorySession";
 import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
 import {
@@ -42,8 +43,8 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
   const [source, setSource] = useState(initialTest ? `test-${initialTest}` : "books");
   const [sections, setSections] = useState<string[]>([]);
   const [kinds, setKinds] = useState<Unit["kind"][]>(KINDS);
-  const [count, setCount] = useState(initialTest ? 70 : 20);
-  const [minutes, setMinutes] = useState(0);
+  const [count, setCount] = useState(70);
+  const [minutes, setMinutes] = useState(180);
   const [random, setRandom] = useState(!initialTest);
   const [practice, setPractice] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
@@ -294,11 +295,12 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
           </Button>
           <p className="text-xs leading-relaxed text-muted-foreground">
             {tx(
-              "Առաջադրանքները չեն կրկնվում։ Միավորների քանակը կախված է ընտրված առաջադրանքների կառուցվածքից։",
+              "70 առաջադրանքն ու պաշտոնական 80 միավորը տարբեր բաներ են։ Շտեմարանի կամայական 70 հարցանոց տարբերակը չի հավաստում ԳԹԿ-ի 2027 թ. ճշգրիտ տեսակային կառուցվածքը։",
             )}
           </p>
         </section>
         <aside className="space-y-5">
+          <GtcGuidePanel subject="history" />
           <section className="space-y-3 rounded-3xl border bg-card p-5">
             <h2 className="font-black">{tx("Նմուշային քննություններ")}</h2>
             <p className="text-sm text-muted-foreground">
