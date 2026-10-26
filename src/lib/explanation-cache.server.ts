@@ -1,14 +1,16 @@
-/**
- * Best-effort server-only explanation cache.
- * Missing Supabase credentials, unavailable DB, and cache permission errors
- * must never prevent AI generation or its no-key fallback.
- */
+/** Optional cache never blocks live AI when storage is unavailable or slow. */
+const limitCacheTime = <T>(operation: PromiseLike<T>, fallback: T, ms: number): Promise<T> =>
+  Promise.race([
+    Promise.resolve(operation).catch(() => fallback),
+    new Promise<T>(resolve => setTimeout(() => resolve(fallback), ms)),
+  ]);
 export async function getSavedExplanation(cacheKey: string): Promise<string | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("explanation_cache")
+    const query = supabaseAdmin.from("explanation_cache")
       .select("explanation").eq("cache_key", cacheKey).maybeSingle();
-    return error ? null : data?.explanation ?? null;
+    const result = await limitCacheTime(query, null, 1300);
+    return result?.error ? null : result?.data?.explanation ?? null;
   } catch {
     return null;
   }
@@ -16,9 +18,10 @@ export async function getSavedExplanation(cacheKey: string): Promise<string | nu
 export async function saveExplanation(cacheKey: string, explanation: string): Promise<void> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("explanation_cache")
+    const query = supabaseAdmin.from("explanation_cache")
       .upsert({ cache_key: cacheKey, explanation }, { onConflict: "cache_key" });
+    await limitCacheTime(query, null, 1000);
   } catch {
-    // Optional cache should not change the successful response.
+    // Optional cache failures never disable generation.
   }
 }
