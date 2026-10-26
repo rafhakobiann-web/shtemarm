@@ -1,7 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 import { translationKey, TRANSLATION_LANGUAGES, type TranslationLanguage } from "./translation";
 
 const languageCodes = TRANSLATION_LANGUAGES.map((language) => language.code) as [TranslationLanguage, ...TranslationLanguage[]];
