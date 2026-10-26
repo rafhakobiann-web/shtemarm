@@ -46,6 +46,8 @@ function BookPage() {
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 31 && id <= 32 ? (
                 <Link to="/biology"><Trophy /> {tx("Քննություն")}</Link>
+              ) : id === 41 || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : (
                 <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
                   <Trophy /> {tx("Քննություն")}
@@ -57,6 +59,8 @@ function BookPage() {
                 <Link to="/history"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 31 && id <= 32 ? (
                 <Link to="/biology"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : id === 41 || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : (
                 <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
                   <ClipboardCheck /> {tx("Կազմել թեստ")}
