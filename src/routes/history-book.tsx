@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Heart, Loader2, Zap } from "lucide-react";
+import { ArrowLeft, Loader2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHistoryProgress } from "@/lib/history-progress";
 import { useTx } from "@/lib/lang";
@@ -29,7 +29,6 @@ type Question = {
 type Bank = { title: string; questions: Question[] };
 
 const DEFAULT_TEST_SIZE = 20;
-const LIVES = 3;
 const BOOK_KEY = "patm-1";
 
 function useBank() {
@@ -122,7 +121,8 @@ function HistoryBookPage() {
 
   const [round, setRound] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
-  const [lives, setLives] = useState(LIVES);
+  const [mistakes, setMistakes] = useState(0);
+  const [sessionAnswers, setSessionAnswers] = useState<Record<string, string>>({});
   const [streak, setStreak] = useState(0);
   const [testAnswers, setTestAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -136,7 +136,8 @@ function HistoryBookPage() {
     if (!section) return;
     setRound(mode === "test" ? shuffle(section.items).slice(0, Math.min(testSize, section.items.length)) : section.items);
     setIndex(0);
-    setLives(LIVES);
+    setMistakes(0);
+    setSessionAnswers({});
     setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
@@ -275,18 +276,18 @@ function HistoryBookPage() {
 
   // ---------- Խաղային ----------
   const it = round[index];
-  const answeredCount = round.filter((x) => progress.answers[qid(x)] !== undefined).length;
-  const current = it ? progress.answers[qid(it)] : undefined;
+  const answeredCount = round.filter((x) => sessionAnswers[qid(x)] !== undefined).length;
+  const current = it ? sessionAnswers[qid(it)] : undefined;
   const finished = !it || (index === round.length - 1 && current !== undefined);
-  const gameOver = lives <= 0;
 
   const onPick = (c: string) => {
     if (!it || current !== undefined) return;
+    setSessionAnswers((prev) => ({ ...prev, [qid(it)]: c }));
     setAnswer(qid(it), c);
     if (c === it.answer) setStreak((s) => s + 1);
     else {
       setStreak(0);
-      setLives((l) => l - 1);
+      setMistakes((n) => n + 1);
     }
   };
 
@@ -298,22 +299,18 @@ function HistoryBookPage() {
       </div>
       {header}
       <div className="flex items-center gap-3">
-        <div className="flex gap-1">
-          {Array.from({ length: LIVES }, (_, i) => (
-            <Heart key={i} className={`size-7 ${i < lives ? "fill-red-500 text-red-500" : "text-stone-300"}`} />
-          ))}
-        </div>
+        <span className="whitespace-nowrap text-xs font-bold text-muted-foreground">{tx("Սխալներ՝ {n}", { n: mistakes })}</span>
         <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
           <div className="h-full rounded-full bg-success transition-all" style={{ width: `${round.length ? (answeredCount / round.length) * 100 : 0}%` }} />
         </div>
         <span className="flex items-center gap-1 text-sm font-black text-amber-600"><Zap className="size-5" /> ×{streak}</span>
       </div>
 
-      {gameOver || finished ? (
+      {finished ? (
         <section className="space-y-3 rounded-[28px] border border-white/60 bg-white/55 p-6 text-center shadow-[0_8px_32px_rgba(30,58,138,0.12)] backdrop-blur-xl">
-          <p className="text-xl font-black">{gameOver ? tx("Կյանքերն ավարտվեցին") : tx("Խաղն ավարտված է")}</p>
-          <p className="text-sm text-muted-foreground">{tx("Ճիշտ՝ {correct} / {answered}", { correct: round.filter((x) => progress.answers[qid(x)] === x.answer).length, answered: answeredCount })}</p>
-          <Button className="w-full" onClick={() => { setIndex(0); setLives(LIVES); setStreak(0); setRound(section.items); }}>{tx("Նորից")}</Button>
+          <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
+          <p className="text-sm text-muted-foreground">{tx("Ճիշտ՝ {correct} / {answered}", { correct: round.filter((x) => sessionAnswers[qid(x)] === x.answer).length, answered: answeredCount })}</p>
+          <Button className="w-full" onClick={() => { setIndex(0); setMistakes(0); setStreak(0); setSessionAnswers({}); setRound([...section.items]); }}>{tx("Նորից")}</Button>
         </section>
       ) : (
         <section className="space-y-4 rounded-[28px] border border-white/60 bg-white/55 p-5 shadow-[0_8px_32px_rgba(30,58,138,0.12),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl">
@@ -323,7 +320,7 @@ function HistoryBookPage() {
           </div>
           <div className="rounded-[24px] border border-white/70 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur">
             <p className="mb-4 text-base font-semibold leading-relaxed">{it.num}. {it.stem}</p>
-            <AnswerRow q={it} chosen={current} locked={lives <= 0} onPick={onPick} />
+            <AnswerRow q={it} chosen={current} locked={false} onPick={onPick} />
             {current !== undefined && (
               <Button className="mt-4 h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
             )}
