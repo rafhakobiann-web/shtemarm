@@ -18,8 +18,8 @@ export type HistoryOfficialCatalog = {
   papers: HistoryOfficialPaper[];
 };
 
-export async function loadHistoryOfficialCatalog(): Promise<HistoryOfficialCatalog> {
-  const response = await fetch("/data/history-official-catalog.json", {
+export async function loadHistoryOfficialCatalog(subject: "history" | "biology" = "history"): Promise<HistoryOfficialCatalog> {
+  const response = await fetch(`/data/${subject}-official-catalog.json`, {
     signal: AbortSignal.timeout(15000),
     cache: "no-cache",
   });
