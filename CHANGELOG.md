@@ -6,6 +6,9 @@
 - 📚 Added **1,104 English–Armenian dictionary entries** in two commits: 649, then 455.
 - 🧹 Existing dictionary keys were excluded during those additions to reduce duplicates.
 - 🛠️ Fixed a missing comma in the expanded dictionary that caused the Vercel production build to fail; a fresh deployment is still needed to confirm the build passes.
+- 🧪 Fixed generated-test ordering so expanded questions return in original book/question order, and added scoring regression tests for multiple choice, numeric, set, sequence, and matching answers.
+- 💾 Hardened progress saving so blocked browser storage or failed remote sync does not interrupt in-memory progress updates.
+- 🚦 **Validation pending:** test execution and production build confirmation are still blocked by the current Vercel build-rate limit.
 - 🔎 **Still in progress:** audit all three English books against the dictionary and calculate the exact number of untranslated forms. The new-entry count is not a verified coverage percentage.
 
 ## 🔵 October 25, 2026 — Platform usability and fixes
