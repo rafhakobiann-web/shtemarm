@@ -23,14 +23,14 @@ describe("Explanation runtime and current AI model fallback", () => {
     });
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
-  it("tries Groq after both Gemini models fail", async () => {
+  it("tries Groq immediately after the fast Gemini model fails", async () => {
     const fetcher = vi.fn(async (url) => url.includes("generativelanguage.googleapis.com")
       ? mockResponse(404, { error:{ message:"model not accessible" }})
       : mockResponse(200, { choices:[{message:{content:"Քայլերով լուծում"}}] }));
     vi.stubGlobal("fetch",fetcher);
     const result = await generateExplanation("explain", { gemini:"test",groq:"test" });
     expect(result.ok).toBe(true);
-    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
   it("sends only Gemini the math-book images, never a text-only Groq model", async () => {
     const fetcher = vi.fn(async (url,init) => {
