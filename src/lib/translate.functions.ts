@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { translationKey, TRANSLATION_LANGUAGES, type TranslationLanguage } from "./translation";
 import { BOOK_VOCABULARY_HY } from "./book-vocabulary-hy";
+import { WORD_DICTIONARY } from "./word-dictionary";
 
 const languageCodes = TRANSLATION_LANGUAGES.map((language) => language.code) as [TranslationLanguage, ...TranslationLanguage[]];
 const Input = z.object({
@@ -28,7 +29,19 @@ export const translateEnglish = createServerFn({ method: "POST" })
     if (!apiKey) {
       if (data.kind === "word" && data.language === "hy") {
         const normalizedWord = data.text.trim().toLocaleLowerCase("en").replace(/[’]/g, "'");
-        const localMeaning = BOOK_VOCABULARY_HY[normalizedWord];
+        const dictionaryMeaning = (word: string) => BOOK_VOCABULARY_HY[word] ?? WORD_DICTIONARY[word]?.hy ?? null;
+        const variants = [normalizedWord];
+        if (normalizedWord.endsWith("ies") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -3) + "y");
+        if (normalizedWord.endsWith("ves") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -3) + "f", normalizedWord.slice(0, -3) + "fe");
+        if (normalizedWord.endsWith("ing") && normalizedWord.length > 5) variants.push(normalizedWord.slice(0, -3), normalizedWord.slice(0, -3) + "e");
+        if (normalizedWord.endsWith("ied") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -3) + "y");
+        if (normalizedWord.endsWith("ed") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -2), normalizedWord.slice(0, -1), normalizedWord.slice(0, -2) + "e");
+        if (normalizedWord.endsWith("es") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -2), normalizedWord.slice(0, -1));
+        if (normalizedWord.endsWith("s") && normalizedWord.length > 3) variants.push(normalizedWord.slice(0, -1));
+        if (normalizedWord.endsWith("ly") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -2));
+        if (normalizedWord.endsWith("est") && normalizedWord.length > 5) variants.push(normalizedWord.slice(0, -3), normalizedWord.slice(0, -3) + "e");
+        if (normalizedWord.endsWith("er") && normalizedWord.length > 4) variants.push(normalizedWord.slice(0, -2), normalizedWord.slice(0, -1));
+        const localMeaning = [...new Set(variants)].map(dictionaryMeaning).find(Boolean);
         if (localMeaning) return { text: localMeaning, error: false, cached: false };
       }
       return { text: "Թարգմանության ծառայությունը դեռ միացված չէ։", error: true, cached: false };
