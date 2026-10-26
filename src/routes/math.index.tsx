@@ -571,10 +571,27 @@ function MathPage() {
         <>
           <h1 className="text-2xl font-black sm:text-3xl">{tx("Մաթեմատիկայի թեստ")}</h1>
           {examError && <p role="alert" className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-medium text-destructive">{examError}</p>}
-          {progress.exams[0] && (
-            <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
-              {tx("Վերջին արդյունքը՝ {c} / {t}", { c: progress.exams[0].correct, t: progress.exams[0].total })}
-            </p>
+          {progress.exams.length > 0 && (
+            <section className="space-y-3 rounded-2xl border bg-card p-4">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-black">{tx("Վերջին արդյունքները")}</h2>
+                <span className="text-xs text-muted-foreground">{tx("Մինչև 5 թեստ")}</span>
+              </div>
+              {progress.exams.slice(0, 5).map((result, i) => {
+                const percent = result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
+                return (
+                  <div key={result.date + "-" + i} className="space-y-2 rounded-xl bg-muted/40 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                      <span className="text-muted-foreground">{new Date(result.date).toLocaleDateString()}</span>
+                      <span className="font-bold">{result.correct} / {result.total} · {percent}%</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full rounded-full bg-primary transition-all" style={{ width: percent + "%" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
           )}
 
           <div className="grid gap-3 sm:grid-cols-2">
