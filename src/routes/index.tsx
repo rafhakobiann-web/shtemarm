@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
-import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS } from "@/lib/books";
+import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
@@ -313,7 +313,7 @@ function Index() {
           </div>
         </div>
         <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:gap-3 lg:mt-0 lg:self-end lg:rounded-2xl lg:border lg:border-white/15 lg:bg-white/5 lg:p-4 lg:backdrop-blur-sm">
-          <div><p className="text-xl font-black sm:text-2xl">5</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
+          <div><p className="text-xl font-black sm:text-2xl">9</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
           <div><p className="text-xl font-black sm:text-2xl">2</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մաթ. գիրք")}</p></div>
           <div><p className="text-xl font-black sm:text-2xl">24/7</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մուտք")}</p></div>
         </div>
@@ -428,6 +428,16 @@ function Index() {
             ),
           )}
         </SubjectRow>
+        <SubjectRow title={tx("Ֆիզիկա · Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta>
+          {STARTER_SUBJECT_BOOKS.map((b) => {
+            const subject = ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number, string>)[b.id]!;
+            return (
+              <Link key={b.id} to="/subject/$subject" params={{ subject }} className={TILE}>
+                <TileBody cover={b.cover} title={tx(b.title)} sub={tx("Ուսումնական 12 հարց · ԳԹԿ 2027 ուղեցույց")} />
+              </Link>
+            );
+          })}
+        </SubjectRow>
       </section>
 
       <section className="space-y-6">
@@ -455,7 +465,13 @@ function Index() {
           <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
-          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("8 բաժնից կազմվող անհատական թեստ")} icon={<BookOpen className="size-5" />} />
+          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
+          {STARTER_SUBJECT_BOOKS.map((b) => (
+            <ExamTile key={b.id} to="/subject/$subject"
+              params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[b.id]! }}
+              title={tx(b.title)} sub={tx("Ուսումնական հարցեր և ԳԹԿ-ի 2027 ուղեցույց")}
+              icon={<BookOpen className="size-5" />} />
+          ))}
         </div>
       </section>
       <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
