@@ -1,0 +1,152 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowLeft, BookOpen, Bug, CheckCircle2, Clock3, Code2, Languages, Sparkles, Wrench } from "lucide-react";
+import { useLang } from "@/lib/lang";
+
+export const Route = createFileRoute("/changelog")({
+  head: () => ({
+    meta: [
+      { title: "Shtemarm · Changelog" },
+      { name: "description", content: "Shtemarm updates, fixes, and learning-platform progress." },
+    ],
+  }),
+  component: ChangelogPage,
+});
+
+const updates = [
+  {
+    date: "October 26, 2026",
+    label: "Latest update",
+    title: "Vocabulary expansion",
+    titleHy: "Բառապաշարի ընդլայնում",
+    icon: Languages,
+    tone: "bg-violet-500/10 text-violet-600 dark:text-violet-300",
+    items: [
+      { emoji: "📚", en: "Added 1,104 English–Armenian vocabulary entries across two commits (649 + 455).", hy: "Երկու commit-ով ավելացվել է անգլերեն-հայերեն բառարանի 1,104 նոր գրառում (649 + 455)։" },
+      { emoji: "🧹", en: "Kept existing dictionary keys out of the additions to reduce duplicate entries.", hy: "Նոր գրառումները ավելացնելիս խուսափել ենք բառարանում արդեն առկա բանալիների կրկնությունից։" },
+      { emoji: "🔎", en: "Next: compare all three English books against the dictionary and verify the exact remaining word count.", hy: "Հաջորդը՝ համեմատել անգլերենի երեք գրքերը բառարանի հետ և ճշտել չթարգմանված բառերի իրական քանակը։" },
+    ],
+  },
+  {
+    date: "October 25, 2026",
+    label: "Platform improvements",
+    title: "Usability, loading, and math fixes",
+    titleHy: "Հարմարավետության, բեռնման և մաթեմատիկայի շտկումներ",
+    icon: Wrench,
+    tone: "bg-sky-500/10 text-sky-600 dark:text-sky-300",
+    items: [
+      { emoji: "📱", en: "Homepage and mobile-layout redesign work was recorded in the recent change set.", hy: "Վերջին փոփոխությունների ընթացքում կատարվել են գլխավոր էջի և բջջային դասավորության վերափոխման աշխատանքներ։" },
+      { emoji: "⚡", en: "Loading/history and mini-game improvements were included in the recent pull-request work.", hy: "Վերջին pull request-երում ներառվել են բեռնման, պատմության և մինի խաղերի բարելավումներ։" },
+      { emoji: "🛠️", en: "A math-books crash fix was recorded; broader math question coverage and answer verification remain in progress.", hy: "Գրանցվել է մաթեմատիկայի գրքերի խափանման շտկում․ առաջադրանքների ամբողջական ծածկույթն ու պատասխանների ստուգումը դեռ ընթացքի մեջ են։" },
+    ],
+  },
+  {
+    date: "October 23, 2026",
+    label: "Content work",
+    title: "Math-book reconstruction",
+    titleHy: "Մաթեմատիկայի գրքերի վերակազմավորում",
+    icon: BookOpen,
+    tone: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+    items: [
+      { emoji: "✍️", en: "Started replacing screenshot-based math material with selectable text recreated from the supplied books.", hy: "Սկսվել է մաթեմատիկայի՝ նկարների վրա հիմնված նյութերը գրքերից վերակազմված ընտրելի տեքստով փոխարինելու աշխատանքը։" },
+      { emoji: "🧮", en: "The first reconstructed task was committed; full exercise coverage and official-answer checks are still pending.", hy: "Commit է արվել վերակազմված առաջին առաջադրանքը․ բոլոր վարժությունների ներառումն ու պաշտոնական պատասխանների ստուգումը դեռ առջևում են։" },
+    ],
+  },
+  {
+    date: "October 20, 2026",
+    label: "Learning experience",
+    title: "English practice tools",
+    titleHy: "Անգլերենի ուսուցման գործիքներ",
+    icon: Sparkles,
+    tone: "bg-amber-500/10 text-amber-600 dark:text-amber-300",
+    items: [
+      { emoji: "🎯", en: "Configurable A1–C1 level-test work and English-to-Armenian vocabulary support are part of the current platform direction.", hy: "A1–C1 մակարդակների կարգավորվող թեստերն ու անգլերենից հայերեն բառային աջակցությունը հարթակի զարգացման ընթացիկ ուղղություններից են։" },
+      { emoji: "🧪", en: "Question/answer integrity, exam-format validation, and reliable AI explanation caching still need further verification.", hy: "Հարցերի ու պատասխանների ճշտությունը, քննության ձևաչափի վավերացումը և AI բացատրությունների հուսալի քեշավորումը դեռ լրացուցիչ ստուգման կարիք ունեն։" },
+    ],
+  },
+];
+
+function ChangelogPage() {
+  const lang = useLang();
+  const en = lang === "en";
+  return (
+    <main className="mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6 sm:py-10">
+      <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+        <ArrowLeft className="size-4" />{en ? "Back to home" : "Վերադառնալ գլխավոր էջ"}
+      </Link>
+
+      <section className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/10 via-card to-violet-500/10 p-6 sm:p-10">
+        <div className="pointer-events-none absolute -right-8 -top-12 size-48 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border bg-background/70 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-primary">
+            <Clock3 className="size-3.5" />{en ? "Project updates" : "Նախագծի թարմացումներ"}
+          </span>
+          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{en ? "What's new" : "Ի՞նչն է նոր"}</h1>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            {en ? "A transparent timeline of Shtemarm improvements, fixes, and work still in progress." : "Shtemarm-ի բարելավումների, շտկումների և դեռ ընթացքի մեջ գտնվող աշխատանքների թափանցիկ ժամանակագրություն։"}
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">✨ {en ? "Feature updates" : "Նոր հնարավորություններ"}</span>
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">🛠️ {en ? "Fixes" : "Շտկումներ"}</span>
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">📈 {en ? "Progress tracking" : "Առաջընթացի հետևում"}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-3">
+        <article className="rounded-2xl border bg-card p-4">
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "New dictionary entries" : "Բառարանի նոր գրառումներ"}</p>
+          <p className="mt-1 text-3xl font-black tabular-nums">+1,104</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "Committed on Oct 26" : "Commit՝ հոկտեմբերի 26-ին"}</p>
+        </article>
+        <article className="rounded-2xl border bg-card p-4">
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "English books" : "Անգլերենի գրքեր"}</p>
+          <p className="mt-1 text-3xl font-black">3</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "Coverage audit still needed" : "Ծածկույթի ստուգումը դեռ պետք է"}</p>
+        </article>
+        <article className="rounded-2xl border bg-card p-4">
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "Status" : "Կարգավիճակ"}</p>
+          <p className="mt-1 text-xl font-black">{en ? "In progress" : "Ընթացքի մեջ"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "Entries added ≠ all words verified" : "Նոր գրառումները դեռ ամբողջական ստուգում չեն նշանակում"}</p>
+        </article>
+      </section>
+
+      <section className="space-y-5">
+        {updates.map((update, index) => {
+          const Icon = update.icon;
+          return (
+            <article key={update.date} className="relative grid gap-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-6">
+              <div className="pt-2 sm:text-right">
+                <p className="text-sm font-black">{update.date}</p>
+                <p className="mt-1 text-xs font-semibold text-muted-foreground">{en ? update.label : index === 0 ? "Վերջին թարմացում" : index === 1 ? "Հարթակի բարելավումներ" : index === 2 ? "Բովանդակության աշխատանք" : "Ուսուցման փորձառություն"}</p>
+              </div>
+              <div className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6">
+                <div className="flex items-start gap-3">
+                  <span className={`grid size-11 shrink-0 place-items-center rounded-2xl ${update.tone}`}><Icon className="size-5" /></span>
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-black sm:text-xl">{en ? update.title : update.titleHy}</h2>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{en ? "Update log" : "Փոփոխությունների մատյան"}</p>
+                  </div>
+                </div>
+                <ul className="mt-5 space-y-3">
+                  {update.items.map((item) => (
+                    <li key={item.en} className="flex gap-3 text-sm leading-relaxed sm:text-[15px]">
+                      <span className="mt-0.5 shrink-0 text-base" aria-hidden="true">{item.emoji}</span>
+                      <span>{en ? item.en : item.hy}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section className="rounded-2xl border border-dashed p-5 text-sm leading-relaxed text-muted-foreground">
+        <div className="flex gap-3">
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
+          <p>{en ? "We mark unfinished work as in progress rather than presenting it as complete. Dates summarize recorded project work; they are not a guarantee that every feature is fully verified." : "Չավարտված աշխատանքները նշվում են որպես ընթացքի մեջ, այլ ոչ թե ներկայացվում ավարտված։ Ամսաթվերը ամփոփում են գրանցված աշխատանքը և չեն նշանակում, որ յուրաքանչյուր գործառույթ ամբողջությամբ ստուգված է։"}</p>
+        </div>
+      </section>
+    </main>
+  );
+}
