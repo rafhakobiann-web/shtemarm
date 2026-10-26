@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Calculator, Eraser, Pencil, Undo2, X } from "lucide-react";
+import { Calculator, Eraser, Pencil, Undo2, X, Sigma, Copy, Check } from "lucide-react";
+import { RichText, useKatex } from "@/components/MathText";
 import { useTx } from "@/lib/lang";
 
 /* ---------- scientific evaluator (no eval) ---------- */
@@ -347,19 +348,65 @@ export function DrawingPad() {
 /** Toolbar shown on math pages: opens a calculator or a drawing board. */
 export function MathTools() {
   const tx = useTx();
-  const [open, setOpen] = useState<"calc" | "draw" | null>(null);
+  const [open, setOpen] = useState<"calc" | "draw" | "latex" | null>(null);
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button type="button" onClick={() => setOpen(open === "calc" ? null : "calc")} className={`inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold ${open === "calc" ? "bg-blue-700 text-white" : "border bg-card"}`}>
           <Calculator className="size-4" /> {tx("Հաշվիչ")}
         </button>
         <button type="button" onClick={() => setOpen(open === "draw" ? null : "draw")} className={`inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold ${open === "draw" ? "bg-blue-700 text-white" : "border bg-card"}`}>
           <Pencil className="size-4" /> {tx("Գրատախտակ")}
         </button>
+        <button type="button" onClick={() => setOpen(open === "latex" ? null : "latex")}
+          className={"inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold " +
+            (open === "latex" ? "bg-primary text-primary-foreground" : "border bg-card")}>
+          <Sigma className="size-4"/> {tx("LaTeX")}
+        </button>
       </div>
       {open === "calc" && <div className="rounded-3xl border bg-card p-4 shadow-sm"><CalculatorPanel /></div>}
       {open === "draw" && <div className="rounded-3xl border bg-card p-4 shadow-sm"><DrawingPad /></div>}
+      {open === "latex" && <div className="rounded-3xl border bg-card p-4 shadow-sm"><FormulaWorkbench /></div>}
     </div>
   );
+}
+
+
+const FORMULAS: readonly { label: string; tex: string }[] = [
+  { label: "Կոտորակ", tex: "\\frac{a}{b}" },
+  { label: "Քառակուսի արմատ", tex: "\\sqrt{x}" },
+  { label: "Աստիճան", tex: "x^{2}" },
+  { label: "Եռանկյունաչափություն", tex: "\\sin^{2} x+\\cos^{2} x=1" },
+  { label: "Քառակուսային բանաձև", tex: "x=\\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}" },
+  { label: "Ինտեգրալ", tex: "\\int_{a}^{b} f(x)\\,dx" },
+];
+/** TeX editor is only a formula composer/preview, never executes the input. */
+export function FormulaWorkbench() {
+  const tx = useTx();
+  const katex = useKatex();
+  const [formula,setFormula] = useState("\\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}");
+  const [copied,setCopied] = useState(false);
+  return <section className="space-y-4">
+    <div className="flex items-center justify-between gap-3">
+      <h3 className="font-black">{tx("LaTeX · Բանաձևերի խմբագիր")}</h3>
+      <button type="button" className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm" onClick={async () => {
+        try { await navigator.clipboard.writeText(formula);setCopied(true); }
+        catch { setCopied(false); }
+      }}>{copied ? <Check className="size-4"/> : <Copy className="size-4"/>}{tx(copied ? "Պատճենված է" : "Պատճենել")}</button>
+    </div>
+    <p className="text-sm text-muted-foreground">{tx("Գրիր LaTeX բանաձև և անմիջապես տես դրա մաթեմատիկական տեսքը։")}</p>
+    <div className="flex flex-wrap gap-2">
+      {FORMULAS.map(f => <button type="button" key={f.label} onClick={() => { setFormula(f.tex);setCopied(false); }}
+        className="rounded-full border border-primary/20 bg-primary/5 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10">
+        {tx(f.label)}
+      </button>)}
+    </div>
+    <textarea aria-label={tx("LaTeX բանաձև")} spellCheck={false} rows={3}
+      className="w-full resize-y rounded-2xl border bg-background p-3 font-mono text-sm outline-offset-2"
+      value={formula} maxLength={1500} onChange={e => {setFormula(e.target.value);setCopied(false);}}/>
+    <div className="min-h-24 overflow-x-auto rounded-2xl border bg-muted/30 p-4 text-center text-xl">
+      {katex ? <RichText text={"$$"+formula+"$$"} katex={katex}/> : <span className="font-mono text-sm">{formula}</span>}
+    </div>
+    <p className="text-xs text-muted-foreground">{tx("Սա բանաձևի դիտարկիչ է, ոչ հավասարումներ լուծող հաշվիչ։")}</p>
+  </section>;
 }

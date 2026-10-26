@@ -7,6 +7,7 @@ import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 import { useTx } from "@/lib/lang";
+import { RichExplanation } from "@/components/RichExplanation";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -128,10 +129,7 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [failed, setFailed] = useState(false);
   return (
     <div>
-    {text && <div role={failed ? "alert" : "status"} className="animate-pop mt-3 rounded-xl border border-sky/30 bg-secondary/60 p-4 text-sm leading-relaxed">
-      <p className="mb-2 flex items-center gap-2 font-black text-foreground"><Sparkles className="size-4 shrink-0 text-primary" />{tx("Բացատրություն")}</p>
-      <div className="whitespace-pre-line">{text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => part.startsWith("**") ? <b key={i}>{part.slice(2, -2)}</b> : <span key={i}>{part}</span>)}</div>
-    </div>}
+    {text && <RichExplanation text={text} error={failed}/>}
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
