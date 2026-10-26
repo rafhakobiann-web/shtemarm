@@ -35,6 +35,9 @@ export const BIO_BOOKS = [
   { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.svg", locked: true },
 ] as const;
 
+/** Additional ORIGINAL Biology study exercises. Not official Book III or IV. */
+export const BIO_SUPPLEMENT = { id: 35, title: "Կենսաբանություն", sub: "Լրացուցիչ թեմատիկ վարժություններ · 48 հարց", cover: "/covers/bio-supplement.svg" } as const;
+
 /** Original Armenian-language practice bank; official past-paper links are shown separately. */
 export const ARMENIAN_BOOKS = [
   { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 32 հարց", cover: "/covers/armenian-language.svg" },
@@ -53,6 +56,7 @@ export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; 
   ...BOOKS,
   ...HISTORY_BOOKS,
   ...BIO_BOOKS.filter((b) => !b.locked),
+  BIO_SUPPLEMENT,
   ...ARMENIAN_BOOKS,
   ...STARTER_SUBJECT_BOOKS,
 ];
@@ -77,7 +81,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id === 35 ? "/data/bio-supplement.json" : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then((r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
