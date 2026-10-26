@@ -123,7 +123,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/changelog': typeof ChangelogRoute
-  '/changelog': typeof ChangelogRoute
   '/study-tools': typeof StudyToolsRoute
   '/auth': typeof AuthRoute
   '/calc': typeof CalcRoute
@@ -221,6 +220,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/changelog'
     | '/auth'
     | '/calc'
     | '/chat'
