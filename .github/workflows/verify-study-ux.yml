@@ -1,0 +1,49 @@
+name: Verify learning UX, assessments, mini-games and source question integrity
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/assessment-builder.ts'
+      - 'src/routes/assessment-builder.tsx'
+      - 'src/routes/flashcards.tsx'
+      - 'src/components/AdditionalMiniGames.tsx'
+      - 'src/routes/mini-games.tsx'
+      - 'src/routes/study-tools.tsx'
+      - 'src/components/BiologyWorkspace.tsx'
+      - 'src/lib/books.ts'
+      - 'src/i18n/ru.ts'
+      - 'src/components/PersonalizationControls.tsx'
+      - 'src/routes/index.tsx'
+      - 'src/components/MathQuestionText.tsx'
+      - 'src/test/study-ux.test.tsx'
+      - 'scripts/audit-math-requirements.mjs'
+      - 'scripts/audit-biology-banks.mjs'
+      - '.github/workflows/verify-study-ux.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - run: bun install --frozen-lockfile
+      - name: Inspect two Biology books for skipped questions and wrong answer keys
+        run: node scripts/audit-biology-banks.mjs
+      - name: Compare Mathematics question text references to original book transcription
+        run: node scripts/audit-math-requirements.mjs
+      - name: Test study tools and existing question bank behavior
+        run: bunx vitest run src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
+      - name: Verify production build
+        run: bun run build
+      - name: Upload Math source-wording audit for manual PDF review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathematics-requirement-audit
+          path: public/data/math-requirement-audit.json
+          if-no-files-found: ignore

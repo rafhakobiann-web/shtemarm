@@ -82,7 +82,7 @@ export function loadBook(id: number): Promise<Book> {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
         })
-        .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : book)
+        .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
           cache.delete(id);
           throw error;
@@ -107,20 +107,51 @@ export const BIOLOGY_SECTION_NAMES: Readonly<Record<number, string>> = {
   5: "Էվոլյուցիոն տեսություն",
 };
 
+/** Correct display-only source import artifacts without altering answer keys.
+ * No speculative rewrite of Biology question wording: ambiguous typos remain
+ * available for review against the original published question books.
+ */
+export function normalizeBiologyText(text: string): string {
+  return text.replace(/\\n/g, "\n").replace(/ {3,}tc(?=$|\n)/gi,"").replace(/[ \t]{3,}/g," ").trim();
+}
+export function normalizeBiologyFirstBook(book: Book): Book {
+  return {
+    ...book,
+    sections: book.sections.map(section=>({
+      ...section,
+      label: section.title || (!section.label || /^\d+$/.test(section.label) ? "Բաժին "+section.n : section.label),
+      instr_hy: section.instr_hy || "Ընտրե՛ք ճիշտ պատասխանը։",
+      units: section.units.map(unit=>unit.kind==="mc"?{
+        ...unit,
+        passage: normalizeBiologyText(unit.passage),
+        questions: unit.questions.map(q=>({...q, stem:normalizeBiologyText(q.stem),
+          options:Object.fromEntries(Object.entries(q.options).map(([k,v])=>[k,normalizeBiologyText(v)]))})),
+      }:unit),
+    })),
+  };
+}
+
 export function normalizeBiologySecondBook(book: Book): Book {
   return {
     ...book,
     sections: book.sections.map((section) => ({
       ...section,
       label: BIOLOGY_SECTION_NAMES[section.n] ?? section.label,
-      instr_hy: section.instr_hy || "Ընտրել ճիշտ պատասխանը",
+      instr_hy: section.instr_hy || "Ընտրե՛ք ճիշտ պատասխանը։",
       units: section.units.flatMap((unit) => {
-        if ((unit.kind !== "mc" && unit.kind !== "num") || unit.questions.length <= 1) return [unit];
+        if ((unit.kind !== "mc" && unit.kind !== "num") || unit.questions.length <= 1) {
+          if(unit.kind !== "mc") return [unit];
+          return [{...unit, passage:normalizeBiologyText(unit.passage),
+            questions:unit.questions.map(q=>({...q,stem:normalizeBiologyText(q.stem),
+              options:Object.fromEntries(Object.entries(q.options).map(([k,v])=>[k,normalizeBiologyText(v)]))}))}];
+        }
         return unit.questions.map((question, index) => ({
           ...unit,
           id: `${unit.id}:q${index + 1}`,
           label: question.n,
-          questions: [question],
+          passage: normalizeBiologyText(unit.passage),
+          questions: [unit.kind==="mc" ? {...question, stem:normalizeBiologyText(question.stem),
+            options:Object.fromEntries(Object.entries(question.options).map(([k,v])=>[k,normalizeBiologyText(v)]))} : question],
         }));
       }),
     })),
@@ -132,11 +163,11 @@ export function unitPoints(u: Unit) {
 }
 
 export const KIND_HY: Record<Unit["kind"], string> = {
-  mc: "Ընտրել ճիշտ տարբերակը",
-  set: "Ընտրել ճիշտ համարները",
-  seq: "Տեղադրել համարները ըստ բացթողումների",
-  match: "Համապատասխանեցնել",
-  num: "Գրեք պատասխանի թիվը",
+  mc: "Ընտրե՛ք ճիշտ պատասխանը",
+  set: "Ընտրե՛ք ճիշտ համարները",
+  seq: "Լրացրե՛ք բացթողումները ըստ հերթականության",
+  match: "Համապատասխանեցրե՛ք",
+  num: "Գրե՛ք թվային պատասխանը",
 };
 
 export function shuffle<T>(a: T[]): T[] {

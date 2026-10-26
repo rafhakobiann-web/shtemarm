@@ -16,20 +16,19 @@ const KINDS: Unit["kind"][] = ["mc", "set", "seq", "match", "num"];
 const fieldClass = "h-12 w-full rounded-xl border bg-background px-3 text-sm";
 type Attempt = { units: Unit[]; title: string; minutes: number; practice: boolean };
 
-async function loadBiologyEntries(): Promise<HistoryEntry[]> {
-  const [first, second] = await Promise.all([loadBook(31), loadBook(32)]);
-  return [
-    ...historyBookEntries(first, 1),
-    ...historyBookEntries(second, 2),
-  ];
+async function loadBiologyEntries(source: string): Promise<HistoryEntry[]> {
+  // Only download the selected book on mobile. The all-books option loads both.
+  const bookIds = source === "book-1" ? [31] : source === "book-2" ? [32] : [31,32];
+  const books = await Promise.all(bookIds.map((id) => loadBook(id)));
+  return books.flatMap((book,i) => historyBookEntries(book,bookIds[i]!-30));
 }
 
-/** Actual available book questions only; 80 is a practice count, not an invented official blueprint. */
+/** Actual verified available book questions; test blueprint is independent from this pool. */
 export function BiologyWorkspace() {
   const tx = useTx();
   const data = useQuery({
-    queryKey: ["biology-configurable-pool-v1"],
-    queryFn: loadBiologyEntries,
+    queryKey: ["biology-configurable-pool-v2", source],
+    queryFn: () => loadBiologyEntries(source),
     staleTime: Infinity,
   });
   const [source, setSource] = useState("all");
@@ -42,8 +41,8 @@ export function BiologyWorkspace() {
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [error, setError] = useState("");
   const entries = useMemo(
-    () => (data.data ?? []).filter((entry) => source === "all" || entry.source === source),
-    [data.data, source],
+    () => data.data ?? [],
+    [data.data],
   );
   const names = [...new Set(entries.map((entry) => entry.section))];
   const allowedKinds = KINDS.filter((kind) => entries.some((entry) => entry.unit.kind === kind));

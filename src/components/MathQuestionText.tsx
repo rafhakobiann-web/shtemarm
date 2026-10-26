@@ -30,7 +30,7 @@ export function NativeMathText({ block }: { block: NativeMathBlock }) {
   </div>;
 }
 
-function TranscribedQuestion({ reference }: { reference: MathTranscriptionRef }) {
+function TranscribedQuestion({ reference, fallback }: { reference: MathTranscriptionRef; fallback: string }) {
   const tx = useTx();
   const q = useQuery({
     queryKey: ["math-transcription", reference.book, reference.section],
@@ -46,7 +46,11 @@ function TranscribedQuestion({ reference }: { reference: MathTranscriptionRef })
   const task = q.data?.tasks[String(reference.task)];
   const body = task?.questions[reference.sub-1];
   if (q.isPending) return <p role="status" className="p-3 text-sm text-muted-foreground">{tx("Բեռնվում է…")}</p>;
-  if (!task || !body) return <div role="alert" className="p-3 text-sm"><p>{tx("Չհաջողվեց բեռնել առաջադրանքը։")}</p><button type="button" className="mt-2 underline" onClick={() => void q.refetch()}>{tx("Կրկին փորձել")}</button></div>;
+  if (!task || !body) return <div role="alert" className="space-y-2 rounded-xl border border-amber-500/30 bg-muted/40 p-3 text-sm">
+    <p>{tx("Գրքի բնօրինակ թվայնացումը ժամանակավորապես անհասանելի է։ Տրված է պահուստային տեքստը․ անհրաժեշտության դեպքում համեմատիր բնօրինակի հետ։")}</p>
+    {fallback ? <p className="whitespace-pre-line"><MathContent text={fallback}/></p> : null}
+    <button type="button" className="font-semibold text-primary underline" onClick={() => void q.refetch()}>{tx("Կրկին բեռնել գրքի բնօրինակը")}</button>
+  </div>;
   return <div className="space-y-3" data-transcription={`${reference.book}:${reference.section}:${reference.task}:${reference.sub}`}>
     {task.stem.length > 0 && <div className="border-b border-border/60 pb-2">{task.stem.map((block,i) => <NativeMathText key={`s${i}`} block={block} />)}</div>}
     {body.map((block,i) => <NativeMathText key={`q${i}`} block={block} />)}
@@ -55,6 +59,6 @@ function TranscribedQuestion({ reference }: { reference: MathTranscriptionRef })
 
 export function MathQuestionText({ question }: { question: Pick<MathQuestion, "prompt" | "transcription"> }) {
   return <div className="min-w-0 rounded-xl bg-muted/40 p-3 text-[15px] leading-relaxed sm:p-4 sm:text-base">
-    {question.transcription ? <TranscribedQuestion reference={question.transcription} /> : <p className="whitespace-pre-line"><MathContent text={question.prompt}/></p>}
+    {question.transcription ? <TranscribedQuestion reference={question.transcription} fallback={question.prompt} /> : <p className="whitespace-pre-line"><MathContent text={question.prompt}/></p>}
   </div>;
 }
