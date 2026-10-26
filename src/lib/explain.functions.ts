@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { explanationError, explanationKey, offlineEnglishExplanation, readGeminiStream, readGroqStream } from "./explanation";
+import { explanationKey, offlineEnglishExplanation } from "./explanation";
 
 const Input = z.object({
   instruction: z.string().max(500),
@@ -13,18 +13,11 @@ const Input = z.object({
 export const explainAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
+    const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
     const cacheKey = await explanationKey(data);
-    try {
-      const { data: cached } = await supabaseAdmin
-        .from("explanation_cache")
-        .select("explanation")
-        .eq("cache_key", cacheKey)
-        .maybeSingle();
-      if (cached) return { text: cached.explanation, cached: true, error: false };
-    } catch {
-      // Keep the explanation flow available even if the optional cache is offline.
-    }
+    const cached = await getSavedExplanation(cacheKey);
+    if (cached) return { text: cached, cached: true, error: false, offline: false };
 
     const wrong = data.chosen && data.chosen !== data.correct;
     const prompt = `Դու փորձառու ուսուցիչ ես, որը հայ աշակերտներին օգնում է անգլերենից, կենսաբանությունից, հայոց պատմությունից, հայոց լեզվից և այլ առարկաներից։ Որոշիր հարցի առարկան և բացատրիր հենց այդ առարկայի կանոններով։
@@ -39,76 +32,16 @@ ${data.passage ? `Տեքստ:\n${data.passage}\n` : ""}Հարց:\n${data.questio
 Ճիշտ պատասխան: ${data.correct}
 ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշակերտը չի պատասխանել։"}`;
 
-    const groqKey = process.env["GROQ_API_KEY"];
-    const geminiKey = process.env["GEMINI_API_KEY"];
-
-    if (!groqKey && !geminiKey) {
-      return {
-        text: offlineEnglishExplanation(data),
-        cached: false,
-        error: false,
-        offline: true,
-      };
+    const ai = await generateExplanation(prompt, {
+      gemini: process.env["GEMINI_API_KEY"],
+      groq: process.env["GROQ_API_KEY"],
+    });
+    if (ai.ok) {
+      await saveExplanation(cacheKey, ai.text);
+      return { text: ai.text, cached: false, error: false, offline: false };
     }
-
-    try {
-      let res: Response;
-      let isGroq = false;
-
-      if (groqKey) {
-        isGroq = true;
-        res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: { 
-            "Authorization": `Bearer ${groqKey}`, 
-            "Content-Type": "application/json" 
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [{ role: "user", content: prompt }],
-            stream: true,
-          }),
-        });
-      }
-
-      if ((!groqKey || !res!.ok) && geminiKey) {
-        isGroq = false;
-        const callGemini = (model: string) =>
-          fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "x-goog-api-key": geminiKey },
-              body: JSON.stringify({
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-              }),
-            }
-          );
-
-        // Flash-lite first for speed; the stronger model is only a fallback.
-        res = await callGemini("gemini-3.5-flash-lite");
-        if (!res.ok) {
-          res = await callGemini("gemini-3.8-flash");
-        }
-      }
-
-      if (!res! || !res.ok || !res.body) {
-        return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
-      }
-
-      const result = isGroq ? await readGroqStream(res.body) : await readGeminiStream(res.body);
-      
-      if (result.blocked) return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
-      if (!result.text) return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
-
-      // Store in the background so the learner gets the explanation without waiting for the write.
-      supabaseAdmin
-        .from("explanation_cache")
-        .upsert({ cache_key: cacheKey, explanation: result.text }, { onConflict: "cache_key" })
-        .then(() => undefined, () => undefined);
-
-      return { text: result.text, cached: false, error: false };
-    } catch {
-      return { text: offlineEnglishExplanation(data), cached: false, error: false, offline: true };
-    }
+    return {
+      text: errorToUser(ai.reason) + "\n\n" + offlineEnglishExplanation(data),
+      cached: false, error: true, offline: true,
+    };
   });
