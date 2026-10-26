@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen, GraduationCap, Languages, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
+import { GtcGuidePanel } from "@/components/GtcGuidePanel";
 import { HistorySession } from "@/components/HistorySession";
 import { KIND_HY, type Unit } from "@/lib/books";
 import { update } from "@/lib/progress";
@@ -35,7 +36,7 @@ export function WorkbookExamWorkspace({
   const [sections, setSections] = useState<string[] | null>(initialSection ? null : []);
   const [kinds, setKinds] = useState<Unit["kind"][]>(kindOrder);
   const [count, setCount] = useState(20);
-  const [minutes, setMinutes] = useState(0);
+  const [minutes, setMinutes] = useState(180);
   const [random, setRandom] = useState(true);
   const [practice, setPractice] = useState(false);
   const [active, setActive] = useState<Active | null>(null);
@@ -119,7 +120,7 @@ export function WorkbookExamWorkspace({
           <div className="grid gap-2 sm:grid-cols-2">
             {([
               ["custom", "Անհատական թեստ", "Ընտրիր քո ուզած հարցերը"],
-              ["full", english ? "80 միավորի նմուշային քննություն" : "80 միավորի փորձնական թեստ", "Ըստ առկա շտեմարանի"],
+              ["full", english ? "80 միավորի նմուշային քննություն" : "70 հարցանոց ուսումնական թեստ", "Ըստ առկա շտեմարանի"],
             ] as const).map(([option, title, desc]) => (
               <button key={option} type="button"
                 aria-pressed={mode === option}
@@ -201,7 +202,7 @@ export function WorkbookExamWorkspace({
             <p className="rounded-2xl border bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground">
               {tx(english
                 ? "Պահպանվում է անգլերենի 13 բաժինների 80 միավորանոց նմուշային քննության կառուցվածքը։ Բոլոր գրքերը ընտրելիս յուրաքանչյուր քննությունը կազմվում է մեկ պատահական շտեմարանից։"
-                : "80 միավորանոց փորձնական թեստ՝ հարցաշարի առկա առաջադրանքներից։ Սա հաստատված պաշտոնական քննական ձևաթուղթ չէ։")}
+                : "Ուսումնական տարբերակը բաղկացած է 70 առկա ընտրովի հարցից։ ԳԹԿ-ի 2027 թ. պաշտոնական թեստը նույնպես ունի 70 առաջադրանք, սակայն 80 միավոր՝ ներառյալ կարճ պատասխաններով առաջադրանքներն ու պնդումների փնջերը, որոնք այստեղ դեռ բացակայում են։")}
             </p>
           )}
           <div className="grid gap-4 sm:grid-cols-2">
@@ -240,6 +241,7 @@ export function WorkbookExamWorkspace({
           </Button>
         </section>
         <aside className="space-y-5">
+          {!english && <GtcGuidePanel subject="armenian" />}
           <section className="space-y-4 rounded-3xl border bg-card p-5">
             <h2 className="flex items-center gap-2 font-black"><GraduationCap className="size-5 text-primary" />{tx("Հասանելի գրքեր")}</h2>
             {(english ? [1, 2, 3] : [41]).map((id) => (

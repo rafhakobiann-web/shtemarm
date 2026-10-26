@@ -162,7 +162,23 @@ function Explain(props: { instruction: string; passage: string; question: string
 /** Numeric answers compare ignoring spaces, so "1 200" and "1200" count the same. */
 export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
 
+export function isGtcClaimsBundle(u: Unit): boolean {
+  return u.kind === "mc" && u.questions.length === 6 &&
+    /վեց պնդում|պնդումների փունջ/i.test(u.passage) &&
+    u.questions.every((q) => q.answer === "1" || q.answer === "2");
+}
+
 export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
+  if (u.kind === "mc" && isGtcClaimsBundle(u)) {
+    // GTC rules: +1 correct true/false, -1 incorrect, 0 "don't know".
+    // Deductions are clamped to zero *within the bundle*, not across the exam.
+    const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
+    const wrong = u.questions.filter((q) => {
+      const chosen = a?.mc?.[q.n];
+      return (chosen === "1" || chosen === "2") && chosen !== q.answer;
+    }).length;
+    return { got: Math.max(0, per.filter(Boolean).length - wrong), total: 6, per };
+  }
   if (u.kind === "mc") {
     const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
     return { got: per.filter(Boolean).length, total: per.length, per };
@@ -219,7 +235,7 @@ export function UnitCard(props: {
           <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
-          {Object.entries(q.options).map(([k, v]) => {
+          {Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options).map(([k, v]) => {
             const isC = k === q.answer;
             const isSel = chosen === k;
             return (

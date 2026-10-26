@@ -1,0 +1,289 @@
+{
+  "id": 52,
+  "provenance": "Shtemarm original practice questions, NOT official GTC question books or exam papers",
+  "examFormat": "practice-only",
+  "sections": [
+    {
+      "n": 1,
+      "label": "Ատոմի կառուցվածք",
+      "title": "Ատոմի կառուցվածք",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-1",
+          "label": "1",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "1",
+              "stem": "Ատոմի միջուկում որո՞նք են գտնվում։",
+              "options": {
+                "1": "պրոտոններ և նեյտրոններ",
+                "2": "էլեկտրոններ և պրոտոններ",
+                "3": "միայն էլեկտրոններ",
+                "4": "միայն իոններ"
+              },
+              "answer": "1"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-2",
+          "label": "2",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "2",
+              "stem": "Տարրի կարգաթիվը հիմնականում ցույց է տալիս ի՞նչ։",
+              "options": {
+                "1": "նեյտրոնների քանակը",
+                "2": "պրոտոնների քանակը",
+                "3": "նյութի զանգվածը",
+                "4": "մոլային ծավալը"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "label": "Պարբերական համակարգ",
+      "title": "Պարբերական համակարգ",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-3",
+          "label": "3",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "3",
+              "stem": "Ո՞ր նշանն է համապատասխանում թթվածին տարրին։",
+              "options": {
+                "1": "H",
+                "2": "O",
+                "3": "N",
+                "4": "C"
+              },
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-4",
+          "label": "4",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "4",
+              "stem": "Ինչպե՞ս են կոչվում պարբերական համակարգի ուղղահայաց սյունակները։",
+              "options": {
+                "1": "պարբերություններ",
+                "2": "խմբեր",
+                "3": "իզոտոպներ",
+                "4": "շերտեր"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "label": "Քիմիական կապ",
+      "title": "Քիմիական կապ",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-5",
+          "label": "5",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "5",
+              "stem": "NaCl միացության մեջ հիմնականում ի՞նչ կապ է առկա։",
+              "options": {
+                "1": "իոնային",
+                "2": "մետաղային",
+                "3": "ջրածնային",
+                "4": "ոչ բևեռային կովալենտ"
+              },
+              "answer": "1"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-6",
+          "label": "6",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "6",
+              "stem": "H₂ մոլեկուլում ի՞նչ կապ կա։",
+              "options": {
+                "1": "իոնային",
+                "2": "ոչ բևեռային կովալենտ",
+                "3": "մետաղային",
+                "4": "ջրածնային"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "label": "Թթուներ և հիմքեր",
+      "title": "Թթուներ և հիմքեր",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-7",
+          "label": "7",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "7",
+              "stem": "Չեզոք ջրային լուծույթում 25°C-ում pH-ը մոտավորապես որքա՞ն է։",
+              "options": {
+                "1": "1",
+                "2": "7",
+                "3": "11",
+                "4": "14"
+              },
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-8",
+          "label": "8",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "8",
+              "stem": "Ո՞րն է նատրիումի հիդրօքսիդի բանաձևը։",
+              "options": {
+                "1": "NaCl",
+                "2": "NaOH",
+                "3": "Na₂O",
+                "4": "HNO₃"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "label": "Ռեակցիաներ",
+      "title": "Ռեակցիաներ",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-9",
+          "label": "9",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "9",
+              "stem": "Ի՞նչ է պահպանվում քիմիական ռեակցիայի ընթացքում փակ համակարգում։",
+              "options": {
+                "1": "միայն ծավալը",
+                "2": "միայն ջերմաստիճանը",
+                "3": "ընդհանուր զանգվածը",
+                "4": "գույնը"
+              },
+              "answer": "3"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-10",
+          "label": "10",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "10",
+              "stem": "Ո՞րն է ածխաթթու գազի բանաձևը։",
+              "options": {
+                "1": "CO",
+                "2": "CO₂",
+                "3": "CaO",
+                "4": "H₂CO"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "label": "Օրգանական քիմիա",
+      "title": "Օրգանական քիմիա",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-chemistry-11",
+          "label": "11",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "11",
+              "stem": "Ածխաջրածիններն ինչի՞ց են կազմված։",
+              "options": {
+                "1": "ածխածնից և ջրածնից",
+                "2": "թթվածնից և ազոտից",
+                "3": "նատրիումից և քլորից",
+                "4": "կալցիումից և ֆոսֆորից"
+              },
+              "answer": "1"
+            }
+          ]
+        },
+        {
+          "id": "original-chemistry-12",
+          "label": "12",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "12",
+              "stem": "Մեթանի բանաձևը ո՞րն է։",
+              "options": {
+                "1": "C₂H₆",
+                "2": "CH₄",
+                "3": "CO₂",
+                "4": "CH₃OH"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

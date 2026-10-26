@@ -40,12 +40,21 @@ export const ARMENIAN_BOOKS = [
   { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 32 հարց", cover: "/covers/armenian-language.svg" },
 ] as const;
 
+/** Original Shtemarm starter practice banks; NOT transcriptions of GTC books. */
+export const STARTER_SUBJECT_BOOKS = [
+  { id: 51, title: "Ֆիզիկա", sub: "Ուսումնական ինքնաստուգում · 12 հարց", cover: "/covers/physics-practice.svg" },
+  { id: 52, title: "Քիմիա", sub: "Ուսումնական ինքնաստուգում · 12 հարց", cover: "/covers/chemistry-practice.svg" },
+  { id: 53, title: "Աշխարհագրություն", sub: "Ուսումնական ինքնաստուգում · 12 հարց", cover: "/covers/geography-practice.svg" },
+  { id: 54, title: "Ռուսաց լեզու", sub: "Ուսումնական ինքնաստուգում · 12 հարց", cover: "/covers/russian-practice.svg" },
+] as const;
+
 /** Every playable book page, English, history, biology and Armenian language. */
 export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; cover: string }> = [
   ...BOOKS,
   ...HISTORY_BOOKS,
   ...BIO_BOOKS.filter((b) => !b.locked),
   ...ARMENIAN_BOOKS,
+  ...STARTER_SUBJECT_BOOKS,
 ];
 
 const cache = new Map<number, Promise<Book>>();
@@ -68,7 +77,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then((r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();

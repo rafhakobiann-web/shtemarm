@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Dna } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
+import { GtcGuidePanel } from "@/components/GtcGuidePanel";
 import { HistorySession } from "@/components/HistorySession";
 import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
 import { KIND_HY, loadBook, type Unit } from "@/lib/books";
@@ -34,8 +35,8 @@ export function BiologyWorkspace() {
   const [source, setSource] = useState("all");
   const [sections, setSections] = useState<string[]>([]);
   const [kinds, setKinds] = useState<Unit["kind"][]>(KINDS);
-  const [count, setCount] = useState(40);
-  const [minutes, setMinutes] = useState(0);
+  const [count, setCount] = useState(70);
+  const [minutes, setMinutes] = useState(180);
   const [random, setRandom] = useState(true);
   const [practice, setPractice] = useState(false);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
@@ -133,7 +134,7 @@ export function BiologyWorkspace() {
             </>
           )}
           <div className="flex flex-wrap gap-2">
-            {[20, 40, 80].map((n) => (
+            {[20, 40, 70].map((n) => (
               <Button key={n} size="sm" variant={count === n ? "default" : "outline"} disabled={n > possible}
                 onClick={() => setCount(n)}>{tx("{n} հարց", { n })}</Button>
             ))}
@@ -183,9 +184,10 @@ export function BiologyWorkspace() {
             }}>
             {tx("Սկսել · {n} առաջադրանք", { n: count })}
           </Button>
-          <p className="text-xs text-muted-foreground">{tx("Քննությունն օգտագործում է շտեմարանի առկա հարցերը։ 80 առաջադրանք ընտրելը պաշտոնական քննության կառուցվածքի հավաստում չէ։")}</p>
+          <p className="text-xs text-muted-foreground">{tx("ԳԹԿ-ի 2027 թ. թեստն ունի 70 առաջադրանք և 80 միավոր։ Շտեմարանի կամայական 70 հարցը կարող է չունենալ պաշտոնական կարճ պատասխաններն ու երկու պնդումների փնջերը։")}</p>
         </section>
         <aside className="space-y-5">
+          <GtcGuidePanel subject="biology" />
           <HistoryOfficialPapers subject="biology" />
           <div className="space-y-3 rounded-3xl border bg-card p-5">
             <h2 className="flex items-center gap-2 font-black"><BookOpen className="size-4" />{tx("Կենսաբանության գրքեր")}</h2>

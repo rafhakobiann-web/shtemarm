@@ -1,0 +1,20 @@
+{
+  "subject": "Հայոց լեզու և հայ գրականություն",
+  "guide": "https://escs.gov.am/api/assets/68a6827e-4608-4d90-9bc5-3304a692d0c5",
+  "sourceArchive": "https://test.am/pdf.php?page=78",
+  "note": "Կայքում առկա 96 հարցանոց ներքին ուսումնական հավաքածուն չի փոխարինում ԳԹԿ-ի պաշտոնական շտեմարաններին։",
+  "currentPracticeFile": "public/data/armenian-book1.json",
+  "officialDigitizedBooks": 0,
+  "officialExam2027": {
+    "tasks": 70,
+    "points": 80,
+    "levelA": {
+      "tasks": 45,
+      "points": 50
+    },
+    "levelB": {
+      "tasks": 25,
+      "points": 30
+    }
+  }
+}

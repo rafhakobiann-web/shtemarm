@@ -35,7 +35,7 @@ describe("unified exam builder: content and answer integrity", () => {
     expect(makeWorkbookExam(armenian, "armenian", "all", "custom", entries, 20, false).units).toHaveLength(20);
     const full = makeWorkbookExam(armenian, "armenian", "all", "full", entries, 0, true);
     expect(full.bookId).toBe(41);
-    expect(full.units.reduce((n, u) => n + unitPoints(u), 0)).toBe(80);
+    expect(full.units.reduce((n, u) => n + unitPoints(u), 0)).toBe(70); // 70 practice items; official GTC maximum is 80 points with special bundles
   });
 
   it("rejects impossible custom counts rather than silently padding with repeats", () => {

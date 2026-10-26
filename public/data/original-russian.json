@@ -1,0 +1,289 @@
+{
+  "id": 54,
+  "provenance": "Shtemarm original practice questions, NOT official GTC question books or exam papers",
+  "examFormat": "practice-only",
+  "sections": [
+    {
+      "n": 1,
+      "label": "Орфография",
+      "title": "Орфография",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-1",
+          "label": "1",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "1",
+              "stem": "Укажите слово с безударной проверяемой гласной в корне.",
+              "options": {
+                "1": "вода",
+                "2": "собака",
+                "3": "корова",
+                "4": "молоко"
+              },
+              "answer": "1"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-2",
+          "label": "2",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "2",
+              "stem": "В каком слове пишется мягкий знак?",
+              "options": {
+                "1": "ночь",
+                "2": "врач",
+                "3": "плащ",
+                "4": "мяч"
+              },
+              "answer": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "label": "Лексика",
+      "title": "Лексика",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-3",
+          "label": "3",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "3",
+              "stem": "Подберите антоним к слову «широкий».",
+              "options": {
+                "1": "большой",
+                "2": "длинный",
+                "3": "узкий",
+                "4": "высокий"
+              },
+              "answer": "3"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-4",
+          "label": "4",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "4",
+              "stem": "Какое слово является синонимом слова «смелый»?",
+              "options": {
+                "1": "храбрый",
+                "2": "грустный",
+                "3": "медленный",
+                "4": "тихий"
+              },
+              "answer": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "label": "Морфология",
+      "title": "Морфология",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-5",
+          "label": "5",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "5",
+              "stem": "Какая часть речи обозначает действие?",
+              "options": {
+                "1": "существительное",
+                "2": "глагол",
+                "3": "прилагательное",
+                "4": "местоимение"
+              },
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-6",
+          "label": "6",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "6",
+              "stem": "Определите существительное.",
+              "options": {
+                "1": "быстрый",
+                "2": "читать",
+                "3": "книга",
+                "4": "весело"
+              },
+              "answer": "3"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-7",
+          "label": "7",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "7",
+              "stem": "Какое местоимение личное?",
+              "options": {
+                "1": "этот",
+                "2": "кто",
+                "3": "мы",
+                "4": "каждый"
+              },
+              "answer": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "label": "Синтаксис",
+      "title": "Синтаксис",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-8",
+          "label": "8",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "8",
+              "stem": "В предложении «Дети читают книги» найдите сказуемое.",
+              "options": {
+                "1": "дети",
+                "2": "читают",
+                "3": "книги",
+                "4": "нет сказуемого"
+              },
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-9",
+          "label": "9",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "9",
+              "stem": "Выберите словосочетание с согласованием.",
+              "options": {
+                "1": "читать вслух",
+                "2": "красивая картина",
+                "3": "идти домой",
+                "4": "любить музыку"
+              },
+              "answer": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "label": "Пунктуация",
+      "title": "Пунктуация",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-10",
+          "label": "10",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "10",
+              "stem": "Выберите правильный вариант: «Когда наступил вечер … мы вернулись домой».",
+              "options": {
+                "1": "ставится запятая",
+                "2": "ставится двоеточие",
+                "3": "не нужен знак",
+                "4": "ставится тире"
+              },
+              "answer": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "label": "Грамматика",
+      "title": "Грамматика",
+      "instr_hy": "Ընտրել ճիշտ տարբերակը",
+      "instr_en": "Choose the correct answer.",
+      "units": [
+        {
+          "id": "original-russian-11",
+          "label": "11",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "11",
+              "stem": "Какова форма множественного числа слова «стол»?",
+              "options": {
+                "1": "стола",
+                "2": "столы",
+                "3": "столом",
+                "4": "столу"
+              },
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "original-russian-12",
+          "label": "12",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "12",
+              "stem": "Выберите правильную форму: «Я ... книгу».",
+              "options": {
+                "1": "читают",
+                "2": "читаем",
+                "3": "читаю",
+                "4": "читаете"
+              },
+              "answer": "3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
