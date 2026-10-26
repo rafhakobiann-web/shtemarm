@@ -1,0 +1,30 @@
+name: Verify appearance presets and Liquid Glass
+
+on:
+  pull_request:
+    paths:
+      - 'src/styles.css'
+      - 'src/lib/theme.ts'
+      - 'src/components/PersonalizationControls.tsx'
+      - 'src/components/AppHeader.tsx'
+      - 'src/components/MobileNav.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/test/theme.test.ts'
+      - '.github/workflows/verify-appearance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/theme.test.ts src/test/app-routing.test.tsx src/test/workbook-exams.test.ts
+      - run: bun run build
