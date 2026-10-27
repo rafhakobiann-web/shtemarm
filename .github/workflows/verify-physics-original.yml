@@ -1,0 +1,30 @@
+name: Verify physics original-book transcription and OCR review pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/physics-original.ts'
+      - 'src/components/PhysicsOriginalWorkspace.tsx'
+      - 'src/routes/physics.original.tsx'
+      - 'src/components/PhysicsWorkspace.tsx'
+      - 'public/data/physics-original-transcribed.json'
+      - 'scripts/digitize-physics-scans.py'
+      - 'src/test/physics-original.test.ts'
+      - '.github/workflows/verify-physics-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/physics-original.test.ts src/test/physics.test.ts src/test/physics-source.test.ts
+      - run: bun run build

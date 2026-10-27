@@ -16,7 +16,7 @@ describe("two independent Shtemarm physics practice volumes",()=>{
     expect(PHYSICS_BOOKS.map(x=>x.id)).toEqual([61,62]);
     expect(books.map(b=>b.id)).toEqual([61,62]);
     expect(PHYSICS_BOOKS.every(meta=>ALL_BOOKS.some(b=>b.id===meta.id))).toBe(true);
-    expect(ASSESSMENT_SOURCES.find(x=>x.key==="physics")?.books).toEqual([61,62]);
+    expect(ASSESSMENT_SOURCES.find(x=>x.key==="physics")?.books).toEqual([61,62,63,64]);
     expect(PHYSICS_SOURCE.part1).toMatch(/^https:\/\/shtemaran\.am\//);
     expect(PHYSICS_SOURCE.part2).toMatch(/^https:\/\/shtemaran\.am\//);
   });
