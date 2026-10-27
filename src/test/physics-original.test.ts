@@ -1,6 +1,7 @@
 import {describe,expect,it} from "vitest";
 import {readFileSync} from "node:fs";
 import {scoreUnit} from "@/components/UnitCard";
+import {ALL_BOOKS,PHYSICS_SOURCE_BOOKS} from "@/lib/books";
 import {validatePhysicsOriginalBank,sourceAsUnit,sourceQuestionsForVolume,
  type PhysicsTranscriptionBank} from "@/lib/physics-original";
 
@@ -39,6 +40,19 @@ describe("real source-linked text exercises from uploaded physics PDFs",()=>{
     expect(b[0]?.answer).toBe("2");
     expect(a.find(q=>q.number===25)?.answer).toBe("1");
     expect(b.find(q=>q.number===24)?.answer).toBe("3");
+  });
+  it("registers both original volumes in the standard book/section study system",()=>{
+    expect(PHYSICS_SOURCE_BOOKS.map(x=>x.id)).toEqual([63,64]);
+    expect(PHYSICS_SOURCE_BOOKS.every(x=>ALL_BOOKS.some(b=>b.id===x.id))).toBe(true);
+    for(const n of [1,2]){
+      const book=JSON.parse(readFileSync("public/data/physics-original-book"+n+".json","utf8"));
+      expect(book.id).toBe(62+n);
+      expect(book.sections).toHaveLength(1);
+      const questionCount=book.sections[0].units.length;
+      expect(questionCount).toBe(n===1?16:15);
+      expect(book.sections[0].units.every((u:Record<string,unknown>)=>Number.isInteger(u.sourcePage))).toBe(true);
+    }
+    expect(readFileSync("src/routes/study.$bookId.$sectionId.tsx","utf8")).toContain("PhysicsSourceJump");
   });
   it("rejects duplicates, swapped answer key editions, incomplete options and empty stems",()=>{
     const damaged=JSON.parse(JSON.stringify(real)) as PhysicsTranscriptionBank;
