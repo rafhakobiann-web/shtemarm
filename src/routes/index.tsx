@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Microscope, Atom, LibraryBig, Target, Layers3, PanelTop } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
 });
 
 const TILE =
-  "glass group flex h-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/70 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+  "academy-bento group flex h-full min-w-0 flex-col overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/covers/math-1.svg" },
@@ -35,19 +35,22 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
   const isMath = text.includes("մաթեմատիկ") || text.includes("matem");
   const isBiology = text.includes("կենսաբան") || text.includes("bio");
   const isHistory = text.includes("պատմ");
+  const isPhysics = text.includes("ֆիզիկ") || text.includes("physics");
   const isArmenian = text.includes("հայոց լեզու") || text.includes("գրական") || text.includes("armenian");
   const isEnglish = text.includes("անգլերեն") || text.includes("շտեմարան") || text.includes("english");
   const subject = isMath ? "ՄԱԹԵՄԱՏԻԿԱ" : isBiology ? "ԿԵՆՍԱԲԱՆՈՒԹՅՈՒՆ" : isHistory ? "ՀԱՅՈՑ ՊԱՏՄՈՒԹՅՈՒՆ" : isArmenian ? "ՀԱՅՈՑ ԼԵԶՈՒ ԵՎ ԳՐԱԿԱՆՈՒԹՅՈՒՆ" : isEnglish ? "ԱՆԳԼԵՐԵՆ" : title.toLocaleUpperCase("hy-AM");
-  const Icon = isMath ? Calculator : isBiology ? Dna : isHistory || isArmenian || isEnglish ? BookOpen : Brain;
+  const Icon = isMath ? Calculator : isBiology ? Dna : isPhysics ? Atom : isHistory || isArmenian || isEnglish ? BookOpen : Brain;
   const palette = isMath
-    ? "from-blue-950 via-blue-800 to-cyan-600"
+    ? "from-slate-900 via-teal-900 to-cyan-800"
     : isBiology
-      ? "from-emerald-950 via-emerald-800 to-lime-600"
+      ? "from-teal-950 via-emerald-900 to-emerald-600"
       : isHistory
-        ? "from-orange-950 via-amber-800 to-orange-500"
+        ? "from-stone-900 via-amber-950 to-amber-700"
         : isArmenian
-          ? "from-violet-950 via-purple-800 to-fuchsia-500"
-          : "from-indigo-950 via-indigo-800 to-sky-500";
+          ? "from-slate-950 via-indigo-950 to-indigo-700"
+          : isPhysics
+            ? "from-slate-900 via-cyan-950 to-teal-700"
+            : "from-slate-900 via-teal-950 to-teal-700";
   const badge = isMath ? "01" : isBiology ? "02" : isHistory ? "03" : isArmenian ? "04" : "05";
   return (
     <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-gradient-to-br ${palette} p-3 text-white sm:p-4`} aria-label={subject}>
@@ -76,23 +79,33 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
     <>
-      <div className="cover-frame relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-muted sm:aspect-[3/4]" data-original-cover={cover}>
-        <SubjectCover title={title} sub={sub} />
+      <div className="cover-frame academy-book-cover relative aspect-[5/4] w-full shrink-0 overflow-hidden sm:aspect-[6/5]">
+        {cover ? <img src={cover} alt="" loading="lazy" decoding="async" className="size-full object-cover object-center" /> : <SubjectCover title={title} sub={sub} />}
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1 p-3 sm:p-4">
-        <h3 className="line-clamp-2 min-h-[2.7em] break-words text-sm font-bold leading-snug sm:text-base">{title}</h3>
+        <h3 className="line-clamp-2 break-words text-sm font-extrabold leading-snug sm:text-[15px]">{title}</h3>
         <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
+        <span aria-hidden="true" className="mt-auto flex justify-end pt-2 text-primary"><ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></span>
       </div>
     </>
   );
 }
 
-function SubjectRow({ title, children, beta = false }: { title: string; children: React.ReactNode; beta?: boolean }) {
+function SubjectRow({ title, children, beta = false, defaultOpen = false }: { title: string; children: React.ReactNode; beta?: boolean; defaultOpen?: boolean }) {
+  const tx = useTx();
   return (
-    <div className="space-y-4">
-      <h3 className="flex flex-wrap items-center gap-2 text-lg font-black">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h3>
-      <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-1">{children}</div>
-    </div>
+    <details className="group/subject overflow-hidden rounded-[1.4rem] border bg-card shadow-card" open={defaultOpen ? true : undefined}>
+      <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-4 outline-offset-[-3px] marker:hidden hover:bg-muted/40 sm:px-6 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-4" /></span>
+        <h3 className="min-w-0 flex-1 text-base font-black sm:text-lg">{title}</h3>
+        {beta && <span className="shrink-0 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-[10px] font-bold text-amber-700 dark:text-amber-200">BETA</span>}
+        <span className="sr-only">{tx("Բացել կամ փակել բաժինը")}</span>
+        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-open/subject:rotate-180" />
+      </summary>
+      <div className="grid grid-cols-2 items-stretch gap-3 border-t p-3 sm:grid-cols-3 sm:gap-4 sm:p-5 lg:grid-cols-4">
+        {children}
+      </div>
+    </details>
   );
 }
 
@@ -299,43 +312,77 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 py-3 sm:space-y-10 sm:py-6">
-      <section className="relative isolate grid overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-800 px-5 py-7 text-white shadow-xl sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.6fr)_minmax(240px,0.8fr)] lg:items-end lg:gap-8 lg:px-10">
-        <div aria-hidden="true" className="absolute -right-16 -top-20 -z-10 size-64 rounded-full border-[24px] border-white/5" />
-        <div aria-hidden="true" className="absolute -bottom-24 right-1/4 -z-10 size-64 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="max-w-2xl space-y-4">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold tracking-wide text-cyan-100"><Sparkles className="size-4" /> SHTEMARM · STUDY SMARTER</p>
-          <h1 className="text-3xl font-black leading-tight sm:text-5xl">{tx("Քո հաջորդ քայլը՝ դեպի քննության հաջողություն")}</h1>
-          <p className="max-w-xl text-sm leading-relaxed text-blue-100 sm:text-base">{tx("Գտիր ճիշտ շտեմարանը, սովորիր թեմաներով, անցիր փորձնական քննություններ և հետևիր առաջընթացիդ՝ մեկ հարմար վայրում։")}</p>
+    <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
+      <section className="academy-hero relative isolate grid overflow-hidden rounded-[1.65rem] px-5 py-8 text-white sm:px-9 sm:py-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(240px,.7fr)] lg:items-center lg:gap-10 lg:px-11">
+        <div className="relative z-10 max-w-2xl space-y-5">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-widest text-emerald-50">
+            <GraduationCap className="size-4" aria-hidden="true"/> SHTEMARM · ACADEMY
+          </p>
+          <div className="space-y-3">
+            <h1 className="max-w-xl text-balance text-3xl font-black leading-[1.23] sm:text-[2.75rem] lg:text-5xl">{tx("Սովորիր վստահ։ Պատրաստվիր խելացի։")}</h1>
+            <p className="max-w-lg text-sm leading-7 text-emerald-50/85 sm:text-base">{tx("Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։")}</p>
+          </div>
           <div className="flex flex-wrap gap-3 pt-1">
-            <Link to="/" search={{ subject: "english" }} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5"><BookOpen className="size-4" />{tx("Սկսել սովորել")}</Link>
-            <Link to="/mini-games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"><Brain className="size-4" />{tx("Մինի խաղեր")}</Link>
+            <a href="#subjects" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-extrabold text-[#124e4b] shadow-sm transition-colors hover:bg-emerald-50">
+              <BookOpen className="size-4" />{tx("Ընտրել առարկան")}<ArrowRight className="size-4" />
+            </a>
+            <a href="#exams" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-white/20">
+              <Target className="size-4" />{tx("Անցնել թեստ")}
+            </a>
           </div>
         </div>
-        <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/15 pt-4 sm:gap-3 lg:mt-0 lg:self-end lg:rounded-2xl lg:border lg:border-white/15 lg:bg-white/5 lg:p-4 lg:backdrop-blur-sm">
-          <div><p className="text-xl font-black sm:text-2xl">9</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Առարկա")}</p></div>
-          <div><p className="text-xl font-black sm:text-2xl">2</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մաթ. գիրք")}</p></div>
-          <div><p className="text-xl font-black sm:text-2xl">24/7</p><p className="text-[10px] leading-tight text-blue-100 sm:text-xs">{tx("Մուտք")}</p></div>
+        <div className="relative z-10 mt-8 space-y-3 rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 lg:mt-0">
+          <p className="text-xs font-bold tracking-[.15em] text-emerald-50/75">{tx("ՈՒՍՈՒՄՆԱԿԱՆ ՔԱՅԼԵՐ")}</p>
+          {[
+            {n:"01",label:tx("Ընտրիր առարկան"),sub:tx("Գտիր քո շտեմարանը")},
+            {n:"02",label:tx("Սովորիր թեմաներով"),sub:tx("Բացատրություններ ու վարժություններ")},
+            {n:"03",label:tx("Ստուգիր գիտելիքներդ"),sub:tx("Փորձնական քննություններ")},
+          ].map(step=>(
+            <div key={step.n} className="flex items-start gap-3 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+              <span className="font-mono text-sm font-bold text-[#f1d08c]">{step.n}</span>
+              <span className="min-w-0">
+                <strong className="block text-sm font-bold">{step.label}</strong>
+                <span className="mt-0.5 block text-xs text-white/65">{step.sub}</span>
+              </span>
+            </div>
+          ))}
         </div>
       </section>
-      <section className="space-y-8">
-        <div className="space-y-2">
-          <p className="text-lg font-bold text-primary">
+      <nav aria-label={tx("Արագ անցումներ")} className="grid gap-3 sm:grid-cols-3">
+        <a href="#subjects" className="academy-quick-action">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
+          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
+          <ArrowRight className="size-4 text-muted-foreground"/>
+        </a>
+        <Link to="/assessment-builder" className="academy-quick-action">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300"><ClipboardCheck className="size-5"/></span>
+          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Թեմատիկ աշխատանք")}</strong><span className="block text-xs text-muted-foreground">{tx("Ստեղծիր առաջադրանքներ")}</span></span>
+          <ArrowRight className="size-4 text-muted-foreground"/>
+        </Link>
+        <Link to="/study-tools" className="academy-quick-action">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Brain className="size-5"/></span>
+          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական գործիքներ")}</strong><span className="block text-xs text-muted-foreground">{tx("Կենտրոնացում և կրկնություն")}</span></span>
+          <ArrowRight className="size-4 text-muted-foreground"/>
+        </Link>
+      </nav>
+      <section className="space-y-7" id="dashboard">
+        <div className="space-y-3">
+          <p className="text-sm font-bold text-primary">
             {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
           </p>
-          <h2 className="text-2xl font-black sm:text-3xl">{tx("Ընտրիր շտեմարանը սկսելու համար")}</h2>
+          <h2 className="text-2xl font-black sm:text-3xl">{tx("Քո ուսումնական վահանակը")}</h2>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <div className="academy-bento p-4">
               <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
             </div>
-            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+            <div className="academy-bento p-4">
               <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><CheckCircle2 className="size-4 text-success" aria-hidden="true" />{tx("Ճիշտ պատասխաններ")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 1).length}</p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Ընդհանուր պատասխանված հարցերից")}</p>
             </div>
-            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+            <div className="academy-bento p-4">
               <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><RotateCcw className="size-4 text-amber-600" aria-hidden="true" />{tx("Կրկնելու հարցեր")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 0).length}</p>
               <p className="mt-1 text-xs text-muted-foreground">{tx("Անհատական առաջարկ")}</p>
@@ -350,6 +397,12 @@ function Index() {
               <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
             </div>
           )}
+          <details className="group/progress rounded-[1.35rem] border bg-card shadow-card">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-black hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2"><Trophy className="size-5 text-primary"/>{tx("Մանրամասն առաջընթաց")}</span>
+              <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/progress:rotate-180"/>
+            </summary>
+            <div className="border-t p-3 sm:p-4">
           {(() => {
             const values = Object.values(progress.answers);
             const right = values.filter((v) => v === 1).length;
@@ -382,10 +435,17 @@ function Index() {
               </section>
             );
           })()}
+            </div>
+          </details>
           <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
         </div>
 
-        <SubjectRow title={tx("Անգլերեն")}>
+        <div id="subjects" className="scroll-mt-24 space-y-3 pt-2">
+          <p className="academy-eyebrow">{tx("Ուսումնական գրադարան")}</p>
+          <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Գտիր քո շտեմարանը")}</h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">{tx("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։")}</p>
+        </div>
+        <SubjectRow title={tx("Անգլերեն")} defaultOpen>
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
@@ -393,7 +453,7 @@ function Index() {
           ))}
         </SubjectRow>
 
-        <SubjectRow title={tx("Մաթեմատիկա")}>
+        <SubjectRow title={tx("Մաթեմատիկա")} defaultOpen>
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
               <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
@@ -444,8 +504,10 @@ function Index() {
         </SubjectRow>
       </section>
 
-      <section className="space-y-6">
-        <h2 className="text-2xl font-black sm:text-3xl">{tx("Քննություն")}</h2>
+      <section id="exams" className="scroll-mt-24 space-y-5">
+        <p className="academy-eyebrow">{tx("Գիտելիքների ստուգում")}</p>
+        <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Փորձնական քննություններ")}</h2>
+        <p className="max-w-2xl text-sm text-muted-foreground">{tx("Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։")}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
           <ExamTile
             to="/exam/$subject" params={{ subject: "english" }}
@@ -475,12 +537,12 @@ function Index() {
           ))}
         </div>
       </section>
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-3" aria-label={tx("Լրացուցիչ ուսումնական գործիքներ")}>
         <ExamTile to="/assessment-builder" title={tx("Թեմատիկ և ամփոփիչ աշխատանքներ")} sub={tx("Կազմել ստուգողական թերթիկ ըստ թեմաների")} icon={<ClipboardCheck className="size-5"/>}/>
         <ExamTile to="/flashcards" title={tx("Հիշողության քարտեր")} sub={tx("Կրկնել իրական հարցերն ու պատասխանները")} icon={<BookOpen className="size-5"/>}/>
         <ExamTile to="/mini-games" title={tx("Ուսումնական խաղեր")} sub={tx("Վիկտորինա, ճիշտ/սխալ և համապատասխանեցում")} icon={<Trophy className="size-5"/>}/>
       </section>
-      <section className="shadow-card glass grid gap-4 rounded-3xl p-5 sm:grid-cols-2 sm:p-6">
+      <section className="academy-bento grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
         <div>
           <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{tx("Սխա՞լ ես գտել կամ ունե՞ս առաջարկ։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
