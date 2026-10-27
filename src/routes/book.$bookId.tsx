@@ -82,6 +82,9 @@ function BookPage() {
             </Button>}
             {(id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
               <Link to="/physics/original"><BookText className="size-5"/>{tx("Բնօրինակի տեքստային հարցերը")}</Link>
+            </Button>
+            {(id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
+              <Link to="/physics/scan-practice"><ClipboardCheck className="size-5"/>{tx("125 բնօրինակ հարց՝ PDF-ով լուծում")}</Link>
             </Button>}
           </div>
         </div>
