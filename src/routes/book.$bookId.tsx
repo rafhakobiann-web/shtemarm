@@ -75,10 +75,13 @@ function BookPage() {
                 </Link>
               )}
             </Button>
-            {(id === 61 || id === 62) && <Button variant="outline" size="lg" asChild>
-              <Link to="/physics/books" search={{volume:id,page:5}}>
+            {(id === 61 || id === 62 || id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
+              <Link to="/physics/books" search={{volume:id===63?61:id===64?62:id,page:5}}>
                 <BookText className="size-5"/>{tx("Բացել բնօրինակ PDF-ը")}
               </Link>
+            </Button>}
+            {(id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
+              <Link to="/physics/original"><BookText className="size-5"/>{tx("Բնօրինակի տեքստային հարցերը")}</Link>
             </Button>}
           </div>
         </div>
