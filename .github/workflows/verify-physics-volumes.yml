@@ -6,8 +6,10 @@ on:
       - 'src/lib/physics.ts'
       - 'src/lib/physics-source.ts'
       - 'src/components/PhysicsSourceReader.tsx'
+      - 'src/components/PhysicsSourceNotes.tsx'
       - 'src/routes/physics.books.tsx'
       - 'src/test/physics-source.test.ts'
+      - 'src/test/physics-source-notes.test.tsx'
       - 'docs/PHYSICS_TWO_BOOKS.md'
       - 'src/lib/books.ts'
       - 'src/components/PhysicsWorkspace.tsx'
@@ -36,6 +38,6 @@ jobs:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
       - name: Verify both source-aligned original physics practice banks
-        run: bunx vitest run src/test/physics.test.ts src/test/physics-source.test.ts src/test/study-ux.test.tsx src/test/gtc-blueprints.test.ts src/test/scoring.test.ts
+        run: bunx vitest run src/test/physics.test.ts src/test/physics-source.test.ts src/test/physics-source-notes.test.tsx src/test/study-ux.test.tsx src/test/gtc-blueprints.test.ts src/test/scoring.test.ts
       - name: Production build
         run: bun run build
