@@ -368,15 +368,15 @@ html[data-surface="soft"] .site-header {
 
 html[data-surface="liquid"] {
   --radius: 1.45rem;
-  --glass-blur-amount: 25px;
-  --liquid-fill: rgb(255 255 255 / 73%);
+  --glass-blur-amount: 12px;
+  --liquid-fill: rgb(255 255 255 / 88%);
   --liquid-stroke: rgb(255 255 255 / 90%);
   --liquid-shine: rgb(255 255 255 / 67%);
-  --liquid-depth: rgb(43 78 127 / 17%);
-  --liquid-bloom-a: oklch(0.86 0.095 230 / 65%);
-  --liquid-bloom-b: oklch(0.90 0.085 90 / 66%);
-  --liquid-bloom-c: oklch(0.90 0.055 310 / 62%);
-  --background: oklch(0.96 0.013 235);
+  --liquid-depth: rgb(11 80 73 / 12%);
+  --liquid-bloom-a: oklch(0.89 0.064 178 / 42%);
+  --liquid-bloom-b: oklch(0.93 0.055 82 / 28%);
+  --liquid-bloom-c: oklch(0.92 0.032 181 / 20%);
+  --background: oklch(0.977 0.009 146);
   --glass-fill: var(--liquid-fill);
   --glass-border: var(--liquid-stroke);
   --glass-highlight: inset 0 1px 0 var(--liquid-shine);
@@ -384,14 +384,14 @@ html[data-surface="liquid"] {
   --shadow-pop: 0 8px 24px -14px var(--liquid-depth);
 }
 html.dark[data-surface="liquid"] {
-  --background: oklch(0.16 0.023 253);
-  --liquid-fill: rgb(29 40 63 / 79%);
-  --liquid-stroke: rgb(201 220 255 / 22%);
-  --liquid-shine: rgb(224 235 255 / 20%);
+  --background: oklch(0.164 0.022 202);
+  --liquid-fill: rgb(24 43 45 / 84%);
+  --liquid-stroke: rgb(182 229 217 / 17%);
+  --liquid-shine: rgb(224 251 242 / 12%);
   --liquid-depth: rgb(0 0 0 / 65%);
-  --liquid-bloom-a: oklch(0.36 0.09 239 / 47%);
-  --liquid-bloom-b: oklch(0.34 0.076 181 / 34%);
-  --liquid-bloom-c: oklch(0.32 0.10 308 / 37%);
+  --liquid-bloom-a: oklch(0.32 0.078 177 / 33%);
+  --liquid-bloom-b: oklch(0.35 0.05 82 / 18%);
+  --liquid-bloom-c: oklch(0.29 0.05 208 / 20%);
   --glass-fill: var(--liquid-fill);
   --glass-border: var(--liquid-stroke);
   --glass-highlight: inset 0 1px 0 var(--liquid-shine);
@@ -415,7 +415,7 @@ html[data-surface="liquid"] body {
     radial-gradient(ellipse 42rem 43rem at 96% 10%, var(--liquid-bloom-b), transparent 70%),
     radial-gradient(ellipse 70rem 48rem at 62% 97%, var(--liquid-bloom-c), transparent 72%),
     linear-gradient(165deg, var(--background) 0%, color-mix(in oklch, var(--background) 92%, var(--primary)) 100%);
-  background-attachment: fixed;
+  background-attachment: scroll;
 }
 /* Preserve intent of colored hero/subject cards; glass is a treatment of
  * neutral surfaces only. Same selector works across exam/books/game routes. */
@@ -533,8 +533,8 @@ html:lang(ru) body { font-family: "Noto Sans", "Noto Sans Armenian", sans-serif;
 @media (max-width: 640px) {
   html[data-surface="liquid"] { --glass-blur-amount: 9px; }
   html[data-surface="liquid"] .bg-card {
-    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(115%);
-    backdrop-filter: blur(var(--glass-blur-amount)) saturate(115%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
   html[data-surface="liquid"] .site-mobile-nav { --glass-blur-amount: 12px; }
 }
