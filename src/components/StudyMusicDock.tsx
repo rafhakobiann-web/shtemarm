@@ -90,7 +90,7 @@ export function StudyMusicDock() {
           <Headphones className="size-5 text-primary"/>{t.open}
         </button>
       ) : (
-        <div className="pointer-events-auto overflow-hidden rounded-[1.3rem] border border-border bg-card shadow-[0_16px_48px_-26px_rgba(8,43,41,0.55)]">
+        <div className="pointer-events-auto max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[1.3rem] border border-border bg-card shadow-[0_16px_48px_-26px_rgba(8,43,41,0.55)] md:max-h-[calc(100dvh-2rem)]">
           <div className="flex items-center gap-3 border-b border-border bg-muted/40 px-3 py-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
               <Music2 className="size-5" aria-hidden="true"/>
