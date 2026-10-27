@@ -17,7 +17,21 @@ export async function loadPhysicsBooks():Promise<Book[]> {
   return Promise.all(PHYSICS_BOOK_IDS.map(id=>loadBook(id)));
 }
 export function physicsEntries(books:readonly Book[]):HistoryEntry[] {
-  return books.flatMap(b=>historyBookEntries(b,b.id));
+  // Preserve six-claim bundles as one compound GTC-style task (6 points).
+  // The generic history flattener splits all MC groups, unintentionally
+  // changing the scoring and hiding claims from question-type filters.
+  return books.flatMap(book=>book.sections.flatMap(section=>
+    section.units.flatMap(unit=>{
+      if(physicsSlotType(unit)==="claims"){
+        return [{
+          source:"book-"+book.id,
+          section:"Գիրք "+book.id+" · "+(section.title??section.label??("Բաժին "+section.n)),
+          unit:{...unit,id:"book-"+book.id+":"+section.n+":"+unit.id},
+        } satisfies HistoryEntry];
+      }
+      return historyBookEntries({...book,sections:[{...section,units:[unit]}]},book.id);
+    })
+  ));
 }
 export function physicsSlotType(u:Unit):"choice"|"short"|"claims" {
   if(u.kind==="num")return "short";
