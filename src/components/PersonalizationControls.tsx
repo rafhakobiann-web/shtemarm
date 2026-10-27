@@ -11,14 +11,14 @@ type Dock = "left" | "right";
 type Accent = "blue" | "violet" | "emerald" | "rose" | "amber" | "teal";
 type Preferences = { textScale: number; highContrast: boolean; reduceMotion: boolean; dock: Dock; accent: Accent };
 const KEY = "shtemarm-display-preferences-v1";
-const defaults: Preferences = { textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: "blue" };
+const defaults: Preferences = { textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: "teal" };
 const accents: { id: Accent; label: string; color: string }[] = [
   { id: "blue", label: "Blue", color: "#4263eb" },
   { id: "violet", label: "Violet", color: "#7c3aed" },
   { id: "emerald", label: "Emerald", color: "#059669" },
   { id: "rose", label: "Rose", color: "#e11d48" },
   { id: "amber", label: "Amber", color: "#b7791f" },
-  { id: "teal", label: "Teal", color: "#0d9488" },
+  { id: "teal", label: "Academy teal", color: "#0b766b" },
 ];
 const copy = {
   hy: {
@@ -95,8 +95,8 @@ export function PersonalizationControls() {
 
   return (
     <>
-      <div className={`fixed ${floatingSide} bottom-24 z-40 flex flex-col gap-2 sm:bottom-6`}>
-        <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
+      <div className={`fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col gap-2 md:bottom-6`}>
+        <Button type="button" variant="outline" size="icon" className="size-11 rounded-xl border bg-card shadow-md transition-colors hover:border-primary/40 hover:bg-muted md:size-12" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
           <Accessibility className="size-5" />
         </Button>
         <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.settings} title={t.settings} onClick={() => setSettingsOpen(true)}>
