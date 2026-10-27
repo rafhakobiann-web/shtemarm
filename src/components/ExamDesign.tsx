@@ -15,16 +15,16 @@ export function ExamHero({
 }) {
   const tx = useTx();
   return (
-    <header className="relative isolate overflow-hidden rounded-3xl border bg-card p-6 shadow-sm sm:p-9">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 -z-10 size-72 rounded-full bg-primary/10 blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-1/3 -z-10 size-40 rounded-full bg-primary/5 blur-3xl" />
-      <div className="mb-4 flex items-center gap-2 text-sm font-bold text-primary">
-        <span className="grid size-10 place-items-center rounded-xl bg-primary/10">{icon}</span>
+    <header className="academy-card relative isolate overflow-hidden p-5 sm:p-8">
+      <div aria-hidden="true" className="pointer-events-none absolute right-0 top-0 -z-10 h-24 w-40 rounded-bl-full bg-primary/5" />
+      <div aria-hidden="true" className="pointer-events-none absolute right-10 top-9 -z-10 size-12 rounded-full border-2 border-primary/10" />
+      <div className="mb-4 flex items-center gap-2 text-xs font-black uppercase tracking-wider text-primary">
+        <span className="grid size-10 place-items-center rounded-xl border border-primary/15 bg-primary/10">{icon}</span>
         <span>{subject} · Shtemarm</span>
       </div>
-      <h1 className="max-w-3xl text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
+      <h1 className="max-w-3xl text-balance text-2xl font-black tracking-tight sm:text-4xl">{title}</h1>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">{description}</p>
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid gap-2 sm:grid-cols-3">
         <Metric icon={<Layers3 className="size-5" />} value={available === undefined ? "—" : available.toLocaleString("hy-AM")} label={tx("Հասանելի առաջադրանքներ")} />
         <Metric icon={<ClipboardCheck className="size-5" />} value={sources} label={tx("Հարցերի աղբյուրներ")} />
         <Metric icon={<Timer className="size-5" />} value={tx("Քո ընտրությամբ")} label={tx("Ժամանակ և ռեժիմ")} />
@@ -35,10 +35,10 @@ export function ExamHero({
 
 function Metric({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-border/60 bg-muted/50 p-4">
+    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-border/70 bg-muted/35 p-3.5">
       <span aria-hidden="true" className="shrink-0 text-primary">{icon}</span>
       <div className="min-w-0">
-        <p className="truncate text-lg font-black">{value}</p>
+        <p className="line-clamp-2 break-words text-base font-black sm:text-lg">{value}</p>
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
     </div>
