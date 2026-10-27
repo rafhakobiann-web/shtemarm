@@ -99,6 +99,10 @@ export function PhysicsWorkspace(){
           {tx("Արդեն հասանելի է երկու մասերի կինեմատիկայի առաջին ստուգված հարցաշարը։ Յուրաքանչյուր հարց կապակցված է PDF-ի բնօրինակ էջին և պատասխանների աղյուսակին։")}
         </p>
       </div>
+      <Link to="/physics/scan-practice"
+        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary/25 bg-card px-5 text-sm font-bold text-primary hover:bg-muted">
+        <ClipboardCheck className="size-5"/>{tx("250 բնօրինակ առաջադրանք · PDF-ով լուծում")}
+      </Link>
       <Link to="/physics/original" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground">
         <BookOpen className="size-4"/>{tx("Լուծել գրքերի իրական առաջադրանքները")}
       </Link>
