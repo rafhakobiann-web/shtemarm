@@ -78,16 +78,18 @@ function SubjectCover({ title, sub }: { title: string; sub: string }) {
 
 function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
-    <>
-      <div className="cover-frame academy-book-cover relative aspect-[5/4] w-full shrink-0 overflow-hidden sm:aspect-[6/5]">
+    <div className="flex h-full min-h-32 min-w-0 items-center gap-3 p-3 sm:gap-4 sm:p-3.5">
+      <div className="cover-frame academy-book-cover relative h-28 w-20 shrink-0 overflow-hidden rounded-[.9rem] shadow-sm sm:h-[7.5rem] sm:w-[5.5rem]">
         {cover ? <img src={cover} alt="" loading="lazy" decoding="async" className="size-full object-cover object-center" /> : <SubjectCover title={title} sub={sub} />}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1 p-3 sm:p-4">
-        <h3 className="line-clamp-2 break-words text-sm font-extrabold leading-snug sm:text-[15px]">{title}</h3>
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <h3 className="line-clamp-3 break-words text-sm font-extrabold leading-snug">{title}</h3>
         <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
-        <span aria-hidden="true" className="mt-auto flex justify-end pt-2 text-primary"><ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></span>
+        <span aria-hidden="true" className="mt-auto inline-flex items-center gap-1 text-xs font-bold text-primary">
+          <BookOpen className="size-3.5"/><ArrowRight className="ml-auto size-4 transition-transform group-hover:translate-x-0.5"/>
+        </span>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -102,7 +104,7 @@ function SubjectRow({ title, children, beta = false, defaultOpen = false }: { ti
         <span className="sr-only">{tx("Բացել կամ փակել բաժինը")}</span>
         <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-open/subject:rotate-180" />
       </summary>
-      <div className="grid grid-cols-2 items-stretch gap-3 border-t p-3 sm:grid-cols-3 sm:gap-4 sm:p-5 lg:grid-cols-4">
+      <div className="grid grid-cols-1 items-stretch gap-3 border-t p-3 sm:grid-cols-2 sm:gap-4 sm:p-5 xl:grid-cols-3">
         {children}
       </div>
     </details>
@@ -157,7 +159,7 @@ function EnglishSubject() {
       <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ, պաշտոնական քննություններ և թեստերի կազմիչ")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
-        <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
