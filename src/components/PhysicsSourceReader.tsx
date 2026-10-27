@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ExternalLink, FileUp,
   FileX2, HardDriveDownload, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
+import { PhysicsSourceNotes } from "@/components/PhysicsSourceNotes";
 import { PHYSICS_SOURCES, clampPhysicsPage, confirmPhysicsSourcePdf,
   deleteLocalPhysicsPdf, getLocalPhysicsPdf, putLocalPhysicsPdf,
   validatePhysicsSourceFile, type PhysicsVolume } from "@/lib/physics-source";
@@ -199,6 +200,7 @@ export function PhysicsSourceReader({
         {tx("Եթե հեռախոսի դիտարկիչը PDF-ը չի ցուցադրում այս հատվածում, սեղմիր վերևի «Բացել PDF-ն առանձին ներդիրում» կոճակը։ Ֆայլը շարունակում է մնալ միայն քո սարքում։")}
       </p>
     </section>}
+    {file && url && <PhysicsSourceNotes volume={volume} page={page} onJump={jump}/>}
     <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-4">
       <p className="text-sm text-muted-foreground">{tx("Պատասխանները PDF-ից ավտոմատ արտագրած չենք համարում․ ուսումնական թեստերի պատասխանները առանձին ստուգված են։")}</p>
       <Link to="/subject/$subject" params={{subject:"physics"}}
