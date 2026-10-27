@@ -203,6 +203,10 @@ export function PhysicsSourceReader({
     {file && url && <PhysicsSourceNotes volume={volume} page={page} onJump={jump}/>}
     <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-4">
       <p className="text-sm text-muted-foreground">{tx("Պատասխանները PDF-ից ավտոմատ արտագրած չենք համարում․ ուսումնական թեստերի պատասխանները առանձին ստուգված են։")}</p>
+      <Link to="/physics/original"
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2 text-sm font-bold text-primary">
+        <BookOpen className="size-4"/>{tx("Թվայնացված բնօրինակ հարցերը")}
+      </Link>
       <Link to="/subject/$subject" params={{subject:"physics"}}
         className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">
         <BookOpen className="size-4"/>{tx("Անցնել ֆիզիկայի թեստերին")}
