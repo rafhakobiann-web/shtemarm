@@ -128,5 +128,5 @@ export function makePhysicsModel(
   const points=result.reduce((sum,u)=>sum+(u.kind==="mc"||u.kind==="num"?u.questions.length:1),0);
   if(result.length!==55||points!==80||numeric!==69)
     throw new Error("Ֆիզիկայի փորձնական թեստի 55/70/80 կառուցվածքը չի պահպանվել։");
-  return {units:result,bookId:source==="all"?0:selected[0]!.id,totalPoints:80,answerSlots:70,mainTasks:55};
+  return {units:result,bookId:source==="all"?60:selected[0]!.id,totalPoints:80,answerSlots:70,mainTasks:55};
 }
