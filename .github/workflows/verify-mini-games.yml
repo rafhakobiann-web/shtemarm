@@ -1,0 +1,31 @@
+name: Verify mini-games data, UI and scores
+
+on:
+  pull_request:
+    paths:
+      - 'src/routes/mini-games.tsx'
+      - 'src/components/AdditionalMiniGames.tsx'
+      - 'src/lib/mini-game-data.ts'
+      - 'src/lib/mini-game-activities.ts'
+      - 'src/lib/mini-game-progress.ts'
+      - 'src/i18n/e.ts'
+      - 'src/i18n/ru.ts'
+      - 'src/test/mini-games.test.tsx'
+      - '.github/workflows/verify-mini-games.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/mini-games.test.tsx src/test/study-ux.test.tsx src/test/app-routing.test.tsx
+      - run: bun run build
