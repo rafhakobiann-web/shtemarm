@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
-import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
+import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
@@ -421,8 +421,19 @@ function Index() {
             </Link>
           ))}
         </SubjectRow>
-        <SubjectRow title={tx("Ֆիզիկա · Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta>
-          {STARTER_SUBJECT_BOOKS.map((b) => {
+        <SubjectRow title={tx("Ֆիզիկա · երկու մաս")} beta>
+          <Link to="/subject/$subject" params={{ subject:"physics" }} className={TILE}>
+            <TileBody cover="/covers/physics-1.svg" title={tx("Ֆիզիկա · քննությունների պատրաստություն")}
+              sub={tx("Երկու մաս · 55 առաջադրանքով փորձնական քննություն")} />
+          </Link>
+          {PHYSICS_BOOKS.map((b)=>(
+            <Link key={b.id} to="/book/$bookId" params={{bookId:String(b.id)}} className={TILE}>
+              <TileBody cover={b.cover} title={tx(b.title)} sub={tx(b.sub)}/>
+            </Link>
+          ))}
+        </SubjectRow>
+        <SubjectRow title={tx("Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta>
+          {STARTER_SUBJECT_BOOKS.filter(b=>b.id!==51).map((b) => {
             const subject = ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number, string>)[b.id]!;
             return (
               <Link key={b.id} to="/subject/$subject" params={{ subject }} className={TILE}>
@@ -452,7 +463,11 @@ function Index() {
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
           <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
-          {STARTER_SUBJECT_BOOKS.map((b) => (
+          <ExamTile to="/subject/$subject" params={{subject:"physics"}}
+            title={tx("Ֆիզիկա · փորձնական քննություն")}
+            sub={tx("70 պատասխանային դիրք · 80 միավոր · 2 մաս")}
+            icon={<BookOpen className="size-5"/>}/>
+          {STARTER_SUBJECT_BOOKS.filter(b=>b.id!==51).map((b) => (
             <ExamTile key={b.id} to="/subject/$subject"
               params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[b.id]! }}
               title={tx(b.title)} sub={tx("Ուսումնական հարցեր և ԳԹԿ-ի 2027 ուղեցույց")}
