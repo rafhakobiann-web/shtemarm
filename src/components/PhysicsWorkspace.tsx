@@ -12,6 +12,7 @@ import { PHYSICS_BOOK_IDS, PHYSICS_SOURCE, loadPhysicsBooks, makePhysicsModel,
 import { selectHistoryUnits } from "@/lib/history";
 import { update } from "@/lib/progress";
 import type { Unit } from "@/lib/books";
+import { PHYSICS_SOURCE_BOOKS } from "@/lib/books";
 
 type Mode="model"|"custom";
 type Kind="choice"|"short"|"claims";
@@ -102,6 +103,23 @@ export function PhysicsWorkspace(){
         <BookOpen className="size-4"/>{tx("Լուծել գրքերի իրական առաջադրանքները")}
       </Link>
     </section>
+    <div className="grid gap-3 sm:grid-cols-2">
+      {PHYSICS_SOURCE_BOOKS.map((b,i)=>(
+        <Link key={b.id} to="/book/$bookId" params={{bookId:String(b.id)}}
+          className="flex min-h-24 min-w-0 items-center gap-3 rounded-2xl border border-primary/25 bg-card p-4 transition-colors hover:bg-muted/40">
+          <img src={b.cover} alt="" width={54} height={74}
+            className="h-20 w-14 shrink-0 rounded-lg object-cover" loading="lazy"/>
+          <span className="min-w-0 space-y-1">
+            <strong className="block text-base font-black">{tx(i===0?"Բնօրինակ գիրք · Մաս I":"Բնօրինակ գիրք · Մաս II")}</strong>
+            <span className="block text-xs text-muted-foreground">{tx(b.sub)}</span>
+            <span className="block text-xs font-semibold text-primary">{tx("Բացել թվայնացված առաջադրանքները")}</span>
+          </span>
+        </Link>
+      ))}
+    </div>
+    <h2 className="text-sm font-black uppercase tracking-wider text-muted-foreground">
+      {tx("Առանձին հեղինակային փորձնական հավաքածուներ")}
+    </h2>
     <div className="grid gap-5 md:grid-cols-2">
       {PHYSICS_BOOK_IDS.map((id,i)=><Link key={id} to="/book/$bookId"
         params={{bookId:String(id)}}
