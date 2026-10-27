@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ClipboardCheck,
@@ -18,6 +18,7 @@ type Result = { correct:number;answered:number;total:number };
 export function PhysicsScanPractice() {
   const tx=useTx();
   const [volume,setVolume]=useState<PhysicsVolume>(61);
+  const verificationEpoch=useRef(0);
   const [file,setFile]=useState<Blob|null>(null);
   const [name,setName]=useState("");
   const [objectUrl,setObjectUrl]=useState("");
@@ -37,20 +38,21 @@ export function PhysicsScanPractice() {
   // The key is pinned to the exact PDF edition: never grade an unknown scan.
   useEffect(()=>{
     let active=true;
+    const epoch=++verificationEpoch.current;
     setFile(null);setName("");setStatus("loading");setError("");setSession(null);
     setFinished(false);setAnswers({});setIndex(0);setFrom(1);
     getLocalPhysicsPdf(volume).then(async item=>{
-      if(!active)return;
+      if(!active||verificationEpoch.current!==epoch)return;
       if(!item){setStatus("unavailable");return;}
       setFile(item.pdf);setName(item.name);setStatus("checking");
       try{
         const ok=await confirmPhysicsSourcePdf(volume,item.pdf);
-        if(active)setStatus(ok?"verified":"different");
+        if(active&&verificationEpoch.current===epoch)setStatus(ok?"verified":"different");
       }catch{
-        if(active)setStatus("unavailable");
+        if(active&&verificationEpoch.current===epoch)setStatus("unavailable");
       }
     }).catch(()=>{
-      if(active)setStatus("unavailable");
+      if(active&&verificationEpoch.current===epoch)setStatus("unavailable");
     });
     return ()=>{active=false;};
   },[volume]);
@@ -64,18 +66,21 @@ export function PhysicsScanPractice() {
   async function selectFile(chosen:File){
     const message=validatePhysicsSourceFile(chosen);
     if(message){setError(message);return;}
+    const epoch=++verificationEpoch.current;
     setError("");setFile(chosen);setName(chosen.name);
     setStatus("checking");setSession(null);setAnswers({});setFinished(false);
     try{
       const valid=await confirmPhysicsSourcePdf(volume,chosen);
+      if(verificationEpoch.current!==epoch)return;
       if(!valid){
         setStatus("different");
         return; // Wrong editions must never be marked against this answer key.
       }
       setStatus("verified");
       try{await putLocalPhysicsPdf(volume,chosen);}
-      catch{setError(tx("PDF-ը բացված է, բայց սարքում պահպանել չհաջողվեց։"));}
+      catch{if(verificationEpoch.current===epoch)setError(tx("PDF-ը բացված է, բայց սարքում պահպանել չհաջողվեց։"));}
     }catch{
+      if(verificationEpoch.current!==epoch)return;
       setStatus("unavailable");
       setError(tx("PDF-ի նույնականությունը ստուգել չհաջողվեց։ Ստուգված թեստը հասանելի չէ։"));
     }
