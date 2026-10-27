@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Atom, BookOpen, ClipboardCheck, ExternalLink, RefreshCw, Sigma } from "lucide-react";
+import { Atom, BookOpen, ClipboardCheck, ExternalLink, FileText, RefreshCw, Sigma } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
 import { GtcGuidePanel } from "@/components/GtcGuidePanel";
@@ -77,6 +77,20 @@ export function PhysicsWorkspace(){
       sources={tx("2 մաս · 110 հիմնական ուսումնական առաջադրանք")}
       available={entries.length||undefined}
       icon={<Atom className="size-5"/>}/>
+    <section className="flex flex-col gap-4 rounded-3xl border border-primary/25 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+      <div className="min-w-0 space-y-1">
+        <h2 className="flex items-center gap-2 text-lg font-black">
+          <FileText className="size-5 text-primary"/>{tx("2017 թ. բնօրինակ շտեմարանները")}
+        </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          {tx("Քո տրամադրած 430 և 436 էջանոց սկանավորված PDF-ները կարող ես բացել անմիջապես Shtemarm-ում՝ ներառյալ բոլոր գծագրերը և պատասխանների աղյուսակները։ Ֆայլերը մնում են միայն քո սարքում։")}
+        </p>
+      </div>
+      <Link to="/physics/books" search={{volume:61,page:5}}
+        className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+        <BookOpen className="size-5"/>{tx("Բացել բնօրինակները")}
+      </Link>
+    </section>
     <div className="grid gap-5 md:grid-cols-2">
       {PHYSICS_BOOK_IDS.map((id,i)=><Link key={id} to="/book/$bookId"
         params={{bookId:String(id)}}
@@ -208,13 +222,17 @@ export function PhysicsWorkspace(){
         <GtcGuidePanel subject="physics"/>
         <section className="space-y-3 rounded-3xl border bg-card p-5">
           <h2 className="font-black">{tx("Բնօրինակ գրքերի աղբյուրներ")}</h2>
+          <Link to="/physics/books" search={{volume:source==="62"?62:61,page:5}}
+            className="flex min-h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary hover:bg-primary/10">
+            <FileText className="size-4"/>{tx("Կարդալ տրամադրված PDF-ները Shtemarm-ում")}
+          </Link>
           <p className="text-xs leading-relaxed text-muted-foreground">
             {tx("Ստորև բերված են բնօրինակ շտեմարանների հղումները։ Դրանց հեղինակային առաջադրանքները չեն արտագրվել Shtemarm-ի ուսումնական հավաքածուներում։")}
           </p>
           {([["part1","Մաս I"],["part2","Մաս II"]] as const).map(([id,label])=>
             <a key={id} href={PHYSICS_SOURCE[id]} target="_blank" rel="noopener noreferrer"
               className="flex min-h-11 items-center justify-between gap-2 rounded-xl border p-3 text-sm font-semibold hover:bg-muted">
-              {tx("Ֆիզիկայի պաշտոնական շտեմարան · {part}",{part:label})}
+              {tx("Հանրային աղբյուր · {part}",{part:label})}
               <ExternalLink className="size-4 shrink-0"/>
             </a>)}
         </section>
