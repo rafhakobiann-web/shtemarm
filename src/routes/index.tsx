@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Microscope, Atom, LibraryBig, Target, Layers3, PanelTop } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -121,15 +121,18 @@ function ComingSoon({ title }: { title: string }) {
 
 function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string; params?: Record<string, string>; search?: Record<string, string>; href?: string; title: string; sub: string; icon: React.ReactNode }) {
   const body = (
-    <div className="flex h-full flex-col justify-between gap-6 p-5">
-      <span className="grid size-11 place-items-center rounded-2xl bg-white/15">{icon}</span>
-      <div className="space-y-1">
-        <h4 className="text-base font-black leading-snug">{title}</h4>
-        <p className="text-xs opacity-85">{sub}</p>
+    <div className="flex h-full flex-col gap-4 p-4 sm:p-5">
+      <span className="grid size-10 place-items-center rounded-xl border border-primary/10 bg-primary/10 text-primary">{icon}</span>
+      <div className="min-w-0 space-y-1">
+        <h4 className="text-sm font-black leading-snug sm:text-base">{title}</h4>
+        <p className="text-xs leading-relaxed text-muted-foreground">{sub}</p>
       </div>
+      <span aria-hidden="true" className="mt-auto flex justify-end text-primary">
+        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5"/>
+      </span>
     </div>
   );
-  const cls = "group block min-h-40 overflow-hidden rounded-3xl text-white shadow-card transition duration-200 hover:-translate-y-1 hover:shadow-lg [background-image:var(--gloss),var(--gradient-hero)]";
+  const cls = "academy-bento group block min-h-36 overflow-hidden text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
   if (href) return <a href={href} className={cls}>{body}</a>;
   return <Link to={to!} params={params as never} search={search as never} className={cls}>{body}</Link>;
 }
