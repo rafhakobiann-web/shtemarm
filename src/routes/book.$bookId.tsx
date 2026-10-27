@@ -75,6 +75,11 @@ function BookPage() {
                 </Link>
               )}
             </Button>
+            {(id === 61 || id === 62) && <Button variant="outline" size="lg" asChild>
+              <Link to="/physics/books" search={{volume:id,page:5}}>
+                <BookText className="size-5"/>{tx("Բացել բնօրինակ PDF-ը")}
+              </Link>
+            </Button>}
           </div>
         </div>
       </div>
