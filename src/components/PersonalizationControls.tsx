@@ -11,27 +11,27 @@ type Dock = "left" | "right";
 type Accent = "blue" | "violet" | "emerald" | "rose" | "amber" | "teal";
 type Preferences = { textScale: number; highContrast: boolean; reduceMotion: boolean; dock: Dock; accent: Accent };
 const KEY = "shtemarm-display-preferences-v1";
-const defaults: Preferences = { textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: "blue" };
+const defaults: Preferences = { textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: "teal" };
 const accents: { id: Accent; label: string; color: string }[] = [
   { id: "blue", label: "Blue", color: "#4263eb" },
   { id: "violet", label: "Violet", color: "#7c3aed" },
   { id: "emerald", label: "Emerald", color: "#059669" },
   { id: "rose", label: "Rose", color: "#e11d48" },
   { id: "amber", label: "Amber", color: "#b7791f" },
-  { id: "teal", label: "Teal", color: "#0d9488" },
+  { id: "teal", label: "Academy teal", color: "#0b766b" },
 ];
 const copy = {
   hy: {
     accessibility: "Մատչելիություն", settings: "Կարգավորումներ", textSize: "Տեքստի չափ", contrast: "Բարձր հակադրություն",
     motion: "Նվազեցնել անիմացիաները", dock: "Կոճակների դիրքը", left: "Ձախ", right: "Աջ", appearance: "Արտաքին տեսք",
-    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Փափուկ", glassStrength: "Ապակու էֆեկտ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
+    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Ակադեմիական", glassStrength: "Ապակու էֆեկտ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
     reset: "Վերականգնել լռելյայնը", close: "Փակել", subtitle: "Անհատականացրու քո ուսումնական միջավայրը",
     small: "Փոքր", normal: "Սովորական", large: "Մեծ", extraLarge: "Շատ մեծ", on: "Միացված", off: "Անջատված",
   },
   en: {
     accessibility: "Accessibility", settings: "Settings", textSize: "Text size", contrast: "High contrast",
     motion: "Reduce animations", dock: "Floating buttons position", left: "Left", right: "Right", appearance: "Appearance",
-    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Soft", glassStrength: "Glass strength", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
+    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Academy", glassStrength: "Glass strength", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
     reset: "Reset to defaults", close: "Close", subtitle: "Make your study space feel like yours",
     small: "Small", normal: "Default", large: "Large", extraLarge: "Extra large", on: "On", off: "Off",
   },
@@ -39,7 +39,7 @@ const copy = {
     accessibility: "Специальные возможности", settings: "Настройки", textSize: "Размер текста", contrast: "Высокая контрастность",
     motion: "Меньше анимаций", dock: "Положение кнопок", left: "Слева", right: "Справа", appearance: "Внешний вид",
     language: "Язык", accent: "Цветовой акцент", theme: "Цветовая тема", light: "Светлая", dark: "Тёмная",
-    system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Мягкая",
+    system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Учебный",
     glassStrength: "Интенсивность стекла", subtle: "Низкая", balanced: "Средняя", vivid: "Высокая",
     blur: "Размытие фона", glassHelp: "Для более быстрой работы можно уменьшить эффект размытия или отключить его.",
     reset: "Сбросить настройки", close: "Закрыть", subtitle: "Настройте удобную учебную среду",
@@ -95,8 +95,8 @@ export function PersonalizationControls() {
 
   return (
     <>
-      <div className={`fixed ${floatingSide} bottom-24 z-40 flex flex-col gap-2 sm:bottom-6`}>
-        <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
+      <div className={`fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col gap-2 md:bottom-6`}>
+        <Button type="button" variant="outline" size="icon" className="size-11 rounded-xl border bg-card shadow-md transition-colors hover:border-primary/40 hover:bg-muted md:size-12" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
           <Accessibility className="size-5" />
         </Button>
         <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.settings} title={t.settings} onClick={() => setSettingsOpen(true)}>

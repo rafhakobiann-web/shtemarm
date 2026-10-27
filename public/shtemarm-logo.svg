@@ -2,7 +2,7 @@
   <title id="title">Shtemarm educational logo</title>
   <defs>
     <linearGradient id="edu" x1="14" y1="18" x2="112" y2="112" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#39c6ff"/><stop offset=".55" stop-color="#477bff"/><stop offset="1" stop-color="#994cff"/>
+      <stop stop-color="#7CE0CC"/><stop offset=".55" stop-color="#0B766B"/><stop offset="1" stop-color="#E3B95F"/>
     </linearGradient>
   </defs>
   <g stroke="url(#edu)" stroke-linecap="round" stroke-linejoin="round">

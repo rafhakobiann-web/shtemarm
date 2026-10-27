@@ -42,78 +42,83 @@
   --color-ring-offset-background: var(--background);
 }
 
+/* Shtemarm Academy · a consistent, calm educational identity
+ * Warm paper surfaces + deep teal ink; soft amber is reserved for emphasis.
+ * Color values are semantic so all subjects, exams and tools inherit them.
+ */
 :root {
-  --radius: 0.9rem;
-  --background: oklch(0.975 0.012 85);
-  --foreground: oklch(0.22 0.05 262);
-  --card: oklch(0.995 0.004 85);
-  --card-foreground: oklch(0.22 0.05 262);
-  --popover: oklch(0.995 0.004 85);
-  --popover-foreground: oklch(0.22 0.05 262);
-  --primary: oklch(0.45 0.17 258);
-  --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: oklch(0.93 0.03 250);
-  --secondary-foreground: oklch(0.28 0.08 260);
-  --muted: oklch(0.94 0.012 85);
-  --muted-foreground: oklch(0.5 0.03 262);
-  --accent: oklch(0.85 0.16 88);
-  --accent-foreground: oklch(0.25 0.06 60);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.98 0.01 85);
-  --success: oklch(0.62 0.15 155);
-  --success-foreground: oklch(0.98 0.01 155);
-  --sun: oklch(0.83 0.17 85);
-  --sky: oklch(0.72 0.12 235);
-  --ink: oklch(0.22 0.05 262);
-  --border: oklch(0.88 0.02 85);
-  --input: oklch(0.88 0.02 85);
-  --ring: oklch(0.45 0.17 258);
-  --shadow-card: 0 1px 0 oklch(0.22 0.05 262 / 6%), 0 12px 32px -16px oklch(0.22 0.05 262 / 25%);
-  --shadow-pop: 0 6px 0 oklch(0.3 0.12 258);
-  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.08) 45%, rgb(255 255 255 / 0) 60%);
-  --glass-fill: color-mix(in oklch, var(--card) 58%, transparent);
-  --glass-border: rgb(255 255 255 / 0.55);
-  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.75);
-  --blob-a: oklch(0.86 0.1 250 / 0.75);
-  --blob-b: oklch(0.93 0.11 88 / 0.7);
-  --blob-c: oklch(0.87 0.08 300 / 0.55);
-  --gradient-hero: linear-gradient(135deg, oklch(0.45 0.17 258) 0%, oklch(0.55 0.15 240) 55%, oklch(0.72 0.12 235) 100%);
+  --radius: 1rem;
+  --background: oklch(0.98 0.008 126);
+  --foreground: oklch(0.235 0.027 209);
+  --card: oklch(0.998 0.002 110);
+  --card-foreground: oklch(0.235 0.027 209);
+  --popover: oklch(0.998 0.002 110);
+  --popover-foreground: oklch(0.235 0.027 209);
+  --primary: #0b766b;
+  --primary-foreground: #fff;
+  --secondary: oklch(0.918 0.026 173);
+  --secondary-foreground: oklch(0.29 0.055 180);
+  --muted: oklch(0.957 0.012 148);
+  --muted-foreground: oklch(0.48 0.027 205);
+  --accent: oklch(0.922 0.07 84);
+  --accent-foreground: oklch(0.3 0.047 65);
+  --destructive: oklch(0.55 0.19 25);
+  --destructive-foreground: #fff;
+  --success: oklch(0.48 0.12 165);
+  --success-foreground: #fff;
+  --sun: oklch(0.75 0.15 82);
+  --sky: oklch(0.69 0.1 204);
+  --ink: oklch(0.235 0.027 209);
+  --border: oklch(0.88 0.018 178);
+  --input: oklch(0.87 0.018 178);
+  --ring: #0b766b;
+  --shadow-card: 0 1px 2px oklch(0.21 0.03 204 / 5%), 0 13px 30px -23px oklch(0.21 0.03 204 / 23%);
+  --shadow-pop: 0 4px 0 oklch(0.28 0.075 178);
+  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.19), transparent 48%);
+  --glass-fill: var(--card);
+  --glass-border: var(--border);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.55);
+  --blob-a: oklch(0.92 0.023 172 / 0.3);
+  --blob-b: oklch(0.94 0.026 86 / 0.24);
+  --blob-c: oklch(0.94 0.014 210 / 0.16);
+  --gradient-hero: linear-gradient(127deg, #103d44 0%, #0e5a58 55%, #147c70 100%);
 }
 
 .dark {
-  --background: oklch(0.18 0.03 262);
-  --foreground: oklch(0.95 0.01 85);
-  --card: oklch(0.23 0.035 262);
-  --card-foreground: oklch(0.95 0.01 85);
-  --popover: oklch(0.23 0.035 262);
-  --popover-foreground: oklch(0.95 0.01 85);
-  --primary: oklch(0.64 0.16 258);
-  --primary-foreground: oklch(0.16 0.03 262);
-  --secondary: oklch(0.3 0.05 262);
-  --secondary-foreground: oklch(0.94 0.02 250);
-  --muted: oklch(0.28 0.03 262);
-  --muted-foreground: oklch(0.72 0.03 262);
-  --accent: oklch(0.8 0.15 88);
-  --accent-foreground: oklch(0.2 0.05 60);
-  --destructive: oklch(0.66 0.2 25);
-  --destructive-foreground: oklch(0.98 0.01 85);
-  --success: oklch(0.7 0.15 155);
-  --success-foreground: oklch(0.16 0.03 155);
-  --sun: oklch(0.83 0.17 85);
-  --sky: oklch(0.72 0.12 235);
-  --ink: oklch(0.95 0.01 85);
-  --border: oklch(0.36 0.03 262);
-  --input: oklch(0.36 0.03 262);
-  --ring: oklch(0.64 0.16 258);
-  --shadow-card: 0 1px 0 oklch(0 0 0 / 30%), 0 12px 32px -16px oklch(0 0 0 / 60%);
-  --shadow-pop: 0 6px 0 oklch(0.1 0.05 262);
-  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0.03) 45%, rgb(255 255 255 / 0) 60%);
-  --glass-fill: color-mix(in oklch, var(--card) 55%, transparent);
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.12);
-  --blob-a: oklch(0.36 0.12 258 / 0.55);
-  --blob-b: oklch(0.38 0.1 60 / 0.35);
-  --blob-c: oklch(0.34 0.1 300 / 0.4);
+  --background: oklch(0.17 0.021 208);
+  --foreground: oklch(0.955 0.009 155);
+  --card: oklch(0.225 0.024 204);
+  --card-foreground: oklch(0.955 0.009 155);
+  --popover: oklch(0.24 0.024 204);
+  --popover-foreground: oklch(0.955 0.009 155);
+  --primary: #1cb4a1;
+  --primary-foreground: #062824;
+  --secondary: oklch(0.29 0.04 181);
+  --secondary-foreground: oklch(0.93 0.021 160);
+  --muted: oklch(0.27 0.025 205);
+  --muted-foreground: oklch(0.755 0.015 195);
+  --accent: oklch(0.43 0.07 82);
+  --accent-foreground: oklch(0.98 0.015 85);
+  --destructive: oklch(0.68 0.16 25);
+  --destructive-foreground: #fff;
+  --success: oklch(0.71 0.11 163);
+  --success-foreground: #052a22;
+  --sun: oklch(0.83 0.14 86);
+  --sky: oklch(0.72 0.09 211);
+  --ink: oklch(0.96 0.009 155);
+  --border: oklch(0.37 0.027 199);
+  --input: oklch(0.39 0.027 199);
+  --ring: #2ac4af;
+  --shadow-card: 0 1px 1px oklch(0 0 0 / 12%), 0 18px 34px -22px oklch(0 0 0 / 48%);
+  --shadow-pop: 0 4px 0 oklch(0.1 0.03 192);
+  --gloss: linear-gradient(180deg, rgb(255 255 255 / 0.065), transparent 53%);
+  --glass-fill: var(--card);
+  --glass-border: var(--border);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --blob-a: oklch(0.34 0.055 181 / 0.18);
+  --blob-b: oklch(0.36 0.04 80 / 0.08);
+  --blob-c: oklch(0.32 0.03 210 / 0.15);
+  --gradient-hero: linear-gradient(127deg, #102f39 0%, #104e4d 58%, #11665a 100%);
   color-scheme: dark;
 }
 
@@ -128,10 +133,9 @@
   }
   body {
     background-image:
-      radial-gradient(60rem 40rem at 8% -10%, var(--blob-a), transparent 60%),
-      radial-gradient(50rem 36rem at 100% 0%, var(--blob-b), transparent 60%),
-      radial-gradient(60rem 42rem at 50% 115%, var(--blob-c), transparent 60%);
-    background-attachment: fixed;
+      radial-gradient(48rem 32rem at 8% -12%, var(--blob-a), transparent 68%),
+      radial-gradient(40rem 30rem at 100% 0%, var(--blob-b), transparent 70%);
+    background-attachment: scroll;
   }
   h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
@@ -156,8 +160,6 @@
 @utility glass {
   background-color: var(--glass-fill);
   background-image: var(--gloss);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  backdrop-filter: blur(22px) saturate(180%);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-card), var(--glass-highlight);
 }
@@ -366,15 +368,15 @@ html[data-surface="soft"] .site-header {
 
 html[data-surface="liquid"] {
   --radius: 1.45rem;
-  --glass-blur-amount: 25px;
-  --liquid-fill: rgb(255 255 255 / 73%);
+  --glass-blur-amount: 12px;
+  --liquid-fill: rgb(255 255 255 / 88%);
   --liquid-stroke: rgb(255 255 255 / 90%);
   --liquid-shine: rgb(255 255 255 / 67%);
-  --liquid-depth: rgb(43 78 127 / 17%);
-  --liquid-bloom-a: oklch(0.86 0.095 230 / 65%);
-  --liquid-bloom-b: oklch(0.90 0.085 90 / 66%);
-  --liquid-bloom-c: oklch(0.90 0.055 310 / 62%);
-  --background: oklch(0.96 0.013 235);
+  --liquid-depth: rgb(11 80 73 / 12%);
+  --liquid-bloom-a: oklch(0.89 0.064 178 / 42%);
+  --liquid-bloom-b: oklch(0.93 0.055 82 / 28%);
+  --liquid-bloom-c: oklch(0.92 0.032 181 / 20%);
+  --background: oklch(0.977 0.009 146);
   --glass-fill: var(--liquid-fill);
   --glass-border: var(--liquid-stroke);
   --glass-highlight: inset 0 1px 0 var(--liquid-shine);
@@ -382,14 +384,14 @@ html[data-surface="liquid"] {
   --shadow-pop: 0 8px 24px -14px var(--liquid-depth);
 }
 html.dark[data-surface="liquid"] {
-  --background: oklch(0.16 0.023 253);
-  --liquid-fill: rgb(29 40 63 / 79%);
-  --liquid-stroke: rgb(201 220 255 / 22%);
-  --liquid-shine: rgb(224 235 255 / 20%);
+  --background: oklch(0.164 0.022 202);
+  --liquid-fill: rgb(24 43 45 / 84%);
+  --liquid-stroke: rgb(182 229 217 / 17%);
+  --liquid-shine: rgb(224 251 242 / 12%);
   --liquid-depth: rgb(0 0 0 / 65%);
-  --liquid-bloom-a: oklch(0.36 0.09 239 / 47%);
-  --liquid-bloom-b: oklch(0.34 0.076 181 / 34%);
-  --liquid-bloom-c: oklch(0.32 0.10 308 / 37%);
+  --liquid-bloom-a: oklch(0.32 0.078 177 / 33%);
+  --liquid-bloom-b: oklch(0.35 0.05 82 / 18%);
+  --liquid-bloom-c: oklch(0.29 0.05 208 / 20%);
   --glass-fill: var(--liquid-fill);
   --glass-border: var(--liquid-stroke);
   --glass-highlight: inset 0 1px 0 var(--liquid-shine);
@@ -413,7 +415,7 @@ html[data-surface="liquid"] body {
     radial-gradient(ellipse 42rem 43rem at 96% 10%, var(--liquid-bloom-b), transparent 70%),
     radial-gradient(ellipse 70rem 48rem at 62% 97%, var(--liquid-bloom-c), transparent 72%),
     linear-gradient(165deg, var(--background) 0%, color-mix(in oklch, var(--background) 92%, var(--primary)) 100%);
-  background-attachment: fixed;
+  background-attachment: scroll;
 }
 /* Preserve intent of colored hero/subject cards; glass is a treatment of
  * neutral surfaces only. Same selector works across exam/books/game routes. */
@@ -531,8 +533,90 @@ html:lang(ru) body { font-family: "Noto Sans", "Noto Sans Armenian", sans-serif;
 @media (max-width: 640px) {
   html[data-surface="liquid"] { --glass-blur-amount: 9px; }
   html[data-surface="liquid"] .bg-card {
-    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(115%);
-    backdrop-filter: blur(var(--glass-blur-amount)) saturate(115%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
   html[data-surface="liquid"] .site-mobile-nav { --glass-blur-amount: 12px; }
+}
+
+
+/* Shared academic surface language across dashboards, source books and exams. */
+@utility academy-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1.35rem;
+  box-shadow: var(--shadow-card);
+}
+@utility academy-eyebrow {
+  color: var(--primary);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+}
+@utility academy-rule {
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 35%, transparent), var(--border), transparent);
+}
+.academy-home { isolation: isolate; }
+.academy-hero {
+  background: var(--gradient-hero);
+  box-shadow: 0 22px 48px -35px oklch(0.14 0.035 195 / 55%);
+}
+.academy-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 85% 17%, rgb(248 216 142 / 15%), transparent 24%),
+    linear-gradient(110deg, transparent 48%, rgb(255 255 255 / 3%) 48%, transparent 49%);
+}
+.academy-bento {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  border-radius: 1.4rem;
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.academy-bento:hover {
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  box-shadow: 0 18px 34px -25px oklch(0.21 0.03 200 / 35%);
+}
+.academy-book-cover { background: var(--secondary); }
+.academy-book-cover > img { object-fit: cover; width: 100%; height: 100%; }
+.academy-section-title {
+  display: flex; align-items: center; gap: .65rem;
+  letter-spacing: -.025em;
+}
+.academy-section-title::before {
+  content: ""; width: .32rem; height: 1.42rem;
+  flex-shrink: 0; border-radius: 999px;
+  background: var(--primary);
+}
+.academy-quick-action {
+  display: flex; align-items: center; gap: .85rem;
+  min-height: 4rem; border-radius: 1.15rem;
+  border: 1px solid var(--border); background: var(--card);
+  padding: .85rem 1rem;
+  transition: border-color 160ms, background-color 160ms;
+}
+.academy-quick-action:hover {
+  background-color: color-mix(in srgb, var(--primary) 5%, var(--card));
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+.academy-quick-action:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+
+/* User overrides retain control: high contrast and motion preferences win. */
+@media (max-width: 767px) {
+  .academy-bento:hover { box-shadow: var(--shadow-card); }
+  .academy-hero::before { background-image: radial-gradient(circle at 100% 0, rgb(248 216 142 / 11%), transparent 50%); }
+  .site-header, .site-mobile-nav, .glass, .bg-card, .site-settings-sheet {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-bento { transition: none; }
+  .academy-bento:hover { transform: none; }
 }

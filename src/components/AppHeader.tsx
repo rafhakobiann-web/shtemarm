@@ -31,15 +31,30 @@ export function AppHeader() {
   }, []);
 
   const close = () => setOpen(false);
-  const item = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold hover:bg-muted";
+  const item = "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/85 hover:bg-muted hover:text-primary focus-visible:outline-2 focus-visible:outline-primary";
 
   return (
-    <header className="site-header sticky top-0 z-30 glass rounded-none !border-x-0 !border-t-0">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
+    <header className="site-header sticky top-0 z-30 border-b border-border/80 bg-card/95">
+      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
-          <span className="flex min-w-0 items-center gap-2"><span className="truncate font-display text-base font-bold sm:text-lg">Shtemarm</span><span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span></span>
+          <span className="grid size-11 shrink-0 place-items-center rounded-[.85rem] border border-primary/10 bg-primary/10"><img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="size-9 object-contain" /></span>
+          <span className="flex min-w-0 items-center gap-2"><span className="truncate font-display text-base font-black tracking-tight sm:text-lg">Shtemarm<span className="hidden text-xs font-bold uppercase tracking-[.18em] text-primary/80 sm:inline"> · Academy</span></span><span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span></span>
         </Link>
+        <nav aria-label={lang === "ru" ? "Главное меню" : lang === "en" ? "Main navigation" : "Հիմնական նավարկում"}
+          className="hidden items-center gap-1 lg:flex">
+          <Link to="/" hash="subjects"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+            <BookOpen className="size-4"/>{t.subjects}
+          </Link>
+          <Link to="/" hash="exams"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+            <History className="size-4"/>{lang === "en" ? "Exams" : lang === "ru" ? "Экзамены" : "Քննություններ"}
+          </Link>
+          <Link to="/study-tools"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+            <Timer className="size-4"/>{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Գործիքներ"}
+          </Link>
+        </nav>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-3">
           <div className="hidden items-center gap-1.5 sm:flex" title={t.darkMode}>
             <Sun className="size-4 text-sun" aria-hidden />
@@ -61,7 +76,7 @@ export function AppHeader() {
           </span>
 
           <Sheet open={open} onOpenChange={setOpen}>
-            <Button variant="outline" size="icon" aria-label={t.openMenu} onClick={() => setOpen(true)}>
+            <Button variant="outline" size="icon" className="size-11 rounded-xl border-primary/15 bg-muted/35 hover:bg-primary/10" aria-label={t.openMenu} onClick={() => setOpen(true)}>
               <Menu className="size-5" />
             </Button>
             <SheetContent side="right" className="flex w-[min(20rem,90vw)] flex-col gap-4 overflow-y-auto">
@@ -92,9 +107,22 @@ export function AppHeader() {
                 <Link to="/" search={{ subject: "history" }} onClick={close} className={item}>
                   <BookOpen className="size-4" />{t.history}
                 </Link>
+                <Link to="/subject/$subject" params={{subject:"physics"}} onClick={close} className={item}>
+                  <BookOpen className="size-4"/>{lang === "en" ? "Physics" : lang === "ru" ? "Физика" : "Ֆիզիկա"}
+                </Link>
+                <Link to="/physics/original" onClick={close} className={item}>
+                  <BookOpen className="size-4"/>{lang === "en" ? "Physics question books" : lang === "ru" ? "Сборники по физике" : "Ֆիզիկայի շտեմարաններ"}
+                </Link>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 border-t pt-3">
+                <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{lang === "en" ? "Learning tools" : lang === "ru" ? "Инструменты" : "Ուսումնական գործիքներ"}</p>
+                <Link to="/assessment-builder" onClick={close} className={item}>
+                  <BookOpen className="size-4"/>{lang === "en" ? "Thematic assignments" : lang === "ru" ? "Тематические работы" : "Թեմատիկ և ամփոփիչ աշխատանքներ"}
+                </Link>
+                <Link to="/flashcards" onClick={close} className={item}>
+                  <Bookmark className="size-4"/>{lang === "en" ? "Flashcards" : lang === "ru" ? "Карточки" : "Հիշողության քարտեր"}
+                </Link>
                 <Link to="/changelog" onClick={close} className={item}>
                   <History className="size-4" />{lang === "en" ? "Changelog" : lang === "ru" ? "История изменений" : "Փոփոխությունների մատյան"}
                 </Link>
@@ -107,7 +135,7 @@ export function AppHeader() {
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />{lang === "en" ? "Study tools / Focus" : lang === "ru" ? "Инструменты / Фокус" : "Ուսումնական գործիքներ / Կենտրոնացում"}
                 </Link>
-                                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր"}</Link>
+                <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր"}</Link>
                 <Link to="/chat" onClick={close} className={item}>
                   <MessageSquare className="size-4" />{t.chat}
                 </Link>
