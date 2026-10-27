@@ -48,6 +48,15 @@ export const PHYSICS_BOOKS = [
   { id: 62, title: "Ֆիզիկա", sub: "Մաս II · 55 ուսումնական առաջադրանք", cover: "/covers/physics-2.svg" },
 ] as const;
 
+/** First source-reviewed text transcriptions from the two actual scanned GTC
+ * books supplied by the user. These are partial; do not conflate with our 61–62
+ * newly authored study questions.
+ */
+export const PHYSICS_SOURCE_BOOKS = [
+  { id: 63, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս I · թվայնացված 16 առաջադրանք · շարունակվում է", cover: "/covers/physics-1.svg" },
+  { id: 64, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս II · թվայնացված 15 առաջադրանք · շարունակվում է", cover: "/covers/physics-2.svg" },
+] as const;
+
 /** Original Shtemarm starter practice banks; NOT transcriptions of GTC books. */
 export const STARTER_SUBJECT_BOOKS = [
   { id: 51, title: "Ֆիզիկա", sub: "Ուսումնական ինքնաստուգում · 12 հարց", cover: "/covers/physics-practice.svg" },
@@ -63,6 +72,7 @@ export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; 
   ...BIO_BOOKS.filter((b) => !b.locked),
   ...ARMENIAN_BOOKS,
   ...PHYSICS_BOOKS,
+  ...PHYSICS_SOURCE_BOOKS,
   ...STARTER_SUBJECT_BOOKS,
 ];
 
@@ -86,7 +96,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then((r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           return r.json();
