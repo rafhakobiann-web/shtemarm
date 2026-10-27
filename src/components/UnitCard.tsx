@@ -232,6 +232,7 @@ export function UnitCard(props: {
           </span>
           <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></p>
         </div>
+        {q.diagram && <figure className="mb-4 rounded-xl border bg-white p-3"><img src={q.diagram.src} alt={q.diagram.alt} width={350} height={250} loading="lazy" className="mx-auto h-auto w-full max-w-sm" /></figure>}
         <div className="grid gap-2 sm:grid-cols-2">
           {Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options).map(([k, v]) => {
             const isC = k === q.answer;
@@ -531,3 +532,4 @@ function splitColumns(lines: string[]) {
   if (left.length < 3 || right.length < 3) return null;
   return { left, right };
 }
+

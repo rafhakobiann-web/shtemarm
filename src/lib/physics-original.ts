@@ -2,7 +2,7 @@ import type {Unit} from "@/lib/books";
 export type PhysicsSourceEntry={
   id:string;book:61|62;number:number;page:number;answerKeyPage:number;
   section:string;kind:"mc";stem:string;options:Record<string,string>;
-  answer:string;explanation:string;status:"source-reviewed";
+  answer:string;explanation:string;diagram?:{src:string;alt:string};status:"source-reviewed";
 };
 export type PhysicsTranscriptionBank={
   format:"shtemarm-physics-source-v1";provenance:string;items:PhysicsSourceEntry[];
@@ -34,8 +34,9 @@ export function validatePhysicsOriginalBank(bank:PhysicsTranscriptionBank):numbe
 }
 export function sourceAsUnit(q:PhysicsSourceEntry):Unit{
   return {id:q.id,kind:"mc",label:String(q.number),passage:"",
-    questions:[{n:String(q.number),stem:q.stem,options:q.options,answer:q.answer,explanation:q.explanation}]};
+    questions:[{n:String(q.number),stem:q.stem,options:q.options,answer:q.answer,explanation:q.explanation,...(q.diagram?{diagram:q.diagram}:{})}]};
 }
 export function sourceQuestionsForVolume(bank:PhysicsTranscriptionBank,volume:61|62){
   return bank.items.filter(q=>q.book===volume).sort((a,b)=>a.number-b.number);
 }
+

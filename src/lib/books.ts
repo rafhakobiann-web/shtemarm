@@ -1,4 +1,4 @@
-export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string };
+export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
@@ -53,8 +53,8 @@ export const PHYSICS_BOOKS = [
  * newly authored study questions.
  */
 export const PHYSICS_SOURCE_BOOKS = [
-  { id: 63, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս I · թվայնացված 16 առաջադրանք · շարունակվում է", cover: "/covers/physics-1.svg" },
-  { id: 64, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս II · թվայնացված 15 առաջադրանք · շարունակվում է", cover: "/covers/physics-2.svg" },
+  { id: 63, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս I · թվայնացված 26 առաջադրանք · շարունակվում է", cover: "/covers/physics-1.svg" },
+  { id: 64, title: "Ֆիզիկա · Բնօրինակ շտեմարան", sub: "Մաս II · թվայնացված 25 առաջադրանք · շարունակվում է", cover: "/covers/physics-2.svg" },
 ] as const;
 
 /** Original Shtemarm starter practice banks; NOT transcriptions of GTC books. */
@@ -328,3 +328,4 @@ export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
   }
   return ordered(book, selected);
 }
+

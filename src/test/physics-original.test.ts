@@ -49,10 +49,21 @@ describe("real source-linked text exercises from uploaded physics PDFs",()=>{
       expect(book.id).toBe(62+n);
       expect(book.sections).toHaveLength(1);
       const questionCount=book.sections[0].units.length;
-      expect(questionCount).toBe(n===1?18:19);
+      expect(questionCount).toBe(n===1?26:25);
       expect(book.sections[0].units.every((u:Record<string,unknown>)=>Number.isInteger(u.sourcePage))).toBe(true);
     }
     expect(readFileSync("src/routes/study.$bookId.$sectionId.tsx","utf8")).toContain("PhysicsSourceJump");
+  });
+  it("keeps every source diagram in both solving modes",()=>{
+    const diagrams=real.items.filter(q=>q.diagram);
+    expect(diagrams.length).toBeGreaterThanOrEqual(7);
+    for(const q of diagrams){
+      const unit=sourceAsUnit(q);
+      if(unit.kind!=="mc")throw new Error("Expected source multiple choice");
+      expect(unit.questions[0]?.diagram).toEqual(q.diagram);
+      expect(readFileSync("public"+q.diagram!.src,"utf8")).toContain("<svg");
+      expect(q.diagram!.alt.length).toBeGreaterThan(15);
+    }
   });
   it("rejects duplicates, swapped answer key editions, incomplete options and empty stems",()=>{
     const damaged=JSON.parse(JSON.stringify(real)) as PhysicsTranscriptionBank;
@@ -79,4 +90,5 @@ describe("real source-linked text exercises from uploaded physics PDFs",()=>{
     expect(script).toContain("verifiedAnswer");
   });
 });
+
 
