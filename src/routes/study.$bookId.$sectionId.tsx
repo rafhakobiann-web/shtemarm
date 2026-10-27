@@ -86,6 +86,21 @@ function useRevealer(onResult?: (correct: boolean) => void) {
   return { answers, setAnswers, revealed, setRevealed, check };
 }
 
+/** Optional source-page link for manually checked original physics questions.
+ * The link opens the user's local PDF, not a hosted screenshot or fabricated OCR.
+ */
+function PhysicsSourceJump({unit}:{unit:Unit}){
+  const tx=useTx();
+  const annotated=unit as Unit & {sourcePage?:number;sourceBook?:number};
+  if(!Number.isInteger(annotated.sourcePage)||
+    (annotated.sourceBook!==61&&annotated.sourceBook!==62))return null;
+  return <Link to="/physics/books"
+    search={{volume:annotated.sourceBook,page:annotated.sourcePage!}}
+    className="inline-flex min-h-10 items-center rounded-lg border border-primary/25 bg-primary/5 px-3 text-xs font-semibold text-primary hover:bg-primary/10">
+    {tx("Համեմատել բնօրինակ PDF-ի էջ {page}",{page:annotated.sourcePage!})}
+  </Link>;
+}
+
 /* ---------------- Classic ---------------- */
 function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; instrEn: string }) {
   const tx = useTx();
@@ -93,6 +108,8 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
   return (
     <div className="space-y-5">
       {units.map((u) => (
+        <div key={u.id} className="space-y-2">
+          <PhysicsSourceJump unit={u}/>
         <UnitCard
           key={u.id}
           unit={u}
@@ -104,6 +121,7 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
           onCheck={(k) => check(u, k)}
           header={<p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? tx("Առաջադրանք {n}", { n: u.label }) : u.label}</p>}
         />
+        </div>
       ))}
     </div>
   );
@@ -196,6 +214,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
           <Zap className="size-4" /> ×{combo}
         </span>
       </div>
+      <PhysicsSourceJump unit={u}/>
       <UnitCard
         key={u.id}
         unit={u}
