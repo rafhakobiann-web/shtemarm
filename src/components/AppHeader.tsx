@@ -46,7 +46,7 @@ export function AppHeader() {
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <BookOpen className="size-4"/>{t.subjects}
           </Link>
-          <Link to="/exam/$subject" params={{subject:"english"}}
+          <Link to="/" hash="exams"
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <History className="size-4"/>{lang === "en" ? "Exams" : lang === "ru" ? "Экзамены" : "Քննություններ"}
           </Link>
