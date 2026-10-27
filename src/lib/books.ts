@@ -1,9 +1,9 @@
-export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string };
+export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
-  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string }[] };
+  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[] };
 export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
 export const secNum = (n: number) => (n > 70 ? 7 : n);
 /** Translator shape of useTx(); the default only fills placeholders in the Armenian text. */
