@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { PHYSICS_BOOKS, ALL_BOOKS, type Book, unitPoints } from "@/lib/books";
 import { GTC_BLUEPRINTS, assertBlueprint } from "@/lib/gtc-blueprints";
-import { historyBookEntries } from "@/lib/history";
 import { isGtcClaimsBundle, normNum, scoreUnit } from "@/components/UnitCard";
 import { PHYSICS_BOOK_IDS, PHYSICS_SOURCE, checkPhysicsBook, makePhysicsModel,
   physicsEntries, physicsSlotType } from "@/lib/physics";
@@ -96,7 +95,7 @@ describe("two independent Shtemarm physics practice volumes",()=>{
     const all=physicsEntries(books);
     expect(all).toHaveLength(140);
     expect(new Set(all.map(e=>e.unit.id)).size).toBe(140);
-    const original=historyBookEntries(books[0]!,61);
+    const original=physicsEntries([books[0]!]);
     expect(original).toHaveLength(70);
     expect(original.filter(e=>physicsSlotType(e.unit)==="claims")).toHaveLength(2);
     expect(original.filter(e=>physicsSlotType(e.unit)==="short")).toHaveLength(28);
