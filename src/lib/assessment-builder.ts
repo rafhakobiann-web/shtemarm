@@ -6,7 +6,7 @@ export const ASSESSMENT_SOURCES = [
   { key: "armenian", label: "Հայոց լեզու և գրականություն", books: [41] },
   { key: "history", label: "Հայոց պատմություն", books: [21,22,23] },
   { key: "biology", label: "Կենսաբանություն", books: [31,32] },
-  { key: "physics", label: "Ֆիզիկա", books: [51] },
+  { key: "physics", label: "Ֆիզիկա", books: [61, 62] },
   { key: "chemistry", label: "Քիմիա", books: [52] },
   { key: "geography", label: "Աշխարհագրություն", books: [53] },
   { key: "russian", label: "Ռուսաց լեզու", books: [54] },
