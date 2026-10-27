@@ -12,6 +12,7 @@ import { GTC_BLUEPRINTS } from "@/lib/gtc-blueprints";
 import { update } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
+import { PhysicsWorkspace } from "@/components/PhysicsWorkspace";
 
 const SUBJECTS = { physics: 51, chemistry: 52, geography: 53, russian: 54 } as const;
 type SubjectId = keyof typeof SUBJECTS;
@@ -26,6 +27,10 @@ export const Route = createFileRoute("/subject/$subject")({
   component: SubjectPage,
 });
 function SubjectPage() {
+  const { subject } = Route.useParams();
+  return subject === "physics" ? <PhysicsWorkspace/> : <StarterSubjectPage/>;
+}
+function StarterSubjectPage() {
   const tx = useTx();
   const { subject } = Route.useParams();
   const { section } = Route.useSearch();
