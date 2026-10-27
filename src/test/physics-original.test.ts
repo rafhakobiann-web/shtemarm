@@ -49,7 +49,7 @@ describe("real source-linked text exercises from uploaded physics PDFs",()=>{
       expect(book.id).toBe(62+n);
       expect(book.sections).toHaveLength(1);
       const questionCount=book.sections[0].units.length;
-      expect(questionCount).toBe(n===1?16:15);
+      expect(questionCount).toBe(n===1?18:19);
       expect(book.sections[0].units.every((u:Record<string,unknown>)=>Number.isInteger(u.sourcePage))).toBe(true);
     }
     expect(readFileSync("src/routes/study.$bookId.$sectionId.tsx","utf8")).toContain("PhysicsSourceJump");
@@ -79,3 +79,4 @@ describe("real source-linked text exercises from uploaded physics PDFs",()=>{
     expect(script).toContain("verifiedAnswer");
   });
 });
+

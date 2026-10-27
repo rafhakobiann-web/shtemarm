@@ -220,6 +220,52 @@
           "transcriptionStatus": "source-reviewed"
         },
         {
+          "id": "physics-original-1-16",
+          "label": "16",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "16",
+              "stem": "Ո՞ր բանաձևն է ճիշտ արտահայտում մարմնի տեղափոխության |S⃗| մոդուլի և կամայական առանցքի վրա նրա պրոյեկցիայի |Sₓ| մոդուլի միջև ճիշտ առնչությունը։",
+              "options": {
+                "1": "|S⃗| > |Sₓ|",
+                "2": "|S⃗| < |Sₓ|",
+                "3": "|S⃗| ≥ |Sₓ|",
+                "4": "|S⃗| = |Sₓ|"
+              },
+              "answer": "3",
+              "explanation": "Վեկտորի պրոյեկցիայի մոդուլը չի գերազանցում վեկտորի մոդուլը՝ |Sₓ| = |S⃗|·|cos α| ≤ |S⃗|։"
+            }
+          ],
+          "sourcePage": 8,
+          "sourceBook": 61,
+          "transcriptionStatus": "source-reviewed"
+        },
+        {
+          "id": "physics-original-1-17",
+          "label": "17",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "17",
+              "stem": "Որքա՞ն է նյութական կետի տեղափոխության մոդուլը R շառավղով շրջանագծով 2,5 պտույտ կատարելիս։",
+              "options": {
+                "1": "5πR",
+                "2": "2,5πR",
+                "3": "2R",
+                "4": "R√2"
+              },
+              "answer": "3",
+              "explanation": "Երկու ամբողջ պտույտից հետո կետը վերադառնում է սկզբնական դիրք։ Մնացած կես պտույտից հետո այն տրամագծի հակառակ ծայրում է, ուստի տեղափոխության մոդուլը 2R է։"
+            }
+          ],
+          "sourcePage": 8,
+          "sourceBook": 61,
+          "transcriptionStatus": "source-reviewed"
+        },
+        {
           "id": "physics-original-1-19",
           "label": "19",
           "kind": "mc",
