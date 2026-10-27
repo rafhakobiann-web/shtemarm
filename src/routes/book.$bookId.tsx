@@ -15,7 +15,7 @@ export const Route = createFileRoute("/book/$bookId")({
     meta: [
       { title: `Շտեմարան ${params.bookId} · Բաժիններ` },
       { name: "description", content: `Շտեմարան ${params.bookId}՝ բաժիններ, ուսուցում և թեստեր։` },
-      { property: "og:title", content: `Շտեմարան ${params.bookId} · English` },
+      { property: "og:title", content: `Շտեմարան ${params.bookId} · Shtemarm` },
       { property: "og:description", content: "Ընտրեք բաժինը, սովորեք կամ անցեք թեստ։" },
     ],
   }),
@@ -46,6 +46,8 @@ function BookPage() {
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 31 && id <= 32 ? (
                 <Link to="/biology"><Trophy /> {tx("Քննություն")}</Link>
+              ) : id === 61 || id === 62 ? (
+                <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><Trophy /> {tx("Ինքնաստուգում")}</Link>
               ) : id === 41 || (id >= 1 && id <= 3) ? (
@@ -61,6 +63,8 @@ function BookPage() {
                 <Link to="/history"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 31 && id <= 32 ? (
                 <Link to="/biology"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : id === 61 || id === 62 ? (
+                <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 41 || (id >= 1 && id <= 3) ? (
@@ -71,6 +75,11 @@ function BookPage() {
                 </Link>
               )}
             </Button>
+            {(id === 61 || id === 62) && <Button variant="outline" size="lg" asChild>
+              <Link to="/physics/books" search={{volume:id,page:5}}>
+                <BookText className="size-5"/>{tx("Բացել բնօրինակ PDF-ը")}
+              </Link>
+            </Button>}
           </div>
         </div>
       </div>

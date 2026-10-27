@@ -1,0 +1,43 @@
+name: Verify physics two-volume exam practice and source bank
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/physics.ts'
+      - 'src/lib/physics-source.ts'
+      - 'src/components/PhysicsSourceReader.tsx'
+      - 'src/components/PhysicsSourceNotes.tsx'
+      - 'src/routes/physics.books.tsx'
+      - 'src/test/physics-source.test.ts'
+      - 'src/test/physics-source-notes.test.tsx'
+      - 'docs/PHYSICS_TWO_BOOKS.md'
+      - 'src/lib/books.ts'
+      - 'src/components/PhysicsWorkspace.tsx'
+      - 'src/components/UnitCard.tsx'
+      - 'src/routes/subject.$subject.tsx'
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/routes/index.tsx'
+      - 'src/lib/assessment-builder.ts'
+      - 'public/data/physics-book*.json'
+      - 'public/covers/physics-*.svg'
+      - 'src/test/physics.test.ts'
+      - '.github/workflows/verify-physics-volumes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Verify both source-aligned original physics practice banks
+        run: bunx vitest run src/test/physics.test.ts src/test/physics-source.test.ts src/test/physics-source-notes.test.tsx src/test/study-ux.test.tsx src/test/gtc-blueprints.test.ts src/test/scoring.test.ts
+      - name: Production build
+        run: bun run build
