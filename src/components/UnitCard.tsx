@@ -283,7 +283,7 @@ export function UnitCard(props: {
     );
   };
 
-  const numBlock = (q: { n: string; stem: string; answer: string }) => {
+  const numBlock = (q: { n: string; stem: string; answer: string; explanation?: string }) => {
     const show = revealed(q.n);
     const val = a?.mc?.[q.n] ?? "";
     const ok = normNum(val) === normNum(q.answer);
