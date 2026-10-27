@@ -18,6 +18,8 @@ describe("persisted user appearance", () => {
   });
   it("uses bounded, safe values and migrates old dark-mode preference", () => {
     expect(normalizeAppearance(null)).toEqual(DEFAULT_APPEARANCE);
+    expect(DEFAULT_APPEARANCE.surface).toBe("soft");
+    expect(DEFAULT_APPEARANCE.blur).toBe(false);
     expect(normalizeAppearance(null, "dark").mode).toBe("dark");
     expect(normalizeAppearance({
       mode: "hacked", surface: "nonexistent", glass: "<script>", blur: "false",
@@ -40,7 +42,7 @@ describe("persisted user appearance", () => {
     cleanup();
     resetAppearance();
     expect(localStorage.getItem(APPEARANCE_KEY)).toBeNull();
-    expect(document.documentElement.dataset.surface).toBe("liquid");
+    expect(document.documentElement.dataset.surface).toBe("soft");
   });
   it("renders OS mode without throwing if browser matchMedia is absent", () => {
     expect(["light", "dark"]).toContain(resolvedTheme({ ...DEFAULT_APPEARANCE }));
