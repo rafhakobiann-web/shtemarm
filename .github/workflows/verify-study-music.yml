@@ -1,0 +1,30 @@
+name: Verify Spotify study music integration
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/study-music.ts'
+      - 'src/components/StudyMusicDock.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/routes/study-tools.tsx'
+      - 'src/test/study-music.test.tsx'
+      - '.github/workflows/verify-study-music.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Test Spotify source selection, opt-in, off switch and localization
+        run: bunx vitest run src/test/study-music.test.tsx src/test/app-routing.test.tsx src/test/theme.test.ts
+      - name: Build Shtemarm production bundle
+        run: bun run build
