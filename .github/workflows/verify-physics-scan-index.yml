@@ -1,0 +1,31 @@
+name: Verify original scanned physics question indexing
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/physics-scan-index.ts'
+      - 'src/components/PhysicsScanPractice.tsx'
+      - 'src/routes/physics.scan-practice.tsx'
+      - 'src/components/PhysicsOriginalWorkspace.tsx'
+      - 'src/components/PhysicsWorkspace.tsx'
+      - 'src/test/physics-scan-index.test.ts'
+      - '.github/workflows/verify-physics-scan-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-source-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Verify first 250 printed answer codes and consistency with manually transcribed questions
+        run: bunx vitest run src/test/physics-scan-index.test.ts src/test/physics-original.test.ts src/test/physics-source.test.ts src/test/physics-source-notes.test.tsx
+      - name: Production build
+        run: bun run build

@@ -61,6 +61,10 @@ export function PhysicsOriginalWorkspace(){
           className="inline-flex min-h-11 items-center rounded-xl border bg-card px-4 text-sm font-semibold">
           {tx("Ֆիզիկայի ուսումնական կենտրոն")}
         </Link>
+        <Link to="/physics/scan-practice"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">
+          <ClipboardCheck className="size-4"/>{tx("Սկզբնական 250 բնօրինակ հարց · PDF-ով վարժանք")}
+        </Link>
         <Link to="/physics/books" search={{volume,page:5}}
           className="inline-flex min-h-11 items-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold">
           <BookOpenCheck className="size-4"/>{tx("Կարդալ ամբողջ բնօրինակ PDF-ը")}
@@ -89,6 +93,15 @@ export function PhysicsOriginalWorkspace(){
           <RefreshCw className="mr-2 size-4"/>{tx("Կրկին փորձել")}
         </Button>
       </div>}
+      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+        <p className="text-sm font-bold">{tx("Ուզո՞ւմ ես լուծել ավելի շատ բնօրինակ առաջադրանքներ։")}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          {tx("Արդեն կապակցված են երկու գրքերի առաջին 125-ական հարցերի ճշգրիտ PDF էջերն ու պատասխանները։ Տեքստը և գծագրերը ցուցադրվում են քո սեփական PDF-ից։")}
+        </p>
+        <Link to="/physics/scan-practice" className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground">
+          {tx("Բացել 250 հարցանոց վարժանքը")}
+        </Link>
+      </div>
       {query.data&&<div className="space-y-4">
         <p className="text-sm text-muted-foreground">
           {tx("Բնօրինակում կան ավելի շատ առաջադրանքներ։ Այստեղ առայժմ հասանելի են միայն ստուգված տեքստով և պատասխանով հարցերը։")}
