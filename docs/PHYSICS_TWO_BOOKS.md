@@ -18,6 +18,7 @@ The files were published by the Armenian GTC as physics multiple-choice and nume
 - Both volumes have distinct in-app book routes, subject tiles, thematic/summary assessment pools, and dedicated original-source access.
 - The **Original PDF reader**, at \`/physics/books?volume=61&page=5\` or \`?volume=62&page=5\`, opens exactly the edition the learner chooses **on their own device**, preserving all formulas and diagrams. The PDF remains on the learner's device: the browser's IndexedDB stores the file locally (if allowed by quota), a Blob URL shows it in the site's iframe, and an explicit removal option deletes it. Hash confirmation is available on demand; other editions are clearly labelled as unverified.
 - The reader has page controls, direct jump to exercise beginnings and answer tables, and a browser-native external-tab fallback for Android PDF readers that do not support iframe rendering.
+- An in-browser answer notebook lets learners record **printed question numbers, source page and their own answer**, then manually check against the original answer tables, mark reviewed questions, revisit the source page and remove entries. No official answers are guessed; no answers or PDFs are sent to a server.
 - The nearby downloadable public-source URL may refer to a **different edition**, so its page numbers and answers must not be represented as matching the two exact 2017 uploads.
 - Separately, \`public/data/physics-book1.json\` and \`physics-book2.json\` contain **original Shtemarm study questions**, *not verbatim reproductions* of the uploaded books. Both practice collections have 55 compound tasks, i.e. 40 one-of-four choices, 13 groups comprising 28 numerically answerable responses and 2 six-claim tasks (80 achievable points across 70 numbered response slots). The combined practice pool spans mechanics, heat, electricity, optics, waves, and atomic physics. The GTC 2027 blueprint is recorded in \`src/lib/gtc-blueprints.ts\`.
 - Number-based tasks have locally stored answer explanations available without AI calls. Six-claim units remain combined for correct bundle scoring.
@@ -31,7 +32,7 @@ The user can read the full originals privately inside the app right now, provide
 ## Testing
 
 \`\`\`bash
-bunx vitest run src/test/physics.test.ts src/test/physics-source.test.ts
+bunx vitest run src/test/physics.test.ts src/test/physics-source.test.ts src/test/physics-source-notes.test.tsx
 bun run build
 \`\`\`
 
