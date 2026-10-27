@@ -91,6 +91,17 @@ export function PhysicsWorkspace(){
         <BookOpen className="size-5"/>{tx("Բացել բնօրինակները")}
       </Link>
     </section>
+    <section className="flex flex-col gap-4 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-1">
+        <h2 className="text-lg font-black">{tx("Բնօրինակ գրքերից թվայնացված տեքստային հարցեր")}</h2>
+        <p className="max-w-2xl text-sm text-muted-foreground">
+          {tx("Արդեն հասանելի է երկու մասերի կինեմատիկայի առաջին ստուգված հարցաշարը։ Յուրաքանչյուր հարց կապակցված է PDF-ի բնօրինակ էջին և պատասխանների աղյուսակին։")}
+        </p>
+      </div>
+      <Link to="/physics/original" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground">
+        <BookOpen className="size-4"/>{tx("Լուծել գրքերի իրական առաջադրանքները")}
+      </Link>
+    </section>
     <div className="grid gap-5 md:grid-cols-2">
       {PHYSICS_BOOK_IDS.map((id,i)=><Link key={id} to="/book/$bookId"
         params={{bookId:String(id)}}
