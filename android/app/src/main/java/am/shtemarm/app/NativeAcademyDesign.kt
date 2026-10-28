@@ -4,6 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +45,19 @@ val AcademyPaper = Color(0xFFF9FBF5)
 val AcademyGold = Color(0xFFE3B95F)
 private val AcademyLine = Color(0xFFDDE7DF)
 
-fun academyColors(dark: Boolean, accent: Color): ColorScheme =
+val LocalAcademySurface = compositionLocalOf { "liquid" }
+
+fun academyAccent(id: String): Color = when (id) {
+    "blue" -> Color(0xFF4263EB)
+    "violet" -> Color(0xFF7C3AED)
+    "emerald" -> Color(0xFF059669)
+    "rose" -> Color(0xFFE11D48)
+    "amber" -> Color(0xFFB7791F)
+    else -> AcademyTeal
+}
+
+
+fun academyColors(dark: Boolean, accent: Color, style: String): ColorScheme =
     if (dark) darkColorScheme(
         primary = if (accent == AcademyTeal) Color(0xFF1CB4A1) else accent,
         onPrimary = Color(0xFF092B27),
@@ -57,8 +73,8 @@ fun academyColors(dark: Boolean, accent: Color): ColorScheme =
         onPrimary = Color.White,
         primaryContainer = Color(0xFFD9F2E9),
         onPrimaryContainer = AcademyInk,
-        background = AcademyPaper,
-        surface = Color(0xFFFFFEFB),
+        background = if (style == "classic") Color(0xFFFFFFFF) else AcademyPaper,
+        surface = if (style == "liquid") Color(0xFFFCFFFA) else Color(0xFFFFFEFB),
         surfaceContainerHigh = Color(0xFFF0F5F1),
         onSurface = AcademyInk,
         onSurfaceVariant = Color(0xFF617471),
@@ -161,6 +177,7 @@ fun AcademyTopBar(
 
 @Composable
 fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
+    val liquid = LocalAcademySurface.current == "liquid"
     val tabs = listOf(
         Triple("Գլխավոր", Icons.Default.Home, 0),
         Triple("Գրքեր", Icons.Default.Book, 1),
@@ -175,8 +192,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     ) {
         Surface(
             shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
-            shadowElevation = 14.dp,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = if (liquid) 0.88f else 1f),
+            shadowElevation = if (liquid) 14.dp else 4.dp,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.58f))
         ) {
             Row(Modifier.fillMaxWidth().padding(6.dp)) {
@@ -472,5 +489,102 @@ fun AcademyMiniCover(subject: String, title: String) {
         }
         Box(Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(3.dp))
             .background(Color.White.copy(alpha = .55f)))
+    }
+}
+
+@Composable
+fun AcademyAppearanceSettings(
+    dark: Boolean,
+    onDark: (Boolean) -> Unit,
+    accent: String,
+    onAccent: (String) -> Unit,
+    surface: String,
+    onSurface: (String) -> Unit,
+    largeText: Boolean,
+    onLargeText: (Boolean) -> Unit,
+    immediateFeedback: Boolean,
+    onFeedback: (Boolean) -> Unit
+) {
+    LazyColumn(
+        Modifier.fillMaxSize().padding(horizontal = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(17.dp)
+    ) {
+        item {
+            Spacer(Modifier.height(4.dp))
+            AcademyEyebrow("Անհատականացում")
+            Spacer(Modifier.height(9.dp))
+            AcademySectionTitle("Կարգավորումներ")
+            Spacer(Modifier.height(5.dp))
+            Text("Հարմարեցրու քո ուսումնական միջավայրը։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+        }
+        item {
+            Text("Կայքի ոճը", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("classic" to "Դասական", "soft" to "Ակադեմիական", "liquid" to "Liquid Glass")
+                    .forEach { (value, label) ->
+                        FilterChip(selected = surface == value, onClick = { onSurface(value) },
+                            label = { Text(label) })
+                    }
+            }
+        }
+        item {
+            Text("Շեշտադրման գույն", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                listOf("teal", "blue", "violet", "emerald", "rose", "amber").forEach { id ->
+                    val color = academyAccent(id)
+                    Box(
+                        Modifier.size(44.dp).clip(RoundedCornerShape(14.dp))
+                            .background(color)
+                            .border(
+                                width = if (accent == id) 3.dp else 1.dp,
+                                color = if (accent == id) MaterialTheme.colorScheme.onSurface
+                                        else MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .clickable { onAccent(id) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (accent == id) Icon(Icons.Default.CheckCircle, null,
+                            tint = Color.White, modifier = Modifier.size(22.dp))
+                    }
+                }
+            }
+        }
+        item {
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .6f))
+            ) {
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 5.dp)) {
+                    AcademyToggle("Մուգ թեմա", dark, onDark)
+                    HorizontalDivider()
+                    AcademyToggle("Խոշոր տեքստ", largeText, onLargeText)
+                    HorizontalDivider()
+                    AcademyToggle("Ցույց տալ ճիշտ պատասխանը", immediateFeedback, onFeedback)
+                }
+            }
+        }
+        item {
+            Text("Արտաքին տեսքի ընտրությունները պահպանվում են այս սարքում։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+            Spacer(Modifier.height(10.dp))
+        }
+    }
+}
+
+@Composable
+private fun AcademyToggle(title: String, value: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(title, fontSize = 15.sp, modifier = Modifier.weight(1f))
+        Switch(checked = value, onCheckedChange = onChange)
     }
 }
