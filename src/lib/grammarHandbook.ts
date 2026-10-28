@@ -298,7 +298,7 @@ export function getSectionTopics(section:number):GrammarTopic[] {
 export function matchGrammarTopic(skill:string, explanation:string):GrammarTopic|undefined {
  if (skill !== "grammar" && skill !== "use-of-english") return undefined;
  const source = explanation.toLowerCase();
- if (/\\bquestion(s)?\\b/.test(source) && /\\b(do|does|did)\\b/.test(source)) return getGrammarTopic("questions");
+ if (/\bquestion(s)?\b/.test(source) && /\b(do|does|did)\b/.test(source)) return getGrammarTopic("questions");
  const patterns: readonly [RegExp,string][] = [
   [/\b(be used to|used to.*gerund)\b/,"used-to"],
   [/\bthird conditional\b/,"third-conditional"],
