@@ -47,7 +47,6 @@ export function MobileNav() {
     ? homeVisible : getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
   const lastY = useRef(0);
-  const dockRef = useRef<HTMLElement>(null);
 
   // Never detach or unmount the dock during scroll; its links remain tappable.
   // A single animation frame throttles direction sensing.
@@ -161,7 +160,6 @@ export function MobileNav() {
 
   return (
     <nav
-      ref={dockRef}
       aria-label={tx("Արագ նավարկում")}
       data-compact={compact ? "true" : "false"}
       className="site-mobile-nav mobile-liquid-dock fixed inset-x-3 z-40 mx-auto max-w-[29rem] rounded-[1.7rem] p-[6px] md:hidden"
