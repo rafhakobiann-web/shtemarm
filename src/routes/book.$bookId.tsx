@@ -5,7 +5,7 @@ import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/book/$bookId")({
   beforeLoad: ({ params }) => {
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/book/$bookId")({
 
 function BookPage() {
   const tx = useTx();
+  const lang = useLang();
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
@@ -75,6 +76,11 @@ function BookPage() {
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               )}
             </Button>
+            {id >= 1 && id <= 3 && <Button variant="outline" size="lg" asChild>
+              <Link to="/english-grammar" search={{book:id,section:2,topic:undefined}}>
+                <BookText className="size-5" />{lang==="en"?"Grammar handbook":lang==="ru"?"Справочник грамматики":"Քերականական կանոններ"}
+              </Link>
+            </Button>}
             {(id === 61 || id === 62 || id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
               <Link to="/physics/books" search={{volume:id===63?61:id===64?62:id,page:5}}>
                 <BookText className="size-5"/>{tx("Բացել բնօրինակ PDF-ը")}
@@ -115,6 +121,10 @@ function BookPage() {
                 <p className="text-xs text-muted-foreground">
                   {tx("{done}/{total} արված · {right} ճիշտ", { done, total: ids.length, right })}
                 </p>
+                {id >= 1 && id <= 3 && <Link to="/english-grammar" search={{book:id,section:s.n,topic:undefined}}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3 text-sm font-semibold text-primary hover:bg-primary/10">
+                  <BookText className="size-4" />{lang==="en"?"Rules & study tips":lang==="ru"?"Правила и советы":"Կանոններ և ուսուցման հուշումներ"}
+                </Link>}
                 <div className="mt-auto grid grid-cols-3 gap-2">
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
