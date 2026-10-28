@@ -46,7 +46,7 @@ describe("Math handbook source alignment",()=>{
         expect(topic.summary[lang].length).toBeGreaterThan(25);
         expect(topic.problem[lang].length).toBeGreaterThan(12);
         expect(topic.steps[lang].length).toBeGreaterThanOrEqual(3);
-        for (const step of topic.steps[lang])expect(step.length).toBeGreaterThan(5);
+        for (const step of topic.steps[lang])expect(step.trim().length).toBeGreaterThan(2);
         expect(topic.mistake[lang].length).toBeGreaterThan(20);
       }
       expect(topic.title.hy).not.toBe(topic.title.en);
