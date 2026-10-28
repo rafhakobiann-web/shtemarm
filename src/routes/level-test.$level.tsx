@@ -5,9 +5,9 @@ import { ENGLISH_LEVELS, getLevel, selectLevelQuestions, selectPlacementQuestion
 import { OFFICIAL_ENGLISH_PREPARATION } from "@/lib/officialEnglishPreparation";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 import { recordMistake } from "@/lib/mistakeNotebook";
-import { ruleForEnglishQuestion } from "@/lib/englishRules";
+import { matchGrammarTopic } from "@/lib/grammarHandbook";
 
 export const Route = createFileRoute("/level-test/$level")({
   head: ({ params }) => ({
@@ -30,6 +30,7 @@ function LevelTestRoute() {
 
 function LevelTestPage() {
   const tx = useTx();
+  const lang = useLang();
   const { level: levelParam } = Route.useParams();
   const levelId = levelParam.toLowerCase();
   const placement = levelId === "placement";
@@ -70,6 +71,10 @@ function LevelTestPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Link to="/mistakes" className="inline-flex rounded-xl border px-3 py-2 text-sm font-semibold text-primary">Սխալների տետր · English Grammar</Link>
+      <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}}
+        className="inline-flex min-h-10 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 text-sm font-semibold text-primary">
+        {lang==="en"?"English grammar handbook":lang==="ru"?"Справочник английской грамматики":"Անգլերենի քերականության ձեռնարկ"}
+      </Link>
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}</Link>
       <section className="bg-hero rounded-3xl p-6 text-white sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -140,6 +145,7 @@ function LevelTestPage() {
       <div className="space-y-4">
         {questions.map((question, index) => {
           const selected = answers[question.id];
+          const topic = submitted && selected !== question.answerIndex ? matchGrammarTopic(question.skill, question.explanation) : undefined;
           return (
             <section key={question.id} className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
               <div className="flex items-start gap-3">
@@ -168,7 +174,14 @@ function LevelTestPage() {
                   );
                 })}
               </div>
-              {submitted && selected !== question.answerIndex && ruleForEnglishQuestion(question.id, question.explanation, question.skill) && <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm"><strong>Քերականական կանոն՝ {ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.title}.</strong> {ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.armenian} <em>{ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.example}</em></p>}
+              {topic && <aside className="space-y-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm">
+                <p className="font-bold">{lang==="en"?"Relevant grammar rule":lang==="ru"?"Связанное правило":"Առնչվող քերականական կանոն"} · {topic.title}</p>
+                <p className="leading-relaxed">{topic.content[lang].summary}</p>
+                <Link to="/english-grammar" search={{book:1,section:topic.sections.includes(2)?2:3,topic:topic.id}}
+                  className="inline-flex min-h-10 items-center font-semibold text-primary underline underline-offset-4">
+                  {lang==="en"?"Review the full rule":lang==="ru"?"Изучить правило подробнее":"Տեսնել ամբողջական կանոնը"}
+                </Link>
+              </aside>}
               {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong>{selected === question.answerIndex ? <>{tx("Ճիշտ է։")} </> : <>{tx("Ճիշտ պատասխանը՝ {letter}.", { letter: String.fromCharCode(65 + question.answerIndex) })} <EnglishText text={question.options[question.answerIndex]} />. </>}</strong><EnglishText text={question.explanation} /></p>}
             </section>
           );

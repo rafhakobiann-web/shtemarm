@@ -75,6 +75,10 @@ export function AppHeader() {
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <History className="size-4"/>{lang === "en" ? "Exams" : lang === "ru" ? "Экзамены" : "Քննություններ"}
           </Link>
+          <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+            <BookOpen className="size-4"/>{lang === "en" ? "Grammar" : lang === "ru" ? "Грамматика" : "Քերականություն"}
+          </Link>
           <Link to="/study-tools"
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <Wrench className="size-4"/>{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Գործիքներ"}
@@ -160,6 +164,9 @@ export function AppHeader() {
 
               <div className="space-y-1 border-t pt-3">
                 <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{lang === "en" ? "Learning tools" : lang === "ru" ? "Инструменты" : "Ուսումնական գործիքներ"}</p>
+                <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} onClick={close} className={item}>
+                  <BookOpen className="size-4" />{lang === "en" ? "English grammar handbook" : lang === "ru" ? "Справочник грамматики" : "Անգլերենի կանոնների ձեռնարկ"}
+                </Link>
                 <Link to="/assessment-builder" onClick={close} className={item}>
                   <BookOpen className="size-4"/>{lang === "en" ? "Thematic assignments" : lang === "ru" ? "Тематические работы" : "Թեմատիկ և ամփոփիչ աշխատանքներ"}
                 </Link>
