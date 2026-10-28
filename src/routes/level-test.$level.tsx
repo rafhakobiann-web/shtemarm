@@ -6,6 +6,8 @@ import { OFFICIAL_ENGLISH_PREPARATION } from "@/lib/officialEnglishPreparation";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 import { useTx } from "@/lib/lang";
+import { recordMistake } from "@/lib/mistakeNotebook";
+import { ruleForEnglishQuestion } from "@/lib/englishRules";
 
 export const Route = createFileRoute("/level-test/$level")({
   head: ({ params }) => ({
@@ -165,6 +167,7 @@ function LevelTestPage() {
                   );
                 })}
               </div>
+              {submitted && selected !== question.answerIndex && ruleForEnglishQuestion(question.id, question.explanation, question.skill) && <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm"><strong>Քերականական կանոն՝ {ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.title}.</strong> {ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.armenian} <em>{ruleForEnglishQuestion(question.id, question.explanation, question.skill)?.example}</em></p>}
               {submitted && <p className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed"><strong>{selected === question.answerIndex ? <>{tx("Ճիշտ է։")} </> : <>{tx("Ճիշտ պատասխանը՝ {letter}.", { letter: String.fromCharCode(65 + question.answerIndex) })} <EnglishText text={question.options[question.answerIndex]} />. </>}</strong><EnglishText text={question.explanation} /></p>}
             </section>
           );
@@ -174,7 +177,7 @@ function LevelTestPage() {
       {!submitted ? (
         <section className="sticky bottom-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background/95 p-4 shadow-lg backdrop-blur">
           <p className="text-sm text-muted-foreground">{tx("Կարող ես ավարտել նաև չպատասխանած հարցերով։")}</p>
-          <Button size="lg" onClick={() => setSubmitted(true)}>{tx("Ստուգել պատասխանները")} <CheckCircle2 className="size-4" /></Button>
+          <Button size="lg" onClick={() => { questions.forEach(question => { const chosen = answers[question.id]; if (chosen !== undefined && chosen !== question.answerIndex) recordMistake({ id: question.id, subject: "English", section: levelId.toUpperCase(), prompt: question.prompt, options: [...question.options], chosen, correct: question.answerIndex, explanation: question.explanation }); }); setSubmitted(true); }}>{tx("Ստուգել պատասխանները")} <CheckCircle2 className="size-4" /></Button>
         </section>
       ) : (
         <div className="flex flex-wrap gap-3"><Button asChild variant="outline"><Link to="/">Վերադառնալ գլխավոր էջ</Link></Button><Button onClick={resetTest}><RotateCcw className="size-4" /> {tx("Նորից անցնել")}</Button></div>
