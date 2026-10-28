@@ -1,17 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
 const read = (p: string) => readFileSync(p, "utf8");
 
 describe("website textbook navigation regressions", () => {
   it("all book action links use actual registered routes", () => {
     const book = read("src/routes/book.$bookId.tsx");
-    const files = read("src/routeTree.gen.ts");
+    const physicsRoute = read("src/routes/physics.original.tsx");
+    const subjectRoute = read("src/routes/subject.$subject.tsx");
     expect(book).not.toContain('to="/test/$bookId"');
     expect(book).toContain('to="/physics/original"');
     expect(book).toContain('to="/subject/$subject"');
-    expect(files).toContain("/physics/original");
-    expect(files).toContain("/subject/$subject");
+    expect(existsSync("src/routes/physics.original.tsx")).toBe(true);
+    expect(physicsRoute).toContain('createFileRoute("/physics/original")');
+    expect(subjectRoute).toContain('createFileRoute("/subject/$subject")');
   });
 
   it("distinguishes failed loads, invalid sections and valid study sessions", () => {
