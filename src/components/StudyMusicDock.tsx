@@ -17,6 +17,7 @@ function AmbientEngine(){
   const player=useRef<HowlPlayer|null>(null);
   const volume=useRef(ambientVolume);
   const [error,setError]=useState("");
+  const [retry,setRetry]=useState(0);
   volume.current=ambientVolume;
   useEffect(()=>{
     player.current?.volume(ambientVolume/100);
@@ -51,10 +52,12 @@ function AmbientEngine(){
       if(player.current===sound)player.current=null;
       if(url)URL.revokeObjectURL(url);
     };
-  },[ambience,ambientEnabled,tx]);
+  // tx() is recreated by useTx on each render: do NOT depend on its identity.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[ambience,ambientEnabled,retry]);
   return error?<p className="mt-2 text-xs text-destructive" role="alert">{error}{" "}
     <button type="button" className="font-bold underline"
-      onClick={()=>{setStudyMusic({ambientEnabled:false});queueMicrotask(()=>setStudyMusic({ambientEnabled:true}));}}>
+      onClick={()=>setRetry(n=>n+1)}>
       {tx("Կրկին փորձել")}
     </button>
   </p>:null;
@@ -175,15 +178,13 @@ export function StudyMusicDock(){
     </div>}
     <button type="button" aria-expanded={expanded}
       aria-label={tx("Ուսման ձայնային միջավայր")}
-      onClick={()=>setExpanded(v=>!v)}
+      onClick={()=>{ if(expanded) close(); else setExpanded(true); }}
       className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-bold shadow-lg transition-colors hover:border-primary/40 hover:bg-muted">
       {anyOn?<AudioLines className="size-5 text-primary"/>:<Music2 className="size-5 text-primary"/>}
       <span className="min-w-0 truncate">{tx("Ուսման ձայներ")}</span>
       <span aria-hidden="true" className={"size-2 shrink-0 rounded-full "+(anyOn?"bg-emerald-500":"bg-muted-foreground/40")}/>
     </button>
-    {!expanded&&youtubeEnabled&&<button type="button"
-      className="ml-2 inline-flex min-h-11 items-center gap-1 rounded-full border bg-card px-3 text-xs font-bold"
-      onClick={()=>setStudyMusic({youtubeEnabled:false})}>{tx("Դադար YouTube")}</button>}
+
   </aside>;
 }
 
