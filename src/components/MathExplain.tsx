@@ -35,8 +35,8 @@ async function pageDataUrl(bookId: string, page: number) {
   return "data:image/jpeg;base64," + btoa(binary);
 }
 const explanationCache = new Map<string,string>();
-function cacheKey(p: Props) {
-  return JSON.stringify([p.item, p.correct, p.chosen, p.question, p.options]);
+function cacheKey(p: Props,lang:string) {
+  return JSON.stringify([lang,p.item, p.correct, p.chosen, p.question, p.options]);
 }
 
 /** Prefer searchable text over uploading full pages on every click.
@@ -46,7 +46,7 @@ export function MathExplain(props: Props) {
   const tx = useTx();
   const lang = useLang();
   const fn = useServerFn(explainMathAnswer);
-  const key = cacheKey(props);
+  const key = cacheKey(props,lang);
   const [result, setResult] = useState<{ key: string; text: string; error: boolean } | null>(() => {
     const previous = explanationCache.get(key);
     return previous ? { key, text: previous, error: false } : null;
