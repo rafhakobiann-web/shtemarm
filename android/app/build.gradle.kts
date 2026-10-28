@@ -14,6 +14,7 @@ android {
         versionName = "0.2.0-native"
     }
     buildFeatures { compose = true }
+    sourceSets.getByName("main").assets.srcDir(file("../../public/data"))
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
