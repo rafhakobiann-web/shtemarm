@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -361,5 +362,110 @@ fun AcademyStatCard(label: String, value: String, caption: String, icon: ImageVe
             Text(value, fontWeight = FontWeight.Black, fontSize = 26.sp)
             Text(caption, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
+    }
+}
+
+@Composable
+fun AcademySubjectAccordion(
+    subject: String,
+    books: List<StudyBook>,
+    initiallyExpanded: Boolean = false,
+    onOpenSubject: () -> Unit,
+    onOpenBook: (StudyBook) -> Unit
+) {
+    var expanded by rememberSaveable(subject) { mutableStateOf(initiallyExpanded) }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(23.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .72f)),
+        shadowElevation = 2.dp
+    ) {
+        Column {
+            Row(
+                Modifier.fillMaxWidth().clickable { expanded = !expanded }
+                    .padding(horizontal = 15.dp, vertical = 18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(Modifier.size(38.dp).clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.09f)),
+                    contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Book, null, tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(21.dp))
+                }
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(subject, fontWeight = FontWeight.Black, fontSize = 17.sp)
+                    Text(books.size.toString() + " հավաքածու",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                }
+                Text(if (expanded) "⌃" else "⌄", fontSize = 23.sp,
+                    color = MaterialTheme.colorScheme.primary)
+            }
+            if (expanded) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .65f))
+                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                    books.forEach { book ->
+                        AcademyBookTile(book) { onOpenBook(book) }
+                    }
+                    TextButton(onClick = onOpenSubject, modifier = Modifier.fillMaxWidth()) {
+                        Text("Տեսնել " + subject + " առարկայի գրքերը")
+                        Spacer(Modifier.width(6.dp))
+                        Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AcademyBookTile(book: StudyBook, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .62f))
+    ) {
+        Row(Modifier.fillMaxWidth().padding(11.dp), verticalAlignment = Alignment.CenterVertically) {
+            AcademyMiniCover(book.subject, book.title)
+            Spacer(Modifier.width(13.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(book.title, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                Text(book.subject, fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Բացել շտեմարանը →", fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.primary)
+            }
+        }
+    }
+}
+
+@Composable
+fun AcademyMiniCover(subject: String, title: String) {
+    val colors = when (subject) {
+        "Մաթեմատիկա" -> listOf(Color(0xFF142E37), Color(0xFF11738A))
+        "Կենսաբանություն" -> listOf(Color(0xFF073A35), Color(0xFF28A16A))
+        "Հայոց պատմություն" -> listOf(Color(0xFF322A21), Color(0xFFA77C37))
+        "Հայոց լեզու" -> listOf(Color(0xFF1B263A), Color(0xFF505EB1))
+        "Ֆիզիկա" -> listOf(Color(0xFF15313F), Color(0xFF0D8C8B))
+        else -> listOf(Color(0xFF153039), Color(0xFF147C70))
+    }
+    Column(
+        Modifier.width(81.dp).height(111.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(Brush.linearGradient(colors))
+            .padding(9.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text("SHTEMARM", fontSize = 8.sp, fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFFE4F7F0), letterSpacing = .3.sp)
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Icon(Icons.Default.School, null, tint = Color.White, modifier = Modifier.size(23.dp))
+            Text(subject, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Black,
+                maxLines = 3, lineHeight = 12.sp)
+        }
+        Box(Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(3.dp))
+            .background(Color.White.copy(alpha = .55f)))
     }
 }
