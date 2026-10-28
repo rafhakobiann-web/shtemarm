@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +72,7 @@ private fun NativeShtemarm() {
             Page.RESULT -> sessionOrigin
             Page.SECTIONS -> Page.BOOKS
             Page.MATH -> Page.BOOKS
+            Page.ADVANCED -> Page.SECTIONS
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
         }
@@ -137,7 +138,7 @@ private fun NativeShtemarm() {
                         NavigationBarItem(selected = page == Page.HOME, onClick = { page = Page.HOME },
                             icon = { Icon(Icons.Default.Home, contentDescription = null) },
                             label = { Text("Գլխավոր") })
-                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY, Page.MATH),
+                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY, Page.MATH, Page.ADVANCED),
                             onClick = { page = Page.SUBJECTS },
                             icon = { Icon(Icons.Default.Book, contentDescription = null) },
                             label = { Text("Գրքեր") })
@@ -154,6 +155,10 @@ private fun NativeShtemarm() {
                 }
             ) { padding ->
                 when (page) {
+                    Page.ADVANCED -> {
+                        val activeBook = book
+                        if (activeBook != null) NativeAdvancedPractice(activeBook) { page = Page.SECTIONS }
+                    }
                     Page.MATH -> NativeMath(if (book?.title?.contains("Մաս 2") == true) 2 else 1)
                     Page.EXAMS -> NativeExams(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
@@ -264,6 +269,16 @@ private fun NativeShtemarm() {
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
+                        if (book?.asset in listOf(
+                            "book1.json", "book2.json", "book3.json",
+                            "bio-book1.json", "history-book1.json", "history-book2.json",
+                            "history-book3.json", "physics-book1.json", "physics-book2.json"
+                        )) item {
+                            OutlinedButton(
+                                onClick = { page = Page.ADVANCED },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Բազմաքայլ առաջադրանքներ · համապատասխանեցում, թվային, հերթականություն") }
+                        }
                         if (loading) item {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
                             Text("Բացվում է…")
