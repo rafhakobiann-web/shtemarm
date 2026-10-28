@@ -1,9 +1,14 @@
-name: Verify Spotify study music controls
+name: Verify YouTube and Howler study sound mixer
 
 on:
   pull_request:
     paths:
       - 'src/lib/study-music.ts'
+      - 'src/lib/study-ambience.ts'
+      - 'public/vendor/howler.core.min.js'
+      - 'public/vendor/HOWLER-LICENSE.md'
+      - 'src/i18n/e.ts'
+      - 'src/i18n/ru.ts'
       - 'src/components/StudyMusicDock.tsx'
       - 'src/routes/study-tools.tsx'
       - 'src/routes/__root.tsx'
