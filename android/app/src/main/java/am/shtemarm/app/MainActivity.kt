@@ -48,11 +48,14 @@ private suspend fun loadQuestions(file:String):List<Question> = withContext(Disp
                 for(k in 0 until qs.length()) {
                     val q=qs.optJSONObject(k) ?: continue
                     val options=q.optJSONObject("options") ?: continue
-                    val choices=(1..4).map { options.optString(it.toString()) }
-                    val answer=q.optString("answer").toIntOrNull() ?: continue
+                    val keys=if(options.has("a")) listOf("a","b","c","d") else listOf("1","2","3","4")
+                    val choices=keys.map { options.optString(it) }
+                    val answerKey=q.optString("answer").trim().lowercase()
+                    val answer=keys.indexOf(answerKey)
+                    if(answer<0) continue
                     val prompt=q.optString("stem")
-                    if(prompt.isNotBlank() && answer in 1..4 && choices.all { it.isNotBlank() } && choices.distinct().size==4)
-                        result.add(Question(prompt,choices,answer-1))
+                    if(prompt.isNotBlank() && answer in 0..3 && choices.all { it.isNotBlank() } && choices.distinct().size==4)
+                        result.add(Question(prompt,choices,answer))
                 }
             }
         }
