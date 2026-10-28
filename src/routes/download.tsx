@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
+import { PRIVATE_BETA_URL, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -17,27 +18,6 @@ type InstallPrompt = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
-
-/**
- * Optional PUBLIC APK URL, configured on the website's deployment.
- * Never put GitHub tokens, private asset URLs or API credentials here.
- * Without a public URL we only expose the private testers' release link.
- */
-export function safePublicApkUrl(value: string | undefined): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value, "https://shtemarm.am");
-    if (url.protocol !== "https:") return null;
-    if (!/\.apk(?:$|[?#])/i.test(url.pathname)) return null;
-    if (url.username || url.password) return null;
-    return url.href;
-  } catch {
-    return null;
-  }
-}
-
-const PRIVATE_BETA_URL =
-  "https://github.com/rafhakobiann-web/shtemarm/releases/tag/v0.1.0-beta.1";
 
 function DownloadPage() {
   const lang = useLang();
