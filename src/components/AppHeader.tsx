@@ -136,7 +136,7 @@ export function AppHeader() {
                   <Headphones className="size-4" />{lang === "en" ? "Study sounds · YouTube + ambience" : lang === "ru" ? "Музыка для учёбы · YouTube и шум" : "Ուսման ձայներ · YouTube և բնության ձայներ"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
-                  <Timer className="size-4" />{lang === "en" ? "Study tools / Focus" : lang === "ru" ? "Инструменты / Фокус" : "Ուսումնական գործիքներ / Կենտրոնացում"}
+                  <Timer className="size-4" />{lang === "en" ? "Study tools" : lang === "ru" ? "Учебные инструменты" : "Ուսումնական գործիքներ"}
                 </Link>
                 <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր"}</Link>
                 <Link to="/chat" onClick={close} className={item}>
