@@ -8,6 +8,9 @@ on:
       - 'src/lib/app-download.ts'
       - 'src/routes/index.tsx'
       - 'src/routes/__root.tsx'
+      - 'src/lib/progress.ts'
+      - 'src/integrations/supabase/client.ts'
+      - 'src/test/homepage-startup.test.ts'
       - 'src/routes/support.tsx'
       - 'src/test/mobile-liquid-nav.test.tsx'
       - 'src/components/AppHeader.tsx'
@@ -34,6 +37,6 @@ jobs:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
       - name: Verify download, navigation and responsive design tests
-        run: bunx vitest run src/test/download-scroll.test.ts src/test/mobile-liquid-nav.test.tsx src/test/academy-design.test.ts src/test/app-routing.test.tsx
+        run: bunx vitest run src/test/download-scroll.test.ts src/test/mobile-liquid-nav.test.tsx src/test/academy-design.test.ts src/test/app-routing.test.tsx src/test/homepage-startup.test.ts
       - name: Build production website
         run: bun run build
