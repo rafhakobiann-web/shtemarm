@@ -29,6 +29,18 @@ class StudyProgress(context: Context) {
             .apply()
     }
 
+    fun isBookmarked(id: String): Boolean =
+        prefs.getStringSet("bookmarks", emptySet())?.contains(id) == true
+
+    fun toggleBookmark(id: String): Boolean {
+        val items = prefs.getStringSet("bookmarks", emptySet()).orEmpty().toMutableSet()
+        val saved = if (id in items) { items.remove(id); false } else { items.add(id); true }
+        prefs.edit().putStringSet("bookmarks", items).apply()
+        return saved
+    }
+
+    fun bookmarkedIds(): Set<String> = prefs.getStringSet("bookmarks", emptySet()).orEmpty().toSet()
+
     var darkMode: Boolean
         get() = prefs.getBoolean("dark_mode", false)
         set(value) { prefs.edit().putBoolean("dark_mode", value).apply() }
