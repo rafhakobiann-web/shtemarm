@@ -41,6 +41,22 @@ class StudyProgress(context: Context) {
 
     fun bookmarkedIds(): Set<String> = prefs.getStringSet("bookmarks", emptySet()).orEmpty().toSet()
 
+    var accent: String
+        get() = prefs.getString("accent", "teal") ?: "teal"
+        set(value) {
+            if (value in setOf("teal", "blue", "violet", "emerald", "rose", "amber")) {
+                prefs.edit().putString("accent", value).apply()
+            }
+        }
+
+    var surfaceStyle: String
+        get() = prefs.getString("surface_style", "liquid") ?: "liquid"
+        set(value) {
+            if (value in setOf("classic", "soft", "liquid")) {
+                prefs.edit().putString("surface_style", value).apply()
+            }
+        }
+
     var darkMode: Boolean
         get() = prefs.getBoolean("dark_mode", false)
         set(value) { prefs.edit().putBoolean("dark_mode", value).apply() }
