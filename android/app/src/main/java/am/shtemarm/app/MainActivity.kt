@@ -51,6 +51,7 @@ private fun NativeShtemarm() {
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
     var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
+    var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var progressVersion by remember { mutableIntStateOf(0) }
 
     var page by remember { mutableStateOf(Page.HOME) }
@@ -132,10 +133,12 @@ private fun NativeShtemarm() {
             LocalDensity provides Density(
                 originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
             ),
-            LocalAcademySurface provides surfaceStyle
+            LocalAcademySurface provides surfaceStyle,
+            LocalGlassIntensity provides glassIntensity
         ) {
+            AcademyAmbientBackdrop(Modifier.fillMaxSize()) {
             Scaffold(
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = Color.Transparent,
                 topBar = {
                     AcademyTopBar(
                         points = BookCatalog.subjects.sumOf { progress.stats(it).correct } * 10,
@@ -603,6 +606,11 @@ private fun NativeShtemarm() {
                             onAccent = { accent = it; progress.accent = it },
                             surface = surfaceStyle,
                             onSurface = { surfaceStyle = it; progress.surfaceStyle = it },
+                            glassIntensity = glassIntensity,
+                            onGlassIntensity = {
+                                glassIntensity = it
+                                progress.glassIntensity = it
+                            },
                             largeText = largeText,
                             onLargeText = { largeText = it; progress.largeText = it },
                             immediateFeedback = immediateFeedback,
@@ -613,6 +621,7 @@ private fun NativeShtemarm() {
                         )
                     }
                 }
+            }
             }
         }
     }
