@@ -88,7 +88,7 @@ function MathReviewPage(){
     <div className="flex flex-wrap items-center gap-3 text-sm">
       <label className="inline-flex items-center gap-2">{t.book}
         <select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)} className="min-h-11 rounded-xl border bg-card px-3">
-          <option value="all">{t.all}</option><option value="matem-1">{t.part||t.book} 1</option><option value="matem-2">{t.part||t.book} 2</option>
+          <option value="all">{t.all}</option><option value="matem-1">{t.book} 1</option><option value="matem-2">{t.book} 2</option>
         </select>
       </label>
       <label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" checked={showMastered}
