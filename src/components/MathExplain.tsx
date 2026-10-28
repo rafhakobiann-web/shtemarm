@@ -66,14 +66,14 @@ export function MathExplain(props: Props) {
       }
       const r = await fn({
         data: {
-          item: props.item, kind: props.kind, task: props.task,
+          item: props.item, kind: props.kind, task: props.task, locale: lang,
           correct: props.correct, chosen: props.chosen,
           question: props.question?.slice(0, 3500) ?? "",
           options: props.options?.slice(0, 6) ?? [], pages,
         },
       });
       setResult({ key, text: r.text, error: !!r.error });
-      if (!r.error && !r.offline) explanationCache.set(key, r.text);
+      if (!r.error) explanationCache.set(key, r.text);
     } catch {
       setResult({ key, text: tx("Չհաջողվեց ստանալ բացատրությունը։ Ստուգիր կապը և կրկին փորձիր։"), error: true });
     } finally {
