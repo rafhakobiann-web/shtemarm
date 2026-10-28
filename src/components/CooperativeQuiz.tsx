@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
 import { Users, RotateCcw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { QUICK_QUIZ_ITEMS, makeRound, type GameSubjectId } from "@/lib/mini-game-data";
+import { makeRound, type GameSubjectId, type QuizItem } from "@/lib/mini-game-data";
 import { useTx } from "@/lib/lang";
 
 type Team = 0 | 1;
-export function CooperativeQuiz({subject}:{subject:GameSubjectId}) {
+export function CooperativeQuiz({subject,bank}:{subject:GameSubjectId;bank:QuizItem[]}) {
   const tx=useTx();
   const [seed,setSeed]=useState(0);
   const [count,setCount]=useState(10);
-  const available=QUICK_QUIZ_ITEMS.filter(q=>subject==="mixed"||q.subject===subject).length;
-  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,Math.min(count,QUICK_QUIZ_ITEMS.filter(q=>subject==="mixed"||q.subject===subject).length)),[subject,seed,count]);
+  const available=bank.filter(q=>subject==="mixed"||q.subject===subject).length;
+  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,Math.min(count,QUICK_QUIZ_ITEMS.filter(q=>subject==="mixed"||q.subject===subject).length)),[subject,seed,count,bank]);
   const [index,setIndex]=useState(0);
   const [picked,setPicked]=useState<string|null>(null);
   const [scores,setScores]=useState<[number,number]>([0,0]);
