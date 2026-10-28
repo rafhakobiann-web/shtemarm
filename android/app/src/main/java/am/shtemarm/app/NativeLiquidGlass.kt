@@ -63,18 +63,45 @@ fun AcademyGlassPanel(
             .border(BorderStroke(1.dp, outline), shape)
     ) {
         if (liquid) {
-            // A subtle edge refraction and top-left glint without expensive full-screen blur.
-            Box(
-                Modifier.matchParentSize().background(
-                    Brush.linearGradient(
-                        listOf(
-                            Color.White.copy(alpha = (if (dark) 0.08f else 0.22f) * strength),
-                            Color.Transparent,
-                            scheme.primary.copy(alpha = 0.045f * strength)
-                        )
+            // Layered reflection + top rim highlight. Draw-only: no touch blocking,
+            // no background capture, and no costly RenderEffect on scrolling lists.
+            Canvas(Modifier.matchParentSize()) {
+                val radius = maxOf(size.width, size.height).coerceAtLeast(1f)
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = (if (dark) 0.13f else 0.29f) * strength),
+                            Color.White.copy(alpha = 0.045f * strength),
+                            Color.Transparent
+                        ),
+                        center = Offset(size.width * 0.12f, size.height * 0.02f),
+                        radius = radius * 0.9f
                     )
                 )
-            )
+                drawRect(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color.Transparent,
+                            scheme.primary.copy(alpha = (if (dark) 0.13f else 0.075f) * strength)
+                        ),
+                        start = Offset(size.width * 0.35f, 0f),
+                        end = Offset(size.width, size.height)
+                    )
+                )
+                drawLine(
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.White.copy(alpha = (if (dark) 0.32f else 0.9f) * strength),
+                            Color.White.copy(alpha = 0.24f * strength),
+                            Color.Transparent
+                        )
+                    ),
+                    start = Offset(size.width * 0.07f, 1.4f),
+                    end = Offset(size.width * 0.93f, 1.4f),
+                    strokeWidth = 1.6f
+                )
+            }
         }
         content()
     }
