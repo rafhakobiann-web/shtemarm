@@ -243,7 +243,17 @@ private fun NativeShtemarm() {
                                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                             }
                             items(BookCatalog.subjects) { s ->
-                                SubjectCard(s) { subject = s; page = Page.BOOKS }
+                                AcademySubjectAccordion(
+                                    subject = s,
+                                    books = BookCatalog.books.filter { it.subject == s },
+                                    initiallyExpanded = s == "Անգլերեն" || s == "Մաթեմատիկա",
+                                    onOpenSubject = { subject = s; page = Page.BOOKS },
+                                    onOpenBook = { item ->
+                                        subject = s
+                                        book = item
+                                        page = if (s == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                                    }
+                                )
                             }
                             item {
                                 AcademyEyebrow("Գիտելիքների ստուգում")
@@ -277,45 +287,57 @@ private fun NativeShtemarm() {
                         }
                     }
                     Page.SUBJECTS -> LazyColumn(
-                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        item { ScreenHeading("Առարկաներ", "Ընտրիր առարկան և շարունակիր վարժանքը։") }
+                        item { Spacer(Modifier.height(7.dp)) }
+                        item {
+                            AcademyEyebrow("Ուսումնական գրադարան")
+                            Spacer(Modifier.height(10.dp))
+                            AcademySectionTitle("Գտիր քո շտեմարանը")
+                            Spacer(Modifier.height(7.dp))
+                            Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        }
                         items(BookCatalog.subjects) { s ->
-                            SubjectCard(s) { subject = s; page = Page.BOOKS }
+                            AcademySubjectAccordion(
+                                subject = s,
+                                books = BookCatalog.books.filter { it.subject == s },
+                                initiallyExpanded = s == "Անգլերեն" || s == "Մաթեմատիկա",
+                                onOpenSubject = { subject = s; page = Page.BOOKS },
+                                onOpenBook = { item ->
+                                    subject = s
+                                    book = item
+                                    page = if (s == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                                }
+                            )
                         }
                         item {
-                            Text("Մաթեմատիկայի հասանելի տեքստային հարցերը դեռ չունեն ստուգված պատասխաններ։ Կենսաբանության 3-րդ և 4-րդ գրքերի ստուգված բանկերն առկա չեն։",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                            Text("Մաթեմատիկայի մի շարք առաջադրանքների պատասխանները դեռ հաստատված չեն։ Կենսաբանության 3-րդ և 4-րդ գրքերի ամբողջական ստուգված բանկերն առկա չեն։",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                            Spacer(Modifier.height(10.dp))
                         }
                     }
                     Page.BOOKS -> LazyColumn(
-                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                        verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
-                        item { ScreenHeading(subject, "Ընտրիր շտեմարան կամ թեստերի հավաքածու։") }
+                        item {
+                            Spacer(Modifier.height(7.dp))
+                            AcademyEyebrow("Ուսումնական գրադարան")
+                            Spacer(Modifier.height(10.dp))
+                            AcademySectionTitle(subject)
+                            Spacer(Modifier.height(7.dp))
+                            Text("Ընտրիր շտեմարան կամ թեստերի հավաքածու։",
+                                fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                         items(BookCatalog.books.filter { it.subject == subject }) { item ->
-                            ElevatedCard(
-                                modifier = Modifier.fillMaxWidth().clickable {
-                                    book = item
-                                    page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
-                                },
-                                shape = RoundedCornerShape(16.dp)
-                            ) {
-                                Row(Modifier.fillMaxWidth().padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically) {
-                                    NativeBookCover(item.subject)
-                                    Spacer(Modifier.width(14.dp))
-                                    Column(Modifier.weight(1f)) {
-                                        Text(item.title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                                        Text("Անցանց հարցաշար", fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                    Text("›", fontSize = 25.sp,
-                                        color = MaterialTheme.colorScheme.primary)
-                                }
+                            AcademyBookTile(item) {
+                                book = item
+                                page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
                             }
                         }
+                        item { Spacer(Modifier.height(12.dp)) }
                     }
                     Page.SECTIONS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
