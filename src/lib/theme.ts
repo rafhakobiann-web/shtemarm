@@ -15,9 +15,9 @@ export const APPEARANCE_KEY = "shtemarm-appearance-v2";
 const LEGACY_KEY = "shtemarm-theme";
 export const DEFAULT_APPEARANCE: Readonly<Appearance> = Object.freeze({
   mode: "system",
-  surface: "soft",
-  glass: "subtle",
-  blur: false,
+  surface: "liquid",
+  glass: "balanced",
+  blur: true,
 });
 const modes: readonly ColorMode[] = ["system", "light", "dark"];
 const surfaces: readonly SurfaceTheme[] = ["classic", "soft", "liquid"];
@@ -130,15 +130,15 @@ function startupAppearance() {
     const legacy = localStorage.getItem("shtemarm-theme");
     const mode = ["light", "dark", "system"].includes(v.mode)
       ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
-    const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "soft";
-    const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "subtle";
+    const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "liquid";
+    const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "balanced";
     const dark = mode === "dark" ||
       (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
     const root = document.documentElement;
     root.classList.toggle("dark", dark);
     root.dataset.surface = surface;
     root.dataset.glass = glass;
-    root.dataset.glassBlur = v.blur === true ? "on" : "off";
+    root.dataset.glassBlur = v.blur === false ? "off" : "on";
   } catch { /* No stored theme: use CSS defaults. */ }
 }
 export const THEME_INIT_SCRIPT = "(" + startupAppearance.toString() + ")();";
