@@ -30,11 +30,22 @@ jobs:
             "b36ecaf73f746d66f3ac3e4acb029a5784efdf55"
           test "$(git hash-object android/licenses/OFL-NotoSansArmenian.txt)" = \
             "ff91c77a6d7c685ae633cca02b2092c452a9baf0"
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifarmenian/NotoSerifArmenian%5Bwdth%2Cwght%5D.ttf' \
+            -o android/app/src/main/res/font/noto_serif_armenian.ttf
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifarmenian/OFL.txt' \
+            -o android/licenses/OFL-NotoSerifArmenian.txt
+          test "$(git hash-object android/app/src/main/res/font/noto_serif_armenian.ttf)" = \
+            "5cc9d635de19e2c204874432998fbfed648e9deb"
+          test "$(git hash-object android/licenses/OFL-NotoSerifArmenian.txt)" = \
+            "ff91c77a6d7c685ae633cca02b2092c452a9baf0"
       - name: Commit the licensed font and its license
         shell: bash
         run: |
           set -euo pipefail
           git add android/app/src/main/res/font/noto_sans_armenian.ttf android/licenses/OFL-NotoSansArmenian.txt
+          git add android/app/src/main/res/font/noto_serif_armenian.ttf android/licenses/OFL-NotoSerifArmenian.txt
           if git diff --cached --quiet; then
             echo 'Verified font already present.'
             exit 0
