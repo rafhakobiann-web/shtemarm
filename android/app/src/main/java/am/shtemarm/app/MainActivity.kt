@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +30,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val BrandBlue = Color(0xFF2563EB)
+private val BrandTeal = Color(0xFF0B766B)
 private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH }
 
 class MainActivity : ComponentActivity() {
@@ -50,6 +52,7 @@ private fun NativeShtemarm() {
     var progressVersion by remember { mutableIntStateOf(0) }
 
     var page by remember { mutableStateOf(Page.HOME) }
+    var sessionOrigin by remember { mutableStateOf(Page.SECTIONS) }
     var subject by remember { mutableStateOf(BookCatalog.subjects.first()) }
     var book by remember { mutableStateOf<StudyBook?>(null) }
     var loaded by remember { mutableStateOf<LoadedBook?>(null) }
@@ -64,8 +67,8 @@ private fun NativeShtemarm() {
 
     fun back() {
         page = when(page) {
-            Page.STUDY -> Page.SECTIONS
-            Page.RESULT -> Page.SECTIONS
+            Page.STUDY -> sessionOrigin
+            Page.RESULT -> sessionOrigin
             Page.SECTIONS -> Page.BOOKS
             Page.MATH -> Page.BOOKS
             Page.BOOKS -> Page.SUBJECTS
@@ -75,6 +78,7 @@ private fun NativeShtemarm() {
 
     fun begin(pool: List<StudyQuestion>, count: Int, name: String) {
         if (pool.isEmpty()) return
+        sessionOrigin = page
         session = pool.shuffled().take(count.coerceAtLeast(1))
         sessionTitle = name
         sessionIndex = 0
@@ -98,8 +102,8 @@ private fun NativeShtemarm() {
 
     BackHandler(page != Page.HOME) { back() }
 
-    val colors = if (dark) darkColorScheme(primary = Color(0xFF93C5FD))
-                 else lightColorScheme(primary = BrandBlue, surface = Color(0xFFF8FAFF))
+    val colors = if (dark) darkColorScheme(primary = Color(0xFF1CB4A1))
+                 else lightColorScheme(primary = BrandTeal, surface = Color(0xFFF9FBF5))
     val originalDensity = LocalDensity.current
     MaterialTheme(colorScheme = colors) {
         CompositionLocalProvider(LocalDensity provides Density(
@@ -173,16 +177,23 @@ private fun NativeShtemarm() {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         item {
-                            ElevatedCard(colors = CardDefaults.elevatedCardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            ), shape = RoundedCornerShape(20.dp)) {
-                                Column(Modifier.fillMaxWidth().padding(22.dp)) {
-                                    Text("Պատրա՞ստ ես սովորելու", fontSize = 21.sp, fontWeight = FontWeight.Bold)
-                                    Spacer(Modifier.height(8.dp))
-                                    Text("Առկա հարցերը պահպանված են հավելվածում և հասանելի են նաև առանց ինտերնետի։")
-                                    Spacer(Modifier.height(12.dp))
-                                    Button(onClick = { page = Page.SUBJECTS }) { Text("Բացել շտեմարանները") }
-                                }
+                            Column(
+                                Modifier.fillMaxWidth()
+                                    .background(
+                                        Brush.linearGradient(listOf(Color(0xFF103D44), Color(0xFF147C70))),
+                                        RoundedCornerShape(23.dp)
+                                    ).padding(23.dp)
+                            ) {
+                                Text("ՍՈՎՈՐԻՐ SHTEMARM-ՈՎ", fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold, color = Color(0xFFB9F5E7))
+                                Spacer(Modifier.height(14.dp))
+                                Text("Պատրա՞ստ ես սովորելու", fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold, color = Color.White)
+                                Spacer(Modifier.height(8.dp))
+                                Text("Առկա հարցերը պահպանված են հավելվածում և հասանելի են նաև առանց ինտերնետի։",
+                                    color = Color(0xFFDCF5F0))
+                                Spacer(Modifier.height(15.dp))
+                                Button(onClick = { page = Page.SUBJECTS }) { Text("Բացել շտեմարանները") }
                             }
                         }
                         item {
@@ -395,7 +406,7 @@ private fun NativeShtemarm() {
                             modifier = Modifier.fillMaxWidth()) { Text("Կրկնել վարժանքը") }
                         OutlinedButton(onClick = { page = Page.PROGRESS },
                             modifier = Modifier.fillMaxWidth()) { Text("Իմ առաջընթացը") }
-                        TextButton(onClick = { page = Page.SECTIONS }) { Text("Վերադառնալ գրքերին") }
+                        TextButton(onClick = { page = sessionOrigin }) { Text("Վերադառնալ") }
                     }
                     Page.PROGRESS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
