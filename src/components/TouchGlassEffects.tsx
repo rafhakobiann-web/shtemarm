@@ -13,6 +13,7 @@ export function TouchGlassEffects() {
     let frame = 0;
     let x = 50;
     let y = 50;
+    let pointerDown = false;
     const enabled = () => !reduced.matches && !root.classList.contains("user-reduced-motion") &&
       !root.classList.contains("user-high-contrast") && root.dataset.surface === "liquid";
 
@@ -32,9 +33,8 @@ export function TouchGlassEffects() {
     };
     const move = (event: PointerEvent) => {
       if (!enabled()) { clear(); return; }
-      if (event.pointerType === "mouse" && event.type === "pointermove" && event.buttons === 0) {
-        // Hover can show a highlight, but never animate the whole page.
-      }
+      // A finger moving to scroll must not trigger continuous paint work.
+      if (event.pointerType !== "mouse" && !pointerDown) return;
       const target = (event.target as Element | null)?.closest?.(targets) as HTMLElement | null;
       if (!target) { clear(); return; }
       if (target !== active) {
@@ -48,16 +48,18 @@ export function TouchGlassEffects() {
       y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
       if (!frame) frame = requestAnimationFrame(paint);
     };
-    document.addEventListener("pointerdown", move, { passive: true });
+    const down = (event: PointerEvent) => { pointerDown = true; move(event); };
+    const up = () => { pointerDown = false; clear(); };
+    document.addEventListener("pointerdown", down, { passive: true });
     document.addEventListener("pointermove", move, { passive: true });
-    document.addEventListener("pointerup", clear, { passive: true });
-    document.addEventListener("pointercancel", clear, { passive: true });
+    document.addEventListener("pointerup", up, { passive: true });
+    document.addEventListener("pointercancel", up, { passive: true });
     window.addEventListener("blur", clear);
     return () => {
-      document.removeEventListener("pointerdown", move);
+      document.removeEventListener("pointerdown", down);
       document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", clear);
-      document.removeEventListener("pointercancel", clear);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", up);
       window.removeEventListener("blur", clear);
       clear();
     };
