@@ -225,6 +225,15 @@ fun NativeTools(
         loading = false
     }
 
+    if (tool == "vocab" || tool == "calc") {
+        Column(Modifier.fillMaxSize()) {
+            TextButton(onClick = { tool = "menu" }) { Text("‹ Ուսումնական գործիքներ") }
+            Box(Modifier.weight(1f)) {
+                if (tool == "vocab") NativeVocabulary() else NativeCalculator()
+            }
+        }
+        return
+    }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Text("Ուսումնական գործիքներ", fontSize = 25.sp, fontWeight = FontWeight.Bold)
@@ -251,6 +260,22 @@ fun NativeTools(
                     Column(Modifier.padding(18.dp)) {
                         Text("Ամփոփիչ աշխատանք", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text("Պատահական հարցեր՝ ընտրված առարկայի տարբեր բաժիններից։")
+                    }
+                }
+            }
+            item {
+                ElevatedCard(Modifier.fillMaxWidth().clickable { tool = "vocab" }) {
+                    Column(Modifier.padding(18.dp)) {
+                        Text("Իմ բառապաշարը · 8393 բառ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("Անգլերեն–հայերեն բառարան, սիրելի բառեր և անձնական ցանկ։")
+                    }
+                }
+            }
+            item {
+                ElevatedCard(Modifier.fillMaxWidth().clickable { tool = "calc" }) {
+                    Column(Modifier.padding(18.dp)) {
+                        Text("Հաշվիչ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("Հիմնական և գիտական գործողություններ։")
                     }
                 }
             }
