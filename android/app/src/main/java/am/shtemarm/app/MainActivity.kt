@@ -197,7 +197,7 @@ private fun NativeShtemarm() {
             if (ids.isNotEmpty()) {
                 // Bookmark IDs begin with their source asset filename. Read only
                 // relevant books instead of reparsing the entire offline library.
-                val sourceAssets = ids.map { it.substringBefore(':') }.toSet()
+                val sourceAssets = SessionGuards.sourceAssets(ids)
                 for (entry in BookCatalog.books.filter {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
@@ -576,9 +576,12 @@ private fun NativeShtemarm() {
                                     Card(
                                         modifier = Modifier.fillMaxWidth()
                                             .clickable(enabled = chosen < 0) {
-                                                if (chosen < 0) {
+                                                val evaluation = SessionGuards.evaluate(
+                                                    chosen, n, q.correctIndex, q.choices.size
+                                                )
+                                                if (evaluation.accepted) {
                                                     chosen = n
-                                                    if (n == q.correctIndex) {
+                                                    if (evaluation.correct) {
                                                         score++
                                                         correctIds = correctIds + q.id
                                                     }

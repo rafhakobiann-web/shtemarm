@@ -25,7 +25,7 @@ class StudyProgress(context: Context) {
      * or a repeated result callback cannot inflate scores and XP.
      */
     fun saveSessionOnce(subject: String, correct: Int, answered: Int, sessionId: String): Boolean {
-        if (answered <= 0 || correct !in 0..answered || sessionId.isBlank()) return false
+        if (!SessionGuards.validSession(answered, correct, sessionId)) return false
         synchronized(this) {
             if (prefs.getString("last_completed_session", null) == sessionId) return false
             val prefix = "s_" + subject + "_"
