@@ -1,0 +1,29 @@
+name: Verify Spotify study music controls
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/study-music.ts'
+      - 'src/components/StudyMusicDock.tsx'
+      - 'src/routes/study-tools.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/components/AppHeader.tsx'
+      - 'src/test/study-music.test.tsx'
+      - '.github/workflows/verify-study-music.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/study-music.test.tsx src/test/app-routing.test.tsx
+      - run: bun run build
