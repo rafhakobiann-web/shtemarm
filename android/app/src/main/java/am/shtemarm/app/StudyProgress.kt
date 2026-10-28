@@ -24,7 +24,10 @@ class StudyProgress(context: Context) {
      * Transactionally record a finished session at most once. A double-tap
      * or a repeated result callback cannot inflate scores and XP.
      */
-    fun saveSessionOnce(subject: String, correct: Int, answered: Int, sessionId: String): Boolean {
+    fun saveSessionOnce(
+        subject: String, correct: Int, answered: Int,
+        sessionId: String, chapterKey: String? = null
+    ): Boolean {
         if (!SessionGuards.validSession(answered, correct, sessionId)) return false
         synchronized(this) {
             if (prefs.getString("last_completed_session", null) == sessionId) return false
@@ -32,13 +35,37 @@ class StudyProgress(context: Context) {
             val current = stats(subject)
             // commit() is deliberate: scores and the de-duplication token
             // must reach disk in the same transaction before success.
-            return prefs.edit()
+            val editor = prefs.edit()
                 .putInt(prefix + "answered", current.answered + answered)
                 .putInt(prefix + "correct", current.correct + correct)
                 .putInt(prefix + "sessions", current.sessions + 1)
                 .putString("last_completed_session", sessionId)
-                .commit()
+            if (chapterKey != null && validChapterKey(chapterKey)) {
+                val currentChapter = chapterStats(chapterKey)
+                val chapterPrefix = "ch_" + chapterKey + "_"
+                editor.putInt(chapterPrefix + "answered", currentChapter.answered + answered)
+                    .putInt(chapterPrefix + "correct", currentChapter.correct + correct)
+                    .putInt(chapterPrefix + "sessions", currentChapter.sessions + 1)
+            }
+            return editor.commit()
         }
+    }
+
+    private fun validChapterKey(key: String): Boolean {
+        if (key.length !in 7..160 || key.count { it == '#' } != 1) return false
+        val asset = key.substringBefore('#')
+        val section = key.substringAfter('#').toIntOrNull() ?: return false
+        return section in 0..500 && BookCatalog.books.any { it.asset == asset }
+    }
+
+    fun chapterStats(chapterKey: String): SubjectStats {
+        if (!validChapterKey(chapterKey)) return SubjectStats(0, 0, 0)
+        val prefix = "ch_" + chapterKey + "_"
+        return SubjectStats(
+            prefs.getInt(prefix + "answered", 0),
+            prefs.getInt(prefix + "correct", 0),
+            prefs.getInt(prefix + "sessions", 0)
+        )
     }
 
     /** Return to the last opened source without storing any textbook text. */
@@ -91,6 +118,16 @@ class StudyProgress(context: Context) {
         val mistakes = JSONArray()
         for (id in mistakeIds().sorted()) mistakes.put(id)
         val lastBook = lastBook()
+        val chapters = JSONObject()
+        val keys = prefs.all.keys.filter { it.startsWith("ch_") && it.endsWith("_sessions") }
+        for (key in keys) {
+            val id = key.removePrefix("ch_").removeSuffix("_sessions")
+            if (!validChapterKey(id)) continue
+            val stats = chapterStats(id)
+            chapters.put(id, JSONObject()
+                .put("answered", stats.answered).put("correct", stats.correct)
+                .put("sessions", stats.sessions))
+        }
         val settings = JSONObject()
             .put("accent", accent)
             .put("surface", surfaceStyle)
@@ -104,6 +141,7 @@ class StudyProgress(context: Context) {
             .put("stats", statsJson)
             .put("bookmarks", bookmarks)
             .put("mistakes", mistakes)
+            .put("chapters", chapters)
             .put("lastBook", lastBook?.let { JSONObject().put("asset", it.asset)
                 .put("title", it.title) } ?: JSONObject.NULL)
             .put("settings", settings)
@@ -121,6 +159,8 @@ class StudyProgress(context: Context) {
             val bookmarksArray = json.getJSONArray("bookmarks")
             // 0.1.1 backups did not yet contain mistakes or recent books.
             val missedArray = json.optJSONArray("mistakes") ?: JSONArray()
+            val chaptersData = json.optJSONObject("chapters") ?: JSONObject()
+            if (chaptersData.length() > 5000) return false
             val lastBookData = json.optJSONObject("lastBook")
             val settings = json.getJSONObject("settings")
             if (bookmarksArray.length() > 10000 || missedArray.length() > 2000) return false
@@ -151,6 +191,17 @@ class StudyProgress(context: Context) {
                 val title = record.getString("title")
                 BookCatalog.books.firstOrNull { it.asset == asset && it.title == title }
             }
+            val chapters = mutableMapOf<String, SubjectStats>()
+            for (key in chaptersData.keys()) {
+                if (!validChapterKey(key)) return false
+                val entry = chaptersData.getJSONObject(key)
+                val answered = entry.getInt("answered")
+                val correct = entry.getInt("correct")
+                val sessions = entry.getInt("sessions")
+                if (answered !in 0..10000000 || correct !in 0..answered ||
+                    sessions !in 0..10000000) return false
+                chapters[key] = SubjectStats(answered, correct, sessions)
+            }
             val restoredAccent = settings.getString("accent")
             val restoredSurface = settings.getString("surface")
             val restoredGlass = settings.getString("glass")
@@ -160,6 +211,12 @@ class StudyProgress(context: Context) {
             val editor = prefs.edit().clear()
             for ((subject, stats) in restored) {
                 val prefix = "s_" + subject + "_"
+                editor.putInt(prefix + "answered", stats.answered)
+                    .putInt(prefix + "correct", stats.correct)
+                    .putInt(prefix + "sessions", stats.sessions)
+            }
+            for ((key, stats) in chapters) {
+                val prefix = "ch_" + key + "_"
                 editor.putInt(prefix + "answered", stats.answered)
                     .putInt(prefix + "correct", stats.correct)
                     .putInt(prefix + "sessions", stats.sessions)
