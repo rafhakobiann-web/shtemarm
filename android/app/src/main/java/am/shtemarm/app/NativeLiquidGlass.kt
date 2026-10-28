@@ -6,15 +6,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -45,13 +48,16 @@ fun AcademyGlassPanel(
     }
     val glow = if (dark) Color(0xFF96F5E5) else Color.White
     val low = if (dark) Color(0xFF19383F) else Color(0xFFE6F8F3)
-    val fill = if (liquid) Brush.linearGradient(
-        listOf(
-            glow.copy(alpha = (if (dark) 0.17f else 0.94f) * strength),
-            scheme.surface.copy(alpha = if (dark) 0.67f else 0.89f),
-            low.copy(alpha = (if (dark) 0.76f else 0.59f) * strength)
-        )
-    ) else Brush.verticalGradient(listOf(scheme.surface, scheme.surface))
+    // Do not rebuild gradient objects on every Compose state update or scroll.
+    val fill = remember(liquid, dark, strength, scheme.surface) {
+        if (liquid) Brush.linearGradient(
+            listOf(
+                glow.copy(alpha = (if (dark) 0.17f else 0.94f) * strength),
+                scheme.surface.copy(alpha = if (dark) 0.67f else 0.89f),
+                low.copy(alpha = (if (dark) 0.76f else 0.59f) * strength)
+            )
+        ) else Brush.verticalGradient(listOf(scheme.surface, scheme.surface))
+    }
     val outline = if (liquid) glow.copy(alpha = (if (dark) 0.26f else 0.86f) * strength)
                   else scheme.outline.copy(alpha = 0.68f)
     Box(
@@ -65,10 +71,12 @@ fun AcademyGlassPanel(
         if (liquid) {
             // Layered reflection + top rim highlight. Draw-only: no touch blocking,
             // no background capture, and no costly RenderEffect on scrolling lists.
-            Canvas(Modifier.matchParentSize()) {
-                val radius = maxOf(size.width, size.height).coerceAtLeast(1f)
-                drawRect(
-                    brush = Brush.radialGradient(
+            // Cache size-dependent shaders instead of allocating gradients
+            // during every frame while a book list is moving.
+            Spacer(
+                Modifier.matchParentSize().drawWithCache {
+                    val radius = maxOf(size.width, size.height).coerceAtLeast(1f)
+                    val reflected = Brush.radialGradient(
                         colors = listOf(
                             Color.White.copy(alpha = (if (dark) 0.13f else 0.29f) * strength),
                             Color.White.copy(alpha = 0.045f * strength),
@@ -77,31 +85,34 @@ fun AcademyGlassPanel(
                         center = Offset(size.width * 0.12f, size.height * 0.02f),
                         radius = radius * 0.9f
                     )
-                )
-                drawRect(
-                    brush = Brush.linearGradient(
-                        listOf(
+                    val edgeTint = Brush.linearGradient(
+                        colors = listOf(
                             Color.Transparent,
                             scheme.primary.copy(alpha = (if (dark) 0.13f else 0.075f) * strength)
                         ),
                         start = Offset(size.width * 0.35f, 0f),
                         end = Offset(size.width, size.height)
                     )
-                )
-                drawLine(
-                    brush = Brush.horizontalGradient(
+                    val topGlint = Brush.horizontalGradient(
                         listOf(
                             Color.Transparent,
                             Color.White.copy(alpha = (if (dark) 0.32f else 0.9f) * strength),
                             Color.White.copy(alpha = 0.24f * strength),
                             Color.Transparent
                         )
-                    ),
-                    start = Offset(size.width * 0.07f, 1.4f),
-                    end = Offset(size.width * 0.93f, 1.4f),
-                    strokeWidth = 1.6f
-                )
-            }
+                    )
+                    onDrawBehind {
+                        drawRect(brush = reflected)
+                        drawRect(brush = edgeTint)
+                        drawLine(
+                            brush = topGlint,
+                            start = Offset(size.width * 0.07f, 1.4f),
+                            end = Offset(size.width * 0.93f, 1.4f),
+                            strokeWidth = 1.6f
+                        )
+                    }
+                }
+            )
         }
         content()
     }

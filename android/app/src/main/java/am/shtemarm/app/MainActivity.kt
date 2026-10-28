@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -78,6 +79,18 @@ private fun NativeShtemarm() {
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var savedLoading by remember { mutableStateOf(false) }
 
+    // Maintain independent scroll positions for each main screen.
+    val homeScroll = rememberLazyListState()
+    val subjectsScroll = rememberLazyListState()
+    val booksScroll = rememberLazyListState()
+    val sectionsScroll = rememberLazyListState()
+    val studyScroll = rememberLazyListState()
+    val savedScroll = rememberLazyListState()
+    val progressScroll = rememberLazyListState()
+    LaunchedEffect(sessionIndex, session) { studyScroll.scrollToItem(0) }
+    LaunchedEffect(book) { sectionsScroll.scrollToItem(0) }
+    LaunchedEffect(subject) { booksScroll.scrollToItem(0) }
+
     fun back() {
         page = when(page) {
             Page.STUDY -> sessionOrigin
@@ -115,7 +128,6 @@ private fun NativeShtemarm() {
         loading = false
     }
 
-    // Keyed on page only: un-bookmarking on this screen must not reload every book (that blanked the list).
     LaunchedEffect(page) {
         if (page == Page.SAVED) {
             savedLoading = true
@@ -186,8 +198,8 @@ private fun NativeShtemarm() {
                 AnimatedContent(
                     targetState = page,
                     modifier = Modifier.fillMaxSize(),
-                    transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(160)) },
-                    label = "screen transition"
+                    transitionSpec = { fadeIn(tween(190)) togetherWith fadeOut(tween(140)) },
+                    label = "native screen transition"
                 ) { screen ->
                 when (screen) {
                     Page.ADVANCED -> {
@@ -220,6 +232,7 @@ private fun NativeShtemarm() {
                         val answered = stats.sumOf { it.answered }
                         LazyColumn(
                             Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                        state = homeScroll,
                             verticalArrangement = Arrangement.spacedBy(17.dp)
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
@@ -271,7 +284,7 @@ private fun NativeShtemarm() {
                                 Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
                                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                             }
-                            items(BookCatalog.subjects) { s ->
+                            items(BookCatalog.subjects, key = { it }) { s ->
                                 AcademySubjectAccordion(
                                     subject = s,
                                     books = BookCatalog.books.filter { it.subject == s },
@@ -317,6 +330,7 @@ private fun NativeShtemarm() {
                     }
                     Page.SUBJECTS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                        state = subjectsScroll,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item { Spacer(Modifier.height(7.dp)) }
@@ -328,7 +342,7 @@ private fun NativeShtemarm() {
                             Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         }
-                        items(BookCatalog.subjects) { s ->
+                        items(BookCatalog.subjects, key = { it }) { s ->
                             AcademySubjectAccordion(
                                 subject = s,
                                 books = BookCatalog.books.filter { it.subject == s },
@@ -349,6 +363,7 @@ private fun NativeShtemarm() {
                     }
                     Page.BOOKS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                        state = booksScroll,
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item {
@@ -360,7 +375,7 @@ private fun NativeShtemarm() {
                             Text("Ընտրիր շտեմարան կամ թեստերի հավաքածու։",
                                 fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        items(BookCatalog.books.filter { it.subject == subject }) { item ->
+                        items(BookCatalog.books.filter { it.subject == subject }, key = { it.asset + ":" + it.title }) { item ->
                             AcademyBookTile(item) {
                                 book = item
                                 page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
@@ -370,6 +385,7 @@ private fun NativeShtemarm() {
                     }
                     Page.SECTIONS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        state = sectionsScroll,
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
@@ -410,7 +426,7 @@ private fun NativeShtemarm() {
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
-                                items(data.sections.size) { sectionIndex ->
+                                items(data.sections.size, key = { idx -> data.sections[idx].title + ":" + idx }) { sectionIndex ->
                                     val sec = data.sections[sectionIndex]
                                     AcademyBookSectionCard(
                                         index = sectionIndex + 1,
@@ -435,6 +451,7 @@ private fun NativeShtemarm() {
                             val q = session[sessionIndex]
                             LazyColumn(
                                 Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+                        state = studyScroll,
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 item {
@@ -447,13 +464,13 @@ private fun NativeShtemarm() {
                                         Spacer(Modifier.weight(1f))
                                         Text("Ճիշտ՝ " + score)
                                     }
-                                    val answeredFraction by animateFloatAsState(
+                                    val animatedProgress by animateFloatAsState(
                                         targetValue = (sessionIndex + 1).toFloat() / session.size,
-                                        animationSpec = tween(durationMillis = 350),
-                                        label = "session progress"
+                                        animationSpec = tween(durationMillis = 260),
+                                        label = "study question progress"
                                     )
                                     LinearProgressIndicator(
-                                        progress = { answeredFraction },
+                                        progress = { animatedProgress },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
@@ -486,8 +503,8 @@ private fun NativeShtemarm() {
                                     }
                                     val animatedBg by animateColorAsState(
                                         targetValue = bg,
-                                        animationSpec = tween(durationMillis = 220),
-                                        label = "choice background"
+                                        animationSpec = tween(durationMillis = 190),
+                                        label = "answer feedback"
                                     )
                                     Card(
                                         modifier = Modifier.fillMaxWidth()
@@ -578,6 +595,7 @@ private fun NativeShtemarm() {
                     }
                     Page.SAVED -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        state = savedScroll,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         item { ScreenHeading("Պահպանված հարցերը", "Կրկնիր նշված հարցերը՝ առանց ինտերնետի։") }
@@ -596,14 +614,14 @@ private fun NativeShtemarm() {
                                     }
                                 ) { Text("Սկսել կրկնությունը") }
                             }
-                            items(savedQuestions) { q ->
+                            items(savedQuestions, key = { it.id }) { q ->
                                 ElevatedCard(Modifier.fillMaxWidth()) {
                                     Column(Modifier.padding(16.dp)) {
                                         Text(q.stem, maxLines = 3)
                                         TextButton(onClick = {
                                             progress.toggleBookmark(q.id)
+                                            savedQuestions = savedQuestions.filterNot { it.id == q.id }
                                             progressVersion++
-                                            savedQuestions = savedQuestions.filter { it.id != q.id }
                                         }) { Text("Հեռացնել ☆") }
                                     }
                                 }
@@ -612,10 +630,11 @@ private fun NativeShtemarm() {
                     }
                     Page.PROGRESS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        state = progressScroll,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item { ScreenHeading("Իմ առաջընթացը", "Արդյունքները պահվում են այս սարքում։") }
-                        items(BookCatalog.subjects) { s ->
+                        items(BookCatalog.subjects, key = { it }) { s ->
                             val stats = progress.stats(s)
                             ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
                                 Column(Modifier.padding(18.dp)) {
@@ -658,7 +677,7 @@ private fun NativeShtemarm() {
                         )
                     }
                 }
-                }
+                } // AnimatedContent
             }
             }
         }

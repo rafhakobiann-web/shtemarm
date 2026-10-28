@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
+import { PRIVATE_BETA_URL, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -18,31 +19,11 @@ type InstallPrompt = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-/**
- * Optional PUBLIC APK URL, configured on the website's deployment.
- * Never put GitHub tokens, private asset URLs or API credentials here.
- * Without a public URL we only expose the private testers' release link.
- */
-export function safePublicApkUrl(value: string | undefined): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value, "https://shtemarm.am");
-    if (url.protocol !== "https:") return null;
-    if (!/\.apk(?:$|[?#])/i.test(url.pathname)) return null;
-    if (url.username || url.password) return null;
-    return url.href;
-  } catch {
-    return null;
-  }
-}
-
-const PRIVATE_BETA_URL =
-  "https://github.com/rafhakobiann-web/shtemarm/releases/tag/v0.1.0-beta.1";
-
 function DownloadPage() {
   const lang = useLang();
   const [installable, setInstallable] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [publishedApk, setPublishedApk] = useState<string | null>(null);
   const promptRef = useRef<InstallPrompt | null>(null);
 
   useEffect(() => {
@@ -70,6 +51,28 @@ function DownloadPage() {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
+  }, []);
+
+  // A manually approved release workflow can publish this static manifest.
+  // Missing files may receive the SPA HTML fallback; those simply fail JSON
+  // parsing and the page continues to show the private-tester option.
+  useEffect(() => {
+    if (safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL)) return;
+    const controller = new AbortController();
+    fetch("/downloads/android-release.json", {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then(async (response) => response.ok ? response.json() : null)
+      .then((value: unknown) => {
+        if (!value || typeof value !== "object" || !("path" in value)) return;
+        const candidate = (value as { path?: unknown }).path;
+        if (typeof candidate !== "string") return;
+        const url = safePublicApkUrl(candidate);
+        if (url?.startsWith("/downloads/")) setPublishedApk(url);
+      })
+      .catch(() => { /* No public APK yet: continue with private beta. */ });
+    return () => controller.abort();
   }, []);
 
   const launchInstall = async () => {
@@ -130,7 +133,7 @@ function DownloadPage() {
     onlyAuthorized: "Բացել փակ փորձնական թողարկումը", available: "Android-ի համար",
   };
 
-  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL);
+  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk;
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
       <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary">
@@ -151,7 +154,7 @@ function DownloadPage() {
             <p className="mt-1 text-sm text-muted-foreground">{text.native}</p>
           </div>
           {apkUrl ? (
-            <a href={apkUrl} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
+            <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
               <Download className="size-5" />{text.apkAvailable}
             </a>
           ) : (
@@ -168,15 +171,20 @@ function DownloadPage() {
             <h2 id="web-app-title" className="text-xl font-black">{text.web}</h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">{text.webInfo}</p>
           </div>
-          <button
-            type="button"
-            disabled={!installable || installed}
-            onClick={launchInstall}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground enabled:hover:bg-primary/90 disabled:cursor-default disabled:opacity-65"
-          >
-            {installed ? <CheckCircle2 className="size-5" /> : <Download className="size-5" />}
-            {installed ? text.installed : installable ? text.install : text.manual}
-          </button>
+          {installable && !installed ? (
+            <button
+              type="button"
+              onClick={launchInstall}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+            >
+              <Download className="size-5" />{text.install}
+            </button>
+          ) : (
+            <p className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-bold text-primary">
+              {installed ? <CheckCircle2 className="size-5" /> : <MonitorDown className="size-5" />}
+              {installed ? text.installed : text.manual}
+            </p>
+          )}
           <p className="text-sm leading-6 text-muted-foreground">{text.noPrompt}</p>
           <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-muted-foreground">
             <li>{text.androidSteps}</li>

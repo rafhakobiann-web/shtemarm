@@ -47,7 +47,15 @@ object BookCatalog {
 
 /** Skips unanswered, illustrated, and non-MCQ material instead of inventing answers. */
 class QuestionRepository(private val context: Context) {
+    // Keep a small LRU of parsed books. Switching among subjects must not parse
+    // multi-megabyte JSON on every navigation; do not keep the whole library in RAM.
+    private val recentBooks = object : LinkedHashMap<String, LoadedBook>(6, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, LoadedBook>?): Boolean =
+            size > 4
+    }
+
     suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
+        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
         val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
         val result = mutableListOf<StudySection>()
@@ -83,7 +91,9 @@ class QuestionRepository(private val context: Context) {
                 }
             }
         }
-        LoadedBook(result)
+        val parsed = LoadedBook(result)
+        synchronized(recentBooks) { recentBooks[book.asset] = parsed }
+        parsed
     }
 
     private fun parseUnit(

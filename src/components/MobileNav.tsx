@@ -53,6 +53,8 @@ export function MobileNav() {
   useEffect(() => {
     lastY.current = window.scrollY || 0;
     let frame = 0;
+    let directionTravel = 0;
+    let lastSectionY = lastY.current;
     const detectHomeSection = () => {
       if (pathname !== "/") return;
       const subjects = document.getElementById("subjects");
@@ -71,11 +73,28 @@ export function MobileNav() {
         frame = 0;
         const nextY = Math.max(0, window.scrollY || 0);
         const delta = nextY - lastY.current;
-        if (nextY < 90) setCompact(false);
-        else if (delta > 10) setCompact(true);
-        else if (delta < -10) setCompact(false);
+        // Accumulate movement in one direction. Tiny touch jitter must not
+        // reanimate the floating dock on every scroll frame.
+        directionTravel = delta * directionTravel < 0
+          ? delta
+          : Math.max(-180, Math.min(180, directionTravel + delta));
+        if (nextY < 90) {
+          directionTravel = 0;
+          setCompact(false);
+        } else if (directionTravel > 48) {
+          setCompact(true);
+          directionTravel = 0;
+        } else if (directionTravel < -48) {
+          setCompact(false);
+          directionTravel = 0;
+        }
         lastY.current = nextY;
-        detectHomeSection();
+        // Reading multiple bounding rectangles on every frame can force
+        // layout on long books. Sample section position every ~80px instead.
+        if (pathname === "/" && Math.abs(nextY - lastSectionY) >= 80) {
+          lastSectionY = nextY;
+          detectHomeSection();
+        }
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
