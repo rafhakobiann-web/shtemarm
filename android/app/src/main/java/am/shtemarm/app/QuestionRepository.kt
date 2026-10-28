@@ -22,6 +22,8 @@ data class LoadedBook(val sections: List<StudySection>) {
 
 object BookCatalog {
     val books = listOf(
+        StudyBook("Մաթեմատիկա", "Մաս 1 · թվայնացված հարցեր", "math-text-questions-extra.json"),
+        StudyBook("Մաթեմատիկա", "Մաս 2 · թվայնացված հարցեր", "math-text-questions-extra.json"),
         StudyBook("Անգլերեն", "Շտեմարան 1", "book1.json"),
         StudyBook("Անգլերեն", "Շտեմարան 2", "book2.json"),
         StudyBook("Անգլերեն", "Շտեմարան 3", "book3.json"),
