@@ -298,6 +298,7 @@ export function getSectionTopics(section:number):GrammarTopic[] {
 export function matchGrammarTopic(skill:string, explanation:string):GrammarTopic|undefined {
  if (skill !== "grammar" && skill !== "use-of-english") return undefined;
  const source = explanation.toLowerCase();
+ if (/\\bquestion(s)?\\b/.test(source) && /\\b(do|does|did)\\b/.test(source)) return getGrammarTopic("questions");
  const patterns: readonly [RegExp,string][] = [
   [/\b(be used to|used to.*gerund)\b/,"used-to"],
   [/\bthird conditional\b/,"third-conditional"],
@@ -307,19 +308,19 @@ export function matchGrammarTopic(skill:string, explanation:string):GrammarTopic
   [/\bpast perfect\b/,"past-perfect"],
   [/\bpresent perfect\b/,"present-perfect"],
   [/\bpast continuous\b/,"past-continuous"],
+  [/\bpassive\b|\bwere \+ past participle\b/,"passive"],
   [/\bpast simple\b|\bfinished event yesterday\b/,"past-simple"],
   [/\bpresent continuous\b/,"present-continuous"],
   [/\bpresent simple\b|\bthird.person singular\b|\bbase verb with\b/,"present-simple"],
   [/\b(question tag|tag question)\b/,"question-tags"],
   [/\bindirect question\b/,"indirect-questions"],
-  [/\bpassive\b|\bwere \+ past participle\b/,"passive"],
   [/\bmodal\b|\bmust.*obligation\b|\bcan.*base form\b/,"modals"],
   [/\bcomparative\b|\bsuperlative\b|\bcheaper\b/,"comparison"],
   [/\buncountable\b/,"countable-uncountable"],
   [/\bgerund\b|\b-infinitive\b/,"gerund-infinitive"],
   [/\bvowel sound\b|\bindefinite article\b/,"articles"],
   [/\b(phrasal verb|put off means)\b/,"phrasal-verbs"],
-  [/\b(are with a plural|is with he|am with i|verb to be)\b/,"to-be"],
+  [/\b(are with a plural|is with he|am with i|verb to be)\b|\buse\b.{0,6}\b(is|are|am)\b.{0,8}\bwith\b/,"to-be"],
   [/\bstarting point in time\b|\buse since\b/,"since-for"],
   [/\bquestion.*(do|does).*base verb\b/,"questions"],
   [/\badverb.*-ly\b|\bword form\b/,"word-formation"],
