@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Block accidentally committed secrets
+        run: node scripts/check-repo-secrets.mjs
       - name: Validate offline question banks
         run: python3 android/scripts/validate_assets.py
       - uses: actions/setup-java@v4
