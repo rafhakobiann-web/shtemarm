@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
@@ -226,6 +227,7 @@ export function UnitCard(props: {
   const mcBlock = (q: MCQuestion) => {
     const show = revealed(q.n);
     const chosen = a?.mc?.[q.n];
+    const englishSource = /^([123])-(\\d+)-/.exec(u.id);
     return (
       <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
         <div className="mb-3 flex gap-2">
@@ -268,6 +270,11 @@ export function UnitCard(props: {
         {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
+        {show && chosen !== q.answer && englishSource && <Link to="/english-grammar"
+          search={{book:Number(englishSource[1]),section:Number(englishSource[2]),topic:undefined}}
+          className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/20 bg-primary/5 px-3 text-sm font-semibold text-primary">
+          {language==="en"?"Relearn this section":language==="ru"?"Повторить правила раздела":"Վերուսումնասիրել բաժնի կանոնները"}
+        </Link>}
         {show && chosen === q.answer && (
           <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
             <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
