@@ -1,0 +1,27 @@
+name: Repository security check (current and historical)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/repository-security.yml'
+      - 'scripts/audit-git-history.py'
+      - 'scripts/check-repo-secrets.mjs'
+      - '.gitignore'
+      - '.env.example'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify no secret files or key strings are tracked
+        run: node scripts/check-repo-secrets.mjs
+      - name: Scan all reachable Git history for leaked credentials
+        run: python3 scripts/audit-git-history.py
