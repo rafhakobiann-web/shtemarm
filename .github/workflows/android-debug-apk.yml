@@ -25,7 +25,7 @@ jobs:
           gradle-version: '8.9'
       - name: Build debug APK
         working-directory: android
-        run: gradle --no-daemon assembleDebug
+        run: gradle --no-daemon assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: shtemarm-android-debug-apk
