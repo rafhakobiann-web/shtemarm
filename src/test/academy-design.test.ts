@@ -22,10 +22,10 @@ describe("Shtemarm Academy final design tokens",()=>{
     expect(contrast).toBeGreaterThanOrEqual(4.5);
     expect(readFileSync("public/shtemarm-logo.svg","utf8")).toContain("#0B766B");
   });
-  it("defaults to low-lag soft surfaces but never removes user-selectable options",()=>{
-    expect(DEFAULT_APPEARANCE.surface).toBe("soft");
-    expect(DEFAULT_APPEARANCE.glass).toBe("subtle");
-    expect(DEFAULT_APPEARANCE.blur).toBe(false);
+  it("defaults to visible Liquid Glass while retaining a lighter Academy option",()=>{
+    expect(DEFAULT_APPEARANCE.surface).toBe("liquid");
+    expect(DEFAULT_APPEARANCE.glass).toBe("balanced");
+    expect(DEFAULT_APPEARANCE.blur).toBe(true);
     expect(normalizeAppearance({surface:"liquid",glass:"vivid",blur:true}).surface).toBe("liquid");
     expect(preferences).toContain('accent: "teal"');
     expect(preferences).toContain('soft: "Ակադեմիական"');
@@ -47,11 +47,11 @@ describe("Shtemarm Academy final design tokens",()=>{
   });
   it("keeps the critical study destinations visible on phones with real touch targets",()=>{
     expect(mobile).toContain("grid-cols-5");
-    expect(mobile).toContain("min-h-14");
-    expect(mobile).toContain('hash="subjects"');
-    expect(mobile).toContain('hash="exams"');
-    expect(mobile).toContain('to="/mini-games"');
-    expect(mobile).toContain('to="/study-tools"');
+    expect(mobile).toContain("min-h-[3.6rem]");
+    expect(mobile).toContain('hash: "subjects"');
+    expect(mobile).toContain('hash: "exams"');
+    expect(mobile).toContain('to: "/mini-games"');
+    expect(mobile).toContain('to: "/study-tools"');
   });
   it("localizes new study dashboard copy in English and Russian",()=>{
     expect(translate("en","Սովորիր վստահ։ Պատրաստվիր խելացի։")).toBe("Learn with confidence. Prepare smarter.");

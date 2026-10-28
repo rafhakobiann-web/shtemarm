@@ -368,10 +368,10 @@ html[data-surface="soft"] .site-header {
 
 html[data-surface="liquid"] {
   --radius: 1.45rem;
-  --glass-blur-amount: 12px;
-  --liquid-fill: rgb(255 255 255 / 88%);
-  --liquid-stroke: rgb(255 255 255 / 90%);
-  --liquid-shine: rgb(255 255 255 / 67%);
+  --glass-blur-amount: 19px;
+  --liquid-fill: rgb(241 253 251 / 76%);
+  --liquid-stroke: rgb(255 255 255 / 93%);
+  --liquid-shine: rgb(255 255 255 / 82%);
   --liquid-depth: rgb(11 80 73 / 12%);
   --liquid-bloom-a: oklch(0.89 0.064 178 / 42%);
   --liquid-bloom-b: oklch(0.93 0.055 82 / 28%);
@@ -385,9 +385,9 @@ html[data-surface="liquid"] {
 }
 html.dark[data-surface="liquid"] {
   --background: oklch(0.164 0.022 202);
-  --liquid-fill: rgb(24 43 45 / 84%);
-  --liquid-stroke: rgb(182 229 217 / 17%);
-  --liquid-shine: rgb(224 251 242 / 12%);
+  --liquid-fill: rgb(21 48 53 / 70%);
+  --liquid-stroke: rgb(207 255 249 / 35%);
+  --liquid-shine: rgb(224 251 242 / 28%);
   --liquid-depth: rgb(0 0 0 / 65%);
   --liquid-bloom-a: oklch(0.32 0.078 177 / 33%);
   --liquid-bloom-b: oklch(0.35 0.05 82 / 18%);
@@ -397,15 +397,15 @@ html.dark[data-surface="liquid"] {
   --glass-highlight: inset 0 1px 0 var(--liquid-shine);
 }
 html[data-surface="liquid"][data-glass="subtle"] {
-  --glass-blur-amount: 12px;
-  --liquid-fill: rgb(255 255 255 / 86%);
+  --glass-blur-amount: 8px;
+  --liquid-fill: rgb(255 255 255 / 88%);
 }
 html.dark[data-surface="liquid"][data-glass="subtle"] { --liquid-fill: rgb(24 34 53 / 92%); }
 html[data-surface="liquid"][data-glass="vivid"] {
-  --glass-blur-amount: 36px;
-  --liquid-fill: rgb(255 255 255 / 59%);
+  --glass-blur-amount: 26px;
+  --liquid-fill: rgb(246 255 253 / 62%);
 }
-html.dark[data-surface="liquid"][data-glass="vivid"] { --liquid-fill: rgb(28 41 65 / 69%); }
+html.dark[data-surface="liquid"][data-glass="vivid"] { --liquid-fill: rgb(22 45 50 / 61%); }
 
 /* The low-contrast blooms sit behind surfaces; they never cover text. */
 html[data-surface="liquid"] body {
@@ -619,4 +619,261 @@ html:lang(ru) body { font-family: "Noto Sans", "Noto Sans Armenian", sans-serif;
 @media (prefers-reduced-motion: reduce) {
   .academy-bento { transition: none; }
   .academy-bento:hover { transform: none; }
+}
+
+
+/* -------------------------------------------------------------------------
+   Shtemarm Liquid Dock 2.0
+   CSS imitation of specular/frosted material. No expensive SVG displacement
+   filters, screenshot capture or per-frame React painting.
+   ------------------------------------------------------------------------- */
+.mobile-liquid-dock {
+  --dock-fill: rgb(241 252 248 / 81%);
+  --dock-outline: rgb(255 255 255 / 90%);
+  --dock-glint: rgb(255 255 255 / 90%);
+  --dock-ink: var(--foreground);
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  isolation: isolate;
+  color: var(--dock-ink);
+  background:
+    linear-gradient(138deg, rgb(255 255 255 / 48%) 0%, transparent 26%, transparent 73%, rgb(255 255 255 / 17%) 100%),
+    linear-gradient(110deg, var(--dock-fill), var(--dock-fill));
+  border: 1px solid var(--dock-outline);
+  box-shadow:
+    0 0 0 1px rgb(15 105 95 / 7%),
+    0 18px 45px -18px rgb(7 39 39 / 37%),
+    inset 0 1.5px 0 var(--dock-glint),
+    inset 0 -1px 0 rgb(255 255 255 / 37%),
+    inset 1px 0 0 rgb(255 255 255 / 40%);
+  -webkit-backdrop-filter: blur(17px) saturate(178%) brightness(1.045);
+  backdrop-filter: blur(17px) saturate(178%) brightness(1.045);
+  transform-origin: 50% 100%;
+  will-change: auto;
+}
+.mobile-liquid-dock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 78% 100% at 20% -32%, rgb(255 255 255 / 65%), transparent 70%),
+    radial-gradient(ellipse 50% 80% at 100% 100%, rgb(59 206 196 / 18%), transparent 76%),
+    linear-gradient(170deg, rgb(255 255 255 / 23%), transparent 45%);
+  opacity: .9;
+}
+.mobile-liquid-dock::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset: 1px 13px auto;
+  height: 2px;
+  border-radius: 100%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 96%) 25%, rgb(255 255 255 / 38%) 76%, transparent);
+  filter: blur(.35px);
+}
+.mobile-liquid-track {
+  position: relative;
+  isolation: isolate;
+  border-radius: 1.3rem;
+}
+.mobile-liquid-indicator {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 75% 76% at 25% 0%, rgb(255 255 255 / 79%), transparent 82%),
+    linear-gradient(143deg,
+      color-mix(in srgb, var(--primary) 24%, rgb(255 255 255 / 42%)),
+      color-mix(in srgb, var(--primary) 12%, rgb(255 255 255 / 16%)));
+  border: 1px solid color-mix(in srgb, var(--primary) 19%, rgb(255 255 255 / 81%));
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 85%),
+    inset 0 -1px 3px rgb(255 255 255 / 18%),
+    0 3px 10px rgb(6 84 84 / 12%);
+}
+.mobile-liquid-tab {
+  color: var(--muted-foreground);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 210ms ease;
+}
+.mobile-liquid-tab.is-selected {
+  color: color-mix(in srgb, var(--primary) 87%, var(--foreground));
+}
+.mobile-liquid-icon {
+  transition: transform 300ms cubic-bezier(.2, .8, .2, 1);
+}
+.mobile-liquid-tab.is-selected .mobile-liquid-icon {
+  transform: translateY(-1px) scale(1.09);
+}
+.mobile-liquid-label {
+  max-width: 100%;
+  max-height: 1.8rem;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 260ms ease, opacity 220ms ease, transform 260ms ease;
+}
+.mobile-liquid-dock[data-compact="true"] {
+  transform: translateY(.45rem) scale(.955);
+}
+.mobile-liquid-dock[data-compact="true"] .mobile-liquid-label {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-5px);
+}
+.mobile-liquid-dock[data-compact="true"] .mobile-liquid-tab {
+  min-height: 3rem;
+}
+.mobile-liquid-dock[data-compact="true"] .mobile-liquid-icon {
+  transform: translateY(0) scale(1.08);
+}
+
+/* Liquid mode boosts contrast and highlights even over busy page content. */
+html[data-surface="liquid"] .mobile-liquid-dock {
+  --dock-fill: rgb(240 254 250 / 67%);
+  --dock-outline: rgb(255 255 255 / 95%);
+  background:
+    linear-gradient(139deg, rgb(255 255 255 / 55%), transparent 34%, rgb(70 194 182 / 10%) 86%),
+    var(--dock-fill);
+  border-color: var(--dock-outline);
+  -webkit-backdrop-filter: blur(20px) saturate(195%) brightness(1.07);
+  backdrop-filter: blur(20px) saturate(195%) brightness(1.07);
+  box-shadow:
+    0 20px 48px -18px rgb(5 50 47 / 39%),
+    0 0 0 1px rgb(255 255 255 / 34%),
+    inset 0 1.5px 0 rgb(255 255 255 / 96%),
+    inset 0 -1.5px 0 rgb(255 255 255 / 34%);
+}
+html[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+  --dock-fill: rgb(240 251 249 / 59%);
+  -webkit-backdrop-filter: blur(25px) saturate(210%);
+  backdrop-filter: blur(25px) saturate(210%);
+}
+html.dark .mobile-liquid-dock {
+  --dock-fill: rgb(26 47 53 / 79%);
+  --dock-outline: rgb(199 246 235 / 31%);
+  --dock-glint: rgb(239 255 252 / 34%);
+  background:
+    linear-gradient(142deg, rgb(234 255 251 / 15%), transparent 34%, rgb(66 173 177 / 13%) 91%),
+    var(--dock-fill);
+  box-shadow:
+    0 17px 45px -18px rgb(0 0 0 / 82%),
+    0 0 0 1px rgb(216 255 249 / 10%),
+    inset 0 1.5px 0 var(--dock-glint),
+    inset 0 -1px 0 rgb(0 0 0 / 17%);
+}
+html.dark[data-surface="liquid"] .mobile-liquid-dock {
+  --dock-fill: rgb(24 46 54 / 64%);
+  border-color: rgb(201 246 239 / 38%);
+  background:
+    linear-gradient(142deg, rgb(243 255 255 / 19%), transparent 36%, rgb(32 125 140 / 15%) 95%),
+    var(--dock-fill);
+}
+html.dark .mobile-liquid-dock::before {
+  background:
+    radial-gradient(ellipse 90% 110% at 20% -35%, rgb(255 255 255 / 20%), transparent 68%),
+    radial-gradient(ellipse 58% 90% at 100% 100%, rgb(33 195 189 / 20%), transparent 78%);
+}
+html.dark .mobile-liquid-indicator {
+  background:
+    radial-gradient(ellipse at 25% 0%, rgb(231 255 250 / 26%), transparent 78%),
+    linear-gradient(139deg,
+      color-mix(in srgb, var(--primary) 30%, rgb(255 255 255 / 8%)),
+      color-mix(in srgb, var(--primary) 18%, transparent));
+  border-color: rgb(213 255 250 / 28%);
+  box-shadow: inset 0 1px 0 rgb(246 255 255 / 29%), 0 4px 12px rgb(0 0 0 / 15%);
+}
+html.dark .mobile-liquid-tab.is-selected { color: var(--foreground); }
+
+/* Scroll shrink / active bubble use only transforms and opacity. */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-liquid-dock {
+    transition: transform 430ms cubic-bezier(.19, 1.05, .25, 1),
+      box-shadow 300ms ease, border-color 250ms ease, background-color 300ms ease;
+  }
+  .mobile-liquid-indicator {
+    transition: transform 470ms cubic-bezier(.2, 1.24, .3, 1),
+      background-color 230ms ease;
+  }
+  .mobile-liquid-tab:active .mobile-liquid-icon { transform: scale(.9); }
+}
+@media (max-width: 767px) {
+  /* Other surfaces stay lightweight; only the small dock uses real backdrop blur.
+     This overrides the old mobile rule which disabled every glass effect. */
+  html:not(.user-high-contrast) .mobile-liquid-dock {
+    -webkit-backdrop-filter: blur(17px) saturate(178%) !important;
+    backdrop-filter: blur(17px) saturate(178%) !important;
+  }
+  html:not(.user-high-contrast)[data-surface="liquid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: blur(20px) saturate(195%) !important;
+    backdrop-filter: blur(20px) saturate(195%) !important;
+  }
+  html:not(.user-high-contrast)[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: blur(25px) saturate(210%) !important;
+    backdrop-filter: blur(25px) saturate(210%) !important;
+  }
+}
+html.user-high-contrast .mobile-liquid-dock,
+html[data-glass-blur="off"] .mobile-liquid-dock,
+html.user-reduced-motion .mobile-liquid-dock {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.user-high-contrast .mobile-liquid-dock,
+html[data-glass-blur="off"] .mobile-liquid-dock {
+  --dock-fill: var(--card);
+  background: var(--card);
+  border-color: var(--border);
+}
+html.user-high-contrast .mobile-liquid-indicator {
+  background: var(--primary);
+  border: 2px solid var(--ring);
+}
+html.user-high-contrast .mobile-liquid-tab.is-selected {
+  color: var(--primary-foreground);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-dock {
+    background: var(--card);
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-liquid-dock, .mobile-liquid-indicator, .mobile-liquid-tab,
+  .mobile-liquid-label, .mobile-liquid-icon {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html.user-reduced-motion .mobile-liquid-dock,
+html.user-reduced-motion .mobile-liquid-indicator,
+html.user-reduced-motion .mobile-liquid-label {
+  transition: none !important;
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-dock {
+    background: var(--card);
+  }
+}
+
+
+/* Opting out of blur wins over all responsive / vivid selectors. */
+html[data-glass-blur="off"]:not(.user-high-contrast) .mobile-liquid-dock,
+html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"] .mobile-liquid-dock,
+html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: var(--card) !important;
+}
+@media (prefers-reduced-transparency: reduce) {
+  html .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-dock,
+  html[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: var(--card) !important;
+  }
 }
