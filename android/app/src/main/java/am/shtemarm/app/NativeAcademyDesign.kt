@@ -589,3 +589,61 @@ private fun AcademyToggle(title: String, value: Boolean, onChange: (Boolean) -> 
         Switch(checked = value, onCheckedChange = onChange)
     }
 }
+
+@Composable
+fun AcademyBookSectionCard(
+    index: Int,
+    title: String,
+    count: Int,
+    onPlay: () -> Unit,
+    onClassic: () -> Unit,
+    onTest: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(21.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .65f)),
+        shadowElevation = 2.dp
+    ) {
+        Column(Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(13.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier.size(44.dp).clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(index.toString(), color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Black, fontSize = 20.sp)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(count.toString() + " հասանելի հարց",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                Button(
+                    onClick = onPlay,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Խաղալ", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                OutlinedButton(
+                    onClick = onClassic,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Դասական", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                FilledTonalButton(
+                    onClick = onTest,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Թեստ", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+            }
+        }
+    }
+}
