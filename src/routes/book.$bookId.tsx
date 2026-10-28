@@ -52,12 +52,10 @@ function BookPage() {
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><Trophy /> {tx("Ինքնաստուգում")}</Link>
               ) : id === 41 || (id >= 1 && id <= 3) ? (
                 <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
+              ) : id === 63 || id === 64 ? (
+                <Link to="/physics/original"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
-                id === 63 || id === 64 ? (
-                  <Link to="/physics/original"><Trophy /> {tx("Քննություն")}</Link>
-                ) : (
-                  <Link to="/subject/$subject" params={{subject:"physics"}}><Trophy /> {tx("Քննություն")}</Link>
-                )
+                <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
               )}
             </Button>
             <Button variant="sun" size="lg" asChild>
@@ -71,12 +69,10 @@ function BookPage() {
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 41 || (id >= 1 && id <= 3) ? (
                 <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : id === 63 || id === 64 ? (
+                <Link to="/physics/original"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : (
-                id === 63 || id === 64 ? (
-                  <Link to="/physics/original"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
-                ) : (
-                  <Link to="/subject/$subject" params={{subject:"physics"}}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
-                )
+                <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               )}
             </Button>
             {(id === 61 || id === 62 || id === 63 || id === 64) && <Button variant="outline" size="lg" asChild>
