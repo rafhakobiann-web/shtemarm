@@ -7,7 +7,7 @@ import { useTx } from "@/lib/lang";
 export const Route = createFileRoute("/study-tools")({
   head: () => ({ meta: [
     { title: "Shtemarm · Ուսումնական գործիքներ" },
-    { name: "description", content: "Կենտրոնացման ժամանակաչափ, Spotify lo-fi երաժշտություն, բնության ձայներ և անհատական ուսումնական գործիքներ։" },
+    { name: "description", content: "Կենտրոնացման ժամանակաչափ, YouTube lo-fi երաժշտություն, Howler.js միջավայրային ձայներ և անհատական ուսումնական գործիքներ։" },
   ] }),
   component: StudyToolsPage,
 });
