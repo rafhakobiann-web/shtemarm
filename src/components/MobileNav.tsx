@@ -125,7 +125,9 @@ export function MobileNav() {
   }, [pathname, hash]);
 
   const onTabClick = (event: MouseEvent<HTMLAnchorElement>, index: number) => {
-    if (index === 0 && pathname === "/" && !hash) {
+    if (index === 0 && pathname === "/") {
+      // Home should take students to the top even from #subjects or #exams.
+      // Clear the anchor using the actual router link, then scroll.
       window.scrollTo({
         top: 0,
         behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
@@ -166,7 +168,7 @@ export function MobileNav() {
         <span
           aria-hidden="true"
           className="mobile-liquid-indicator pointer-events-none absolute inset-y-0 left-0 w-1/5 rounded-[1.3rem]"
-          style={{ transform: "translate3d(" + selected * 100 + "%, 0, 0)" }}
+          style={{ transform: "translate3d(" + selected * 500 + "%, 0, 0)" }}
         />
         {tabs.map(({ id, to, hash: tabHash, label, icon: Icon }, index) => (
           <Link
