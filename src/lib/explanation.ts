@@ -117,12 +117,12 @@ export function offlineEnglishExplanation(input: ExplanationInput) {
   // Specific textual markers only: never infer a grammar rule solely from a/an/the,
   // since articles appear in nearly every unrelated English question.
   const rules: Array<[RegExp, string]> = [
-    [/\\b(if|unless)\\b[^.!?]*\\b(would have|could have|might have)\\b|\\bwould have\\b[^.!?]*\\bif\\b/, "Երրորդ պայմանական նախադասությունում սովորաբար օգտագործվում է if + Past Perfect և would have + V3։ Ստուգիր՝ արդյոք պայմանը վերաբերում է անցյալում չիրականացած իրավիճակի։"],
-    [/\\b(present perfect|past perfect|future perfect)\\b/, "Perfect ժամանակաձևերը կազմվում են համապատասխան have օժանդակ բայով և բայի երրորդ ձևով (V3)։ Ժամանակաձևն ընտրիր ամբողջ նախադասության իմաստով։"],
-    [/\\b(comparative|superlative|degree of comparison)\\b/, "Comparative-ը համեմատում է երկու առարկա, իսկ superlative-ը առանձնացնում է առավելագույն հատկանիշ ունեցողը։ Բացառությունների համար, օրինակ, good → better → best։"],
-    [/\\b(passive voice|active voice)\\b/, "Կրավորական սեռի հիմնական ձևն է be + past participle (V3)։ Ժամանակաձևը որոշում է be-ի ձևը։"],
-    [/\\b(reported speech|indirect speech)\\b/, "Անուղղակի խոսքում ուշադրություն դարձրու ժամանակաձևերի, դերանունների ու ժամանակի ցուցիչների հնարավոր փոփոխություններին։ Դրանք կախված են հաղորդման համատեքստից։"],
-    [/\\b(relative clause|relative pronoun)\\b/, "Որոշիչ երկրորդական նախադասությունները տալիս են լրացուցիչ տեղեկություն գոյականի մասին. who՝ մարդկանց, which՝ իրերի, իսկ that՝ որոշ սահմանափակող կապակցությունների համար։"],
+    [/\b(if|unless)\b[^.!?]*\b(would have|could have|might have)\b|\bwould have\b[^.!?]*\bif\b/, "Երրորդ պայմանական նախադասությունում սովորաբար օգտագործվում է if + Past Perfect և would have + V3։ Ստուգիր՝ արդյոք պայմանը վերաբերում է անցյալում չիրականացած իրավիճակի։"],
+    [/\b(present perfect|past perfect|future perfect)\b/, "Perfect ժամանակաձևերը կազմվում են համապատասխան have օժանդակ բայով և բայի երրորդ ձևով (V3)։ Ժամանակաձևն ընտրիր ամբողջ նախադասության իմաստով։"],
+    [/\b(comparative|superlative|degree of comparison)\b/, "Comparative-ը համեմատում է երկու առարկա, իսկ superlative-ը առանձնացնում է առավելագույն հատկանիշ ունեցողը։ Բացառությունների համար, օրինակ, good → better → best։"],
+    [/\b(passive voice|active voice)\b/, "Կրավորական սեռի հիմնական ձևն է be + past participle (V3)։ Ժամանակաձևը որոշում է be-ի ձևը։"],
+    [/\b(reported speech|indirect speech)\b/, "Անուղղակի խոսքում ուշադրություն դարձրու ժամանակաձևերի, դերանունների ու ժամանակի ցուցիչների հնարավոր փոփոխություններին։ Դրանք կախված են հաղորդման համատեքստից։"],
+    [/\b(relative clause|relative pronoun)\b/, "Որոշիչ երկրորդական նախադասությունները տալիս են լրացուցիչ տեղեկություն գոյականի մասին. who՝ մարդկանց, which՝ իրերի, իսկ that՝ որոշ սահմանափակող կապակցությունների համար։"],
   ];
   const rule = rules.find(([pattern]) => pattern.test(text));
   if (rule) lines.push(rule[1]);
