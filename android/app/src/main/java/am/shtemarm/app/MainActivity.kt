@@ -49,6 +49,8 @@ private fun NativeShtemarm() {
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
+    var accent by remember { mutableStateOf(progress.accent) }
+    var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
     var progressVersion by remember { mutableIntStateOf(0) }
 
     var page by remember { mutableStateOf(Page.HOME) }
@@ -123,12 +125,15 @@ private fun NativeShtemarm() {
 
     BackHandler(page != Page.HOME) { back() }
 
-    val colors = academyColors(dark, AcademyTeal)
+    val colors = academyColors(dark, academyAccent(accent), surfaceStyle)
     val originalDensity = LocalDensity.current
     MaterialTheme(colorScheme = colors) {
-        CompositionLocalProvider(LocalDensity provides Density(
-            originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
-        )) {
+        CompositionLocalProvider(
+            LocalDensity provides Density(
+                originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
+            ),
+            LocalAcademySurface provides surfaceStyle
+        ) {
             Scaffold(
                 containerColor = MaterialTheme.colorScheme.background,
                 topBar = {
@@ -590,22 +595,22 @@ private fun NativeShtemarm() {
                             }
                         }
                     }
-                    Page.SETTINGS -> Column(
-                        Modifier.fillMaxSize().padding(padding).padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        ScreenHeading("Կարգավորումներ", "Հարմարեցրու Shtemarm-ը քեզ համար։")
-                        SettingToggle("Մուգ թեմա", dark) { dark = it; progress.darkMode = it }
-                        SettingToggle("Խոշոր տեքստ", largeText) {
-                            largeText = it; progress.largeText = it
-                        }
-                        SettingToggle("Ցույց տալ ճիշտ պատասխանը", immediateFeedback) {
-                            immediateFeedback = it; progress.showAnswersImmediately = it
-                        }
-                        HorizontalDivider()
-                        Text("Հավելվածի տարբերակ՝ 0.2.0 · Native Android")
-                        Text("Հարցաշարերն աշխատում են առանց ինտերնետի։ Այս տարբերակում հաշվի համաժամեցում դեռ չկա։",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Page.SETTINGS -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        AcademyAppearanceSettings(
+                            dark = dark,
+                            onDark = { dark = it; progress.darkMode = it },
+                            accent = accent,
+                            onAccent = { accent = it; progress.accent = it },
+                            surface = surfaceStyle,
+                            onSurface = { surfaceStyle = it; progress.surfaceStyle = it },
+                            largeText = largeText,
+                            onLargeText = { largeText = it; progress.largeText = it },
+                            immediateFeedback = immediateFeedback,
+                            onFeedback = {
+                                immediateFeedback = it
+                                progress.showAnswersImmediately = it
+                            }
+                        )
                     }
                 }
             }
