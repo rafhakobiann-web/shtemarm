@@ -2,6 +2,15 @@
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
 
+## 🟢 October 28, 2026 — Website 0.1.1 stability fixes
+- 🧭 Fixed the mobile Liquid Glass navigation highlight: it now moves the full width of a tab instead of one-fifth of a tab.
+- 🧪 Added five-position navigation regression tests to prevent the highlight from drifting again.
+- 🔐 Prevented stale authentication responses from overwriting a newer account state in the website header.
+- 🌐 Localized the 404 page and recoverable error screen in Armenian, English and Russian.
+- 🐛 Removed malformed JSX in the Support page that prevented the entire website from building.
+- 🏗️ Expanded website CI triggers to cover Support page changes as well as mobile navigation; production-build verification is tracked in GitHub Actions.
+- 📱 This is a **website-only** patch, separate from Android version 0.1.1.
+
 ## 🟣 October 28, 2026 — Android smoothness and saved-question fix
 - 📱 Android: screen changes now fade instead of snapping.
 - 🎨 Android: answer choices animate their correct/wrong colours, and the session progress bar animates between questions.
