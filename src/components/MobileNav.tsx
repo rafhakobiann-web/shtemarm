@@ -23,7 +23,7 @@ export function getMobileNavIndex(pathname: string, hash = ""): number {
   if (
     path === "/study-tools" || path === "/flashcards" ||
     path === "/assessment-builder" || path === "/calc" ||
-    path === "/chat" || path === "/vocabulary"
+    path === "/chat" || path === "/vocabulary" || path === "/english-grammar"
   ) return 4;
   if (
     path.startsWith("/book/") || path.startsWith("/study/") ||
