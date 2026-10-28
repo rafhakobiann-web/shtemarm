@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History, Headphones } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -131,6 +131,9 @@ export function AppHeader() {
                 </Link>
                 <Link to="/vocabulary" onClick={close} className={item}>
                   <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : lang === "ru" ? "Мой словарь" : "Իմ բառապաշարը"}
+                </Link>
+                <Link to="/study-tools" onClick={close} className={item}>
+                  <Headphones className="size-4" />{lang === "en" ? "Spotify study music" : lang === "ru" ? "Spotify для учёбы" : "Ուսման երաժշտություն · Spotify"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />{lang === "en" ? "Study tools / Focus" : lang === "ru" ? "Инструменты / Фокус" : "Ուսումնական գործիքներ / Կենտրոնացում"}
