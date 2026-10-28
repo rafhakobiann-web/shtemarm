@@ -7,7 +7,7 @@ import { ExamHero, ExamBuilderTitle } from "@/components/ExamDesign";
 import { GtcGuidePanel } from "@/components/GtcGuidePanel";
 import { HistorySession } from "@/components/HistorySession";
 import { HistoryOfficialPapers } from "@/components/HistoryOfficialPapers";
-import { KIND_HY, loadBook, type Unit } from "@/lib/books";
+import { BIO_BOOKS, KIND_HY, loadBook, type Unit } from "@/lib/books";
 import { historyBookEntries, selectHistoryUnits, type HistoryEntry } from "@/lib/history";
 import { update } from "@/lib/progress";
 import { useTx } from "@/lib/lang";
@@ -81,6 +81,30 @@ export function BiologyWorkspace() {
         available={data.data?.length}
         icon={<Dna className="size-5" />}
       />
+      <section aria-label={tx("Կենսաբանության շտեմարանների մասերը")} className="space-y-3">
+        <h2 className="text-lg font-black">{tx("Կենսաբանության չորս մասերը")}</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {BIO_BOOKS.map(book=>book.locked?
+            <article key={book.id} className="academy-bento overflow-hidden p-3">
+              <img src={book.cover} alt={tx(book.sub)} loading="lazy"
+                className="mx-auto aspect-[3/4] max-h-40 w-full rounded-xl object-contain"/>
+              <h3 className="mt-3 text-sm font-black">{tx(book.sub)}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {tx("Կազմը պատրաստ է · բնօրինակ հարցերի թվայնացումը սպասվում է")}
+              </p>
+              <span className="mt-2 inline-flex rounded-full border px-2 py-1 text-[11px] font-bold text-muted-foreground">
+                {tx("Դեռ հասանելի չէ")}
+              </span>
+            </article>:
+            <Link key={book.id} to="/book/$bookId" params={{bookId:String(book.id)}}
+              className="academy-bento overflow-hidden p-3 hover:border-primary/40">
+              <img src={book.cover} alt={tx(book.sub)} loading="lazy"
+                className="mx-auto aspect-[3/4] max-h-40 w-full rounded-xl object-contain"/>
+              <h3 className="mt-3 text-sm font-black">{tx(book.sub)}</h3>
+              <p className="mt-1 text-xs text-primary">{tx("Բացել առաջադրանքները")}</p>
+            </Link>)}
+        </div>
+      </section>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="min-w-0 space-y-5 rounded-3xl border bg-card p-5 sm:p-7">
           <ExamBuilderTitle />
