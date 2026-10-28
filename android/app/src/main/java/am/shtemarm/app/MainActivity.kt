@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandBlue = Color(0xFF2563EB)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +113,7 @@ private fun NativeShtemarm() {
                                 .height(60.dp).padding(horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS)) {
+                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS, Page.EXAMS, Page.GAMES, Page.TOOLS)) {
                                 IconButton(onClick = { back() }) {
                                     Icon(Icons.Default.ArrowBack, contentDescription = "Հետ")
                                 }
@@ -134,16 +134,31 @@ private fun NativeShtemarm() {
                             onClick = { page = Page.SUBJECTS },
                             icon = { Icon(Icons.Default.Book, contentDescription = null) },
                             label = { Text("Գրքեր") })
-                        NavigationBarItem(selected = page == Page.PROGRESS, onClick = { page = Page.PROGRESS },
+                        NavigationBarItem(selected = page == Page.EXAMS, onClick = { page = Page.EXAMS },
                             icon = { Icon(Icons.Default.Star, contentDescription = null) },
-                            label = { Text("Արդյունքներ") })
-                        NavigationBarItem(selected = page == Page.SETTINGS, onClick = { page = Page.SETTINGS },
+                            label = { Text("Թեստեր") })
+                        NavigationBarItem(selected = page == Page.GAMES, onClick = { page = Page.GAMES },
+                            icon = { Text("★", fontSize = 20.sp) },
+                            label = { Text("Խաղեր") })
+                        NavigationBarItem(selected = page == Page.TOOLS, onClick = { page = Page.TOOLS },
                             icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                            label = { Text("Կարգավորումներ") })
+                            label = { Text("Գործիքներ") })
                     }
                 }
             ) { padding ->
                 when (page) {
+                    Page.EXAMS -> NativeExams(repository) { selectedSubject, pool, count, name ->
+                        subject = selectedSubject
+                        begin(pool, count, name)
+                    }
+                    Page.GAMES -> NativeGames(repository) { selectedSubject, pool, count, name ->
+                        subject = selectedSubject
+                        begin(pool, count, name)
+                    }
+                    Page.TOOLS -> NativeTools(repository) { selectedSubject, pool, count, name ->
+                        subject = selectedSubject
+                        begin(pool, count, name)
+                    }
                     Page.HOME -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -165,6 +180,24 @@ private fun NativeShtemarm() {
                                     Text("Առկա հարցերը պահպանված են հավելվածում և հասանելի են նաև առանց ինտերնետի։")
                                     Spacer(Modifier.height(12.dp))
                                     Button(onClick = { page = Page.SUBJECTS }) { Text("Բացել շտեմարանները") }
+                                }
+                            }
+                        }
+                        item {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedButton(onClick = { page = Page.EXAMS }, modifier = Modifier.weight(1f)) {
+                                    Text("Թեստեր")
+                                }
+                                OutlinedButton(onClick = { page = Page.GAMES }, modifier = Modifier.weight(1f)) {
+                                    Text("Խաղեր")
+                                }
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                TextButton(onClick = { page = Page.PROGRESS }, modifier = Modifier.weight(1f)) {
+                                    Text("Առաջընթաց")
+                                }
+                                TextButton(onClick = { page = Page.SETTINGS }, modifier = Modifier.weight(1f)) {
+                                    Text("Կարգավորումներ")
                                 }
                             }
                         }
