@@ -437,7 +437,7 @@ private fun NativeShtemarm() {
                                             Text("Տեքստ", fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.primary)
                                             Spacer(Modifier.height(10.dp))
-                                            Text(q.passage, fontSize = 15.sp, lineHeight = 24.sp)
+                                            Text(q.passage, fontFamily = StudyReadingFont, fontSize = 15.sp, lineHeight = 28.sp)
                                         }
                                     }
                                 }
