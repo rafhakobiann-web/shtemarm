@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { explainMathAnswer } from "@/lib/math-explain.functions";
 import { RichExplanation } from "@/components/RichExplanation";
 import { Button } from "@/components/ui/button";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 type Segment = { page: number };
 type Props = {
@@ -44,6 +44,7 @@ function cacheKey(p: Props) {
  */
 export function MathExplain(props: Props) {
   const tx = useTx();
+  const lang = useLang();
   const fn = useServerFn(explainMathAnswer);
   const key = cacheKey(props);
   const [result, setResult] = useState<{ key: string; text: string; error: boolean } | null>(() => {
@@ -80,7 +81,16 @@ export function MathExplain(props: Props) {
     }
   };
 
+  // An offline handbook is always available, regardless of AI service or API keys.
+  // We link to the source SECTION, not claim this worked example solves the exact question.
+  const parts = props.item.split(":");
+  const handbookUrl = /^matem-[12]$/.test(parts[0]??"") && /^\d+$/.test(parts[1]??"") && /^\d+$/.test(parts[2]??"")
+    ? `/math-handbook?book=${parts[0]}&chapter=${parts[1]}&section=${parts[2]}` : null;
   return <div className="min-w-0">
+    {handbookUrl && <a href={handbookUrl}
+      className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
+      {lang==="en"?"Study methods and worked examples (no AI)":lang==="ru"?"Правила и примеры решений (без ИИ)":"Սովորել բանաձևերը և լուծված օրինակները (առանց AI-ի)"}
+    </a>}
     {active && <RichExplanation text={active.text} error={active.error}/>}
     {(!active || active.error) && <Button
       variant="secondary" type="button" disabled={loading} onClick={() => void run()}
