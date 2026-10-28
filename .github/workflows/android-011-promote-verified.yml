@@ -1,0 +1,103 @@
+name: Release Shtemarm Android 0.1.1 verified APK
+
+# Publish the exact artifact from successful Android CI run #93.
+# The source of the binary is pinned and compared to main; it is NOT rebuilt
+# with an unknown runner-generated debug signing key.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/android-011-promote-verified.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: shtemarm-011-artifact-promotion
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require private repository and matching APK source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SOURCE: e2370c5b04be203615c0080d6fedac8b56ba751b
+          VERIFIED_RUN: '40738366839'
+        run: |
+          set -euo pipefail
+          if [[ "$(gh repo view --json isPrivate --jq .isPrivate)" != 'true' ]]; then
+            echo 'Release blocked: repository must remain private for book rights review.' >&2
+            exit 1
+          fi
+          ACTUAL=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$VERIFIED_RUN" --jq '.head_sha')
+          if [[ "$ACTUAL" != "$VERIFIED_SOURCE" ]]; then
+            echo 'Release blocked: CI artifact does not match pinned source SHA.' >&2
+            exit 1
+          fi
+          # Subsequent commits have only edited CI and these honest release
+          # notes. No app code may drift from the already-tested artifact.
+          DIFF=$(git diff --name-only "$VERIFIED_SOURCE" HEAD | grep -Ev '^(\.github/workflows/android-011-beta\.yml|\.github/workflows/android-011-promote-verified\.yml|docs/ANDROID_011_BETA_RELEASE\.md)$' || true)
+          if [[ -n "$DIFF" ]]; then
+            echo "App files changed after the verified APK: $DIFF" >&2
+            exit 1
+          fi
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+      - name: Download the successfully compiled and unit-tested APK
+        uses: actions/download-artifact@v4
+        with:
+          name: shtemarm-android-debug-apk
+          run-id: 40738366839
+          github-token: ${{ github.token }}
+          path: verified-apk
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Ensure APK signature validation tools
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;35.0.0" >/dev/null
+      - name: Verify exact Android version and APK signature
+        run: |
+          set -euo pipefail
+          APK=verified-apk/app-debug.apk
+          test -s "$APK"
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionCode='4'" <<< "$BADGING"
+          grep -Fq "versionName='0.1.1-beta.1'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Shtemarm-Android-v0.1.1-beta.1.apk
+          sha256sum Shtemarm-Android-v0.1.1-beta.1.apk > Shtemarm-Android-v0.1.1-beta.1.apk.sha256
+      - name: Publish private beta release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=v0.1.1-beta.1
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Beta tag already exists; will not replace an APK with a different signing key."
+          else
+            gh release create "$TAG" \
+              Shtemarm-Android-v0.1.1-beta.1.apk \
+              Shtemarm-Android-v0.1.1-beta.1.apk.sha256 \
+              --target "$GITHUB_SHA" \
+              --title 'Shtemarm Android 0.1.1 · Stability Beta' \
+              --notes-file docs/ANDROID_011_BETA_RELEASE.md \
+              --prerelease
+          fi
+          gh release view "$TAG" --json isPrerelease,assets,url \
+            --jq '{prerelease: .isPrerelease, assets: [.assets[].name], url: .url}'
+          if ! gh release view "$TAG" --json assets --jq '.assets[].name' | grep -Fxq 'Shtemarm-Android-v0.1.1-beta.1.apk'; then
+            echo 'Release APK missing' >&2
+            exit 1
+          fi

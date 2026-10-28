@@ -35,15 +35,19 @@ A new production certificate will not retroactively match the old debug APK.
 
 ## Testing before wider distribution
 
-The private beta workflow checks:
-1. Tracked-file and Git-history secrets, and bundled book validity.
-2. Verified math bank data and Kotlin unit tests.
-3. Compiled APK version and signature.
-4. Emulator startup and Shtemarm home-screen accessibility.
+- **Passed:** Source secret scan, Git-history scan, question-bank validation,
+  Kotlin regression tests, APK compilation, versionCode=4/versionName=0.1.1-beta.1
+  checks, and APK signature verification.
+- **Not verified at publication:** Automated emulator launch and screen
+  accessibility. The emulator runner ran out of disk space while creating its
+  virtual-device data partition. This is a CI infrastructure issue, **not**
+  evidence that the app has passed a real-device launch test. Emulator testing
+  will continue independently.
+- **Required next:** Install and test on a physical Android phone, including
+  startup, study sessions, saved questions, progress backup and navigation.
 
-Passing automation validates packaging and launch, not every textbook
-exercise, online feature, or hardware-specific animation. Feedback from
-actual Android devices is still required.
+This release promotes the exact APK from successful Android CI run #93.
+The release is intentionally **private and debug-signed**.
 
 ## Limitations
 
