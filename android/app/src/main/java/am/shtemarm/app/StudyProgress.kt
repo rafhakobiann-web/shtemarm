@@ -57,6 +57,14 @@ class StudyProgress(context: Context) {
             }
         }
 
+    var glassIntensity: String
+        get() = prefs.getString("glass_intensity", "balanced") ?: "balanced"
+        set(value) {
+            if (value in setOf("subtle", "balanced", "vivid")) {
+                prefs.edit().putString("glass_intensity", value).apply()
+            }
+        }
+
     var darkMode: Boolean
         get() = prefs.getBoolean("dark_mode", false)
         set(value) { prefs.edit().putBoolean("dark_mode", value).apply() }
