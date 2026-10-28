@@ -7,6 +7,7 @@ import { SUBJECTS, QUICK_QUIZ_ITEMS, makeRound, resultPercent,
   type GameSubjectId, type QuizItem } from "@/lib/mini-game-data";
 import { TrueFalseGame, MatchingGame, FlashcardsGame } from "@/components/AdditionalMiniGames";
 import { CooperativeQuiz } from "@/components/CooperativeQuiz";
+import { useMiniGameQuestionBank } from "@/lib/mini-game-book-bank";
 import { bestResult, recordResult, type MiniGameMode, type MiniGameResult } from "@/lib/mini-game-progress";
 
 export const Route = createFileRoute("/mini-games")({
@@ -28,8 +29,9 @@ function MiniGamesPage(){
   const [game,setGame]=useState<MiniGameMode | "coop">("quiz");
   const [subject,setSubject]=useState<GameSubjectId>("mixed");
   const [attempt,setAttempt]=useState(0);
-  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,subject==="mixed"?50:30),
-    [subject,attempt]);
+  const { questions: bank, loading: loadingBooks, count: bankCount } = useMiniGameQuestionBank(subject);
+  const questions=useMemo(()=>makeRound(bank,subject,Math.min(50,bank.length)),
+    [subject,attempt,bank]);
   const [index,setIndex]=useState(0);
   const [picked,setPicked]=useState<string|null>(null);
   const [score,setScore]=useState(0);
@@ -117,7 +119,8 @@ function MiniGamesPage(){
       <Trophy className="size-4 text-primary"/><span className="font-bold">{tx("Լավագույն արդյունք")}</span>
       <strong className="ml-auto tabular-nums">{best.correct}/{best.total} · {resultPercent(best.correct,best.total)}%</strong>
     </div>}
-    {game==="coop" ? <CooperativeQuiz key={"coop-"+subject} subject={subject}/> :
+    <p className="text-sm text-muted-foreground" role="status">{loadingBooks ? tx("Շտեմարանների հարցերը բեռնվում են…") : tx("Հասանելի հարցեր") + "՝ " + bankCount}</p>
+    {game==="coop" ? <CooperativeQuiz key={"coop-"+subject} subject={subject} bank={bank}/> :
       game==="truefalse" ? <TrueFalseGame key={"tf-"+subject} subject={subject}
       onComplete={(c,t)=>complete("truefalse",c,t)}/> :
       game==="matching" ? <MatchingGame key={"pairs-"+subject} subject={subject}
