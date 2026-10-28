@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -174,6 +174,7 @@ function PlayPage() {
   const q = useIndex();
   const { progress, setAnswer, addExam } = useMathProgress();
   const tx = useTx();
+  const lang = useLang();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
 
   useEffect(() => {
@@ -218,6 +219,10 @@ function PlayPage() {
       <a href={sectionHref} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 shrink-0" />
         <span className="truncate">{bookTitle} · {tx("Բաժին {n}", { n: params.section })}</span>
+      </a>
+      <a href={`/math-handbook?book=${params.book}&chapter=${params.chapter}&section=${params.section}`}
+        className="inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+        {lang==="en"?"Learn the methods for this section":lang==="ru"?"Изучить правила этого раздела":"Սովորել այս բաժնի բանաձևերն ու կանոնները"}
       </a>
       {!isTest && (
         <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
