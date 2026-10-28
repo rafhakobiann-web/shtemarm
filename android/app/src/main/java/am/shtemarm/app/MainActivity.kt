@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import java.util.UUID
+import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
@@ -99,8 +100,18 @@ private fun NativeShtemarm() {
     ) { uri ->
         backupMessage = if (uri == null) "Վերականգնումը չեղարկված է։" else try {
             val content = context.contentResolver.openInputStream(uri)?.use { stream ->
-                // A bounded read prevents accidentally importing huge files.
-                stream.readNBytes(1_048_577).toString(StandardCharsets.UTF_8)
+                // API 24-compatible bounded read, including older Android phones.
+                val output = ByteArrayOutputStream()
+                val buffer = ByteArray(8192)
+                while (true) {
+                    val count = stream.read(buffer)
+                    if (count < 0) break
+                    if (output.size() + count > 1_048_576) {
+                        error("Backup file exceeds 1 MiB")
+                    }
+                    output.write(buffer, 0, count)
+                }
+                output.toString(StandardCharsets.UTF_8.name())
             } ?: error("Cannot open backup file")
             if (progress.importSnapshot(content)) {
                 progressVersion++
