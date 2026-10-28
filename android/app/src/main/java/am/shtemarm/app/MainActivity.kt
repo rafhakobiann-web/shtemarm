@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandBlue = Color(0xFF2563EB)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +67,7 @@ private fun NativeShtemarm() {
             Page.STUDY -> Page.SECTIONS
             Page.RESULT -> Page.SECTIONS
             Page.SECTIONS -> Page.BOOKS
+            Page.MATH -> Page.BOOKS
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
         }
@@ -130,7 +131,7 @@ private fun NativeShtemarm() {
                         NavigationBarItem(selected = page == Page.HOME, onClick = { page = Page.HOME },
                             icon = { Icon(Icons.Default.Home, contentDescription = null) },
                             label = { Text("Գլխավոր") })
-                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY),
+                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY, Page.MATH),
                             onClick = { page = Page.SUBJECTS },
                             icon = { Icon(Icons.Default.Book, contentDescription = null) },
                             label = { Text("Գրքեր") })
@@ -147,6 +148,7 @@ private fun NativeShtemarm() {
                 }
             ) { padding ->
                 when (page) {
+                    Page.MATH -> NativeMath(if (book?.title?.contains("Մաս 2") == true) 2 else 1)
                     Page.EXAMS -> NativeExams(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
@@ -219,7 +221,7 @@ private fun NativeShtemarm() {
                             SubjectCard(s) { subject = s; page = Page.BOOKS }
                         }
                         item {
-                            Text("Մաթեմատիկայի հարցերը դեռ վերափոխվում են native ձևաչափի։ Կենսաբանության 3-րդ և 4-րդ գրքերի ստուգված բանկերն առկա չեն։",
+                            Text("Մաթեմատիկայի հասանելի տեքստային հարցերը դեռ չունեն ստուգված պատասխաններ։ Կենսաբանության 3-րդ և 4-րդ գրքերի ստուգված բանկերն առկա չեն։",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         }
                     }
@@ -230,7 +232,10 @@ private fun NativeShtemarm() {
                         item { ScreenHeading(subject, "Ընտրիր շտեմարան կամ թեստերի հավաքածու։") }
                         items(BookCatalog.books.filter { it.subject == subject }) { item ->
                             ElevatedCard(
-                                modifier = Modifier.fillMaxWidth().clickable { book = item; page = Page.SECTIONS },
+                                modifier = Modifier.fillMaxWidth().clickable {
+                                    book = item
+                                    page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                                },
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Column(Modifier.fillMaxWidth().padding(18.dp)) {
