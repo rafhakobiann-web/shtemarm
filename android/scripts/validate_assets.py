@@ -44,6 +44,34 @@ for name in BOOKS:
     print(f"{name}: {amount} individual questions")
 assert all_questions > 4000, f"Unexpectedly low question count: {all_questions}"
 
+# The English books use empty stems for numbered gap-fill exercises.
+# Each recovered item must have the corresponding numbered blank in its passage.
+recoverable_english_gaps = 0
+unverified_blank_stems = 0
+for filename in ("book1.json", "book2.json", "book3.json"):
+    for section in read(WEB_DATA / filename).get("sections", []):
+        for unit in section.get("units", []):
+            if unit.get("kind") != "mc":
+                continue
+            passage = str(unit.get("passage") or "")
+            for question in unit.get("questions", []):
+                if str(question.get("stem") or "").strip():
+                    continue
+                number = str(question.get("n") or "").strip()
+                marker = "(" + number + ")"
+                marker_at = passage.find(marker) if number else -1
+                near_marker = (passage[marker_at + len(marker):marker_at + len(marker) + 30]
+                               if marker_at >= 0 else "")
+                if marker_at >= 0 and "__" in near_marker:
+                    recoverable_english_gaps += 1
+                else:
+                    unverified_blank_stems += 1
+assert recoverable_english_gaps >= 1000, (
+    f"English gap-fill coverage regressed: {recoverable_english_gaps}"
+)
+print(f"Verified {recoverable_english_gaps} English gap-fill blanks; "
+      f"{unverified_blank_stems} missing stems are not invented")
+
 dictionary = read(APP_ASSETS / "english-armenian-dictionary.json")
 assert isinstance(dictionary, dict) and len(dictionary) >= 8000, "Vocabulary asset incomplete"
 levels = read(APP_ASSETS / "english-level-practice.json").get("questions", [])
