@@ -83,10 +83,10 @@ private fun NativeShtemarm() {
         }
     }
 
-    fun begin(pool: List<StudyQuestion>, count: Int, name: String) {
+    fun begin(pool: List<StudyQuestion>, count: Int, name: String, shuffle: Boolean = true) {
         if (pool.isEmpty()) return
         if (page != Page.RESULT) sessionOrigin = page
-        session = pool.shuffled().take(count.coerceAtLeast(1))
+        session = (if (shuffle) pool.shuffled() else pool).take(count.coerceAtLeast(1))
         sessionTitle = name
         sessionIndex = 0
         chosen = -1
@@ -389,17 +389,22 @@ private fun NativeShtemarm() {
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
-                                items(data.sections) { sec ->
-                                    ElevatedCard(
-                                        Modifier.fillMaxWidth().clickable { begin(sec.questions, sec.questions.size, sec.title) },
-                                        shape = RoundedCornerShape(15.dp)
-                                    ) {
-                                        Column(Modifier.padding(17.dp)) {
-                                            Text(sec.title, fontWeight = FontWeight.SemiBold)
-                                            Text(sec.questions.size.toString() + " հարց", fontSize = 13.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                items(data.sections.size) { sectionIndex ->
+                                    val sec = data.sections[sectionIndex]
+                                    AcademyBookSectionCard(
+                                        index = sectionIndex + 1,
+                                        title = sec.title,
+                                        count = sec.questions.size,
+                                        onPlay = {
+                                            begin(sec.questions, minOf(10, sec.questions.size), sec.title + " · Խաղ")
+                                        },
+                                        onClassic = {
+                                            begin(sec.questions, sec.questions.size, sec.title, shuffle = false)
+                                        },
+                                        onTest = {
+                                            begin(sec.questions, minOf(30, sec.questions.size), sec.title + " · Թեստ")
                                         }
-                                    }
+                                    )
                                 }
                             }
                         }
