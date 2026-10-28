@@ -2,6 +2,13 @@
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
 
+## 🟣 October 28, 2026 — Android smoothness and saved-question fix
+- 📱 Android: screen changes now fade instead of snapping.
+- 🎨 Android: answer choices animate their correct/wrong colours, and the session progress bar animates between questions.
+- 🗂️ Android: subject lists expand and collapse with motion, and the chevron rotates.
+- 🐛 Android: removing a question from the saved list no longer reloads every book and blanks the list.
+- 🧪 Build verification for these changes is pending the Android debug APK workflow, because the local sandbox cannot reach the Android SDK or Gradle.
+
 ## 🟣 October 26, 2026 — English vocabulary expansion
 - 📚 Added **1,104 English–Armenian dictionary entries** in two commits: 649, then 455.
 - 🧹 Existing dictionary keys were excluded during those additions to reduce duplicates.

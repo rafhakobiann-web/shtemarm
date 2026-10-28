@@ -4,6 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -108,7 +115,8 @@ private fun NativeShtemarm() {
         loading = false
     }
 
-    LaunchedEffect(page, progressVersion) {
+    // Keyed on page only: un-bookmarking on this screen must not reload every book (that blanked the list).
+    LaunchedEffect(page) {
         if (page == Page.SAVED) {
             savedLoading = true
             val ids = progress.bookmarkedIds()
@@ -175,7 +183,13 @@ private fun NativeShtemarm() {
                     )
                 }
             ) { padding ->
-                when (page) {
+                AnimatedContent(
+                    targetState = page,
+                    modifier = Modifier.fillMaxSize(),
+                    transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(160)) },
+                    label = "screen transition"
+                ) { screen ->
+                when (screen) {
                     Page.ADVANCED -> {
                         val activeBook = book
                         if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
@@ -433,8 +447,13 @@ private fun NativeShtemarm() {
                                         Spacer(Modifier.weight(1f))
                                         Text("Ճիշտ՝ " + score)
                                     }
+                                    val answeredFraction by animateFloatAsState(
+                                        targetValue = (sessionIndex + 1).toFloat() / session.size,
+                                        animationSpec = tween(durationMillis = 350),
+                                        label = "session progress"
+                                    )
                                     LinearProgressIndicator(
-                                        progress = { (sessionIndex + 1).toFloat() / session.size },
+                                        progress = { answeredFraction },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
@@ -465,6 +484,11 @@ private fun NativeShtemarm() {
                                         wrong -> Color(0xFFFEE2E2)
                                         else -> MaterialTheme.colorScheme.surfaceContainerHigh
                                     }
+                                    val animatedBg by animateColorAsState(
+                                        targetValue = bg,
+                                        animationSpec = tween(durationMillis = 220),
+                                        label = "choice background"
+                                    )
                                     Card(
                                         modifier = Modifier.fillMaxWidth()
                                             .clickable(enabled = chosen < 0) {
@@ -474,7 +498,7 @@ private fun NativeShtemarm() {
                                                     correctIds = correctIds + q.id
                                                 }
                                             },
-                                        colors = CardDefaults.cardColors(containerColor = bg),
+                                        colors = CardDefaults.cardColors(containerColor = animatedBg),
                                         shape = RoundedCornerShape(14.dp)
                                     ) {
                                         Row(Modifier.fillMaxWidth().padding(16.dp),
@@ -579,6 +603,7 @@ private fun NativeShtemarm() {
                                         TextButton(onClick = {
                                             progress.toggleBookmark(q.id)
                                             progressVersion++
+                                            savedQuestions = savedQuestions.filter { it.id != q.id }
                                         }) { Text("Հեռացնել ☆") }
                                     }
                                 }
@@ -632,6 +657,7 @@ private fun NativeShtemarm() {
                             }
                         )
                     }
+                }
                 }
             }
             }
