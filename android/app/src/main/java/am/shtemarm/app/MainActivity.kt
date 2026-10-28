@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import java.util.UUID
+import java.nio.charset.StandardCharsets
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -76,6 +80,44 @@ private fun NativeShtemarm() {
     var chosen by remember { mutableIntStateOf(-1) }
     var score by remember { mutableIntStateOf(0) }
     var correctIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var sessionId by remember { mutableStateOf("") }
+    var backupMessage by remember { mutableStateOf("") }
+    val exportProgress = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        backupMessage = if (uri == null) "Պահպանումը չեղարկված է։" else try {
+            context.contentResolver.openOutputStream(uri)?.use { stream ->
+                stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
+            } ?: error("Cannot open backup destination")
+            "Առաջընթացի կրկնօրինակը պահպանվեց։"
+        } catch (_: Exception) {
+            "Կրկնօրինակը պահպանել չհաջողվեց։"
+        }
+    }
+    val importProgress = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        backupMessage = if (uri == null) "Վերականգնումը չեղարկված է։" else try {
+            val content = context.contentResolver.openInputStream(uri)?.use { stream ->
+                // A bounded read prevents accidentally importing huge files.
+                stream.readNBytes(1_048_577).toString(StandardCharsets.UTF_8)
+            } ?: error("Cannot open backup file")
+            if (progress.importSnapshot(content)) {
+                progressVersion++
+                dark = progress.darkMode
+                largeText = progress.largeText
+                immediateFeedback = progress.showAnswersImmediately
+                accent = progress.accent
+                surfaceStyle = progress.surfaceStyle
+                glassIntensity = progress.glassIntensity
+                "Առաջընթացը հաջողությամբ վերականգնվեց։"
+            } else {
+                "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+            }
+        } catch (_: Exception) {
+            "Կրկնօրինակը բացել չհաջողվեց։"
+        }
+    }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var savedLoading by remember { mutableStateOf(false) }
 
@@ -112,11 +154,19 @@ private fun NativeShtemarm() {
         chosen = -1
         score = 0
         correctIds = emptySet()
+        sessionId = UUID.randomUUID().toString()
         page = Page.STUDY
     }
 
     LaunchedEffect(book) {
         val chosenBook = book ?: return@LaunchedEffect
+        // Mathematics uses a separate verified text/answer reader.
+        if (chosenBook.subject == "Մաթեմատիկա") {
+            loaded = null
+            loadError = ""
+            loading = false
+            return@LaunchedEffect
+        }
         loading = true
         loadError = ""
         loaded = null
@@ -134,9 +184,15 @@ private fun NativeShtemarm() {
             val ids = progress.bookmarkedIds()
             val collected = mutableListOf<StudyQuestion>()
             if (ids.isNotEmpty()) {
-                for (entry in BookCatalog.books.filter { it.subject != "Մաթեմատիկա" }) {
-                    try { collected += repository.load(entry).allQuestions.filter { it.id in ids } }
-                    catch (_: Exception) { /* Other books remain available. */ }
+                // Bookmark IDs begin with their source asset filename. Read only
+                // relevant books instead of reparsing the entire offline library.
+                val sourceAssets = ids.map { it.substringBefore(':') }.toSet()
+                for (entry in BookCatalog.books.filter {
+                    it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
+                }.distinctBy { it.asset }) {
+                    try {
+                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                    } catch (_: Exception) { /* Other saved questions remain usable. */ }
                 }
             }
             savedQuestions = collected.distinctBy { it.id }
@@ -509,10 +565,12 @@ private fun NativeShtemarm() {
                                     Card(
                                         modifier = Modifier.fillMaxWidth()
                                             .clickable(enabled = chosen < 0) {
-                                                chosen = n
-                                                if (n == q.correctIndex) {
-                                                    score++
-                                                    correctIds = correctIds + q.id
+                                                if (chosen < 0) {
+                                                    chosen = n
+                                                    if (n == q.correctIndex) {
+                                                        score++
+                                                        correctIds = correctIds + q.id
+                                                    }
                                                 }
                                             },
                                         colors = CardDefaults.cardColors(containerColor = animatedBg),
@@ -535,8 +593,9 @@ private fun NativeShtemarm() {
                                     Button(
                                         onClick = {
                                             if (sessionIndex + 1 >= session.size) {
-                                                progress.saveSession(subject, score, session.size)
-                                                progressVersion++
+                                                if (progress.saveSessionOnce(subject, score, session.size, sessionId)) {
+                                                    progressVersion++
+                                                }
                                                 page = Page.RESULT
                                             } else {
                                                 sessionIndex++
@@ -673,6 +732,13 @@ private fun NativeShtemarm() {
                             onFeedback = {
                                 immediateFeedback = it
                                 progress.showAnswersImmediately = it
+                            },
+                            backupStatus = backupMessage,
+                            onExportBackup = {
+                                exportProgress.launch("shtemarm-progress-backup.json")
+                            },
+                            onImportBackup = {
+                                importProgress.launch(arrayOf("application/json", "text/plain"))
                             }
                         )
                     }

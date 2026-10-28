@@ -17,7 +17,7 @@ data class StudyQuestion(
 )
 data class StudySection(val title: String, val questions: List<StudyQuestion>)
 data class LoadedBook(val sections: List<StudySection>) {
-    val allQuestions: List<StudyQuestion> get() = sections.flatMap { it.questions }
+    val allQuestions: List<StudyQuestion> = sections.flatMap { it.questions }
 }
 
 object BookCatalog {

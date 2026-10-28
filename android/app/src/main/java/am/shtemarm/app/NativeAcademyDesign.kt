@@ -543,7 +543,10 @@ fun AcademyAppearanceSettings(
     largeText: Boolean,
     onLargeText: (Boolean) -> Unit,
     immediateFeedback: Boolean,
-    onFeedback: (Boolean) -> Unit
+    onFeedback: (Boolean) -> Unit,
+    backupStatus: String,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit
 ) {
     LazyColumn(
         Modifier.fillMaxSize().padding(horizontal = 18.dp),
@@ -631,7 +634,27 @@ fun AcademyAppearanceSettings(
         item {
             Text("Արտաքին տեսքի ընտրությունները պահպանվում են այս սարքում։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
+        item {
+            HorizontalDivider()
+            Spacer(Modifier.height(7.dp))
+            Text("Առաջընթացի պահուստավորում", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Spacer(Modifier.height(5.dp))
+            Text("Պահպանիր արդյունքներն ու նշված հարցերը որպես JSON ֆայլ՝ հավելվածը վերատեղադրելուց առաջ։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             Spacer(Modifier.height(10.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                OutlinedButton(onClick = onExportBackup, modifier = Modifier.weight(1f)) {
+                    Text("Պահպանել", fontSize = 13.sp)
+                }
+                OutlinedButton(onClick = onImportBackup, modifier = Modifier.weight(1f)) {
+                    Text("Վերականգնել", fontSize = 13.sp)
+                }
+            }
+            if (backupStatus.isNotBlank()) {
+                Text(backupStatus, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(Modifier.height(12.dp))
         }
     }
 }

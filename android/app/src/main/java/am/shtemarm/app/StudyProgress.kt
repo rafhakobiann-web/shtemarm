@@ -1,6 +1,8 @@
 package am.shtemarm.app
 
 import android.content.Context
+import org.json.JSONArray
+import org.json.JSONObject
 
 data class SubjectStats(val answered: Int, val correct: Int, val sessions: Int) {
     val accuracy: Int get() = if (answered == 0) 0 else (correct * 100 / answered)
@@ -18,15 +20,109 @@ class StudyProgress(context: Context) {
         )
     }
 
-    fun saveSession(subject: String, correct: Int, answered: Int) {
-        if (answered <= 0 || correct < 0 || correct > answered) return
-        val prefix = "s_" + subject + "_"
-        val current = stats(subject)
-        prefs.edit()
-            .putInt(prefix + "answered", current.answered + answered)
-            .putInt(prefix + "correct", current.correct + correct)
-            .putInt(prefix + "sessions", current.sessions + 1)
-            .apply()
+    /**
+     * Transactionally record a finished session at most once. A double-tap
+     * or a repeated result callback cannot inflate scores and XP.
+     */
+    fun saveSessionOnce(subject: String, correct: Int, answered: Int, sessionId: String): Boolean {
+        if (answered <= 0 || correct !in 0..answered || sessionId.isBlank()) return false
+        synchronized(this) {
+            if (prefs.getString("last_completed_session", null) == sessionId) return false
+            val prefix = "s_" + subject + "_"
+            val current = stats(subject)
+            // commit() is deliberate: scores and the de-duplication token
+            // must reach disk in the same transaction before success.
+            return prefs.edit()
+                .putInt(prefix + "answered", current.answered + answered)
+                .putInt(prefix + "correct", current.correct + correct)
+                .putInt(prefix + "sessions", current.sessions + 1)
+                .putString("last_completed_session", sessionId)
+                .commit()
+        }
+    }
+
+    /**
+     * User-controlled, local-only backup. No API keys or account tokens are
+     * included. Do not silently upload these files to a remote service.
+     */
+    fun exportSnapshot(): String {
+        val statsJson = JSONObject()
+        for (subject in BookCatalog.subjects + "Կրկնություն") {
+            val stats = stats(subject)
+            statsJson.put(subject, JSONObject()
+                .put("answered", stats.answered)
+                .put("correct", stats.correct)
+                .put("sessions", stats.sessions))
+        }
+        val bookmarks = JSONArray()
+        for (id in bookmarkedIds().sorted()) bookmarks.put(id)
+        val settings = JSONObject()
+            .put("accent", accent)
+            .put("surface", surfaceStyle)
+            .put("glass", glassIntensity)
+            .put("dark", darkMode)
+            .put("largeText", largeText)
+            .put("feedback", showAnswersImmediately)
+        return JSONObject()
+            .put("format", "shtemarm-progress-backup")
+            .put("version", 1)
+            .put("stats", statsJson)
+            .put("bookmarks", bookmarks)
+            .put("settings", settings)
+            .toString(2)
+    }
+
+    /** Validate the complete file before touching existing local progress. */
+    fun importSnapshot(contents: String): Boolean {
+        if (contents.length !in 5..1_048_576) return false
+        return try {
+            val json = JSONObject(contents)
+            if (json.optString("format") != "shtemarm-progress-backup" ||
+                json.optInt("version") != 1) return false
+            val statsObj = json.getJSONObject("stats")
+            val bookmarksArray = json.getJSONArray("bookmarks")
+            val settings = json.getJSONObject("settings")
+            if (bookmarksArray.length() > 10000) return false
+            val restored = mutableMapOf<String, SubjectStats>()
+            for (subject in BookCatalog.subjects + "Կրկնություն") {
+                val record = statsObj.getJSONObject(subject)
+                val answered = record.getInt("answered")
+                val correct = record.getInt("correct")
+                val sessions = record.getInt("sessions")
+                if (answered !in 0..10000000 || correct !in 0..answered ||
+                    sessions !in 0..10000000) return false
+                restored[subject] = SubjectStats(answered, correct, sessions)
+            }
+            val bookmarks = mutableSetOf<String>()
+            for (i in 0 until bookmarksArray.length()) {
+                val id = bookmarksArray.getString(i)
+                if (id.length !in 1..256) return false
+                bookmarks.add(id)
+            }
+            val restoredAccent = settings.getString("accent")
+            val restoredSurface = settings.getString("surface")
+            val restoredGlass = settings.getString("glass")
+            if (restoredAccent !in setOf("teal", "blue", "violet", "emerald", "rose", "amber") ||
+                restoredSurface !in setOf("classic", "soft", "liquid") ||
+                restoredGlass !in setOf("subtle", "balanced", "vivid")) return false
+            val editor = prefs.edit().clear()
+            for ((subject, stats) in restored) {
+                val prefix = "s_" + subject + "_"
+                editor.putInt(prefix + "answered", stats.answered)
+                    .putInt(prefix + "correct", stats.correct)
+                    .putInt(prefix + "sessions", stats.sessions)
+            }
+            editor.putStringSet("bookmarks", bookmarks)
+                .putString("accent", restoredAccent)
+                .putString("surface_style", restoredSurface)
+                .putString("glass_intensity", restoredGlass)
+                .putBoolean("dark_mode", settings.getBoolean("dark"))
+                .putBoolean("large_text", settings.getBoolean("largeText"))
+                .putBoolean("immediate_feedback", settings.getBoolean("feedback"))
+                .commit()
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun isBookmarked(id: String): Boolean =

@@ -27,7 +27,7 @@ private val examCounts = mapOf(
 /** Sample exams built from existing MCQs. These are NOT official GTC blueprint replicas. */
 @Composable
 fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
-    var selected by remember { mutableStateOf(BookCatalog.subjects.first()) }
+    var selected by remember { mutableStateOf("Անգլերեն") }
     var pool by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -39,8 +39,10 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         pool = emptyList()
         try {
             val collected = mutableListOf<StudyQuestion>()
-            for (b in BookCatalog.books.filter { it.subject == selected }) {
-                collected += repository.load(b).allQuestions
+            for (b in BookCatalog.books.filter { it.subject == selected }.distinctBy { it.asset }) {
+                try {
+                    collected += repository.load(b).allQuestions
+                } catch (_: Exception) { /* Keep questions from other available books. */ }
             }
             pool = collected.distinctBy { it.id }
             if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
@@ -127,7 +129,7 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
 
 @Composable
 fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
-    var selected by remember { mutableStateOf(BookCatalog.subjects.first()) }
+    var selected by remember { mutableStateOf("Անգլերեն") }
     var mode by remember { mutableStateOf("quiz") }
     var questions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
@@ -137,8 +139,10 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
         loading = true
         val result = mutableListOf<StudyQuestion>()
         try {
-            for (book in BookCatalog.books.filter { it.subject == selected })
-                result += repository.load(book).allQuestions
+            for (book in BookCatalog.books.filter { it.subject == selected }.distinctBy { it.asset }) {
+                try { result += repository.load(book).allQuestions }
+                catch (_: Exception) { /* Continue with readable question books. */ }
+            }
         } catch (_: Exception) { /* show empty state */ }
         questions = result.shuffled()
         flipIndex = 0; revealed = false
@@ -247,7 +251,7 @@ fun NativeTools(
 ) {
     var tool by remember { mutableStateOf("menu") }
     var number by remember { mutableStateOf("10") }
-    var subject by remember { mutableStateOf(BookCatalog.subjects.first()) }
+    var subject by remember { mutableStateOf("Անգլերեն") }
     var sections by remember { mutableStateOf<List<StudySection>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var selectedSection by remember { mutableStateOf("Բոլոր բաժինները") }
@@ -256,11 +260,13 @@ fun NativeTools(
         loading = true
         val result = mutableListOf<StudySection>()
         try {
-            for (book in BookCatalog.books.filter { it.subject == subject }) {
-                val loaded = repository.load(book)
-                result += loaded.sections.map { sec ->
-                    sec.copy(title = book.title + " · " + sec.title)
-                }
+            for (book in BookCatalog.books.filter { it.subject == subject }.distinctBy { it.asset }) {
+                try {
+                    val loaded = repository.load(book)
+                    result += loaded.sections.map { sec ->
+                        sec.copy(title = book.title + " · " + sec.title)
+                    }
+                } catch (_: Exception) { /* One missing book cannot empty the subject. */ }
             }
         } catch (_: Exception) { /* empty state */ }
         sections = result
