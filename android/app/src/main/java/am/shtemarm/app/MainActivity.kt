@@ -256,10 +256,17 @@ private fun NativeShtemarm() {
                                 },
                                 shape = RoundedCornerShape(16.dp)
                             ) {
-                                Column(Modifier.fillMaxWidth().padding(18.dp)) {
-                                    Text(item.title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                                    Text("Անցանց հարցաշար", fontSize = 13.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Row(Modifier.fillMaxWidth().padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically) {
+                                    NativeBookCover(item.subject)
+                                    Spacer(Modifier.width(14.dp))
+                                    Column(Modifier.weight(1f)) {
+                                        Text(item.title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                                        Text("Անցանց հարցաշար", fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                    Text("›", fontSize = 25.sp,
+                                        color = MaterialTheme.colorScheme.primary)
                                 }
                             }
                         }
@@ -530,5 +537,29 @@ private fun NativeShtemarm() {
     ) {
         Text(label, modifier = Modifier.weight(1f), fontSize = 16.sp)
         Switch(checked = checked, onCheckedChange = onChange)
+    }
+}
+
+@Composable private fun NativeBookCover(subject: String) {
+    val palette = when (subject) {
+        "Մաթեմատիկա" -> listOf(Color(0xFF152F39), Color(0xFF166E83))
+        "Կենսաբանություն" -> listOf(Color(0xFF093F39), Color(0xFF2A9870))
+        "Հայոց պատմություն" -> listOf(Color(0xFF302921), Color(0xFFA47A37))
+        "Հայոց լեզու" -> listOf(Color(0xFF202742), Color(0xFF5461AA))
+        "Ֆիզիկա" -> listOf(Color(0xFF153244), Color(0xFF138A88))
+        else -> listOf(Color(0xFF103D44), Color(0xFF147C70))
+    }
+    Box(
+        modifier = Modifier.width(70.dp).height(94.dp)
+            .background(Brush.linearGradient(palette), RoundedCornerShape(12.dp))
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("S", fontSize = 31.sp, fontWeight = FontWeight.Black,
+                color = Color.White)
+            Text("SHTEMARM", fontSize = 8.sp, fontWeight = FontWeight.Bold,
+                color = Color.White)
+        }
     }
 }
