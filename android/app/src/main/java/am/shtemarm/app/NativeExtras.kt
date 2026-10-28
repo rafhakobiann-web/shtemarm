@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 
 private val examCounts = mapOf(
-    "Անգլերեն" to 80, "Հայոց լեզու" to 70, "Հայոց պատմություն" to 70,
+    "Մաթեմատիկա" to 65, "Անգլերեն" to 80, "Հայոց լեզու" to 80, "Հայոց պատմություն" to 70,
     "Կենսաբանություն" to 70, "Ֆիզիկա" to 70, "Քիմիա" to 70,
     "Աշխարհագրություն" to 70, "Ռուսերեն" to 80
 )
