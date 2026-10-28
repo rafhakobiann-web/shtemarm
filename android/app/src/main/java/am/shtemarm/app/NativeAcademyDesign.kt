@@ -513,6 +513,8 @@ fun AcademyAppearanceSettings(
     onAccent: (String) -> Unit,
     surface: String,
     onSurface: (String) -> Unit,
+    glassIntensity: String,
+    onGlassIntensity: (String) -> Unit,
     largeText: Boolean,
     onLargeText: (Boolean) -> Unit,
     immediateFeedback: Boolean,
@@ -542,6 +544,24 @@ fun AcademyAppearanceSettings(
                             label = { Text(label) })
                     }
             }
+        }
+        if (surface == "liquid") item {
+            Text("Ապակու էֆեկտ", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("subtle" to "Մեղմ", "balanced" to "Հավասարակշռված",
+                    "vivid" to "Արտահայտիչ").forEach { (value, label) ->
+                    FilterChip(
+                        selected = glassIntensity == value,
+                        onClick = { onGlassIntensity(value) },
+                        label = { Text(label) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(5.dp))
+            Text("Թափանցիկ, լուսավորված մակերեսներ՝ առանց ծանր ֆոնային մշուշման։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
         item {
             Text("Շեշտադրման գույն", fontWeight = FontWeight.Bold, fontSize = 17.sp)
