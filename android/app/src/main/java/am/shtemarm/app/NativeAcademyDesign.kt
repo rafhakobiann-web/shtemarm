@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -72,8 +74,11 @@ fun AcademyLogo() {
             .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.16f), RoundedCornerShape(14.dp)),
         contentAlignment = Alignment.Center
     ) {
-        Icon(Icons.Default.School, null, tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(29.dp))
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher),
+            contentDescription = "Shtemarm",
+            modifier = Modifier.size(33.dp).clip(RoundedCornerShape(9.dp))
+        )
     }
 }
 
