@@ -125,6 +125,7 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
 /* ---------- explanation ---------- */
 function Explain(props: { instruction: string; passage: string; question: string; correct: string; chosen: string | null }) {
   const tx = useTx();
+  const lang = useLang();
   const fn = useServerFn(explainAnswer);
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -139,7 +140,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       onClick={async () => {
         setLoading(true);
         try {
-          const r = await fn({ data: { ...props, passage: props.passage.slice(0, 5800) } });
+          const r = await fn({ data: { ...props, locale: lang, passage: props.passage.slice(0, 5800) } });
           setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
         } catch {
