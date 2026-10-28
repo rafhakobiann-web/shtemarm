@@ -16,7 +16,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { pullAndMerge } from "@/lib/progress";
 import { TranslationProvider } from "@/components/EnglishText";
 import { THEME_INIT_SCRIPT, initAppearance } from "@/lib/theme";
@@ -151,11 +151,19 @@ function RootComponent() {
     return initAppearance();
   }, []);
   useEffect(() => {
-    pullAndMerge();
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") pullAndMerge();
-    });
-    return () => data.subscription.unsubscribe();
+    // Offline study pages are usable without a configured cloud account.
+    if (!hasSupabaseConfig()) return;
+    void pullAndMerge().catch((error) => console.warn("[Shtemarm] Progress sync unavailable", error));
+    try {
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_IN") {
+          void pullAndMerge().catch((error) => console.warn("[Shtemarm] Progress sync unavailable", error));
+        }
+      });
+      return () => data.subscription.unsubscribe();
+    } catch (error) {
+      console.warn("[Shtemarm] Auth not available; offline library remains accessible", error);
+    }
   }, []);
 
   return (

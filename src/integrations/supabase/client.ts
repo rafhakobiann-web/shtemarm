@@ -46,6 +46,20 @@ function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof f
 }
 
 
+/**
+ * The study library must remain available even when Lovable preview/server
+ * variables are not configured. Only public Supabase URL/publishable key are
+ * checked here; no private key belongs in a client-side VITE_ variable.
+ */
+export function hasSupabaseConfig(): boolean {
+  const vite = import.meta.env;
+  const server = typeof process !== "undefined" ? process.env : undefined;
+  const url = vite["VITE_SUPABASE_URL"] || server?.["SUPABASE_URL"];
+  const key = vite["VITE_SUPABASE_PUBLISHABLE_KEY"] || server?.["SUPABASE_PUBLISHABLE_KEY"];
+  return typeof url === "string" && /^https:\/\//.test(url) &&
+    typeof key === "string" && key.length > 10;
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)

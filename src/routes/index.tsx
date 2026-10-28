@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target, Download, Smartphone } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
@@ -308,7 +308,16 @@ function Index() {
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setName((data.user?.user_metadata?.username as string | undefined) ?? null));
+    if (!hasSupabaseConfig()) return;
+    try {
+      void supabase.auth.getUser()
+        .then(({ data, error }) => {
+          if (!error) setName((data.user?.user_metadata?.username as string | undefined) ?? null);
+        })
+        .catch(() => { /* Keep the study dashboard usable without an account. */ });
+    } catch {
+      // Missing or unavailable auth must never crash the public homepage.
+    }
   }, []);
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;

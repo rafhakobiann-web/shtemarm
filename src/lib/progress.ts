@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 
 export type Progress = {
   answers: Record<string, 0 | 1>; // question id -> last result
@@ -100,6 +100,7 @@ function merge(a: Progress, b: Progress): Progress {
 }
 
 async function pushRemote() {
+  if (!hasSupabaseConfig()) return;
   const { data } = await supabase.auth.getSession();
   const uid = data.session?.user.id;
   if (!uid) return;
@@ -108,6 +109,7 @@ async function pushRemote() {
 
 export async function pullAndMerge() {
   load();
+  if (!hasSupabaseConfig()) return;
   const { data } = await supabase.auth.getSession();
   const uid = data.session?.user.id;
   if (!uid) return;
