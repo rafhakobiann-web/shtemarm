@@ -11,7 +11,6 @@ export function StudyTools() {
   const progress = useProgress();
   const [seconds, setSeconds] = useState(FOCUS_SECONDS);
   const [running, setRunning] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
 
   useEffect(() => {
     if (!running) return;
@@ -28,11 +27,6 @@ export function StudyTools() {
     return () => window.clearInterval(id);
   }, [running]);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("study-focus-mode", focusMode);
-    return () => document.documentElement.classList.remove("study-focus-mode");
-  }, [focusMode]);
-
   const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
   const secs = (seconds % 60).toString().padStart(2, "0");
   const wrongCount = Object.values(progress.answers).filter((answer) => answer === 0).length;
@@ -43,7 +37,7 @@ export function StudyTools() {
       <div className="mb-5 flex items-start gap-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><Timer className="size-5" /></span>
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-black">{tx("Կենտրոնացման ժամանակաչափ")}</h3>
+          <h3 className="text-lg font-black">{tx("Ուսումնական ժամանակաչափ")}</h3>
           <p className="text-sm text-muted-foreground">{tx("Սովորիր 25 րոպե, ապա կարճ դադար վերցրու։")}</p>
         </div>
       </div>
@@ -78,10 +72,6 @@ export function StudyTools() {
         </div>
         {wrongCount > 0 && <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold transition-colors hover:bg-muted">{tx("Իմ առաջընթացը")}</Link>}
       </div>
-      <button type="button" aria-pressed={focusMode} onClick={() => setFocusMode((value) => !value)} className="mt-4 inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors hover:bg-muted">
-        <span className={`size-2 rounded-full ${focusMode ? "bg-emerald-500" : "bg-muted-foreground/40"}`} />
-        {focusMode ? tx("Անջատել կենտրոնացման ռեժիմը") : tx("Միացնել կենտրոնացման ռեժիմը")}
-      </button>
     </section>
   );
 }
