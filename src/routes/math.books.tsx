@@ -7,7 +7,7 @@ import { MathDemandReference } from "@/components/MathDemandReference";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -227,6 +227,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
 function BooksPage() {
   const q = useIndex();
   const tx = useTx();
+  const lang = useLang();
   const questionCounts = useMemo(() => {
     const out: Record<string, number> = {};
     if (!q.data) return out;
@@ -303,6 +304,12 @@ function BooksPage() {
         )}
       </div>
 
+      <Link to="/math-handbook"
+        search={{book:bookId==="matem-2"?"matem-2":"matem-1",chapter:section?.chapter??1,section:section?.section??1,topic:undefined}}
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+        <BookText className="size-4"/>
+        {lang==="en"?"Mathematics rules & worked examples":lang==="ru"?"Формулы и разобранные примеры":"Մաթեմատիկայի բանաձևեր և լուծված օրինակներ"}
+      </Link>
       {!bookId && (
         <section className="space-y-5">
           <h2 className="text-xl font-bold sm:text-2xl">{tx("Ընտրիր շտեմարանը")}</h2>
