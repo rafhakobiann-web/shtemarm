@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, HeartHandshake, ShieldCheck, ExternalLink } from "lucide-react";
+import { ArrowLeft, HeartHandshake, ShieldCheck, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useTx } from "@/lib/lang";
 
@@ -12,19 +12,11 @@ export const Route = createFileRoute("/support")({
 });
 
 const GOAL_AMD = 10000;
-const approvedPaymentLink = import.meta.env.VITE_SHTEMARM_APPROVED_DONATION_URL?.trim() ?? "";
-// An approved HTTPS checkout URL only; never place merchant secrets or card details here.
-function safeCheckoutUrl(value: string): string | null {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && !url.username && !url.password ? url.href : null;
-  } catch { return null; }
-}
-
 function SupportPage() {
   const tx = useTx();
   const [amount, setAmount] = useState(1000);
-  const checkout = safeCheckoutUrl(approvedPaymentLink);
+  const message = `Բարև Ձեզ։ Ցանկանում եմ աջակցել Shtemarm-ին ${amount.toLocaleString("en-US")} ֏ գումարով։ Խնդրում եմ տրամադրել փոխանցման տվյալները։`;
+  const contactUrl = `https://www.tiktok.com/@shtemarm_official`;
   return (
     <main className="mx-auto max-w-3xl space-y-6 py-5">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />{tx("Գլխավոր էջ")}</Link>
@@ -44,11 +36,17 @@ function SupportPage() {
               {[500, 1000, 2000, 5000].map(value => <button key={value} type="button" aria-pressed={amount === value} onClick={() => setAmount(value)} className={`rounded-2xl border px-3 py-3 font-bold transition-colors ${amount === value ? "border-primary bg-primary/10 text-primary" : "bg-background/60 hover:bg-muted"}`}>{value.toLocaleString("en-US")} ֏</button>)}
             </div>
           </fieldset>
-          {checkout ? (
-            <div className="space-y-3">
-              <a href={checkout} target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-bold text-primary-foreground hover:opacity-90">{tx("Անցնել անվտանգ վճարման էջ")} <ExternalLink className="size-4" /></a>
-              <p className="text-xs text-muted-foreground">{tx("Վճարումը կատարվում է արտաքին հաստատված էջում։ Ընտրված գումարը ստուգիր վճարման էջում։")}</p>
+          <div className="space-y-3">
+            <a href={contactUrl} target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 font-bold text-primary-foreground hover:opacity-90"><MessageCircle className="size-5" />{tx("Ստանալ փոխանցման տվյալները")}</a>
+            <p className="text-sm text-muted-foreground">{tx("Գրիր մեզ TikTok-ում և խնդրիր փոխանցման տվյալները։ Գումարը կարող ես նշել հաղորդագրության մեջ։")}</p>
+            <div className="rounded-2xl border bg-background/60 p-4 text-sm">
+              <p className="mb-2 font-semibold">{tx("Պատրաստի հաղորդագրություն")}</p>
+              <p className="break-words text-muted-foreground">{message}</p>
+              <button type="button" onClick={() => navigator.clipboard?.writeText(message)} className="mt-3 rounded-xl border px-4 py-2 font-semibold hover:bg-muted">{tx("Պատճենել հաղորդագրությունը")}</button>
             </div>
+          </div>
+          <p className="flex items-start gap-2 text-sm text-muted-foreground"><ShieldCheck className="mt-0.5 size-5 shrink-0" />{tx("Քարտի տվյալները հրապարակված չեն։ Փոխանցումը կատարվում է քո բանկային հավելվածում՝ տվյալները անձնական հաղորդագրությամբ ստանալուց հետո։ Երբեք մի փոխանցիր CVV, PIN կամ գաղտնաբառ։")}</p>
+        </div>
           ) : (
             <div className="rounded-2xl border border-dashed p-4 text-sm text-muted-foreground" role="status">{tx("Վճարումները դեռ հասանելի չեն։ Սպասում ենք բանկի հաստատմանը։")}</div>
           )}
