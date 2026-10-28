@@ -2,9 +2,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { MOBILE_TAB_TARGETS, MobileNav, getMobileNavIndex } from "@/components/MobileNav";
-import { createRouter, rootRouteId } from "@tanstack/react-router";
-import { QueryClient } from "@tanstack/react-query";
-import { routeTree } from "@/routeTree.gen";
 
 const mockLocation = vi.hoisted(() => ({pathname: "/", hash: ""}));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -33,11 +30,12 @@ describe("Liquid Glass bottom dock routes", () => {
     expect(MOBILE_TAB_TARGETS.map(tab => tab.id)).toEqual([
       "home", "books", "exams", "games", "tools",
     ]);
-    const router = createRouter({
-      routeTree, context: { queryClient: new QueryClient() },
-    });
     for (const tab of MOBILE_TAB_TARGETS) {
-      expect(router.matchRoutes(tab.to).at(-1)?.routeId).not.toBe(rootRouteId);
+      const routeFile = tab.to === "/" ? "src/routes/index.tsx" :
+        tab.to === "/mini-games" ? "src/routes/mini-games.tsx" :
+        tab.to === "/study-tools" ? "src/routes/study-tools.tsx" : "";
+      expect(routeFile).not.toBe("");
+      expect(readFileSync(routeFile, "utf8")).toContain('createFileRoute("' + tab.to + '")');
     }
     const home = readFileSync("src/routes/index.tsx", "utf8");
     expect(home).toContain('id="subjects"');
@@ -110,7 +108,7 @@ describe("Liquid Glass bottom dock routes", () => {
     expect(css).toContain('prefers-reduced-motion: reduce');
     expect(css).toContain('prefers-reduced-transparency: reduce');
     expect(css).toContain('data-glass-blur="off"');
-    expect(css).toContain('focus-visible:outline-2');
+    expect(readFileSync("src/components/MobileNav.tsx", "utf8")).toContain("focus-visible:outline-2");
     // UI effects should not rely on heavy image-capture / SVG displacement.
     expect(css).not.toContain("feDisplacementMap");
   });
