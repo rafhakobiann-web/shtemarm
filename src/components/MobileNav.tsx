@@ -42,7 +42,9 @@ export function getMobileNavIndex(pathname: string, hash = ""): number {
 export function MobileNav() {
   const tx = useTx();
   const { pathname, hash } = useLocation();
-  const selected = getMobileNavIndex(pathname, hash);
+  const [homeVisible, setHomeVisible] = useState<0 | 1 | 2 | null>(null);
+  const selected = pathname === "/" && homeVisible !== null
+    ? homeVisible : getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
   const lastY = useRef(0);
 
@@ -51,6 +53,18 @@ export function MobileNav() {
   useEffect(() => {
     lastY.current = window.scrollY || 0;
     let frame = 0;
+    const detectHomeSection = () => {
+      if (pathname !== "/") return;
+      const subjects = document.getElementById("subjects");
+      const exams = document.getElementById("exams");
+      if (!subjects || !exams) return;
+      const marker = Math.max(130, window.innerHeight * .28);
+      const visible: 0 | 1 | 2 =
+        exams.getBoundingClientRect().top <= marker ? 2 :
+        subjects.getBoundingClientRect().top <= marker ? 1 : 0;
+      setHomeVisible(previous => previous === visible ? previous : visible);
+    };
+    detectHomeSection();
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
@@ -61,6 +75,7 @@ export function MobileNav() {
         else if (delta > 10) setCompact(true);
         else if (delta < -10) setCompact(false);
         lastY.current = nextY;
+        detectHomeSection();
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -68,11 +83,12 @@ export function MobileNav() {
       window.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [pathname]);
 
   // Opening a different tab restores full labels for orientation.
   useEffect(() => {
     setCompact(false);
+    setHomeVisible(null);
   }, [pathname, hash]);
 
   // Home-page hash targets always scroll to the actual catalogue/exams section.
