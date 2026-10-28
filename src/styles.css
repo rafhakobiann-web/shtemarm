@@ -858,3 +858,22 @@ html.user-reduced-motion .mobile-liquid-label {
     background: var(--card);
   }
 }
+
+
+/* Opting out of blur wins over all responsive / vivid selectors. */
+html[data-glass-blur="off"]:not(.user-high-contrast) .mobile-liquid-dock,
+html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"] .mobile-liquid-dock,
+html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: var(--card) !important;
+}
+@media (prefers-reduced-transparency: reduce) {
+  html .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-dock,
+  html[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: var(--card) !important;
+  }
+}
