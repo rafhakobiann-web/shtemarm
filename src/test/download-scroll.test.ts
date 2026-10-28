@@ -32,7 +32,7 @@ describe("Shtemarm app download", () => {
   });
   it("does not misrepresent the repository's private APK as a public file", () => {
     const download = source("src/routes/download.tsx");
-    expect(PRIVATE_BETA_URL).toContain("/releases/tag/v0.1.0-beta.1");
+    expect(PRIVATE_BETA_URL).toContain("/releases/tag/v0.1.1-beta.1");
     expect(download).toContain("privateNote");
     expect(download).toContain("invited");
     expect(download).not.toContain('const GITHUB_TOKEN');
