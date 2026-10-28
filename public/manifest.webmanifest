@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Shtemarm — Շտեմարան",
+  "short_name": "Shtemarm",
+  "description": "Քննությունների պատրաստություն, շտեմարաններ և ուսումնական խաղեր",
+  "lang": "hy",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/shtemarm-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
