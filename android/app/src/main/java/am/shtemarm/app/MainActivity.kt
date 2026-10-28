@@ -128,7 +128,7 @@ private fun NativeShtemarm() {
 
     val colors = academyColors(dark, academyAccent(accent), surfaceStyle)
     val originalDensity = LocalDensity.current
-    MaterialTheme(colorScheme = colors) {
+    MaterialTheme(colorScheme = colors, typography = ShtemarmTypography) {
         CompositionLocalProvider(
             LocalDensity provides Density(
                 originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
