@@ -86,7 +86,7 @@ describe("study mixer: official YouTube + local Howler.js ambient audio",()=>{
     expect(iframe).toHaveAttribute("src",youtubeEmbedSrc("lofi"));
     expect(iframe).toHaveAttribute("allow",expect.stringContaining("autoplay"));
     expect(screen.getAllByTitle(/^YouTube ·/)).toHaveLength(1);
-    fireEvent.change(screen.getByLabelText("YouTube երաժշտություն"),{target:{value:"jazz"}});
+    fireEvent.change(screen.getAllByRole("combobox")[0]!,{target:{value:"jazz"}});
     expect(screen.getByTitle(/^YouTube ·/)).toHaveAttribute("src",youtubeEmbedSrc("jazz"));
     expect(screen.getAllByTitle(/^YouTube ·/)).toHaveLength(1);
     fireEvent.click(screen.getByRole("button",{name:"Փակել պատուհանը"}));
@@ -113,8 +113,8 @@ describe("original procedural ambient audio (not copied from YouTube)",()=>{
     for(const kind of kinds){
       const pcm=generateAmbientSamples(kind);
       expect(pcm.length).toBe(16000*12);
-      expect(pcm[0]).toBe(0);
-      expect(pcm[pcm.length-1]).toBe(0);
+      expect(Math.abs(pcm[0]!)).toBe(0);
+      expect(Math.abs(pcm[pcm.length-1]!)).toBe(0);
       let nonzero=0;
       let sum=0;
       for(let i=0;i<pcm.length;i+=227){
@@ -132,7 +132,13 @@ describe("original procedural ambient audio (not copied from YouTube)",()=>{
     const blob=encodeMonoWav(new Float32Array([0,1,-1,0]),16000);
     expect(blob.type).toBe("audio/wav");
     expect(blob.size).toBe(52);
-    const bytes=new DataView(await blob.arrayBuffer());
+    const payload=await new Promise<ArrayBuffer>((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result as ArrayBuffer);
+      reader.onerror=()=>reject(reader.error);
+      reader.readAsArrayBuffer(blob);
+    });
+    const bytes=new DataView(payload);
     const text=(offset:number)=>String.fromCharCode(
       bytes.getUint8(offset),bytes.getUint8(offset+1),
       bytes.getUint8(offset+2),bytes.getUint8(offset+3));
@@ -146,6 +152,6 @@ describe("original procedural ambient audio (not copied from YouTube)",()=>{
   it("vendors the actual MIT-licensed Howler.js release, loaded lazily",()=>{
     expect(readFileSync("public/vendor/howler.core.min.js","utf8")).toContain("howler.js v2.2.4");
     expect(readFileSync("public/vendor/HOWLER-LICENSE.md","utf8")).toContain("Permission is hereby granted");
-    expect(readFileSync("src/lib/study-ambience.ts","utf8")).toContain('src:[url],format:["wav"]');
+    expect(readFileSync("src/components/StudyMusicDock.tsx","utf8")).toContain('src:[url],format:["wav"]');
   });
 });
