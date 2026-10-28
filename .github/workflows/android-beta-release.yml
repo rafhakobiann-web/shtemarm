@@ -1,0 +1,67 @@
+name: Publish first Shtemarm Android beta
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/android-beta-release.yml'
+permissions:
+  contents: write
+concurrency:
+  group: shtemarm-beta-publish
+  cancel-in-progress: false
+jobs:
+  beta:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit committed files and credentials in Git history
+        run: |
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+      - name: Validate bundled question banks and language assets
+        run: python3 android/scripts/validate_assets.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          echo "y" | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile native Android beta (debug-signed, NOT a Play release)
+        working-directory: android
+        run: gradle --no-daemon assembleDebug --stacktrace
+      - name: Name the installable beta APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Shtemarm-Android-v0.1.0-beta.1.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shtemarm-first-beta-apk
+          path: Shtemarm-Android-v0.1.0-beta.1.apk
+          if-no-files-found: error
+      - name: Publish private GitHub pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG='v0.1.0-beta.1'
+          ASSET='Shtemarm-Android-v0.1.0-beta.1.apk'
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ASSET" --clobber
+          else
+            gh release create "$TAG" "$ASSET" \
+              --target main \
+              --title 'Shtemarm Android 0.1.0 · First Beta' \
+              --notes-file docs/ANDROID_BETA_RELEASE.md \
+              --prerelease
+          fi
