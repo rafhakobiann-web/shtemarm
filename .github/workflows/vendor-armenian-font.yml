@@ -1,0 +1,45 @@
+name: Vendor Noto Sans Armenian font (OFL)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/vendor-armenian-font.yml'
+permissions:
+  contents: write
+jobs:
+  vendor-font:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Download verified Google Fonts files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/res/font android/licenses
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansarmenian/NotoSansArmenian%5Bwdth%2Cwght%5D.ttf' \
+            -o android/app/src/main/res/font/noto_sans_armenian.ttf
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansarmenian/OFL.txt' \
+            -o android/licenses/OFL-NotoSansArmenian.txt
+          test "$(git hash-object android/app/src/main/res/font/noto_sans_armenian.ttf)" = \
+            "b36ecaf73f746d66f3ac3e4acb029a5784efdf55"
+          test "$(git hash-object android/licenses/OFL-NotoSansArmenian.txt)" = \
+            "ff91c77a6d7c685ae633cca02b2092c452a9baf0"
+      - name: Commit the licensed font and its license
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add android/app/src/main/res/font/noto_sans_armenian.ttf android/licenses/OFL-NotoSansArmenian.txt
+          if git diff --cached --quiet; then
+            echo 'Verified font already present.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'assets(android): vendor licensed Noto Sans Armenian font'
+          git push origin HEAD:main
