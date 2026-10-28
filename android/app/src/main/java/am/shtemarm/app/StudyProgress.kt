@@ -41,6 +41,38 @@ class StudyProgress(context: Context) {
         }
     }
 
+    /** Return to the last opened source without storing any textbook text. */
+    fun recordLastBook(book: StudyBook) {
+        prefs.edit().putString("last_book_asset", book.asset)
+            .putString("last_book_title", book.title).apply()
+    }
+
+    fun lastBook(): StudyBook? {
+        val asset = prefs.getString("last_book_asset", null) ?: return null
+        val title = prefs.getString("last_book_title", null) ?: return null
+        return BookCatalog.books.firstOrNull { it.asset == asset && it.title == title }
+    }
+
+    fun mistakeIds(): Set<String> =
+        prefs.getStringSet("mistakes", emptySet()).orEmpty().toSet()
+
+    /** Keep only recent, answer-key-verified missed questions. */
+    fun recordMistakes(questions: List<StudyQuestion>, correctIds: Set<String>) {
+        val mistakes = LinkedHashSet(mistakeIds())
+        for (question in questions) {
+            if (question.id in correctIds) mistakes.remove(question.id)
+            else mistakes.add(question.id)
+        }
+        while (mistakes.size > 2000) mistakes.remove(mistakes.first())
+        prefs.edit().putStringSet("mistakes", mistakes).apply()
+    }
+
+    fun removeMistake(id: String) {
+        val missed = mistakeIds().toMutableSet()
+        missed.remove(id)
+        prefs.edit().putStringSet("mistakes", missed).apply()
+    }
+
     /**
      * User-controlled, local-only backup. No API keys or account tokens are
      * included. Do not silently upload these files to a remote service.
@@ -56,6 +88,9 @@ class StudyProgress(context: Context) {
         }
         val bookmarks = JSONArray()
         for (id in bookmarkedIds().sorted()) bookmarks.put(id)
+        val mistakes = JSONArray()
+        for (id in mistakeIds().sorted()) mistakes.put(id)
+        val lastBook = lastBook()
         val settings = JSONObject()
             .put("accent", accent)
             .put("surface", surfaceStyle)
@@ -68,6 +103,9 @@ class StudyProgress(context: Context) {
             .put("version", 1)
             .put("stats", statsJson)
             .put("bookmarks", bookmarks)
+            .put("mistakes", mistakes)
+            .put("lastBook", lastBook?.let { JSONObject().put("asset", it.asset)
+                .put("title", it.title) } ?: JSONObject.NULL)
             .put("settings", settings)
             .toString(2)
     }
@@ -81,8 +119,11 @@ class StudyProgress(context: Context) {
                 json.optInt("version") != 1) return false
             val statsObj = json.getJSONObject("stats")
             val bookmarksArray = json.getJSONArray("bookmarks")
+            // 0.1.1 backups did not yet contain mistakes or recent books.
+            val missedArray = json.optJSONArray("mistakes") ?: JSONArray()
+            val lastBookData = json.optJSONObject("lastBook")
             val settings = json.getJSONObject("settings")
-            if (bookmarksArray.length() > 10000) return false
+            if (bookmarksArray.length() > 10000 || missedArray.length() > 2000) return false
             val restored = mutableMapOf<String, SubjectStats>()
             for (subject in BookCatalog.subjects + "Կրկնություն") {
                 val record = statsObj.getJSONObject(subject)
@@ -99,6 +140,17 @@ class StudyProgress(context: Context) {
                 if (id.length !in 1..256) return false
                 bookmarks.add(id)
             }
+            val mistakes = mutableSetOf<String>()
+            for (i in 0 until missedArray.length()) {
+                val id = missedArray.getString(i)
+                if (id.length !in 1..256) return false
+                mistakes.add(id)
+            }
+            val recentBook = lastBookData?.let { record ->
+                val asset = record.getString("asset")
+                val title = record.getString("title")
+                BookCatalog.books.firstOrNull { it.asset == asset && it.title == title }
+            }
             val restoredAccent = settings.getString("accent")
             val restoredSurface = settings.getString("surface")
             val restoredGlass = settings.getString("glass")
@@ -113,6 +165,9 @@ class StudyProgress(context: Context) {
                     .putInt(prefix + "sessions", stats.sessions)
             }
             editor.putStringSet("bookmarks", bookmarks)
+                .putStringSet("mistakes", mistakes)
+                .putString("last_book_asset", recentBook?.asset)
+                .putString("last_book_title", recentBook?.title)
                 .putString("accent", restoredAccent)
                 .putString("surface_style", restoredSurface)
                 .putString("glass_intensity", restoredGlass)
