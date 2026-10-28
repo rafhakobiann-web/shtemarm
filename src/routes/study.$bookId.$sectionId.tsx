@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Heart, Zap, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
@@ -87,11 +87,22 @@ const qKey = (u: Unit, k: string) => (perQuestion(u) ? `${u.id}:${k}` : u.id);
 
 function useRevealer(onResult?: (correct: boolean) => void) {
   const [answers, setAnswers] = useState<Record<string, UnitAnswer>>({});
-  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [revealed, updateRevealed] = useState<Record<string, boolean>>({});
+  const checkedRef = useRef<Set<string>>(new Set());
+  const setRevealed: typeof updateRevealed = (value) => {
+    updateRevealed((previous) => {
+      const next = typeof value === "function" ? value(previous) : value;
+      checkedRef.current = new Set(Object.keys(next).filter((id) => next[id]));
+      return next;
+    });
+  };
   const check = (u: Unit, key: string) => {
     const id = qKey(u, key);
-    if (revealed[id]) return;
-    setRevealed((r) => ({ ...r, [id]: true }));
+    // Guard synchronously. React state updates can be batched, so two rapid
+    // taps must not record the same question twice before re-render.
+    if (checkedRef.current.has(id) || revealed[id]) return;
+    checkedRef.current.add(id);
+    updateRevealed((r) => ({ ...r, [id]: true }));
     const a = answers[u.id];
     let ok: boolean;
     if (u.kind === "mc") ok = a?.mc?.[key] === u.questions.find((q) => q.n === key)?.answer;
