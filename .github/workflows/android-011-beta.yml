@@ -1,0 +1,108 @@
+name: Publish Shtemarm Android 0.1.1 private beta
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/android-011-beta.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shtemarm-private-beta-011
+  cancel-in-progress: false
+
+jobs:
+  private-beta:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify secrets and offline question banks
+        run: |
+          set -euo pipefail
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK 35
+        run: |
+          echo "y" | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Run Kotlin regression tests and compile native beta
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
+      - name: Verify APK version and debug signing
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "versionCode='4'" <<< "$BADGING"
+          grep -Fq "versionName='0.1.1-beta.1'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          sha256sum "$APK"
+      - name: Enable hardware acceleration for Android emulator
+        run: |
+          if test -e /dev/kvm; then sudo chmod 666 /dev/kvm; fi
+      - name: Smoke-test app launch on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: bash android/scripts/smoke_011.sh
+      - name: Upload emulator smoke-test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shtemarm-011-android-smoke
+          path: |
+            android-smoke-home.png
+            android-smoke-window.xml
+          if-no-files-found: ignore
+      - name: Prepare private beta APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Shtemarm-Android-v0.1.1-beta.1.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shtemarm-011-private-beta-apk
+          path: Shtemarm-Android-v0.1.1-beta.1.apk
+          if-no-files-found: error
+      - name: Publish private prerelease (never publish to a public repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$(gh repo view --json isPrivate -q .isPrivate)" != "true" ]]; then
+            echo "Refusing to publish: this repository must remain private for textbook rights review." >&2
+            exit 1
+          fi
+          TAG=v0.1.1-beta.1
+          APK=Shtemarm-Android-v0.1.1-beta.1.apk
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; leaving its APK and tag unchanged."
+            exit 0
+          fi
+          gh release create "$TAG" "$APK" \
+            --target "$GITHUB_SHA" \
+            --title 'Shtemarm Android 0.1.1 · Stability Beta' \
+            --notes-file docs/ANDROID_011_BETA_RELEASE.md \
+            --prerelease
