@@ -23,6 +23,7 @@ function DownloadPage() {
   const lang = useLang();
   const [installable, setInstallable] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [publishedApk, setPublishedApk] = useState<string | null>(null);
   const promptRef = useRef<InstallPrompt | null>(null);
 
   useEffect(() => {
@@ -50,6 +51,28 @@ function DownloadPage() {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
+  }, []);
+
+  // A manually approved release workflow can publish this static manifest.
+  // Missing files may receive the SPA HTML fallback; those simply fail JSON
+  // parsing and the page continues to show the private-tester option.
+  useEffect(() => {
+    if (safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL)) return;
+    const controller = new AbortController();
+    fetch("/downloads/android-release.json", {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then(async (response) => response.ok ? response.json() : null)
+      .then((value: unknown) => {
+        if (!value || typeof value !== "object" || !("path" in value)) return;
+        const candidate = (value as { path?: unknown }).path;
+        if (typeof candidate !== "string") return;
+        const url = safePublicApkUrl(candidate);
+        if (url?.startsWith("/downloads/")) setPublishedApk(url);
+      })
+      .catch(() => { /* No public APK yet: continue with private beta. */ });
+    return () => controller.abort();
   }, []);
 
   const launchInstall = async () => {
@@ -110,7 +133,7 @@ function DownloadPage() {
     onlyAuthorized: "Բացել փակ փորձնական թողարկումը", available: "Android-ի համար",
   };
 
-  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL);
+  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk;
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
       <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary">
@@ -131,7 +154,7 @@ function DownloadPage() {
             <p className="mt-1 text-sm text-muted-foreground">{text.native}</p>
           </div>
           {apkUrl ? (
-            <a href={apkUrl} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
+            <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
               <Download className="size-5" />{text.apkAvailable}
             </a>
           ) : (
