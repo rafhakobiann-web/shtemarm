@@ -74,6 +74,10 @@ private fun NativeShtemarm() {
     var loaded by remember { mutableStateOf<LoadedBook?>(null) }
     var loading by remember { mutableStateOf(false) }
     var loadError by remember { mutableStateOf("") }
+    var subjectFilter by remember { mutableStateOf("") }
+    var bookFilter by remember { mutableStateOf("") }
+    var chapterFilter by remember { mutableStateOf("") }
+    var reviewMistakes by remember { mutableStateOf(false) }
 
     var session by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var sessionTitle by remember { mutableStateOf("") }
@@ -142,7 +146,10 @@ private fun NativeShtemarm() {
     val progressScroll = rememberLazyListState()
     LaunchedEffect(sessionIndex, session) { studyScroll.scrollToItem(0) }
     LaunchedEffect(book) { sectionsScroll.scrollToItem(0) }
-    LaunchedEffect(subject) { booksScroll.scrollToItem(0) }
+    LaunchedEffect(subject) {
+        booksScroll.scrollToItem(0)
+        bookFilter = ""
+    }
 
     fun back() {
         page = when(page) {
@@ -171,6 +178,8 @@ private fun NativeShtemarm() {
 
     LaunchedEffect(book) {
         val chosenBook = book ?: return@LaunchedEffect
+        chapterFilter = ""
+        progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
         if (chosenBook.subject == "Մաթեմատիկա") {
             loaded = null
@@ -189,21 +198,28 @@ private fun NativeShtemarm() {
         loading = false
     }
 
-    LaunchedEffect(page) {
+    LaunchedEffect(page, reviewMistakes) {
         if (page == Page.SAVED) {
             savedLoading = true
-            val ids = progress.bookmarkedIds()
+            val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
             val collected = mutableListOf<StudyQuestion>()
             if (ids.isNotEmpty()) {
-                // Bookmark IDs begin with their source asset filename. Read only
-                // relevant books instead of reparsing the entire offline library.
                 val sourceAssets = SessionGuards.sourceAssets(ids)
                 for (entry in BookCatalog.books.filter {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
                     try {
                         collected += repository.load(entry).allQuestions.filter { it.id in ids }
-                    } catch (_: Exception) { /* Other saved questions remain usable. */ }
+                    } catch (_: Exception) { /* Keep questions from other readable books. */ }
+                }
+                // The scored math books have a dedicated verified source loader.
+                for (part in 1..2) {
+                    if (ids.any { it.startsWith("math:matem-$part:") }) {
+                        try {
+                            collected += loadScoredMath(context, part)
+                                .allQuestions.filter { it.id in ids }
+                        } catch (_: Exception) { /* Other review questions still work. */ }
+                    }
                 }
             }
             savedQuestions = collected.distinctBy { it.id }
@@ -297,6 +313,8 @@ private fun NativeShtemarm() {
                         val stats = BookCatalog.subjects.map { progress.stats(it) }
                         val correct = stats.sumOf { it.correct }
                         val answered = stats.sumOf { it.answered }
+                        val lastBook = progressVersion.let { progress.lastBook() }
+                        val mistakesCount = progress.mistakeIds().size
                         LazyColumn(
                             Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
                         state = homeScroll,
@@ -304,6 +322,27 @@ private fun NativeShtemarm() {
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
                             item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            if (lastBook != null) item {
+                                AcademyQuickAction(
+                                    Icons.Default.Book,
+                                    "Շարունակել ուսումը",
+                                    lastBook.subject + " · " + lastBook.title
+                                ) {
+                                    subject = lastBook.subject
+                                    book = lastBook
+                                    page = if (lastBook.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                                }
+                            }
+                            if (mistakesCount > 0) item {
+                                AcademyQuickAction(
+                                    Icons.Default.Star,
+                                    "Կրկնել սխալները",
+                                    "$mistakesCount հարց՝ կրկնելու համար"
+                                ) {
+                                    reviewMistakes = true
+                                    page = Page.SAVED
+                                }
+                            }
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                     AcademyQuickAction(Icons.Default.Book, "Շտեմարաններ", "Ընտրիր գիրքը") {
@@ -330,8 +369,8 @@ private fun NativeShtemarm() {
                                                 "Պատասխանված՝ " + answered, Icons.Default.Book)
                                         }
                                         Box(Modifier.weight(1f)) {
-                                            AcademyStatCard("Կրկնելու հարցեր", (answered - correct).toString(),
-                                                "Ավարտված վարժանքներից", Icons.Default.Settings)
+                                            AcademyStatCard("Կրկնելու հարցեր", mistakesCount.toString(),
+                                                "Պահպանված սխալ պատասխաններ", Icons.Default.Settings)
                                         }
                                     }
                                 }
@@ -409,7 +448,20 @@ private fun NativeShtemarm() {
                             Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         }
-                        items(BookCatalog.subjects, key = { it }) { s ->
+                        item {
+                            OutlinedTextField(
+                                value = subjectFilter,
+                                onValueChange = { subjectFilter = it.take(80) },
+                                label = { Text("Փնտրել առարկա") },
+                                placeholder = { Text("Օրինակ՝ կենսաբանություն") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        }
+                        items(BookCatalog.subjects.filter {
+                            BookStudyHelpers.matches(subjectFilter, it)
+                        }, key = { it }) { s ->
                             AcademySubjectAccordion(
                                 subject = s,
                                 books = BookCatalog.books.filter { it.subject == s },
@@ -442,10 +494,34 @@ private fun NativeShtemarm() {
                             Text("Ընտրիր շտեմարան կամ թեստերի հավաքածու։",
                                 fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        items(BookCatalog.books.filter { it.subject == subject }, key = { it.asset + ":" + it.title }) { item ->
+                        item {
+                            OutlinedTextField(
+                                value = bookFilter,
+                                onValueChange = { bookFilter = it.take(80) },
+                                label = { Text("Փնտրել գիրք") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        }
+                        items(BookCatalog.books.filter {
+                            it.subject == subject &&
+                                BookStudyHelpers.matches(bookFilter, it.title, it.subject)
+                        }, key = { it.asset + ":" + it.title }) { item ->
                             AcademyBookTile(item) {
                                 book = item
                                 page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                            }
+                        }
+                        if (subject == "Կենսաբանություն") item {
+                            ElevatedCard {
+                                Text(
+                                    "3-րդ և 4-րդ մասերի ամբողջական ստուգված հարցաշարերը դեռ հասանելի չեն։ " +
+                                        "Դրանք չեն ներկայացվում որպես ավարտված գրքեր։",
+                                    Modifier.padding(15.dp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 13.sp
+                                )
                             }
                         }
                         item { Spacer(Modifier.height(12.dp)) }
@@ -456,6 +532,17 @@ private fun NativeShtemarm() {
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
+                        item {
+                            OutlinedTextField(
+                                value = chapterFilter,
+                                onValueChange = { chapterFilter = it.take(100) },
+                                label = { Text("Փնտրել բաժին կամ թեմա") },
+                                placeholder = { Text("Մուտքագրիր թեմայի անվանումը") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        }
                         if (book?.asset in listOf(
                             "book1.json", "book2.json", "book3.json",
                             "bio-book1.json", "history-book1.json", "history-book2.json",
@@ -493,7 +580,14 @@ private fun NativeShtemarm() {
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
-                                items(data.sections.size, key = { idx -> data.sections[idx].title + ":" + idx }) { sectionIndex ->
+                                val visibleSectionIndexes = data.sections.indices.filter { idx ->
+                                    BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
+                                }
+                                if (visibleSectionIndexes.isEmpty()) item {
+                                    Text("Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                items(visibleSectionIndexes, key = { idx -> data.sections[idx].title + ":" + idx }) { sectionIndex ->
                                     val sec = data.sections[sectionIndex]
                                     AcademyBookSectionCard(
                                         index = sectionIndex + 1,
@@ -608,6 +702,7 @@ private fun NativeShtemarm() {
                                         onClick = {
                                             if (sessionIndex + 1 >= session.size) {
                                                 if (progress.saveSessionOnce(subject, score, session.size, sessionId)) {
+                                                    progress.recordMistakes(session, correctIds)
                                                     progressVersion++
                                                 }
                                                 page = Page.RESULT
@@ -671,31 +766,66 @@ private fun NativeShtemarm() {
                         state = savedScroll,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        item { ScreenHeading("Պահպանված հարցերը", "Կրկնիր նշված հարցերը՝ առանց ինտերնետի։") }
+                        item {
+                            ScreenHeading("Իմ կրկնության հարցերը", "Ընտրիր պահպանված կամ սխալ պատասխանած հարցերը։")
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                FilterChip(
+                                    selected = !reviewMistakes,
+                                    onClick = { reviewMistakes = false },
+                                    label = { Text("☆ Պահպանված") }
+                                )
+                                FilterChip(
+                                    selected = reviewMistakes,
+                                    onClick = { reviewMistakes = true },
+                                    label = { Text("Սխալներ") }
+                                )
+                            }
+                        }
                         if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                         else if (savedQuestions.isEmpty()) item {
-                            Text("Դու դեռ հարցեր չես պահպանել։ Վարժանքի ընթացքում սեղմիր «Պահպանել հարցը» կոճակը։")
+                            Text(
+                                if (reviewMistakes) "Դեռ կրկնելու սխալ հարցեր չկան։"
+                                else "Դու դեռ հարցեր չես պահպանել։ Վարժանքի ընթացքում սեղմիր «Պահպանել հարցը»։",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         } else {
                             item {
-                                Text("Պահպանված՝ " + savedQuestions.size, fontWeight = FontWeight.Bold)
-                                Button(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onClick = {
-                                        // Questions may belong to several subjects: progress is grouped under review.
-                                        subject = "Կրկնություն"
-                                        begin(savedQuestions, savedQuestions.size, "Պահպանված հարցերի կրկնություն")
-                                    }
-                                ) { Text("Սկսել կրկնությունը") }
+                                Text("Հասանելի՝ " + savedQuestions.size, fontWeight = FontWeight.Bold)
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Button(
+                                        modifier = Modifier.weight(1f),
+                                        onClick = {
+                                            subject = "Կրկնություն"
+                                            begin(
+                                                savedQuestions, minOf(10, savedQuestions.size),
+                                                if (reviewMistakes) "Սխալների արագ կրկնություն"
+                                                else "Պահպանված հարցերի արագ կրկնություն"
+                                            )
+                                        }
+                                    ) { Text("10 հարց") }
+                                    OutlinedButton(
+                                        modifier = Modifier.weight(1f),
+                                        onClick = {
+                                            subject = "Կրկնություն"
+                                            begin(
+                                                savedQuestions, savedQuestions.size,
+                                                if (reviewMistakes) "Սխալների կրկնություն"
+                                                else "Պահպանված հարցերի կրկնություն"
+                                            )
+                                        }
+                                    ) { Text("Բոլորը") }
+                                }
                             }
                             items(savedQuestions, key = { it.id }) { q ->
                                 ElevatedCard(Modifier.fillMaxWidth()) {
                                     Column(Modifier.padding(16.dp)) {
                                         Text(q.stem, maxLines = 3)
                                         TextButton(onClick = {
-                                            progress.toggleBookmark(q.id)
+                                            if (reviewMistakes) progress.removeMistake(q.id)
+                                            else progress.toggleBookmark(q.id)
                                             savedQuestions = savedQuestions.filterNot { it.id == q.id }
                                             progressVersion++
-                                        }) { Text("Հեռացնել ☆") }
+                                        }) { Text("Հեռացնել ցանկից") }
                                     }
                                 }
                             }
