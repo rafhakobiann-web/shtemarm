@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +65,8 @@ private fun NativeShtemarm() {
     var chosen by remember { mutableIntStateOf(-1) }
     var score by remember { mutableIntStateOf(0) }
     var correctIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
+    var savedLoading by remember { mutableStateOf(false) }
 
     fun back() {
         page = when(page) {
@@ -103,6 +105,22 @@ private fun NativeShtemarm() {
         loading = false
     }
 
+    LaunchedEffect(page, progressVersion) {
+        if (page == Page.SAVED) {
+            savedLoading = true
+            val ids = progress.bookmarkedIds()
+            val collected = mutableListOf<StudyQuestion>()
+            if (ids.isNotEmpty()) {
+                for (entry in BookCatalog.books.filter { it.subject != "Մաթեմատիկա" }) {
+                    try { collected += repository.load(entry).allQuestions.filter { it.id in ids } }
+                    catch (_: Exception) { /* Other books remain available. */ }
+                }
+            }
+            savedQuestions = collected.distinctBy { it.id }
+            savedLoading = false
+        }
+    }
+
     BackHandler(page != Page.HOME) { back() }
 
     val colors = if (dark) darkColorScheme(primary = Color(0xFF1CB4A1))
@@ -121,7 +139,7 @@ private fun NativeShtemarm() {
                                 .height(60.dp).padding(horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS, Page.EXAMS, Page.GAMES, Page.TOOLS)) {
+                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS, Page.EXAMS, Page.GAMES, Page.TOOLS, Page.SAVED)) {
                                 IconButton(onClick = { back() }) {
                                     Icon(Icons.Default.ArrowBack, contentDescription = "Հետ")
                                 }
@@ -219,6 +237,11 @@ private fun NativeShtemarm() {
                                 TextButton(onClick = { page = Page.SETTINGS }, modifier = Modifier.weight(1f)) {
                                     Text("Կարգավորումներ")
                                 }
+                            }
+                        }
+                        item {
+                            OutlinedButton(onClick = { page = Page.SAVED }, modifier = Modifier.fillMaxWidth()) {
+                                Text("☆ Պահպանված հարցերը · " + progress.bookmarkedIds().size)
                             }
                         }
                         item { Text("Արագ մեկնարկ", fontSize = 21.sp, fontWeight = FontWeight.SemiBold) }
@@ -363,6 +386,11 @@ private fun NativeShtemarm() {
                                 item {
                                     Text(q.stem, fontSize = 19.sp, lineHeight = 28.sp,
                                         fontWeight = FontWeight.SemiBold)
+                                    Spacer(Modifier.height(8.dp))
+                                    val saved = progressVersion.let { progress.isBookmarked(q.id) }
+                                    TextButton(onClick = { progress.toggleBookmark(q.id); progressVersion++ }) {
+                                        Text(if (saved) "★ Հեռացնել պահպանվածներից" else "☆ Պահպանել հարցը")
+                                    }
                                 }
                                 items(q.choices.size) { n ->
                                     val correct = chosen >= 0 && immediateFeedback && n == q.correctIndex
@@ -458,6 +486,39 @@ private fun NativeShtemarm() {
                         OutlinedButton(onClick = { page = Page.PROGRESS },
                             modifier = Modifier.fillMaxWidth()) { Text("Իմ առաջընթացը") }
                         TextButton(onClick = { page = sessionOrigin }) { Text("Վերադառնալ") }
+                    }
+                    Page.SAVED -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item { ScreenHeading("Պահպանված հարցերը", "Կրկնիր նշված հարցերը՝ առանց ինտերնետի։") }
+                        if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                        else if (savedQuestions.isEmpty()) item {
+                            Text("Դեռ պահպանված հարցեր չկան։ Վարժանքի ընթացքում սեղմիր ☆ կոճակը։")
+                        } else {
+                            item {
+                                Text("Պահպանված՝ " + savedQuestions.size, fontWeight = FontWeight.Bold)
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        // Questions may belong to several subjects: progress is grouped under review.
+                                        subject = "Կրկնություն"
+                                        begin(savedQuestions, savedQuestions.size, "Պահպանված հարցերի կրկնություն")
+                                    }
+                                ) { Text("Սկսել կրկնությունը") }
+                            }
+                            items(savedQuestions) { q ->
+                                ElevatedCard(Modifier.fillMaxWidth()) {
+                                    Column(Modifier.padding(16.dp)) {
+                                        Text(q.stem, maxLines = 3)
+                                        TextButton(onClick = {
+                                            progress.toggleBookmark(q.id)
+                                            progressVersion++
+                                        }) { Text("Հեռացնել ☆") }
+                                    }
+                                }
+                            }
+                        }
                     }
                     Page.PROGRESS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
