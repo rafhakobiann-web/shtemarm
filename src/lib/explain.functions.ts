@@ -17,7 +17,7 @@ export const explainAnswer = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
     const { generateExplanation } = await import("./explanation-providers.server");
-    const cacheKey = await explanationKey(data);
+    const cacheKey = await explanationKey({ ...data, instruction: `${data.locale??"hy"}|${data.instruction}` });
     const cached = await getSavedExplanation(cacheKey);
     if (cached) return { text: cached, cached: true, error: false, offline: false };
 
