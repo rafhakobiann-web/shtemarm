@@ -68,7 +68,7 @@ function MiniGamesPage(){
   };
   const incorrect=answers.filter(a=>!a.correct);
   const done=finished||!current;
-  return <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-9">
+  return <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-9">
     <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
       <ArrowLeft className="size-4"/>{tx("Գլխավոր էջ")}
     </Link>
@@ -193,5 +193,5 @@ function MiniGamesPage(){
     <p className="text-center text-xs leading-relaxed text-muted-foreground">
       {tx("Խաղերի հարցերը հեղինակային ուսումնական վարժություններ են և չեն փոխարինում պաշտոնական քննությանը։")}
     </p>
-  </main>;
+  </div>;
 }
