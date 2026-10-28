@@ -1,5 +1,6 @@
 package am.shtemarm.app
 
+import java.util.UUID
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,11 +32,12 @@ fun NativeMatchingGame(subject: String, questions: List<StudyQuestion>) {
     var wrongIds by remember(round) { mutableStateOf<Set<String>>(emptySet()) }
     var message by remember(round) { mutableStateOf("Ընտրիր հարցը, ապա՝ համապատասխան պատասխանը։") }
     var sessionSaved by remember(round) { mutableStateOf(false) }
+    val sessionId = remember(round) { UUID.randomUUID().toString() }
     val completed = pool.isNotEmpty() && solvedIds.size == pool.size
     if (completed && !sessionSaved) {
         // Saving in a launch effect prevents persistence from running during composition.
         LaunchedEffect(completed, round) {
-            progress.saveSession(subject, pool.size - wrongIds.size, pool.size)
+            progress.saveSessionOnce(subject, pool.size - wrongIds.size, pool.size, sessionId)
             sessionSaved = true
         }
     }

@@ -119,6 +119,7 @@ fun NativeAdvancedPractice(book: StudyBook, onExit: () -> Unit) {
     var submitted by remember(book) { mutableStateOf(false) }
     var wasCorrect by remember(book) { mutableStateOf(false) }
     var finished by remember(book) { mutableStateOf(false) }
+    var sessionId by remember(book) { mutableStateOf(UUID.randomUUID().toString()) }
     var chosenSet by remember(book, index) { mutableStateOf<Set<Int>>(emptySet()) }
     var typed by remember(book, index) { mutableStateOf("") }
     var matched by remember(book, index) { mutableStateOf<Map<String,String>>(emptyMap()) }
@@ -136,6 +137,7 @@ fun NativeAdvancedPractice(book: StudyBook, onExit: () -> Unit) {
         correct = 0
         submitted = false
         finished = false
+        sessionId = UUID.randomUUID().toString()
     }
     val t = tasks.getOrNull(index)
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -281,7 +283,7 @@ fun NativeAdvancedPractice(book: StudyBook, onExit: () -> Unit) {
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             if (index + 1 >= tasks.size) {
-                                progress.saveSession(book.subject, correct, tasks.size)
+                                progress.saveSessionOnce(book.subject, correct, tasks.size, sessionId)
                                 finished = true
                             } else {
                                 index++
