@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       version_name:
-        description: 'Version name for signed candidate, e.g. 0.1.0'
+        description: 'Version name for signed candidate, e.g. 0.1.1-beta.1'
         required: true
-        default: '0.1.0'
+        default: '0.1.1-beta.1'
         type: string
       version_code:
         description: 'Increasing integer Android version code'

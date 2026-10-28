@@ -9,6 +9,16 @@
 - 🐛 Android: removing a question from the saved list no longer reloads every book and blanks the list.
 - 🧪 Build verification for these changes is pending the Android debug APK workflow, because the local sandbox cannot reach the Android SDK or Gradle.
 
+## 🟢 October 28, 2026 — Android 0.1.1 beta stability update
+- 🧪 Prepared Android 0.1.1-beta.1 (versionCode 4) with automated Kotlin scoring tests.
+- ✅ Prevent repeated answer taps and duplicate score/session recording.
+- 📚 Load bookmarked questions directly from their source books rather than rescanning every book.
+- ⚡ Cache parsed question lists and retain polished Liquid Glass transitions.
+- 💾 Add local JSON progress backup and restore in Settings for future reinstallation.
+- 🛠️ Improve exam, game, and study-tool question loading when a source book is missing.
+- 🔐 Keep the release private; debug signatures can differ between CI runs, so upgrading from 0.1.0 may require uninstalling and losing stored progress.
+- 🧾 Some question books and exam formats are still incomplete; this is a stability beta, not a production release.
+
 ## 🟣 October 26, 2026 — English vocabulary expansion
 - 📚 Added **1,104 English–Armenian dictionary entries** in two commits: 649, then 455.
 - 🧹 Existing dictionary keys were excluded during those additions to reduce duplicates.
