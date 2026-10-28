@@ -227,7 +227,7 @@ export function UnitCard(props: {
   const mcBlock = (q: MCQuestion) => {
     const show = revealed(q.n);
     const chosen = a?.mc?.[q.n];
-    const englishSource = /^([123])-(\\d+)-/.exec(u.id);
+    const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
       <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
         <div className="mb-3 flex gap-2">
