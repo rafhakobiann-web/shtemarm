@@ -8,6 +8,8 @@ on:
       - 'src/lib/app-download.ts'
       - 'src/routes/index.tsx'
       - 'src/routes/__root.tsx'
+      - 'src/routes/support.tsx'
+      - 'src/test/mobile-liquid-nav.test.tsx'
       - 'src/components/AppHeader.tsx'
       - 'src/components/MobileNav.tsx'
       - 'src/styles.css'
