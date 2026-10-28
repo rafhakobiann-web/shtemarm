@@ -1,126 +1,246 @@
-import { useEffect, useState } from "react";
-import { ExternalLink, Headphones, Music2, Power, Volume2, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AudioLines, ExternalLink, Headphones, Music2, Pause, Play,
+  Power, Volume2, Waves, X,
+} from "lucide-react";
 import { useTx } from "@/lib/lang";
-import { channelDetails, initStudyMusic, setStudyMusic, spotifyContentUrl,
-  spotifyEmbedSrc, STUDY_MUSIC_CHANNELS, useStudyMusic,
-  type StudyMusicChannel } from "@/lib/study-music";
+import {
+  channelDetails, initStudyMusic, setStudyMusic, youtubeContentUrl,
+  youtubeEmbedSrc, STUDY_MUSIC_CHANNELS, STUDY_AMBIENCE, useStudyMusic,
+  type StudyMusicChannel, type AmbientScene,
+} from "@/lib/study-music";
+import { ambientWavUrl, loadHowler, type HowlPlayer } from "@/lib/study-ambience";
 
+function AmbientEngine(){
+  const tx=useTx();
+  const { ambience, ambientEnabled, ambientVolume }=useStudyMusic();
+  const player=useRef<HowlPlayer|null>(null);
+  const volume=useRef(ambientVolume);
+  const [error,setError]=useState("");
+  volume.current=ambientVolume;
+  useEffect(()=>{
+    player.current?.volume(ambientVolume/100);
+  },[ambientVolume]);
+  useEffect(()=>{
+    if(!ambientEnabled||ambience==="off"){setError("");return;}
+    let cancelled=false;
+    let sound:HowlPlayer|null=null;
+    let url:string|null=null;
+    setError("");
+    // Howler is loaded only after the user explicitly starts ambience.
+    void loadHowler().then(Howl=>{
+      if(cancelled)return;
+      url=ambientWavUrl(ambience);
+      sound=new Howl({
+        src:[url],format:["wav"],loop:true,volume:volume.current/100,
+        onloaderror:()=>{
+          if(!cancelled)setError(tx("Միջավայրային ձայնը չհաջողվեց բեռնել։"));
+        },
+        onplayerror:()=>{
+          if(!cancelled)setError(tx("Դիտարկիչը թույլ չտվեց ձայնը սկսել․ կրկին սեղմիր միացնել։"));
+        },
+      });
+      player.current=sound;
+      sound.play();
+    }).catch(()=>{
+      if(!cancelled)setError(tx("Howler.js ձայնային համակարգը չհաջողվեց բացել։"));
+    });
+    return()=>{
+      cancelled=true;
+      if(sound){sound.stop();sound.unload();}
+      if(player.current===sound)player.current=null;
+      if(url)URL.revokeObjectURL(url);
+    };
+  },[ambience,ambientEnabled,tx]);
+  return error?<p className="mt-2 text-xs text-destructive" role="alert">{error}{" "}
+    <button type="button" className="font-bold underline"
+      onClick={()=>{setStudyMusic({ambientEnabled:false});queueMicrotask(()=>setStudyMusic({ambientEnabled:true}));}}>
+      {tx("Կրկին փորձել")}
+    </button>
+  </p>:null;
+}
+function VolumeControl(){
+  const tx=useTx();
+  const { ambientVolume }=useStudyMusic();
+  return <label className="block space-y-2">
+    <span className="flex items-center justify-between gap-2 text-xs font-bold">
+      <span className="inline-flex items-center gap-2"><Volume2 className="size-4"/>{tx("Միջավայրային ձայնի ուժգնությունը")}</span>
+      <span className="tabular-nums">{ambientVolume}%</span>
+    </span>
+    <input type="range" min={0} max={100} step={5} value={ambientVolume}
+      onChange={e=>setStudyMusic({ambientVolume:Number(e.target.value)})}
+      className="h-7 w-full cursor-pointer accent-primary"
+      aria-label={tx("Միջավայրային ձայնի ուժգնությունը")}/>
+  </label>;
+}
 /**
- * Remains mounted at the app root when navigating between books and tests:
- * one Spotify embed, never a separate audio stream or duplicated player.
- * The iframe is created only after an explicit user choice, not on page load
- * for a new student. The Spotify player owns its play/pause and repeat controls.
+ * One persistent mixer at the app root. It never creates more than one YouTube
+ * iframe or one Howler sound. Closing the panel stops the YouTube embed to
+ * avoid invisible video playback, while the separately opted-in ambience stays.
  */
-export function StudyMusicDock() {
-  const tx = useTx();
-  const { channel, enabled } = useStudyMusic();
-  const [expanded, setExpanded] = useState(false);
-  useEffect(() => initStudyMusic(), []);
-  const selected = channelDetails(channel);
-
-  const switchChannel = (next: StudyMusicChannel) => {
-    setStudyMusic({ channel: next, enabled: true });
-    setExpanded(true);
+export function StudyMusicDock(){
+  const tx=useTx();
+  const settings=useStudyMusic();
+  const { channel, ambience, youtubeEnabled, ambientEnabled }=settings;
+  const [expanded,setExpanded]=useState(false);
+  useEffect(()=>initStudyMusic(),[]);
+  useEffect(()=>{if(youtubeEnabled)setExpanded(true);},[youtubeEnabled]);
+  const selected=channelDetails(channel);
+  const anyOn=youtubeEnabled||ambientEnabled;
+  const close=()=>{
+    if(youtubeEnabled)setStudyMusic({youtubeEnabled:false});
+    setExpanded(false);
   };
-  return (
-    <aside className="study-music-dock fixed bottom-[calc(6.6rem+env(safe-area-inset-bottom))] left-3 z-40 w-[min(21.5rem,calc(100vw-1.5rem))] sm:bottom-4 sm:left-4"
-      aria-label={tx("Ուսման երաժշտություն")}>
-      {enabled && expanded && <div className="mb-2 space-y-3 rounded-2xl border bg-card p-3 shadow-xl">
-        <div className="flex items-start gap-2">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Headphones className="size-5" /></span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-black">{tx("Ուսման երաժշտություն")}</p>
-            <p className="truncate text-xs text-muted-foreground">{selected.title}</p>
-          </div>
-          <button type="button" className="grid size-9 place-items-center rounded-lg hover:bg-muted"
-            aria-label={tx("Փակել նվագարկչի պատուհանը")} onClick={() => setExpanded(false)}><X className="size-4"/></button>
+  return <aside aria-label={tx("Ուսման ձայնային միջավայր")}
+    className="study-music-dock fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] left-3 z-40 w-[min(22rem,calc(100vw-1.5rem))] sm:bottom-4 sm:left-4">
+    <AmbientEngine/>
+    {expanded&&<div className="mb-2 max-h-[min(74vh,43rem)] space-y-4 overflow-y-auto rounded-2xl border bg-card p-4 shadow-xl">
+      <div className="flex items-start gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+          <Headphones className="size-5"/>
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-black">{tx("Ուսման ձայնային միջավայր")}</h2>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {tx("YouTube-ի lo-fi երաժշտություն + առանձին կարգավորվող Howler.js ձայներ")}
+          </p>
         </div>
-        <label className="block space-y-1.5">
-          <span className="text-xs font-bold">{tx("Ընտրել ձայնային միջավայրը")}</span>
-          <select className="min-h-11 w-full rounded-xl border bg-background px-3 text-sm font-semibold"
-            value={channel} onChange={event => switchChannel(event.target.value as StudyMusicChannel)}>
-            {STUDY_MUSIC_CHANNELS.map(item => <option key={item.id} value={item.id}>{tx(item.label)}</option>)}
-          </select>
-        </label>
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          {tx(channel === "boo"
-            ? "BOO!-ն այս Spotify երգացանկի առաջին երգն է։ Կրկնությունը կառավարում է Spotify-ն․ ավտոմատ անվերջ կրկնությունը երաշխավորված չէ։"
-            : "Սեղմիր Play Spotify-ի նվագարկչում։ Ձայնի կառավարումն ու երգերի հերթականությունը Spotify-ում են։")}
-        </p>
-        <div className="overflow-hidden rounded-xl">
-          <iframe title={tx("Spotify · {name}",{name:selected.title})}
-            src={spotifyEmbedSrc(channel)} width="100%" height="240"
-            loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            className="block w-full rounded-xl border-0" />
-        </div>
+        <button type="button" className="grid size-10 place-items-center rounded-xl hover:bg-muted"
+          aria-label={tx("Փակել պատուհանը")} onClick={close}>
+          <X className="size-5"/>
+        </button>
+      </div>
+      <section className="space-y-2" aria-label={tx("YouTube երաժշտություն")}>
         <div className="flex items-center justify-between gap-2">
-          <a href={spotifyContentUrl(channel)} target="_blank" rel="noopener noreferrer"
-            className="inline-flex min-h-10 items-center gap-1.5 text-xs font-bold text-primary hover:underline">
-            {tx("Բացել Spotify-ում")}<ExternalLink className="size-3.5"/>
-          </a>
-          <button type="button" onClick={()=>setStudyMusic({enabled:false})}
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold hover:bg-muted">
-            <Power className="size-4"/>{tx("Անջատել երաժշտությունը")}
+          <label htmlFor="study-youtube-channel" className="text-sm font-black">{tx("YouTube երաժշտություն")}</label>
+          <button type="button" aria-pressed={youtubeEnabled}
+            onClick={()=>setStudyMusic({youtubeEnabled:!youtubeEnabled})}
+            className={"inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold "+
+              (youtubeEnabled?"border bg-card":"bg-primary text-primary-foreground")}>
+            {youtubeEnabled?<Pause className="size-4"/>:<Play className="size-4"/>}
+            {tx(youtubeEnabled?"Անջատել YouTube-ը":"Միացնել YouTube-ը")}
           </button>
         </div>
-      </div>}
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" aria-expanded={expanded && enabled}
-          className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border bg-card px-3 py-2 text-sm font-black shadow-md transition-colors hover:border-primary/40 hover:bg-muted"
-          onClick={()=>{
-            if (!enabled) { setStudyMusic({enabled:true});setExpanded(true); }
-            else setExpanded(v=>!v);
-          }}>
-          {enabled?<Volume2 className="size-5 text-primary"/>:<Music2 className="size-5 text-primary"/>}
-          <span className="max-w-[11rem] truncate">{enabled?selected.title:tx("Երաժշտություն")}</span>
-          <span className={"size-2 rounded-full "+(enabled?"bg-emerald-500":"bg-muted-foreground/40")} aria-hidden="true"/>
-        </button>
-        {enabled && <button type="button" aria-label={tx("Անջատել երաժշտությունը")}
-          onClick={()=>setStudyMusic({enabled:false})}
-          className="grid size-11 place-items-center rounded-full border bg-card shadow-md hover:bg-muted"><Power className="size-4"/></button>}
+        <select id="study-youtube-channel" className="min-h-11 w-full rounded-xl border bg-background px-3 text-sm"
+          value={channel} onChange={e=>setStudyMusic({channel:e.target.value as StudyMusicChannel})}>
+          {STUDY_MUSIC_CHANNELS.map(item=><option key={item.id} value={item.id}>{tx(item.label)}</option>)}
+        </select>
+        {youtubeEnabled&&<div className="space-y-2">
+          <iframe key={channel} title={tx("YouTube · {name}",{name:selected.title})}
+            src={youtubeEmbedSrc(channel)} width="100%" height="220" loading="lazy"
+            className="block min-h-[220px] w-full rounded-xl border-0"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {tx("Երաժշտության ձայնը և նվագարկումը կարգավորիր YouTube-ի պաշտոնական նվագարկչում։ Եթե ավտոմատ մեկնարկը արգելափակվում է, սեղմիր Play այնտեղ։")}
+          </p>
+        </div>}
+        <a href={youtubeContentUrl(channel)} target="_blank" rel="noopener noreferrer"
+          className="inline-flex min-h-9 items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+          {tx("Բացել YouTube-ում")}<ExternalLink className="size-4"/>
+        </a>
+      </section>
+      <section className="space-y-3 border-t pt-3" aria-label={tx("Միջավայրային ձայներ")}>
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="study-ambient-channel" className="text-sm font-black">{tx("Միջավայրային ձայներ")}</label>
+          <button type="button" aria-pressed={ambientEnabled} disabled={ambience==="off"}
+            onClick={()=>setStudyMusic({ambientEnabled:!ambientEnabled})}
+            className={"inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold disabled:opacity-40 "+
+              (ambientEnabled?"border bg-card":"bg-primary text-primary-foreground")}>
+            {ambientEnabled?<Pause className="size-4"/>:<Play className="size-4"/>}
+            {tx(ambientEnabled?"Անջատել ձայները":"Միացնել ձայները")}
+          </button>
+        </div>
+        <select id="study-ambient-channel" className="min-h-11 w-full rounded-xl border bg-background px-3 text-sm"
+          value={ambience} onChange={e=>setStudyMusic({ambience:e.target.value as AmbientScene})}>
+          {STUDY_AMBIENCE.map(item=><option key={item.id} value={item.id}>{tx(item.label)}</option>)}
+        </select>
+        <VolumeControl/>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          {tx("Ձայները ստեղծվում են անմիջապես սարքում և անվերջ կրկնվում են Howler.js-ով։ Դրանք չեն փոխանցվում որևէ սերվերի։")}
+        </p>
+      </section>
+      <button type="button" onClick={()=>setStudyMusic({
+          youtubeEnabled:true,ambientEnabled:ambience!=="off",
+        })} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">
+        <Waves className="size-4"/>{tx("Միացնել երաժշտությունն ու ֆոնը միասին")}
+      </button>
+      <div className="flex items-center justify-between gap-2 border-t pt-3">
+        <p className="text-xs text-muted-foreground">{tx("Սկզբում ամեն ինչ անջատված է։ Ընտրությունն ու ձայնի ուժգնությունը հիշվում են այս սարքում։")}</p>
+        {anyOn&&<button type="button" onClick={()=>setStudyMusic({youtubeEnabled:false,ambientEnabled:false})}
+          className="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-xl border px-3 text-xs font-bold hover:bg-muted">
+          <Power className="size-4"/>{tx("Անջատել բոլորը")}
+        </button>}
       </div>
-    </aside>
-  );
+    </div>}
+    <button type="button" aria-expanded={expanded}
+      aria-label={tx("Ուսման ձայնային միջավայր")}
+      onClick={()=>setExpanded(v=>!v)}
+      className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-bold shadow-lg transition-colors hover:border-primary/40 hover:bg-muted">
+      {anyOn?<AudioLines className="size-5 text-primary"/>:<Music2 className="size-5 text-primary"/>}
+      <span className="min-w-0 truncate">{tx("Ուսման ձայներ")}</span>
+      <span aria-hidden="true" className={"size-2 shrink-0 rounded-full "+(anyOn?"bg-emerald-500":"bg-muted-foreground/40")}/>
+    </button>
+    {!expanded&&youtubeEnabled&&<button type="button"
+      className="ml-2 inline-flex min-h-11 items-center gap-1 rounded-full border bg-card px-3 text-xs font-bold"
+      onClick={()=>setStudyMusic({youtubeEnabled:false})}>{tx("Դադար YouTube")}</button>}
+  </aside>;
 }
 
-/** User settings in the existing Focus Mode / Study Tools menu. */
-export function StudyMusicSettings() {
-  const tx = useTx();
-  const { channel, enabled } = useStudyMusic();
-  return <section className="space-y-4 rounded-3xl border bg-card p-5 sm:p-6" aria-label={tx("Ուսման երաժշտություն")}>
+/** Configuration lives in Focus Mode. The dock above is the only player. */
+export function StudyMusicSettings(){
+  const tx=useTx();
+  const {channel,ambience,ambientVolume,youtubeEnabled,ambientEnabled}=useStudyMusic();
+  return <section className="space-y-5 rounded-3xl border bg-card p-5 sm:p-6"
+    aria-label={tx("Ուսման ձայնային միջավայր")}>
     <div className="flex items-start gap-3">
-      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><Headphones className="size-5"/></span>
-      <div className="space-y-1">
-        <h2 className="text-lg font-black">{tx("Ուսման երաժշտություն")}</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {tx("Ընտրիր lo-fi երաժշտություն, բնության կամ անձրևի ձայներ, կամ Naré-ի «BOO!» երգը։ Ընտրությունը հիշվում է այս սարքում։")}
+      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+        <Headphones className="size-5"/>
+      </span>
+      <div>
+        <h2 className="text-lg font-black">{tx("Ուսման ձայնային միջավայր")}</h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          {tx("Ընտրիր lo-fi երաժշտությունն ու միջավայրային ձայնը առանձին։ Կարող ես միացնել երկուսն էլ և փոխել ֆոնի ձայնի ուժգնությունը։")}
         </p>
       </div>
     </div>
-    <fieldset className="grid gap-2 sm:grid-cols-2">
-      <legend className="mb-2 text-sm font-bold">{tx("Ընտրել ձայնային միջավայրը")}</legend>
-      {STUDY_MUSIC_CHANNELS.map(item=><button key={item.id} type="button"
-        aria-pressed={channel===item.id} onClick={()=>setStudyMusic({channel:item.id,enabled:true})}
-        className={"min-h-20 rounded-2xl border-2 p-3 text-left transition-colors "+
-          (channel===item.id?"border-primary bg-primary/5":"border-border hover:border-primary/40")}>
-        <span className="block text-sm font-black">{tx(item.label)}</span>
-        <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{tx(item.description)}</span>
-      </button>)}
-    </fieldset>
-    <div className="flex flex-wrap gap-2">
-      <button type="button" onClick={()=>setStudyMusic({enabled:!enabled})}
-        className={"inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold "+
-          (enabled?"border bg-card text-foreground":"bg-primary text-primary-foreground")}>
-        {enabled?<Power className="size-4"/>:<Headphones className="size-4"/>}
-        {tx(enabled?"Անջատել երաժշտությունը":"Միացնել նվագարկիչը")}
+    <fieldset className="space-y-2">
+      <legend className="text-sm font-bold">{tx("YouTube lo-fi")}</legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {STUDY_MUSIC_CHANNELS.map(item=><button type="button" key={item.id}
+          aria-pressed={channel===item.id} onClick={()=>setStudyMusic({channel:item.id})}
+          className={"min-h-16 rounded-xl border-2 p-3 text-left text-sm font-semibold transition-colors "+
+            (channel===item.id?"border-primary bg-primary/5":"hover:border-primary/40")}>
+          {tx(item.label)}
+        </button>)}
+      </div>
+      <button type="button" className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground"
+        onClick={()=>setStudyMusic({youtubeEnabled:!youtubeEnabled})}>
+        {youtubeEnabled?<Pause className="size-4"/>:<Play className="size-4"/>}
+        {tx(youtubeEnabled?"Անջատել YouTube-ը":"Միացնել YouTube-ը")}
       </button>
-      <a href={spotifyContentUrl(channel)} target="_blank" rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center gap-2 rounded-xl border bg-card px-4 text-sm font-bold hover:bg-muted">
-        <ExternalLink className="size-4"/>{tx("Բացել Spotify-ում")}
-      </a>
-    </div>
+    </fieldset>
+    <fieldset className="space-y-3 border-t pt-4">
+      <legend className="text-sm font-bold">{tx("Howler.js · միջավայրային ձայներ")}</legend>
+      <div className="flex flex-wrap gap-2">
+        {STUDY_AMBIENCE.map(item=><button type="button" key={item.id}
+          aria-pressed={ambience===item.id} onClick={()=>setStudyMusic({ambience:item.id})}
+          className={"min-h-10 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors "+
+            (ambience===item.id?"border-primary bg-primary/10":"hover:border-primary/40")}>
+          {tx(item.label)}
+        </button>)}
+      </div>
+      <VolumeControl/>
+      <button type="button" disabled={ambience==="off"}
+        className={"inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold disabled:opacity-40 "+
+          (ambientEnabled?"border bg-card":"bg-primary text-primary-foreground")}
+        onClick={()=>setStudyMusic({ambientEnabled:!ambientEnabled})}>
+        {ambientEnabled?<Pause className="size-4"/>:<Play className="size-4"/>}
+        {tx(ambientEnabled?"Անջատել ձայները":"Միացնել ձայները")}
+      </button>
+    </fieldset>
     <p className="text-xs leading-relaxed text-muted-foreground">
-      {tx("Սկզբում ձայնն անջատված է։ Spotify-ում սեղմիր Play։ Որոշ սարքերում կամ առանց Spotify մուտքի կարող է հասանելի լինել միայն նախադիտումը։ Անվերջ կրկնությունը և ավտոմատ նվագարկումը կախված են Spotify-ից ու դիտարկիչից։")}
+      {tx("YouTube-ը օգտագործում է իր պաշտոնական նվագարկիչը։ Howler.js-ը կառավարում է միայն տեղում գեներացված ֆոնային ձայները։ Ավտոմատ նվագարկումը կարող է սահմանափակվել դիտարկիչով։")}
     </p>
   </section>;
 }
