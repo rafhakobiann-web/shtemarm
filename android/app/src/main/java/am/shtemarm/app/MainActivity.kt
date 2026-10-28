@@ -64,6 +64,7 @@ private fun NativeShtemarm() {
     var sessionIndex by remember { mutableIntStateOf(0) }
     var chosen by remember { mutableIntStateOf(-1) }
     var score by remember { mutableIntStateOf(0) }
+    var correctIds by remember { mutableStateOf<Set<String>>(emptySet()) }
 
     fun back() {
         page = when(page) {
@@ -84,6 +85,7 @@ private fun NativeShtemarm() {
         sessionIndex = 0
         chosen = -1
         score = 0
+        correctIds = emptySet()
         page = Page.STUDY
     }
 
@@ -352,7 +354,10 @@ private fun NativeShtemarm() {
                                         modifier = Modifier.fillMaxWidth()
                                             .clickable(enabled = chosen < 0) {
                                                 chosen = n
-                                                if (n == q.correctIndex) score++
+                                                if (n == q.correctIndex) {
+                                                    score++
+                                                    correctIds = correctIds + q.id
+                                                }
                                             },
                                         colors = CardDefaults.cardColors(containerColor = bg),
                                         shape = RoundedCornerShape(14.dp)
@@ -401,6 +406,23 @@ private fun NativeShtemarm() {
                             fontSize = 40.sp, fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary)
                         Text("Ճիշտ պատասխան", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (sessionTitle == "Անգլերենի մակարդակի ստուգում") {
+                            var estimate = "A1 կամ ցածր"
+                            for (tier in listOf("a1", "a2", "b1", "b2", "c1")) {
+                                val tierItems = session.filter { it.id.lowercase().startsWith(tier + "-") }
+                                val rate = if (tierItems.isEmpty()) 0.0 else
+                                    tierItems.count { it.id in correctIds }.toDouble() / tierItems.size
+                                if (rate < 0.6) break
+                                estimate = tier.uppercase()
+                            }
+                            Spacer(Modifier.height(12.dp))
+                            Text("Մոտավոր CEFR մակարդակ՝ " + estimate,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold)
+                            Text("Սա միայն մոտավոր գնահատում է, ոչ պաշտոնական լեզվական հավաստագիր։",
+                                fontSize = 12.sp, textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                         Spacer(Modifier.height(26.dp))
                         Button(onClick = { begin(session, session.size, sessionTitle) },
                             modifier = Modifier.fillMaxWidth()) { Text("Կրկնել վարժանքը") }
