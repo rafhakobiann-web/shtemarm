@@ -18,7 +18,7 @@ function SupportPage() {
   const message = `Բարև Ձեզ։ Ցանկանում եմ աջակցել Shtemarm-ին ${amount.toLocaleString("en-US")} ֏ գումարով։ Խնդրում եմ տրամադրել փոխանցման տվյալները։`;
   const contactUrl = `https://www.tiktok.com/@shtemarm_official`;
   return (
-    <main className="mx-auto max-w-3xl space-y-6 py-5">
+    <div className="mx-auto max-w-3xl space-y-6 py-5">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />{tx("Գլխավոր էջ")}</Link>
       <section className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-card/80 p-6 shadow-xl backdrop-blur-xl sm:p-10">
         <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-primary/10 blur-3xl" />
@@ -47,12 +47,7 @@ function SupportPage() {
           </div>
           <p className="flex items-start gap-2 text-sm text-muted-foreground"><ShieldCheck className="mt-0.5 size-5 shrink-0" />{tx("Քարտի տվյալները հրապարակված չեն։ Փոխանցումը կատարվում է քո բանկային հավելվածում՝ տվյալները անձնական հաղորդագրությամբ ստանալուց հետո։ Երբեք մի փոխանցիր CVV, PIN կամ գաղտնաբառ։")}</p>
         </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed p-4 text-sm text-muted-foreground" role="status">{tx("Վճարումները դեռ հասանելի չեն։ Սպասում ենք բանկի հաստատմանը։")}</div>
-          )}
-          <p className="flex items-start gap-2 text-sm text-muted-foreground"><ShieldCheck className="mt-0.5 size-5 shrink-0" />{tx("Shtemarm-ը չի հավաքում կամ պահպանում բանկային քարտերի տվյալներ։ Վճարումները կակտիվացվեն միայն վճարային ծառայության հաստատումից հետո։")}</p>
-        </div>
       </section>
-    </main>
+    </div>
   );
 }
