@@ -6,8 +6,10 @@ on:
       - 'android/**'
       - '.github/workflows/android-debug-apk.yml'
 concurrency:
-  group: native-android-${{ github.ref }}
-  cancel-in-progress: true
+  # Supersede outdated push builds without cancelling an explicitly requested
+  # manual verification (which must run to completion even if code is pushed).
+  group: native-android-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || 'push' }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 permissions:
   contents: read
 jobs:
