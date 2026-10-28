@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target, Download, Smartphone } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -353,6 +353,19 @@ function Index() {
           ))}
         </div>
       </section>
+      <Link
+        to="/download"
+        className="academy-download-cta group flex min-h-16 items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-primary shadow-sm transition-colors hover:bg-primary/10 sm:px-5"
+      >
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/12">
+          <Smartphone className="size-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <strong className="block text-sm font-black">{tx("Shtemarm-ը՝ քո հեռախոսում")}</strong>
+          <span className="block text-xs leading-5 text-muted-foreground">{tx("Ներբեռնել Android հավելվածը կամ տեղադրել կայքը")}</span>
+        </span>
+        <Download className="size-5 shrink-0 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
+      </Link>
       <nav aria-label={tx("Արագ անցումներ")} className="grid gap-3 sm:grid-cols-3">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
