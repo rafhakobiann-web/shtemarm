@@ -19,6 +19,8 @@ jobs:
         run: node scripts/check-repo-secrets.mjs
       - name: Validate offline question banks
         run: python3 android/scripts/validate_assets.py
+      - name: Audit scored math questions
+        run: python3 android/scripts/audit_math_text.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
