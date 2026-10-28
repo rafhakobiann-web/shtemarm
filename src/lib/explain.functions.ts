@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { explanationKey, offlineEnglishExplanation } from "./explanation";
+import { explanationKey } from "./explanation";
+import { reliableEnglishFallback } from "./reliableEnglishFallback";
 
 const Input = z.object({
   instruction: z.string().max(500),
@@ -8,13 +9,14 @@ const Input = z.object({
   question: z.string().max(2000),
   correct: z.string().max(500),
   chosen: z.string().max(500).nullable(),
+  locale: z.enum(["hy","en","ru"]).optional(),
 });
 
 export const explainAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
-    const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
+    const { generateExplanation } = await import("./explanation-providers.server");
     const cacheKey = await explanationKey(data);
     const cached = await getSavedExplanation(cacheKey);
     if (cached) return { text: cached, cached: true, error: false, offline: false };
@@ -41,7 +43,7 @@ ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշա�
       return { text: ai.text, cached: false, error: false, offline: false };
     }
     return {
-      text: errorToUser(ai.reason) + "\n\n" + offlineEnglishExplanation(data),
-      cached: false, error: true, offline: true,
+      text: reliableEnglishFallback(data,data.locale??"hy"),
+      cached: false, error: false, offline: true,
     };
   });
