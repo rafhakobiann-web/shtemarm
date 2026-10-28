@@ -1,0 +1,34 @@
+name: Verify website textbook navigation and loading
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/routes/study.$bookId.$sectionId.tsx'
+      - 'src/lib/books.ts'
+      - 'src/test/website-book-navigation.test.ts'
+      - '.github/workflows/verify-website-bugs.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-bugfix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Run textbook route and study UX regression tests
+        run: bunx vitest run src/test/website-book-navigation.test.ts src/test/study-ux.test.tsx
+      - name: Build production website
+        run: bun run build
