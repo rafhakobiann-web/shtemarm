@@ -30,6 +30,7 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
     var count by remember { mutableIntStateOf(20) }
+    var showEnglishLevels by remember { mutableStateOf(false) }
     LaunchedEffect(selected) {
         isLoading = true
         error = ""
@@ -44,6 +45,13 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         } catch (_: Exception) { error = "Հարցաշարերը չհաջողվեց բացել։" }
         isLoading = false
     }
+    if (showEnglishLevels) {
+        Column(Modifier.fillMaxSize()) {
+            TextButton(onClick = { showEnglishLevels = false }) { Text("‹ Թեստեր") }
+            Box(Modifier.weight(1f)) { NativeEnglishLevels(onStart) }
+        }
+        return
+    }
     LazyColumn(
         Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(13.dp)
@@ -52,6 +60,21 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
             Text("Քննություններ և թեստեր", fontSize = 25.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(5.dp))
             Text("Կազմիր փորձնական թեստ առկա շտեմարաններից։", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        item {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth().clickable { showEnglishLevels = true },
+                shape = RoundedCornerShape(17.dp)
+            ) {
+                Column(Modifier.padding(18.dp)) {
+                    Text("Անգլերենի մակարդակի ստուգում · A1–C1",
+                        fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Spacer(Modifier.height(5.dp))
+                    Text("20 հարց յուրաքանչյուր մակարդակի համար և 25 հարցանոց խառը թեստ։")
+                    Spacer(Modifier.height(7.dp))
+                    Text("Բացել →", color = MaterialTheme.colorScheme.primary)
+                }
+            }
         }
         item {
             ElevatedCard(colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
