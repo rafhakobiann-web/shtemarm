@@ -3,6 +3,15 @@ package am.shtemarm.app
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -413,6 +422,11 @@ fun AcademySubjectAccordion(
     onOpenBook: (StudyBook) -> Unit
 ) {
     var expanded by rememberSaveable(subject) { mutableStateOf(initiallyExpanded) }
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(durationMillis = 260),
+        label = "accordion chevron"
+    )
     AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(23.dp)
@@ -435,19 +449,30 @@ fun AcademySubjectAccordion(
                     Text(books.size.toString() + " հավաքածու",
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 }
-                Text(if (expanded) "⌃" else "⌄", fontSize = 23.sp,
-                    color = MaterialTheme.colorScheme.primary)
+                Icon(
+                    Icons.Default.KeyboardArrowDown, null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp).graphicsLayer { rotationZ = chevronRotation }
+                )
             }
-            if (expanded) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .65f))
-                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
-                    books.forEach { book ->
-                        AcademyBookTile(book) { onOpenBook(book) }
-                    }
-                    TextButton(onClick = onOpenSubject, modifier = Modifier.fillMaxWidth()) {
-                        Text("Տեսնել " + subject + " առարկայի գրքերը")
-                        Spacer(Modifier.width(6.dp))
-                        Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(animationSpec = tween(durationMillis = 260)) +
+                    fadeIn(animationSpec = tween(durationMillis = 220)),
+                exit = shrinkVertically(animationSpec = tween(durationMillis = 200)) +
+                    fadeOut(animationSpec = tween(durationMillis = 160))
+            ) {
+                Column {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .65f))
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                        books.forEach { book ->
+                            AcademyBookTile(book) { onOpenBook(book) }
+                        }
+                        TextButton(onClick = onOpenSubject, modifier = Modifier.fillMaxWidth()) {
+                            Text("Տեսնել " + subject + " առարկայի գրքերը")
+                            Spacer(Modifier.width(6.dp))
+                            Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
+                        }
                     }
                 }
             }
