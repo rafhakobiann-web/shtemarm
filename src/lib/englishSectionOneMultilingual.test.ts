@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { getOfflineEnglishExplanation } from "./englishSectionOneMultilingual";
 
 type SourceBook = { sections: { n: number; units: { id: string; questions?: { n: string }[] }[] }[] };
-const source = JSON.parse(readFileSync(new URL("../../public/data/book1.json", import.meta.url), "utf8")) as SourceBook;
+const source = JSON.parse(readFileSync("public/data/book1.json", "utf8")) as SourceBook;
 const first25 = source.sections.find(section => section.n === 1)?.units.slice(0, 25) ?? [];
 
 describe("Offline English section one explanations", () => {
