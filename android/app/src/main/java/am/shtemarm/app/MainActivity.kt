@@ -123,53 +123,48 @@ private fun NativeShtemarm() {
 
     BackHandler(page != Page.HOME) { back() }
 
-    val colors = if (dark) darkColorScheme(primary = Color(0xFF1CB4A1))
-                 else lightColorScheme(primary = BrandTeal, surface = Color(0xFFF9FBF5))
+    val colors = academyColors(dark, AcademyTeal)
     val originalDensity = LocalDensity.current
     MaterialTheme(colorScheme = colors) {
         CompositionLocalProvider(LocalDensity provides Density(
             originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
         )) {
             Scaffold(
+                containerColor = MaterialTheme.colorScheme.background,
                 topBar = {
-                    Surface(shadowElevation = 2.dp) {
-                        Row(
-                            Modifier.fillMaxWidth()
-                                .windowInsetsPadding(WindowInsets.statusBars)
-                                .height(60.dp).padding(horizontal = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS, Page.EXAMS, Page.GAMES, Page.TOOLS, Page.SAVED)) {
-                                IconButton(onClick = { back() }) {
-                                    Icon(Icons.Default.ArrowBack, contentDescription = "Հետ")
-                                }
-                            }
-                            Text("Shtemarm", fontSize = 23.sp, fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary)
-                            Spacer(Modifier.weight(1f))
-                            Text("Ուսում", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
-                        }
-                    }
+                    AcademyTopBar(
+                        points = BookCatalog.subjects.sumOf { progress.stats(it).correct } * 10,
+                        onHome = { page = Page.HOME },
+                        onProgress = { page = Page.PROGRESS },
+                        onSaved = { page = Page.SAVED },
+                        onSettings = { page = Page.SETTINGS }
+                    )
                 },
                 bottomBar = {
-                    NavigationBar {
-                        NavigationBarItem(selected = page == Page.HOME, onClick = { page = Page.HOME },
-                            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                            label = { Text("Գլխավոր") })
-                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY, Page.MATH, Page.ADVANCED),
-                            onClick = { page = Page.SUBJECTS },
-                            icon = { Icon(Icons.Default.Book, contentDescription = null) },
-                            label = { Text("Գրքեր") })
-                        NavigationBarItem(selected = page == Page.EXAMS, onClick = { page = Page.EXAMS },
-                            icon = { Icon(Icons.Default.Star, contentDescription = null) },
-                            label = { Text("Թեստեր") })
-                        NavigationBarItem(selected = page == Page.GAMES, onClick = { page = Page.GAMES },
-                            icon = { Text("★", fontSize = 20.sp) },
-                            label = { Text("Խաղեր") })
-                        NavigationBarItem(selected = page == Page.TOOLS, onClick = { page = Page.TOOLS },
-                            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                            label = { Text("Գործիքներ") })
-                    }
+                    AcademyFloatingDock(
+                        selected = when (page) {
+                            Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
+                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED -> 1
+                            Page.EXAMS -> 2
+                            Page.GAMES -> 3
+                            Page.TOOLS -> 4
+                            Page.STUDY, Page.RESULT -> when (sessionOrigin) {
+                                Page.EXAMS -> 2
+                                Page.GAMES -> 3
+                                Page.TOOLS -> 4
+                                else -> 1
+                            }
+                        },
+                        onSelect = { tab ->
+                            page = when (tab) {
+                                0 -> Page.HOME
+                                1 -> Page.SUBJECTS
+                                2 -> Page.EXAMS
+                                3 -> Page.GAMES
+                                else -> Page.TOOLS
+                            }
+                        }
+                    )
                 }
             ) { padding ->
                 when (page) {
@@ -190,67 +185,95 @@ private fun NativeShtemarm() {
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
-                    Page.HOME -> LazyColumn(
-                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        item {
-                            Spacer(Modifier.height(10.dp))
-                            Text("Սովորի՛ր քո տեմպով", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                            Spacer(Modifier.height(7.dp))
-                            Text("Շտեմարաններ, առաջադրանքներ և վարժանքներ՝ անմիջապես հեռախոսում։",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        item {
-                            Column(
-                                Modifier.fillMaxWidth()
-                                    .background(
-                                        Brush.linearGradient(listOf(Color(0xFF103D44), Color(0xFF147C70))),
-                                        RoundedCornerShape(23.dp)
-                                    ).padding(23.dp)
-                            ) {
-                                Text("ՍՈՎՈՐԻՐ SHTEMARM-ՈՎ", fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold, color = Color(0xFFB9F5E7))
-                                Spacer(Modifier.height(14.dp))
-                                Text("Պատրա՞ստ ես սովորելու", fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold, color = Color.White)
+                    Page.HOME -> {
+                        val stats = BookCatalog.subjects.map { progress.stats(it) }
+                        val correct = stats.sumOf { it.correct }
+                        val answered = stats.sumOf { it.answered }
+                        LazyColumn(
+                            Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
+                            verticalArrangement = Arrangement.spacedBy(17.dp)
+                        ) {
+                            item { Spacer(Modifier.height(3.dp)) }
+                            item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            item {
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    AcademyQuickAction(Icons.Default.Book, "Շտեմարաններ", "Ընտրիր գիրքը") {
+                                        page = Page.SUBJECTS
+                                    }
+                                    AcademyQuickAction(Icons.Default.Star, "Թեմատիկ աշխատանք", "Ստեղծիր առաջադրանքներ") {
+                                        page = Page.TOOLS
+                                    }
+                                    AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ", "Կենտրոնացում և կրկնություն") {
+                                        page = Page.TOOLS
+                                    }
+                                }
+                            }
+                            item {
+                                Text("Քո ուսումնական վահանակը", fontSize = 23.sp, fontWeight = FontWeight.Black)
+                            }
+                            item {
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    AcademyStatCard("Քո միավորները", (correct * 10).toString() + " XP",
+                                        "Այս սարքի վարժանքներից", Icons.Default.Star)
+                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                        Box(Modifier.weight(1f)) {
+                                            AcademyStatCard("Ճիշտ պատասխաններ", correct.toString(),
+                                                "Պատասխանված՝ " + answered, Icons.Default.Book)
+                                        }
+                                        Box(Modifier.weight(1f)) {
+                                            AcademyStatCard("Կրկնելու հարցեր", (answered - correct).toString(),
+                                                "Անցած վարժանքներից", Icons.Default.Settings)
+                                        }
+                                    }
+                                }
+                            }
+                            item {
+                                OutlinedButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = { page = Page.PROGRESS },
+                                    shape = RoundedCornerShape(16.dp)
+                                ) { Text("Մանրամասն առաջընթաց") }
+                            }
+                            item {
+                                AcademyEyebrow("Ուսումնական գրադարան")
+                                Spacer(Modifier.height(9.dp))
+                                AcademySectionTitle("Գտիր քո շտեմարանը")
+                                Spacer(Modifier.height(5.dp))
+                                Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                            }
+                            items(BookCatalog.subjects) { s ->
+                                SubjectCard(s) { subject = s; page = Page.BOOKS }
+                            }
+                            item {
+                                AcademyEyebrow("Գիտելիքների ստուգում")
                                 Spacer(Modifier.height(8.dp))
-                                Text("Առկա հարցերը պահպանված են հավելվածում և հասանելի են նաև առանց ինտերնետի։",
-                                    color = Color(0xFFDCF5F0))
-                                Spacer(Modifier.height(15.dp))
-                                Button(onClick = { page = Page.SUBJECTS }) { Text("Բացել շտեմարանները") }
+                                AcademySectionTitle("Փորձնական քննություններ")
+                                Spacer(Modifier.height(7.dp))
+                                Text("Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։",
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                        }
-                        item {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedButton(onClick = { page = Page.EXAMS }, modifier = Modifier.weight(1f)) {
-                                    Text("Թեստեր")
-                                }
-                                OutlinedButton(onClick = { page = Page.GAMES }, modifier = Modifier.weight(1f)) {
-                                    Text("Խաղեր")
-                                }
+                            item {
+                                AcademyQuickAction(Icons.Default.Star, "Փորձնական քննություններ",
+                                    "Ստուգիր գիտելիքներդ") { page = Page.EXAMS }
                             }
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TextButton(onClick = { page = Page.PROGRESS }, modifier = Modifier.weight(1f)) {
-                                    Text("Առաջընթաց")
-                                }
-                                TextButton(onClick = { page = Page.SETTINGS }, modifier = Modifier.weight(1f)) {
-                                    Text("Կարգավորումներ")
-                                }
+                            item {
+                                AcademyQuickAction(Icons.Default.Book, "Մինի խաղեր և բառապաշար",
+                                    "Սովորիր խաղալով") { page = Page.GAMES }
                             }
-                        }
-                        item {
-                            OutlinedButton(onClick = { page = Page.SAVED }, modifier = Modifier.fillMaxWidth()) {
-                                Text("☆ Պահպանված հարցերը · " + progress.bookmarkedIds().size)
+                            item {
+                                AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ",
+                                    "Հաշվիչ, բառապաշար, թեմատիկ աշխատանք") { page = Page.TOOLS }
                             }
-                        }
-                        item { Text("Արագ մեկնարկ", fontSize = 21.sp, fontWeight = FontWeight.SemiBold) }
-                        items(BookCatalog.subjects.take(5)) { s ->
-                            SubjectCard(s) { subject = s; page = Page.BOOKS }
-                        }
-                        item {
-                            OutlinedButton(onClick = { page = Page.SUBJECTS },
-                                modifier = Modifier.fillMaxWidth()) { Text("Տեսնել բոլոր առարկաները") }
+                            item {
+                                OutlinedButton(
+                                    onClick = { page = Page.SAVED },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(15.dp)
+                                ) { Text("☆ Պահպանված հարցեր · " + progress.bookmarkedIds().size) }
+                                Spacer(Modifier.height(12.dp))
+                            }
                         }
                     }
                     Page.SUBJECTS -> LazyColumn(
