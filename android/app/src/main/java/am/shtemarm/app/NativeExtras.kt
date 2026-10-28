@@ -38,13 +38,7 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         error = ""
         pool = emptyList()
         try {
-            val collected = mutableListOf<StudyQuestion>()
-            for (b in BookCatalog.books.filter { it.subject == selected }.distinctBy { it.asset }) {
-                try {
-                    collected += repository.load(b).allQuestions
-                } catch (_: Exception) { /* Keep questions from other available books. */ }
-            }
-            pool = collected.distinctBy { it.id }
+            pool = repository.practiceForSubject(selected)
             if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
         } catch (_: Exception) { error = "Հնարավոր չեղավ բացել հարցաշարերը։" }
         isLoading = false
@@ -137,14 +131,9 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
     var revealed by remember { mutableStateOf(false) }
     LaunchedEffect(selected) {
         loading = true
-        val result = mutableListOf<StudyQuestion>()
-        try {
-            for (book in BookCatalog.books.filter { it.subject == selected }.distinctBy { it.asset }) {
-                try { result += repository.load(book).allQuestions }
-                catch (_: Exception) { /* Continue with readable question books. */ }
-            }
-        } catch (_: Exception) { /* show empty state */ }
-        questions = result.shuffled()
+        questions = try {
+            repository.practiceForSubject(selected).shuffled()
+        } catch (_: Exception) { emptyList() }
         flipIndex = 0; revealed = false
         loading = false
     }
@@ -258,18 +247,9 @@ fun NativeTools(
 
     LaunchedEffect(subject) {
         loading = true
-        val result = mutableListOf<StudySection>()
-        try {
-            for (book in BookCatalog.books.filter { it.subject == subject }.distinctBy { it.asset }) {
-                try {
-                    val loaded = repository.load(book)
-                    result += loaded.sections.map { sec ->
-                        sec.copy(title = book.title + " · " + sec.title)
-                    }
-                } catch (_: Exception) { /* One missing book cannot empty the subject. */ }
-            }
-        } catch (_: Exception) { /* empty state */ }
-        sections = result
+        sections = try {
+            repository.sectionsForSubject(subject)
+        } catch (_: Exception) { emptyList() }
         selectedSection = "Բոլոր բաժինները"
         loading = false
     }
