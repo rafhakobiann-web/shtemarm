@@ -96,8 +96,23 @@ class QuestionRepository(private val context: Context) {
         for (qi in 0 until questions.length()) {
             val q = questions.optJSONObject(qi) ?: continue
             if (hasVisual(q)) continue
-            val stem = q.optString("stem").trim()
-            if (stem.isBlank() || stem.contains("<img", ignoreCase = true) ||
+            val originalStem = q.optString("stem").trim()
+            // In the English gap-fill sections the question is the numbered blank
+            // inside the passage; its individual stem is intentionally empty.
+            // Recover only those demonstrable numbered gaps, never missing
+            // reading-comprehension questions or unknown answers.
+            val number = q.optString("n").trim()
+            val marker = "($number)"
+            val markerIndex = if (number.isNotBlank()) passage.indexOf(marker) else -1
+            val afterMarker = if (markerIndex >= 0) passage.substring(
+                markerIndex + marker.length,
+                minOf(markerIndex + marker.length + 30, passage.length)
+            ) else ""
+            val isGap = markerIndex >= 0 && afterMarker.contains(Regex("_{2,}"))
+            val stem = if (originalStem.isNotBlank()) originalStem
+                else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
+                else continue
+            if (stem.contains("<img", ignoreCase = true) ||
                 stem.contains("\\includegraphics", ignoreCase = true)) continue
             val options = q.optJSONObject("options") ?: continue
             val keys = when {
