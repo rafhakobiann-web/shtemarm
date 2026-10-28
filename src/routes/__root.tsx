@@ -14,7 +14,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { MobileNav } from "@/components/MobileNav";
-import { StudyMusicDock } from "@/components/StudyMusicDock";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,7 +144,6 @@ function RootComponent() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <AppHeader />
       <PersonalizationControls />
-      <StudyMusicDock />
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <TranslationProvider><Outlet /><MobileNav /></TranslationProvider>
       </main>
