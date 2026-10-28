@@ -25,7 +25,7 @@ function extract(data: unknown, filename: string): QuizItem[] {
     for (const unit of section.units) {
       if (unit?.kind !== "mc" || !Array.isArray(unit.questions)) continue;
       // Passage-dependent and illustrated exercises cannot be answered in isolation.
-      if (validText(unit.passage) || unit.image || unit.diagram) continue;
+      if (validText(unit.passage) || unit.image || unit.diagram || unit.figure) continue;
       for (const question of unit.questions) {
         const options = question?.options;
         if (!options || typeof options !== "object" || !validText(question.stem)) continue;
@@ -34,7 +34,7 @@ function extract(data: unknown, filename: string): QuizItem[] {
         const answerKey = String(question.answer ?? "");
         if (!keys.includes(answerKey)) continue;
         const choices = keys.map(key => options[key].trim()) as [string, string, string, string];
-        if (new Set(choices).size !== 4 || question.image || question.diagram || question.figure) continue;
+        if (new Set(choices).size !== 4 || question.image || question.diagram || question.figure || /<img|!\[|\\includegraphics/i.test(question.stem)) continue;
         result.push({
           id: "book:" + filename + ":" + section.n + ":" + unit.id + ":" + question.n,
           subject, prompt: question.stem.trim(), choices,
