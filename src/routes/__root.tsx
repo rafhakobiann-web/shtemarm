@@ -145,8 +145,9 @@ function RootComponent() {
       <AppHeader />
       <PersonalizationControls />
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <TranslationProvider><Outlet /><MobileNav /></TranslationProvider>
+        <TranslationProvider><Outlet /></TranslationProvider>
       </main>
+      <MobileNav />
       <Toaster />
     </QueryClientProvider>
   );

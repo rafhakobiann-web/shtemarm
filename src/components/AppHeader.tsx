@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -52,7 +52,7 @@ export function AppHeader() {
           </Link>
           <Link to="/study-tools"
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-            <Timer className="size-4"/>{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Գործիքներ"}
+            <Wrench className="size-4"/>{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Գործիքներ"}
           </Link>
         </nav>
         <div className="flex items-center gap-2 text-sm font-bold sm:gap-3">
@@ -133,7 +133,7 @@ export function AppHeader() {
                   <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : lang === "ru" ? "Мой словарь" : "Իմ բառապաշարը"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
-                  <Timer className="size-4" />{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Ուսումնական գործիքներ"}
+                  <Wrench className="size-4" />{lang === "en" ? "Study tools" : lang === "ru" ? "Инструменты" : "Ուսումնական գործիքներ"}
                 </Link>
                 <Link to="/mini-games" onClick={close} className={item}><Gamepad2 className="size-4" />{lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր"}</Link>
                 <Link to="/chat" onClick={close} className={item}>

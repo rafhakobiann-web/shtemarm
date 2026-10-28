@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { BookOpen, ClipboardCheck, Gamepad2, House, Timer } from "lucide-react";
+import { BookOpen, ClipboardCheck, Gamepad2, House, Wrench } from "lucide-react";
 import { useTx } from "@/lib/lang";
 
 /**
@@ -98,7 +98,7 @@ export function MobileNav() {
     const frame = window.requestAnimationFrame(() => {
       document.getElementById(anchor)?.scrollIntoView({
         behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-          ? "instant" : "smooth",
+          ? "auto" : "smooth",
         block: "start",
       });
     });
@@ -110,7 +110,7 @@ export function MobileNav() {
       window.scrollTo({
         top: 0,
         behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-          ? "instant" : "smooth",
+          ? "auto" : "smooth",
       });
     }
     if (pathname === "/" && (index === 1 || index === 2)) {
@@ -119,7 +119,7 @@ export function MobileNav() {
       if (hash.replace(/^#/, "") === anchor) {
         document.getElementById(anchor)?.scrollIntoView({
           behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-            ? "instant" : "smooth",
+            ? "auto" : "smooth",
           block: "start",
         });
       }
@@ -134,7 +134,7 @@ export function MobileNav() {
     { ...MOBILE_TAB_TARGETS[1], label: tx("Գրքեր"), icon: BookOpen },
     { ...MOBILE_TAB_TARGETS[2], label: tx("Թեստեր"), icon: ClipboardCheck },
     { ...MOBILE_TAB_TARGETS[3], label: tx("Խաղեր"), icon: Gamepad2 },
-    { ...MOBILE_TAB_TARGETS[4], label: tx("Գործիքներ"), icon: Timer },
+    { ...MOBILE_TAB_TARGETS[4], label: tx("Գործիքներ"), icon: Wrench },
   ] as const;
 
   return (

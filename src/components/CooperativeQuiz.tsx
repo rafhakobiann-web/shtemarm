@@ -1,79 +1,44 @@
 import { useMemo, useState } from "react";
-import { RotateCcw, Users, Trophy } from "lucide-react";
+import { Users, RotateCcw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTx } from "@/lib/lang";
 import { QUICK_QUIZ_ITEMS, makeRound, type GameSubjectId } from "@/lib/mini-game-data";
+import { useTx } from "@/lib/lang";
 
-type Turn={questionId:string;player:0|1;chosen:string;correct:boolean};
-const COUNT=30;
-
-/** Same-device cooperative challenge: teammates alternate, shared accuracy wins.
- * Offline, no account, no sockets, and no misleading online multiplayer claim.
- */
-export function CooperativeQuiz({subject}:{subject:GameSubjectId}){
+type Team = 0 | 1;
+export function CooperativeQuiz({subject}:{subject:GameSubjectId}) {
   const tx=useTx();
   const [seed,setSeed]=useState(0);
-  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,COUNT),[subject,seed]);
-  const [names,setNames]=useState<[string,string]>(["Խաղացող 1","Խաղացող 2"]);
-  const [turns,setTurns]=useState<Turn[]>([]);
+  const [count,setCount]=useState(10);
+  const available=QUICK_QUIZ_ITEMS.filter(q=>subject==="mixed"||q.subject===subject).length;
+  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,Math.min(count,QUICK_QUIZ_ITEMS.filter(q=>subject==="mixed"||q.subject===subject).length)),[subject,seed,count]);
+  const [index,setIndex]=useState(0);
   const [picked,setPicked]=useState<string|null>(null);
-  const index=turns.length;
-  const current=questions[index];
-  const player=(index%2) as 0|1;
+  const [scores,setScores]=useState<[number,number]>([0,0]);
+  const [names,setNames]=useState<[string,string]>(["Թիմ 1","Թիմ 2"]);
+  const team=(index%2) as Team;
+  const item=questions[index];
   const finished=index>=questions.length;
-  const correct=turns.filter(t=>t.correct).length;
-  const perPlayer=[0,1].map(p=>turns.filter(t=>t.player===p&&t.correct).length);
-  const restart=()=>{setSeed(v=>v+1);setTurns([]);setPicked(null);};
-  const submit=()=>{
-    if(!current||picked===null)return;
-    setTurns(v=>[...v,{questionId:current.id,player,chosen:picked,correct:picked===current.answer}]);
-    setPicked(null);
+  const restart=()=>{setSeed(x=>x+1);setIndex(0);setPicked(null);setScores([0,0]);};
+  const choose=(answer:string)=>{
+    if(picked!==null||!item)return;
+    setPicked(answer);
+    if(answer===item.answer)setScores(s=>team===0?[s[0]+1,s[1]]:[s[0],s[1]+1]);
   };
-  return <section className="mx-auto max-w-3xl space-y-5 rounded-3xl border bg-card p-4 sm:p-7"
-    aria-label={tx("Թիմային վիկտորինա")}>
-    <div className="flex items-center gap-3">
-      <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary"><Users className="size-6"/></span>
-      <div><h2 className="text-xl font-black">{tx("Թիմային վիկտորինա")}</h2>
-      <p className="text-xs text-muted-foreground">{tx("Երկու հոգով՝ նույն սարքում։ Հերթով պատասխանեք և միասին հավաքեք միավորներ։")}</p></div>
-    </div>
-    <div className="grid grid-cols-2 gap-3">
-      {([0,1] as const).map(p=><label key={p} className="space-y-1 text-sm font-semibold">
-        <span>{tx("Խաղացող {n}",{n:p+1})}</span>
-        <input aria-label={tx("Խաղացող {n}",{n:p+1})} maxLength={24} value={names[p]}
-          onChange={e=>setNames(v=>p===0?[e.target.value,v[1]]:[v[0],e.target.value])}
-          className="h-11 w-full rounded-xl border bg-background px-3"/>
-        <span className="block text-xs text-muted-foreground">{perPlayer[p]} {tx("միավոր")}</span>
-      </label>)}
-    </div>
-    <div className="flex items-center justify-between gap-3 text-sm font-bold">
-      <span>{tx("Թիմային միավորներ")}՝ {correct}/{turns.length}</span>
-      <span>{Math.min(index+1,questions.length)}/{questions.length}</span>
-    </div>
-    {finished?<div className="space-y-4 rounded-2xl bg-primary/5 p-6 text-center">
-      <Trophy className="mx-auto size-10 text-primary"/>
-      <h3 className="text-xl font-black">{tx("Թիմային խաղն ավարտվեց")}</h3>
-      <p className="text-4xl font-black">{correct}/{questions.length}</p>
-      <p className="text-sm text-muted-foreground">{tx("Հարցերի պատասխանները ստուգվել են տեղական հարցաշարով։")}</p>
-      <Button onClick={restart}><RotateCcw className="mr-2 size-4"/>{tx("Նոր փուլ")}</Button>
-    </div>:current?<div className="space-y-4">
-      <p className="rounded-xl bg-primary/10 px-4 py-3 text-sm font-bold text-primary">
-        {tx("Հերթը՝")} {names[player]||tx("Խաղացող {n}",{n:player+1})}
-      </p>
-      <h3 className="text-lg font-black leading-relaxed">{current.prompt}</h3>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {current.choices.map((choice,i)=><button key={i} type="button"
-          aria-pressed={picked===choice} onClick={()=>setPicked(choice)}
-          className={"min-h-14 rounded-xl border-2 p-3 text-left text-sm font-semibold "+
-            (picked===choice?"border-primary bg-primary/10":"border-border hover:border-primary/40")}>
-          {String.fromCharCode(65+i)}. {choice}
-        </button>)}
-      </div>
-      <Button className="min-h-12 w-full" disabled={picked===null} onClick={submit}>
-        {tx("Հաստատել պատասխանը և փոխանցել հերթը")}
-      </Button>
-    </div>:<p>{tx("Այս առարկայի համար հարցեր չկան։")}</p>}
-    <Button variant="outline" size="sm" onClick={restart}>
-      <RotateCcw className="mr-2 size-4"/>{tx("Սկսել նորից")}
-    </Button>
+  return <section className="mx-auto max-w-3xl space-y-5 rounded-3xl border bg-card p-5 sm:p-8" aria-label={tx("Թիմային վիկտորինա")}>
+    <div className="flex items-center gap-3"><Users className="size-6 text-primary"/><div><h2 className="text-xl font-black">{tx("Թիմային վիկտորինա")}</h2><p className="text-xs text-muted-foreground">{tx("Երկու թիմերը հերթով պատասխանում են նույն սարքով։ Արդյունքները հաշվարկվում են միայն այս խաղում։")}</p></div></div>
+    <div className="grid grid-cols-2 gap-3">{([0,1] as const).map(i=><label key={i} className={"rounded-xl border p-3 "+(!finished&&team===i?"border-primary bg-primary/10":"")}>
+      <span className="mb-1 block text-xs text-muted-foreground">{tx("Թիմ")} {i+1}</span>
+      <input aria-label={tx("Թիմի անունը")+" "+(i+1)} maxLength={24} className="w-full min-w-0 rounded-md bg-background px-2 py-2 text-sm font-bold" value={names[i]} onChange={e=>setNames(n=>i===0?[e.target.value,n[1]]:[n[0],e.target.value])}/>
+      <strong className="mt-2 block text-2xl tabular-nums">{scores[i]}</strong>
+    </label>)}</div>
+    <div className="flex flex-wrap items-center gap-3"><label className="text-sm font-semibold" htmlFor="co-op-length">{tx("Հարցերի քանակ")}</label><select id="co-op-length" disabled={available < 10} value={count} onChange={e=>{setCount(Number(e.target.value));restart();}} className="rounded-lg border bg-background px-3 py-2 text-sm">{[10,20,30,50,100].filter(n=>n<=available).map(n=><option key={n} value={n}>{n}</option>)}</select><span className="text-xs text-muted-foreground">{tx("Մինչև բանկի հասանելի հարցերի քանակը")}</span></div>
+    {finished?<div className="space-y-4 text-center"><CheckCircle2 className="mx-auto size-12 text-primary"/><h3 className="text-xl font-black">{tx("Խաղն ավարտվեց")}</h3><p className="font-bold">{scores[0]===scores[1]?tx("Ոչ-ոքի"):names[scores[0]>scores[1]?0:1]+" · "+tx("Հաղթող թիմ")}</p><Button onClick={restart}><RotateCcw className="mr-2 size-4"/>{tx("Կրկին խաղալ")}</Button></div>:item?<div className="space-y-4">
+      <p className="text-sm font-bold">{tx("Հերթը")}՝ {names[team]} · {index+1}/{questions.length}</p>
+      <div role="progressbar" aria-label={tx("Խաղի առաջընթաց")} aria-valuemin={0} aria-valuemax={questions.length} aria-valuenow={index+1} className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary" style={{width:(index/questions.length*100)+"%"}}/></div>
+      <p className="text-lg font-black">{item.prompt}</p>
+      <div className="grid gap-2 sm:grid-cols-2">{item.choices.map((answer,i)=><button key={i} type="button" disabled={picked!==null} onClick={()=>choose(answer)} className={"min-h-14 rounded-xl border-2 p-3 text-left font-semibold "+(picked!==null&&answer===item.answer?"border-emerald-500 bg-emerald-500/10":picked===answer?"border-destructive bg-destructive/10":"bg-background hover:border-primary")}>{answer}</button>)}</div>
+      {picked!==null&&<div className="space-y-3 rounded-xl bg-muted/50 p-4"><p className="font-bold">{tx(picked===item.answer?"Ճիշտ պատասխան":"Սխալ պատասխան")}</p><p className="text-sm">{item.explanation}</p><Button onClick={()=>{setIndex(i=>i+1);setPicked(null);}} className="w-full">{tx("Հաջորդ հարցը")}</Button></div>}
+    </div>:<p>{tx("Այս առարկայի համար առայժմ համապատասխան հարցեր չկան։")}</p>}
+    <p className="text-xs text-muted-foreground">{tx("Այս ռեժիմը տեղային է. առցանց սենյակներ կամ խաղացողների հաշիվներ դեռ չկան։")}</p>
   </section>;
 }
