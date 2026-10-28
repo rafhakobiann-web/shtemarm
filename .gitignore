@@ -54,3 +54,12 @@ service-account*.json
 **/google-services.json
 **/upload-keystore.*
 **/*.orig
+
+# Android local build caches and installable binaries
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/.cxx/
+*.apk
+*.aab
+*.hprof
