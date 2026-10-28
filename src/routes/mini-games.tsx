@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Brain, CheckCircle2, Gamepad2, Layers3, RotateCcw, Sparkles, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
-import { SUBJECTS, QUICK_QUIZ_ITEMS, makeRound, resultPercent,
+import { SUBJECTS, makeRound, resultPercent,
   type GameSubjectId, type QuizItem } from "@/lib/mini-game-data";
 import { TrueFalseGame, MatchingGame, FlashcardsGame } from "@/components/AdditionalMiniGames";
 import { CooperativeQuiz } from "@/components/CooperativeQuiz";
@@ -143,7 +143,7 @@ function MiniGamesPage(){
                 <p className="text-sm font-bold">{item.prompt}</p>
                 <p className="text-xs text-destructive">{tx("Քո պատասխանը")}՝ {chosen}</p>
                 <p className="text-xs font-semibold">{tx("Ճիշտ պատասխան")}՝ {item.answer}</p>
-                <p className="text-xs leading-relaxed text-muted-foreground">{item.explanation}</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">{item.explanation || tx("Բացատրությունն այս հարցի համար դեռ հասանելի չէ։")}</p>
               </article>)}
             </div>
           </div>}
@@ -186,7 +186,7 @@ function MiniGamesPage(){
             {picked!==current.answer&&<p className="text-sm font-bold">
               {tx("Ճիշտ պատասխան")}՝ {current.answer}
             </p>}
-            <p className="text-sm leading-relaxed">{current.explanation}</p>
+            <p className="text-sm leading-relaxed">{current.explanation || tx("Բացատրությունն այս հարցի համար դեռ հասանելի չէ։")}</p>
             <Button type="button" className="min-h-11 w-full" onClick={next}>
               {tx(index===questions.length-1?"Տեսնել արդյունքը":"Հաջորդ հարցը")}
             </Button>
