@@ -43,8 +43,8 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
                 collected += repository.load(b).allQuestions
             }
             pool = collected.distinctBy { it.id }
-            if (pool.isEmpty()) error = "Այս առարկայի ստուգված բազմընտրանի հարցեր դեռ չկան։"
-        } catch (_: Exception) { error = "Հարցաշարերը չհաջողվեց բացել։" }
+            if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
+        } catch (_: Exception) { error = "Հնարավոր չեղավ բացել հարցաշարերը։" }
         isLoading = false
     }
     if (showEnglishLevels) {
@@ -63,7 +63,7 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
             Spacer(Modifier.height(8.dp))
             AcademySectionTitle("Փորձնական քննություններ")
             Spacer(Modifier.height(5.dp))
-            Text("Կազմիր փորձնական թեստ առկա շտեմարաններից։", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Կազմիր ուսումնական թեստ՝ օգտագործելով հասանելի շտեմարանների հարցերը։", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
             ElevatedCard(
@@ -163,7 +163,7 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
             Text("Սովորիր խաղալով՝ առանց ինտերնետի։", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
-            Text("Խաղի տեսակ", fontWeight = FontWeight.SemiBold)
+            Text("Ընտրիր խաղի տեսակը", fontWeight = FontWeight.SemiBold)
             Row(
                 modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -195,7 +195,7 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
                             color = MaterialTheme.colorScheme.primary)
                         Text(if (revealed) q.choices[q.correctIndex] else q.stem,
                             fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
-                        Text(if (revealed) "Պատասխան" else "Սեղմիր քարտը՝ պատասխանը տեսնելու",
+                        Text(if (revealed) "Պատասխան" else "Սեղմիր քարտը՝ պատասխանը բացելու համար",
                             color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                     }
                 }
@@ -296,7 +296,7 @@ fun NativeTools(
                 ElevatedCard(Modifier.fillMaxWidth().clickable { tool = "theme" }) {
                     Column(Modifier.padding(18.dp)) {
                         Text("Թեմատիկ աշխատանք", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text("Ընտրիր առարկան ու թեման, որոշիր հարցերի քանակը։")
+                        Text("Ընտրիր առարկան, թեման և հարցերի քանակը։")
                     }
                 }
             }
@@ -311,8 +311,8 @@ fun NativeTools(
             item {
                 ElevatedCard(Modifier.fillMaxWidth().clickable { tool = "vocab" }) {
                     Column(Modifier.padding(18.dp)) {
-                        Text("Իմ բառապաշարը · 8393 բառ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text("Անգլերեն–հայերեն բառարան, սիրելի բառեր և անձնական ցանկ։")
+                        Text("Իմ բառապաշարը · բառարան և անձնական ցանկ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("Անգլերեն–հայերեն բառարան, պահպանված բառեր և քո ցանկը։")
                     }
                 }
             }
@@ -325,7 +325,7 @@ fun NativeTools(
                 }
             }
             item {
-                Text("Նշում. սա հարցերի թվային կազմիչ է։ Տպելու և PDF արտահանման հնարավորությունը դեռ հասանելի չէ։",
+                Text("Սա ուսումնական թեստերի կազմման գործիք է։ Տպելու և PDF արտահանելու հնարավորությունները դեռ հասանելի չեն։",
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
             }
         } else {
@@ -375,7 +375,7 @@ fun NativeTools(
                     }
                 ) { Text("Ստեղծել և սկսել") }
                 if (validCount && pool.size < (number.toIntOrNull() ?: 0)) {
-                    Text("Առկա են ավելի քիչ հարցեր, ուստի կօգտագործվեն միայն հասանելիները։",
+                    Text("Ընտրված թեմայում հարցերն ավելի քիչ են․ կօգտագործվեն միայն առկա հարցերը։",
                         fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
