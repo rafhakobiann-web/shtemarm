@@ -1,6 +1,8 @@
 import { SECTION_ONE_EXPLANATIONS } from "./englishSectionOneExplanations";
 import { SECTION_ONE_TEXTS_4_9 } from "./englishSectionOneTexts4to9";
 import { SECTION_ONE_TEXTS_10_15 } from "./englishSectionOneTexts10to15";
+import { SECTION_ONE_TEXTS_16_20 } from "./englishSectionOneTexts16to20";
+import { SECTION_ONE_TEXTS_21_25 } from "./englishSectionOneTexts21to25";
 type Language = "hy" | "en" | "ru";
 type Explanation = Record<Language, string>;
 const DETAILS: Record<string, Explanation> = {
@@ -23,7 +25,7 @@ const DETAILS: Record<string, Explanation> = {
 export function getOfflineEnglishExplanation(unitId:string, questionNumber:string, language:string):string|undefined {
  const key = unitId + ":" + questionNumber;
  const entry = DETAILS[key];
- const additional = SECTION_ONE_TEXTS_4_9[key] ?? SECTION_ONE_TEXTS_10_15[key];
+ const additional = SECTION_ONE_TEXTS_4_9[key] ?? SECTION_ONE_TEXTS_10_15[key] ?? SECTION_ONE_TEXTS_16_20[key] ?? SECTION_ONE_TEXTS_21_25[key];
  if (additional) return additional[language === "ru" ? 2 : language === "en" ? 1 : 0];
  if (entry) return entry[language === "ru" || language === "en" ? language : "hy"];
  return SECTION_ONE_EXPLANATIONS[key];
