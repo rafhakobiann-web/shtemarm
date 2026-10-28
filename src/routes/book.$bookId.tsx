@@ -53,7 +53,7 @@ function BookPage() {
               ) : id === 41 || (id >= 1 && id <= 3) ? (
                 <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : (
-                <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "exam", style: "classic" }}>
+                <Link to={id === 63 || id === 64 ? "/physics/original" : "/subject/$subject"} params={id === 63 || id === 64 ? {} as never : { subject: "physics" } as never}>
                   <Trophy /> {tx("Քննություն")}
                 </Link>
               )}
@@ -70,7 +70,7 @@ function BookPage() {
               ) : id === 41 || (id >= 1 && id <= 3) ? (
                 <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : (
-                <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", style: "classic" }}>
+                <Link to={id === 63 || id === 64 ? "/physics/original" : "/subject/$subject"} params={id === 63 || id === 64 ? {} as never : { subject: "physics" } as never}>
                   <ClipboardCheck /> {tx("Կազմել թեստ")}
                 </Link>
               )}
@@ -138,7 +138,7 @@ function BookPage() {
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
                     ) : (
-                      <Link to="/test/$bookId" params={{ bookId }} search={{ mode: "custom", section: s.n, style: "classic" }}>
+                      <Link to="/subject/$subject" params={{ subject: "physics" }}>
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
                     )}

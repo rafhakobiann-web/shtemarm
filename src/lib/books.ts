@@ -97,9 +97,20 @@ export function loadBook(id: number): Promise<Book> {
     cache.set(
       id,
       fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
-        .then((r) => {
+        .then(async (r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
-          return r.json();
+          const type = r.headers.get("content-type") ?? "";
+          // Some hosting platforms return a successful HTML fallback for
+          // missing /data/*.json. Surface a retryable error instead of parsing HTML.
+          if (type && !/json|text\/plain|octet-stream/i.test(type)) {
+            throw new Error(`Book ${id} returned ${type}, not JSON`);
+          }
+          const data: unknown = await r.json();
+          if (!data || typeof data !== "object" || !("sections" in data) ||
+              !Array.isArray(data.sections)) {
+            throw new Error(`Book ${id} has an invalid question-bank format`);
+          }
+          return data as Book;
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {

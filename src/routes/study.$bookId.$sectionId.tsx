@@ -7,6 +7,7 @@ import { secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
+import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
 import { useTx } from "@/lib/lang";
 
@@ -27,7 +28,7 @@ function StudyPage() {
   const tx = useTx();
   const { bookId, sectionId } = Route.useParams();
   const { mode } = Route.useSearch();
-  const { data: book } = useBook(Number(bookId));
+  const { data: book, error, isPending, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
 
   useEffect(() => {
@@ -54,8 +55,24 @@ function StudyPage() {
           ))}
         </div>
       </div>
-      {!section ? (
-        <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
+      {error && !book ? (
+        <LoadError onRetry={() => void refetch()} detail={error instanceof Error ? error.message : String(error)} />
+      ) : isPending && !book ? (
+        <div role="status" className="grid place-items-center gap-3 py-20">
+          <Loader2 className="animate-spin text-primary" />
+          <span className="text-sm text-muted-foreground">{tx("Բեռնվում է…")}</span>
+        </div>
+      ) : !section ? (
+        <div role="alert" className="space-y-4 rounded-2xl border bg-card p-8 text-center">
+          <h2 className="font-bold">{tx("Այս բաժինը չի գտնվել։")}</h2>
+          <p className="text-sm text-muted-foreground">{tx("Ընտրիր գոյություն ունեցող բաժին գրքի ցանկից։")}</p>
+          <Button asChild variant="outline"><Link to="/book/$bookId" params={{bookId}}>{tx("Վերադառնալ բաժիններին")}</Link></Button>
+        </div>
+      ) : section.units.length === 0 ? (
+        <div role="status" className="space-y-3 rounded-2xl border bg-card p-8 text-center">
+          <p className="font-semibold">{tx("Այս բաժնում առաջադրանքներ դեռ չկան։")}</p>
+          <Button asChild variant="outline"><Link to="/book/$bookId" params={{bookId}}>{tx("Վերադառնալ բաժիններին")}</Link></Button>
+        </div>
       ) : mode === "game" ? (
         <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       ) : (
@@ -143,7 +160,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     };
     // book order: continue from the first unit not yet answered correctly
     const start = units.findIndex((u) => score(u) !== 2);
-    const from = start === -1 ? (seed * ROUND) % units.length : start;
+    const from = start === -1 ? (seed * ROUND) % Math.max(1, units.length) : start;
     return units.slice(from, from + ROUND);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [units, seed]);
