@@ -8,6 +8,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.Image
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -107,11 +110,9 @@ fun AcademyTopBar(
     onSettings: () -> Unit
 ) {
     var menuOpen by remember { mutableStateOf(false) }
-    Surface(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
-        shadowElevation = 2.dp,
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.65f))
+        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
     ) {
         Row(
             Modifier.fillMaxWidth()
@@ -190,37 +191,61 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
             .padding(start = 12.dp, end = 12.dp, bottom = 10.dp),
         contentAlignment = Alignment.Center
     ) {
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = if (liquid) 0.88f else 1f),
-            shadowElevation = if (liquid) 14.dp else 4.dp,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.58f))
+        AcademyGlassPanel(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(29.dp)
         ) {
-            Row(Modifier.fillMaxWidth().padding(6.dp)) {
-                tabs.forEach { (label, icon, id) ->
-                    val active = selected == id
-                    val shape = RoundedCornerShape(21.dp)
-                    Column(
-                        modifier = Modifier.weight(1f)
-                            .clip(shape)
-                            .background(
-                                if (active) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
-                                else Color.Transparent
+            BoxWithConstraints(Modifier.fillMaxWidth().padding(6.dp)) {
+                val tabWidth = maxWidth / 5
+                val selectedTab = selected.coerceIn(0, 4)
+                val animatedOffset by animateDpAsState(
+                    targetValue = tabWidth * selectedTab,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    ),
+                    label = "Shtemarm dock selection"
+                )
+                val activeShape = RoundedCornerShape(21.dp)
+                val highlight = MaterialTheme.colorScheme.primary
+                Box(
+                    Modifier.offset(x = animatedOffset).width(tabWidth).height(60.dp)
+                        .clip(activeShape)
+                        .background(
+                            if (liquid) Brush.linearGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.47f),
+                                    highlight.copy(alpha = 0.21f),
+                                    highlight.copy(alpha = 0.10f)
+                                )
+                            ) else Brush.verticalGradient(
+                                listOf(highlight.copy(alpha = 0.13f), highlight.copy(alpha = 0.13f))
                             )
-                            .clickable { onSelect(id) }
-                            .height(60.dp)
-                            .padding(top = 7.dp, bottom = 5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Icon(icon, contentDescription = label,
-                            tint = if (active) MaterialTheme.colorScheme.primary
-                                   else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(23.dp))
-                        Text(label, maxLines = 1, fontSize = 10.sp,
-                            fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
-                            color = if (active) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+                        .border(
+                            1.dp,
+                            if (liquid) Color.White.copy(alpha = 0.72f)
+                            else highlight.copy(alpha = 0.15f),
+                            activeShape
+                        )
+                )
+                Row(Modifier.fillMaxWidth()) {
+                    tabs.forEach { (label, icon, id) ->
+                        val active = selectedTab == id
+                        Column(
+                            modifier = Modifier.weight(1f).clip(activeShape)
+                                .clickable { onSelect(id) }.height(60.dp)
+                                .padding(top = 7.dp, bottom = 5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(icon, contentDescription = label,
+                                tint = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(23.dp))
+                            Text(label, maxLines = 1, fontSize = 10.sp,
+                                fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
+                                color = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
                 }
             }
@@ -322,12 +347,9 @@ fun AcademyQuickAction(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    Surface(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(19.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .7f)),
-        shadowElevation = 1.dp
+        shape = RoundedCornerShape(19.dp)
     ) {
         Row(
             Modifier.fillMaxWidth().heightIn(min = 69.dp).padding(horizontal = 14.dp, vertical = 11.dp),
@@ -368,12 +390,7 @@ fun AcademyEyebrow(label: String) {
 
 @Composable
 fun AcademyStatCard(label: String, value: String, caption: String, icon: ImageVector) {
-    Surface(
-        shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .7f)),
-        shadowElevation = 2.dp
-    ) {
+    AcademyGlassPanel(shape = RoundedCornerShape(22.dp)) {
         Column(Modifier.fillMaxWidth().padding(17.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(17.dp))
@@ -396,12 +413,9 @@ fun AcademySubjectAccordion(
     onOpenBook: (StudyBook) -> Unit
 ) {
     var expanded by rememberSaveable(subject) { mutableStateOf(initiallyExpanded) }
-    Surface(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(23.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .72f)),
-        shadowElevation = 2.dp
+        shape = RoundedCornerShape(23.dp)
     ) {
         Column {
             Row(
@@ -443,11 +457,9 @@ fun AcademySubjectAccordion(
 
 @Composable
 fun AcademyBookTile(book: StudyBook, onClick: () -> Unit) {
-    Surface(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .62f))
+        shape = RoundedCornerShape(18.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(11.dp), verticalAlignment = Alignment.CenterVertically) {
             AcademyMiniCover(book.subject, book.title)
@@ -599,12 +611,9 @@ fun AcademyBookSectionCard(
     onClassic: () -> Unit,
     onTest: () -> Unit
 ) {
-    Surface(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(21.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .65f)),
-        shadowElevation = 2.dp
+        shape = RoundedCornerShape(21.dp)
     ) {
         Column(Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(13.dp)) {
