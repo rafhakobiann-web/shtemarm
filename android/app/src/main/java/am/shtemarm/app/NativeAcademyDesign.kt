@@ -466,11 +466,12 @@ fun AcademyBookTile(book: StudyBook, onClick: () -> Unit) {
 @Composable
 fun AcademyMiniCover(subject: String, title: String) {
     val colors = when (subject) {
-        "Մաթեմատիկա" -> listOf(Color(0xFF142E37), Color(0xFF11738A))
-        "Կենսաբանություն" -> listOf(Color(0xFF073A35), Color(0xFF28A16A))
-        "Հայոց պատմություն" -> listOf(Color(0xFF322A21), Color(0xFFA77C37))
-        "Հայոց լեզու" -> listOf(Color(0xFF1B263A), Color(0xFF505EB1))
-        "Ֆիզիկա" -> listOf(Color(0xFF15313F), Color(0xFF0D8C8B))
+        "Մաթեմատիկա" -> listOf(Color(0xFF071A52), Color(0xFF2459D9), Color(0xFF55D9E8))
+        "Անգլերեն" -> listOf(Color(0xFF14265F), Color(0xFF3869E8), Color(0xFF7DD3FC))
+        "Կենսաբանություն" -> listOf(Color(0xFF073A35), Color(0xFF10785A), Color(0xFF28A16A))
+        "Հայոց պատմություն" -> listOf(Color(0xFF7F1D1D), Color(0xFFC2410C), Color(0xFFFBBF24))
+        "Հայոց լեզու" -> listOf(Color(0xFF1B263A), Color(0xFF303B78), Color(0xFF505EB1))
+        "Ֆիզիկա" -> listOf(Color(0xFF071F36), Color(0xFF136E9C), Color(0xFF27BBCE))
         else -> listOf(Color(0xFF153039), Color(0xFF147C70))
     }
     Column(
