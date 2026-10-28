@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate offline question banks
+        run: python3 android/scripts/validate_assets.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
