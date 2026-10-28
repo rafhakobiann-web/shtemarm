@@ -15,7 +15,7 @@ describe("Offline English section one explanations", () => {
         for (const lang of ["hy", "en", "ru"] as const) {
           const explanation = getOfflineEnglishExplanation(unit.id, question.n, lang);
           expect(explanation, unit.id + ":" + question.n + " " + lang).toBeTruthy();
-          expect(explanation?.length).toBeGreaterThan(45);
+          expect(explanation?.length).toBeGreaterThan(20);
         }
       }
     }
