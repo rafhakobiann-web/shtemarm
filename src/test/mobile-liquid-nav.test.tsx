@@ -73,9 +73,26 @@ describe("Liquid Glass bottom dock routes", () => {
       "aria-current", "page",
     );
     expect(dock.querySelector(".mobile-liquid-indicator")).toHaveStyle({
-      transform:"translate3d(300%, 0, 0)",
+      transform:"translate3d(1500%, 0, 0)",
     });
     view.unmount();
+  });
+
+  it("moves the active bubble by whole tab widths for every destination", () => {
+    for (const [path, expected] of [
+      ["/", "translate3d(0%, 0, 0)"],
+      ["/book/61", "translate3d(500%, 0, 0)"],
+      ["/exam/english", "translate3d(1000%, 0, 0)"],
+      ["/mini-games", "translate3d(1500%, 0, 0)"],
+      ["/study-tools", "translate3d(2000%, 0, 0)"],
+    ]) {
+      mockLocation.pathname = path;
+      const view = render(<MobileNav />);
+      expect(view.container.querySelector(".mobile-liquid-indicator")).toHaveStyle({
+        transform: expected,
+      });
+      view.unmount();
+    }
   });
 
   it("compresses downward and expands upward without removing any touch targets", () => {
