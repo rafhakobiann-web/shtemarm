@@ -1,6 +1,8 @@
 package am.shtemarm.app
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -141,6 +143,16 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
         loading = false
     }
 
+    if (mode == "match") {
+        Column(Modifier.fillMaxSize()) {
+            TextButton(onClick = { mode = "quiz" }) { Text("‹ Մինի խաղեր") }
+            Box(Modifier.weight(1f)) {
+                if (loading) CircularProgressIndicator()
+                else NativeMatchingGame(selected, questions)
+            }
+        }
+        return
+    }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Text("Մինի խաղեր", fontWeight = FontWeight.Bold, fontSize = 25.sp)
@@ -148,10 +160,14 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
         }
         item {
             Text("Խաղի տեսակ", fontWeight = FontWeight.SemiBold)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 FilterChip(selected = mode == "quiz", onClick = { mode = "quiz" }, label = { Text("Արագ հարցեր") })
                 FilterChip(selected = mode == "truth", onClick = { mode = "truth" }, label = { Text("Ճիշտ/սխալ") })
                 FilterChip(selected = mode == "cards", onClick = { mode = "cards" }, label = { Text("Քարտեր") })
+                FilterChip(selected = mode == "match", onClick = { mode = "match" }, label = { Text("Համապատասխանեցում") })
             }
         }
         item { Text("Առարկան", fontWeight = FontWeight.SemiBold) }
