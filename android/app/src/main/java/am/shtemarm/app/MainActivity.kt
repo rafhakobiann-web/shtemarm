@@ -8,155 +8,434 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.URL
 
-private val books = linkedMapOf(
-    "Անգլերեն" to listOf("book1.json","book2.json","book3.json"),
-    "Հայոց լեզու" to listOf("armenian-book1.json"),
-    "Հայոց պատմություն" to listOf("history-book1.json","history-book2.json","history-book3.json"),
-    "Կենսաբանություն" to listOf("bio-book1.json","bio-book2.json"),
-    "Ֆիզիկա" to listOf("physics-book1.json","physics-book2.json"),
-    "Քիմիա" to listOf("original-chemistry.json"),
-    "Ռուսերեն" to listOf("original-russian.json"),
-    "Աշխարհագրություն" to listOf("original-geography.json")
-)
-private data class Question(val text:String,val options:List<String>,val answer:Int)
-private suspend fun loadQuestions(file:String):List<Question> = withContext(Dispatchers.IO) {
-    try {
-        val connection = URL("https://shtemarm.lovable.app/data/$file").openConnection()
-        connection.connectTimeout=12000
-        connection.readTimeout=12000
-        val root=JSONObject(connection.getInputStream().bufferedReader().use { it.readText() })
-        val result=mutableListOf<Question>()
-        val sections=root.optJSONArray("sections") ?: return@withContext result
-        for (i in 0 until sections.length()) {
-            val units=sections.optJSONObject(i)?.optJSONArray("units") ?: continue
-            for (j in 0 until units.length()) {
-                val unit=units.optJSONObject(j) ?: continue
-                if(unit.optString("kind")!="mc" || unit.optString("passage").isNotBlank()) continue
-                val qs=unit.optJSONArray("questions") ?: continue
-                for(k in 0 until qs.length()) {
-                    val q=qs.optJSONObject(k) ?: continue
-                    val options=q.optJSONObject("options") ?: continue
-                    val keys=if(options.has("a")) listOf("a","b","c","d") else listOf("1","2","3","4")
-                    val choices=keys.map { options.optString(it) }
-                    val answerKey=q.optString("answer").trim().lowercase()
-                    val answer=keys.indexOf(answerKey)
-                    if(answer<0) continue
-                    val prompt=q.optString("stem")
-                    if(prompt.isNotBlank() && answer in 0..3 && choices.all { it.isNotBlank() } && choices.distinct().size==4)
-                        result.add(Question(prompt,choices,answer))
-                }
-            }
-        }
-        result
-    } catch (_:Exception) { emptyList() }
-}
-class MainActivity:ComponentActivity() {
-    override fun onCreate(savedInstanceState:Bundle?) {
+private val BrandBlue = Color(0xFF2563EB)
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS }
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme(colorScheme=lightColorScheme(primary=Color(0xFF2563EB))) { NativeApp() } }
+        setContent { NativeShtemarm() }
     }
 }
-@Composable private fun NativeApp() {
-    var screen by remember { mutableStateOf("home") }
-    var subject by remember { mutableStateOf("Անգլերեն") }
-    var filename by remember { mutableStateOf("") }
-    var questions by remember { mutableStateOf<List<Question>>(emptyList()) }
+
+/** Android-native UI. No WebView, Javascript or embedded website is used. */
+@Composable
+private fun NativeShtemarm() {
+    val context = LocalContext.current.applicationContext
+    val repository = remember { QuestionRepository(context) }
+    val progress = remember { StudyProgress(context) }
+    var dark by remember { mutableStateOf(progress.darkMode) }
+    var largeText by remember { mutableStateOf(progress.largeText) }
+    var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
+    var progressVersion by remember { mutableIntStateOf(0) }
+
+    var page by remember { mutableStateOf(Page.HOME) }
+    var subject by remember { mutableStateOf(BookCatalog.subjects.first()) }
+    var book by remember { mutableStateOf<StudyBook?>(null) }
+    var loaded by remember { mutableStateOf<LoadedBook?>(null) }
     var loading by remember { mutableStateOf(false) }
-    var index by remember { mutableIntStateOf(0) }
+    var loadError by remember { mutableStateOf("") }
+
+    var session by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
+    var sessionTitle by remember { mutableStateOf("") }
+    var sessionIndex by remember { mutableIntStateOf(0) }
     var chosen by remember { mutableIntStateOf(-1) }
     var score by remember { mutableIntStateOf(0) }
-    fun back() { screen=when(screen) { "quiz"->"books";"books"->"subjects";else->"home" } }
-    BackHandler(screen!="home") { back() }
-    LaunchedEffect(filename) {
-        if(filename.isNotEmpty()) {
-            loading=true
-            questions=loadQuestions(filename).shuffled()
-            index=0;chosen=-1;score=0
-            loading=false
+
+    fun back() {
+        page = when(page) {
+            Page.STUDY -> Page.SECTIONS
+            Page.RESULT -> Page.SECTIONS
+            Page.SECTIONS -> Page.BOOKS
+            Page.BOOKS -> Page.SUBJECTS
+            else -> Page.HOME
         }
     }
-    Scaffold(topBar={
-        Surface(shadowElevation=3.dp) {
-            Row(Modifier.fillMaxWidth().padding(12.dp)) {
-                if(screen!="home") TextButton(onClick={back()}) { Text("‹ Հետ") }
-                Text("Shtemarm",Modifier.padding(10.dp),fontWeight=FontWeight.Bold,fontSize=23.sp,color=Color(0xFF2563EB))
-            }
+
+    fun begin(pool: List<StudyQuestion>, count: Int, name: String) {
+        if (pool.isEmpty()) return
+        session = pool.shuffled().take(count.coerceAtLeast(1))
+        sessionTitle = name
+        sessionIndex = 0
+        chosen = -1
+        score = 0
+        page = Page.STUDY
+    }
+
+    LaunchedEffect(book) {
+        val chosenBook = book ?: return@LaunchedEffect
+        loading = true
+        loadError = ""
+        loaded = null
+        try {
+            loaded = repository.load(chosenBook)
+        } catch (e: Exception) {
+            loadError = "Չհաջողվեց բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
-    },bottomBar={
-        NavigationBar {
-            NavigationBarItem(selected=screen=="home",onClick={screen="home"},icon={Text("⌂")},label={Text("Գլխավոր")})
-            NavigationBarItem(selected=screen!="home",onClick={screen="subjects"},icon={Text("▤")},label={Text("Առարկաներ")})
-        }
-    }) { insets ->
-        Column(Modifier.fillMaxSize().padding(insets).padding(16.dp)) {
-            when(screen) {
-                "home" -> {
-                    Text("Սովորիր Shtemarm-ի հետ",fontSize=27.sp,fontWeight=FontWeight.Bold)
-                    Spacer(Modifier.height(14.dp))
-                    Text("Native Android · Քննությունների պատրաստություն")
-                    Spacer(Modifier.height(24.dp))
-                    Button(onClick={screen="subjects"},modifier=Modifier.fillMaxWidth()) { Text("Ընտրել առարկա") }
+        loading = false
+    }
+
+    BackHandler(page != Page.HOME) { back() }
+
+    val colors = if (dark) darkColorScheme(primary = Color(0xFF93C5FD))
+                 else lightColorScheme(primary = BrandBlue, surface = Color(0xFFF8FAFF))
+    val originalDensity = LocalDensity.current
+    MaterialTheme(colorScheme = colors) {
+        CompositionLocalProvider(LocalDensity provides Density(
+            originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
+        )) {
+            Scaffold(
+                topBar = {
+                    Surface(shadowElevation = 2.dp) {
+                        Row(
+                            Modifier.fillMaxWidth()
+                                .windowInsetsPadding(WindowInsets.statusBars)
+                                .height(60.dp).padding(horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (page !in listOf(Page.HOME, Page.SUBJECTS, Page.PROGRESS, Page.SETTINGS)) {
+                                IconButton(onClick = { back() }) {
+                                    Icon(Icons.Default.ArrowBack, contentDescription = "Հետ")
+                                }
+                            }
+                            Text("Shtemarm", fontSize = 23.sp, fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary)
+                            Spacer(Modifier.weight(1f))
+                            Text("Ուսում", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        }
+                    }
+                },
+                bottomBar = {
+                    NavigationBar {
+                        NavigationBarItem(selected = page == Page.HOME, onClick = { page = Page.HOME },
+                            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                            label = { Text("Գլխավոր") })
+                        NavigationBarItem(selected = page in listOf(Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.STUDY),
+                            onClick = { page = Page.SUBJECTS },
+                            icon = { Icon(Icons.Default.Book, contentDescription = null) },
+                            label = { Text("Գրքեր") })
+                        NavigationBarItem(selected = page == Page.PROGRESS, onClick = { page = Page.PROGRESS },
+                            icon = { Icon(Icons.Default.Star, contentDescription = null) },
+                            label = { Text("Արդյունքներ") })
+                        NavigationBarItem(selected = page == Page.SETTINGS, onClick = { page = Page.SETTINGS },
+                            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+                            label = { Text("Կարգավորումներ") })
+                    }
                 }
-                "subjects" -> {
-                    Text("Առարկաներ",fontSize=25.sp,fontWeight=FontWeight.Bold)
-                    LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp)) {
-                        items(books.keys.toList()) { name ->
-                            Card(Modifier.fillMaxWidth().clickable { subject=name;screen="books" }) {
-                                Text(name,Modifier.padding(20.dp),fontSize=18.sp)
+            ) { padding ->
+                when (page) {
+                    Page.HOME -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        item {
+                            Spacer(Modifier.height(10.dp))
+                            Text("Սովորի՛ր քո տեմպով", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.height(7.dp))
+                            Text("Շտեմարաններ, առաջադրանքներ և վարժանքներ՝ անմիջապես հեռախոսում։",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        item {
+                            ElevatedCard(colors = CardDefaults.elevatedCardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ), shape = RoundedCornerShape(20.dp)) {
+                                Column(Modifier.fillMaxWidth().padding(22.dp)) {
+                                    Text("Պատրա՞ստ ես սովորելու", fontSize = 21.sp, fontWeight = FontWeight.Bold)
+                                    Spacer(Modifier.height(8.dp))
+                                    Text("Առկա հարցերը պահպանված են հավելվածում և հասանելի են նաև առանց ինտերնետի։")
+                                    Spacer(Modifier.height(12.dp))
+                                    Button(onClick = { page = Page.SUBJECTS }) { Text("Բացել շտեմարանները") }
+                                }
+                            }
+                        }
+                        item { Text("Արագ մեկնարկ", fontSize = 21.sp, fontWeight = FontWeight.SemiBold) }
+                        items(BookCatalog.subjects.take(5)) { s ->
+                            SubjectCard(s) { subject = s; page = Page.BOOKS }
+                        }
+                        item {
+                            OutlinedButton(onClick = { page = Page.SUBJECTS },
+                                modifier = Modifier.fillMaxWidth()) { Text("Տեսնել բոլոր առարկաները") }
+                        }
+                    }
+                    Page.SUBJECTS -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        item { ScreenHeading("Առարկաներ", "Ընտրիր առարկան և շարունակիր վարժանքը։") }
+                        items(BookCatalog.subjects) { s ->
+                            SubjectCard(s) { subject = s; page = Page.BOOKS }
+                        }
+                        item {
+                            Text("Մաթեմատիկայի հարցերը դեռ վերափոխվում են native ձևաչափի։ Կենսաբանության 3-րդ և 4-րդ գրքերի ստուգված բանկերն առկա չեն։",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        }
+                    }
+                    Page.BOOKS -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item { ScreenHeading(subject, "Ընտրիր շտեմարան կամ թեստերի հավաքածու։") }
+                        items(BookCatalog.books.filter { it.subject == subject }) { item ->
+                            ElevatedCard(
+                                modifier = Modifier.fillMaxWidth().clickable { book = item; page = Page.SECTIONS },
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(Modifier.fillMaxWidth().padding(18.dp)) {
+                                    Text(item.title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                                    Text("Անցանց հարցաշար", fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                         }
                     }
-                }
-                "books" -> {
-                    Text(subject,fontSize=24.sp,fontWeight=FontWeight.Bold)
-                    books[subject].orEmpty().forEachIndexed { n,file ->
-                        Card(Modifier.fillMaxWidth().padding(top=12.dp).clickable { filename=file;screen="quiz" }) {
-                            Text("Շտեմարան "+(n+1),Modifier.padding(20.dp),fontSize=18.sp)
-                        }
-                    }
-                }
-                "quiz" -> {
-                    if(loading) { CircularProgressIndicator();Text("Բեռնվում է…") }
-                    else if(questions.isEmpty()) {
-                        Text("Հարցերը չբեռնվեցին։ Ստուգիր ինտերնետը։")
-                        Button(onClick={filename="";screen="books"}) { Text("Վերադառնալ") }
-                    } else if(index>=questions.size) {
-                        Text("Ավարտվեց",fontSize=26.sp,fontWeight=FontWeight.Bold)
-                        Text("Արդյունք՝ "+score+" / "+questions.size)
-                        Button(onClick={questions=questions.shuffled();index=0;chosen=-1;score=0}) { Text("Կրկին խաղալ") }
-                    } else {
-                        val q=questions[index]
-                        Text("Հարց "+(index+1)+" / "+questions.size)
-                        LinearProgressIndicator(progress={ (index+1).toFloat()/questions.size },modifier=Modifier.fillMaxWidth())
-                        Spacer(Modifier.height(16.dp))
-                        Text(q.text,fontSize=20.sp,fontWeight=FontWeight.SemiBold)
-                        Spacer(Modifier.height(14.dp))
-                        q.options.forEachIndexed { n,option ->
-                            val bg=if(chosen>=0 && n==q.answer) Color(0xFFD1FAE5)
-                                else if(chosen==n) Color(0xFFFEE2E2) else Color(0xFFF3F4F6)
-                            Card(Modifier.fillMaxWidth().padding(bottom=10.dp).clickable(enabled=chosen<0) {
-                                chosen=n
-                                if(n==q.answer) score++
-                            },colors=CardDefaults.cardColors(containerColor=bg)) {
-                                Text(option,Modifier.padding(16.dp))
+                    Page.SECTIONS -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(11.dp)
+                    ) {
+                        item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
+                        if (loading) item {
+                            LinearProgressIndicator(Modifier.fillMaxWidth())
+                            Text("Բացվում է…")
+                        } else if (loadError.isNotBlank()) item {
+                            Text(loadError, color = MaterialTheme.colorScheme.error)
+                        } else {
+                            val data = loaded
+                            if (data == null || data.allQuestions.isEmpty()) item {
+                                Text("Այս շտեմարանում դեռ չկան ամբողջությամբ պատասխանված, ցուցադրվող բազմընտրանի հարցեր։")
+                            } else {
+                                val pool = data.allQuestions
+                                item {
+                                    Text("Հասանելի հարցեր՝ " + pool.size, fontWeight = FontWeight.SemiBold)
+                                    Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                                        Button(onClick = { begin(pool, 10, "Արագ վարժանք") },
+                                            modifier = Modifier.weight(1f)) { Text("10 հարց") }
+                                        OutlinedButton(onClick = { begin(pool, 30, "Պատահական թեստ") },
+                                            modifier = Modifier.weight(1f)) { Text("30 հարց") }
+                                    }
+                                    OutlinedButton(
+                                        onClick = { begin(pool, pool.size, "Ամբողջ շտեմարան") },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) { Text("Բոլոր հասանելի հարցերը") }
+                                    Text("Պատահական թեստերը պաշտոնական քննության կառուցվածքը չեն կրկնում։",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                                }
+                                item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
+                                items(data.sections) { sec ->
+                                    ElevatedCard(
+                                        Modifier.fillMaxWidth().clickable { begin(sec.questions, sec.questions.size, sec.title) },
+                                        shape = RoundedCornerShape(15.dp)
+                                    ) {
+                                        Column(Modifier.padding(17.dp)) {
+                                            Text(sec.title, fontWeight = FontWeight.SemiBold)
+                                            Text(sec.questions.size.toString() + " հարց", fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                    }
+                                }
                             }
                         }
-                        if(chosen>=0) Button(onClick={index++;chosen=-1},modifier=Modifier.fillMaxWidth()) { Text("Հաջորդը") }
+                    }
+                    Page.STUDY -> {
+                        if (sessionIndex < session.size) {
+                            val q = session[sessionIndex]
+                            LazyColumn(
+                                Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                item {
+                                    Spacer(Modifier.height(8.dp))
+                                    Text(sessionTitle, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                                    Spacer(Modifier.height(6.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text("Հարց " + (sessionIndex + 1) + " / " + session.size,
+                                            color = MaterialTheme.colorScheme.primary)
+                                        Spacer(Modifier.weight(1f))
+                                        Text("Ճիշտ՝ " + score)
+                                    }
+                                    LinearProgressIndicator(
+                                        progress = { (sessionIndex + 1).toFloat() / session.size },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                if (q.passage.isNotBlank()) item {
+                                    ElevatedCard(shape = RoundedCornerShape(15.dp)) {
+                                        Column(Modifier.padding(16.dp)) {
+                                            Text("Տեքստ", fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary)
+                                            Spacer(Modifier.height(10.dp))
+                                            Text(q.passage, fontSize = 15.sp, lineHeight = 24.sp)
+                                        }
+                                    }
+                                }
+                                item {
+                                    Text(q.stem, fontSize = 19.sp, lineHeight = 28.sp,
+                                        fontWeight = FontWeight.SemiBold)
+                                }
+                                items(q.choices.size) { n ->
+                                    val correct = chosen >= 0 && immediateFeedback && n == q.correctIndex
+                                    val wrong = chosen == n && n != q.correctIndex && immediateFeedback
+                                    val bg = when {
+                                        correct -> Color(0xFFD1FAE5)
+                                        wrong -> Color(0xFFFEE2E2)
+                                        else -> MaterialTheme.colorScheme.surfaceContainerHigh
+                                    }
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .clickable(enabled = chosen < 0) {
+                                                chosen = n
+                                                if (n == q.correctIndex) score++
+                                            },
+                                        colors = CardDefaults.cardColors(containerColor = bg),
+                                        shape = RoundedCornerShape(14.dp)
+                                    ) {
+                                        Row(Modifier.fillMaxWidth().padding(16.dp),
+                                            verticalAlignment = Alignment.CenterVertically) {
+                                            Text(("ABCD".getOrNull(n) ?: '•').toString() + ".",
+                                                fontWeight = FontWeight.Bold, modifier = Modifier.width(30.dp))
+                                            Text(q.choices[n], fontSize = 16.sp)
+                                        }
+                                    }
+                                }
+                                if (chosen >= 0) item {
+                                    if (immediateFeedback) {
+                                        Text(if (chosen == q.correctIndex) "Ճիշտ է ✓" else "Սխալ պատասխան",
+                                            fontWeight = FontWeight.Bold)
+                                        if (q.explanation.isNotBlank()) Text(q.explanation)
+                                    }
+                                    Button(
+                                        onClick = {
+                                            if (sessionIndex + 1 >= session.size) {
+                                                progress.saveSession(subject, score, session.size)
+                                                progressVersion++
+                                                page = Page.RESULT
+                                            } else {
+                                                sessionIndex++
+                                                chosen = -1
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) { Text(if (sessionIndex + 1 == session.size) "Տեսնել արդյունքը" else "Հաջորդ հարցը") }
+                                    Spacer(Modifier.height(20.dp))
+                                }
+                            }
+                        }
+                    }
+                    Page.RESULT -> Column(
+                        Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Վարժանքն ավարտված է", fontSize = 26.sp, fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center)
+                        Spacer(Modifier.height(24.dp))
+                        Text(score.toString() + " / " + session.size,
+                            fontSize = 40.sp, fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary)
+                        Text("Ճիշտ պատասխան", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.height(26.dp))
+                        Button(onClick = { begin(session, session.size, sessionTitle) },
+                            modifier = Modifier.fillMaxWidth()) { Text("Կրկնել վարժանքը") }
+                        OutlinedButton(onClick = { page = Page.PROGRESS },
+                            modifier = Modifier.fillMaxWidth()) { Text("Իմ առաջընթացը") }
+                        TextButton(onClick = { page = Page.SECTIONS }) { Text("Վերադառնալ գրքերին") }
+                    }
+                    Page.PROGRESS -> LazyColumn(
+                        Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        item { ScreenHeading("Իմ առաջընթացը", "Արդյունքները պահվում են այս սարքում։") }
+                        items(BookCatalog.subjects) { s ->
+                            val stats = progress.stats(s)
+                            ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
+                                Column(Modifier.padding(18.dp)) {
+                                    Text(s, fontWeight = FontWeight.Bold)
+                                    Spacer(Modifier.height(6.dp))
+                                    Text("Վարժանքներ՝ " + stats.sessions +
+                                        " · Ճիշտ՝ " + stats.correct + " / " + stats.answered)
+                                    if (stats.answered > 0) {
+                                        Spacer(Modifier.height(8.dp))
+                                        LinearProgressIndicator(
+                                            progress = { stats.accuracy / 100f },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                        Text("Ճշտություն՝ " + stats.accuracy + "%", fontSize = 13.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Page.SETTINGS -> Column(
+                        Modifier.fillMaxSize().padding(padding).padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ScreenHeading("Կարգավորումներ", "Հարմարեցրու Shtemarm-ը քեզ համար։")
+                        SettingToggle("Մուգ թեմա", dark) { dark = it; progress.darkMode = it }
+                        SettingToggle("Խոշոր տեքստ", largeText) {
+                            largeText = it; progress.largeText = it
+                        }
+                        SettingToggle("Ցույց տալ ճիշտ պատասխանը", immediateFeedback) {
+                            immediateFeedback = it; progress.showAnswersImmediately = it
+                        }
+                        HorizontalDivider()
+                        Text("Հավելվածի տարբերակ՝ 0.2.0 · Native Android")
+                        Text("Հարցաշարերն աշխատում են առանց ինտերնետի։ Այս տարբերակում հաշվի համաժամեցում դեռ չկա։",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable private fun ScreenHeading(title: String, subtitle: String) {
+    Text(title, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(6.dp))
+    Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable private fun SubjectCard(subject: String, onClick: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(subject, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(BookCatalog.books.count { it.subject == subject }.toString() + " հավաքածու",
+                    fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Text("›", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+@Composable private fun SettingToggle(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 54.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, modifier = Modifier.weight(1f), fontSize = 16.sp)
+        Switch(checked = checked, onCheckedChange = onChange)
     }
 }
