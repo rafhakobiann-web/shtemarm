@@ -877,3 +877,43 @@ html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"][data
     background: var(--card) !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Scroll performance: preserve the Liquid Glass shape and reflections without
+   repainting a 25px background blur every time the document moves on Android.
+   User-selected blur-off, high-contrast and reduced-transparency keep priority.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px), (pointer: coarse) {
+  html:not(.user-high-contrast):not(.user-reduced-motion):not([data-glass-blur="off"]) .mobile-liquid-dock,
+  html:not(.user-high-contrast):not(.user-reduced-motion):not([data-glass-blur="off"])[data-surface="liquid"] .mobile-liquid-dock,
+  html:not(.user-high-contrast):not(.user-reduced-motion):not([data-glass-blur="off"])[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: blur(9px) saturate(140%) !important;
+    backdrop-filter: blur(9px) saturate(140%) !important;
+  }
+  /* The thin highlight is already drawn by the gradients; no extra filter. */
+  .mobile-liquid-dock::after { filter: none; }
+  .academy-bento, .academy-quick-action {
+    transition-property: border-color, background-color, color;
+    transition-duration: 140ms;
+  }
+  .answer-option { transform: none; }
+  .answer-option:not(:disabled):hover { transform: none; box-shadow: none; }
+  .answer-option:not(:disabled):active { opacity: .86; }
+  .test-toolbar { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Fast enough to feel responsive, without 470ms spring lag while scrolling. */
+  .mobile-liquid-dock { transition-duration: 220ms, 180ms, 180ms, 180ms; }
+  .mobile-liquid-indicator { transition-duration: 240ms, 150ms; }
+}
+/* Opt-out always wins even in vivid mode or on touch devices. */
+@media (prefers-reduced-transparency: reduce) {
+  html .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-dock,
+  html[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: var(--card) !important;
+  }
+}
