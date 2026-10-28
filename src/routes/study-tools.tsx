@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Timer, BookOpen, ClipboardList, Layers, Gamepad2, Languages } from "lucide-react";
 import { StudyTools } from "@/components/StudyTools";
+import { StudyMusicSettings } from "@/components/StudyMusicDock";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study-tools")({
   head: () => ({ meta: [
     { title: "Shtemarm · Ուսումնական գործիքներ" },
-    { name: "description", content: "Կենտրոնացման ժամանակաչափ և անհատական ուսումնական գործիքներ։" },
+    { name: "description", content: "Կենտրոնացման ժամանակաչափ, Spotify lo-fi երաժշտություն, բնության ձայներ և անհատական ուսումնական գործիքներ։" },
   ] }),
   component: StudyToolsPage,
 });
@@ -35,6 +36,7 @@ function StudyToolsPage() {
         </Link>)}
       </div>
       <StudyTools />
+      <StudyMusicSettings />
       <Link to="/" className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm font-bold transition-colors hover:bg-muted"><BookOpen className="size-4" />{tx("Ընտրել շտեմարան")}</Link>
     </div>
   );
