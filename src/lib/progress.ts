@@ -12,7 +12,39 @@ export type Progress = {
 
 const KEY = "shtemaran-progress-v1";
 const empty: Progress = { answers: {}, xp: 0, streak: 0, lastDay: "", exams: [], mode: "game" };
-let state: Progress = empty;
+
+/**
+ * Old/partial browser storage must never crash the homepage. In particular,
+ * Object.values(progress.answers) throws if a previous version saved null.
+ */
+export function normalizeProgress(value: unknown): Progress {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return { ...empty, answers: {}, exams: [] };
+  const v = value as Record<string, unknown>;
+  const candidate = v.answers && typeof v.answers === "object" && !Array.isArray(v.answers)
+    ? v.answers as Record<string, unknown> : {};
+  const answers: Record<string, 0 | 1> = {};
+  for (const [key, answer] of Object.entries(candidate).slice(-25000)) {
+    if (key.length <= 256 && (answer === 0 || answer === 1)) answers[key] = answer;
+  }
+  const number = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n >= 0 ? n : 0;
+  const exams = Array.isArray(v.exams) ? v.exams.filter(
+    (item): item is Progress["exams"][number] =>
+      item !== null && typeof item === "object" &&
+      typeof item.date === "string" && item.date.length < 40 &&
+      typeof item.book === "number" && Number.isFinite(item.book) &&
+      typeof item.score === "number" && Number.isFinite(item.score) &&
+      typeof item.total === "number" && Number.isFinite(item.total),
+  ).slice(-50) : [];
+  return {
+    answers,
+    xp: number(v.xp),
+    streak: number(v.streak),
+    lastDay: typeof v.lastDay === "string" ? v.lastDay.slice(0, 10) : "",
+    exams,
+    mode: v.mode === "classic" ? "classic" : "game",
+  };
+}
+let state: Progress = { ...empty };
 let loaded = false;
 const subs = new Set<() => void>();
 
@@ -21,7 +53,7 @@ function load() {
   loaded = true;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) state = { ...empty, ...JSON.parse(raw) };
+    if (raw) state = normalizeProgress(JSON.parse(raw));
   } catch {
     /* ignore */
   }
@@ -114,6 +146,6 @@ export async function pullAndMerge() {
   const uid = data.session?.user.id;
   if (!uid) return;
   const { data: row } = await supabase.from("user_progress").select("data").eq("user_id", uid).maybeSingle();
-  if (row?.data) state = merge(state, { ...empty, ...(row.data as unknown as Progress) });
+  if (row?.data) state = merge(state, normalizeProgress(row.data));
   persist();
 }
