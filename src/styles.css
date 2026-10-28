@@ -917,3 +917,50 @@ html[data-glass-blur="off"]:not(.user-high-contrast)[data-surface="liquid"][data
     background: var(--card) !important;
   }
 }
+
+
+/* Touch-reactive liquid surfaces: one GPU-friendly highlight per active card.
+   No layout shifts, no SVG filters and no touch-event prevention. */
+html[data-surface="liquid"] .academy-bento,
+html[data-surface="liquid"] .academy-quick-action,
+html[data-surface="liquid"] .mobile-liquid-dock,
+html[data-surface="liquid"] .site-header {
+  position: relative;
+  isolation: isolate;
+}
+html[data-surface="liquid"] .academy-bento::before,
+html[data-surface="liquid"] .academy-quick-action::before,
+html[data-surface="liquid"] .mobile-liquid-dock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(185px circle at var(--touch-x, 50%) var(--touch-y, 50%),
+    rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.075) 38%, transparent 75%);
+  transition: opacity 130ms ease-out;
+}
+html[data-surface="liquid"] [data-touch-glow="true"]::before { opacity: 1; }
+html[data-surface="liquid"] .academy-bento,
+html[data-surface="liquid"] .academy-quick-action {
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, scale 150ms ease;
+}
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  html[data-surface="liquid"] .academy-bento:active,
+  html[data-surface="liquid"] .academy-quick-action:active {
+    scale: .987;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-surface="liquid"] [data-touch-glow="true"]::before { opacity: 0; }
+  html[data-surface="liquid"] .academy-bento,
+  html[data-surface="liquid"] .academy-quick-action { transition: none !important; scale: 1 !important; }
+}
+html.user-reduced-motion [data-touch-glow="true"]::before,
+html.user-high-contrast [data-touch-glow="true"]::before,
+html[data-glass-blur="off"] [data-touch-glow="true"]::before { opacity: 0 !important; }
+@media (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] [data-touch-glow="true"]::before { opacity: 0 !important; }
+}
