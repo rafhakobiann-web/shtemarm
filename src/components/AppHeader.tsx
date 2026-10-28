@@ -25,9 +25,25 @@ export function AppHeader() {
     setHydrated(true);
   }, []);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
-    return () => data.subscription.unsubscribe();
+    let active = true;
+    // Auth events can arrive before the initial lookup finishes. Never let an
+    // older getUser response overwrite the newer signed-in/out state.
+    let authEventSeen = false;
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => {
+      authEventSeen = true;
+      if (active) setEmail(session?.user?.email ?? null);
+    });
+    void supabase.auth.getUser()
+      .then(({ data: result, error }) => {
+        if (active && !authEventSeen) setEmail(error ? null : result.user?.email ?? null);
+      })
+      .catch(() => {
+        if (active && !authEventSeen) setEmail(null);
+      });
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   const close = () => setOpen(false);
