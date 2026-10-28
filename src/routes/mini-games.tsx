@@ -6,6 +6,7 @@ import { useTx } from "@/lib/lang";
 import { SUBJECTS, QUICK_QUIZ_ITEMS, makeRound, resultPercent,
   type GameSubjectId, type QuizItem } from "@/lib/mini-game-data";
 import { TrueFalseGame, MatchingGame, FlashcardsGame } from "@/components/AdditionalMiniGames";
+import { CooperativeQuiz } from "@/components/CooperativeQuiz";
 import { bestResult, recordResult, type MiniGameMode, type MiniGameResult } from "@/lib/mini-game-progress";
 
 export const Route = createFileRoute("/mini-games")({
@@ -24,6 +25,7 @@ const MODES=[
 function MiniGamesPage(){
   const tx=useTx();
   const [game,setGame]=useState<MiniGameMode>("quiz");
+  const [cooperative,setCooperative]=useState(false);
   const [subject,setSubject]=useState<GameSubjectId>("mixed");
   const [attempt,setAttempt]=useState(0);
   const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,subject==="mixed"?20:10),
@@ -46,7 +48,7 @@ function MiniGamesPage(){
   };
   const switchGame=(id:MiniGameMode)=>{
     if(id===game)return;
-    setGame(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);setAnswers([]);
+    setCooperative(false);setGame(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);setAnswers([]);
   };
   const complete=(mode:MiniGameMode,correct:number,total:number)=>{
     setBest(recordResult(mode,subject,correct,total));
@@ -90,6 +92,13 @@ function MiniGamesPage(){
     </section>
     <section className="space-y-4">
       <h2 className="text-base font-black">{tx("Խաղի ընտրություն")}</h2>
+      <button type="button" aria-pressed={cooperative} onClick={()=>{setCooperative(v=>!v);setIndex(0);setPicked(null);setScore(0);setFinished(false);setAnswers([]);}}
+        className={"flex min-h-16 w-full items-center gap-3 rounded-2xl border-2 p-4 text-left "+
+          (cooperative?"border-primary bg-primary/10":"border-border bg-card hover:border-primary/40")}>
+        <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><Gamepad2 className="size-5"/></span>
+        <span><strong className="block">{tx("Թիմային խաղ · 2 հոգով")}</strong>
+        <span className="block text-xs text-muted-foreground">{tx("30 հարց, հերթափոխով պատասխաններ, ընդհանուր միավորներ։ Նույն սարքում՝ առանց հաշվի։")}</span></span>
+      </button>
       <div role="group" aria-label={tx("Խաղի ընտրություն")} className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {MODES.map(({id,label,icon:Icon})=><button type="button" key={id}
           aria-pressed={game===id} onClick={()=>switchGame(id)}
@@ -115,7 +124,7 @@ function MiniGamesPage(){
       <Trophy className="size-4 text-primary"/><span className="font-bold">{tx("Լավագույն արդյունք")}</span>
       <strong className="ml-auto tabular-nums">{best.correct}/{best.total} · {resultPercent(best.correct,best.total)}%</strong>
     </div>}
-    {game==="truefalse" ? <TrueFalseGame key={"tf-"+subject} subject={subject}
+    {cooperative ? <CooperativeQuiz key={"coop-"+subject} subject={subject}/> : game==="truefalse" ? <TrueFalseGame key={"tf-"+subject} subject={subject}
       onComplete={(c,t)=>complete("truefalse",c,t)}/> :
       game==="matching" ? <MatchingGame key={"pairs-"+subject} subject={subject}
         onComplete={(c,t)=>complete("matching",c,t)}/> :
