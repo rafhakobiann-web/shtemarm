@@ -103,7 +103,7 @@ private fun NativeShtemarm() {
         try {
             loaded = repository.load(chosenBook)
         } catch (e: Exception) {
-            loadError = "Չհաջողվեց բացել շտեմարանը։ " + (e.localizedMessage ?: "")
+            loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
         loading = false
     }
@@ -217,7 +217,7 @@ private fun NativeShtemarm() {
                                 }
                             }
                             item {
-                                Text("Քո ուսումնական վահանակը", fontSize = 23.sp, fontWeight = FontWeight.Black)
+                                Text("Քո ուսումնական առաջընթացը", fontSize = 23.sp, fontWeight = FontWeight.Black)
                             }
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -230,7 +230,7 @@ private fun NativeShtemarm() {
                                         }
                                         Box(Modifier.weight(1f)) {
                                             AcademyStatCard("Կրկնելու հարցեր", (answered - correct).toString(),
-                                                "Անցած վարժանքներից", Icons.Default.Settings)
+                                                "Ավարտված վարժանքներից", Icons.Default.Settings)
                                         }
                                     }
                                 }
@@ -370,7 +370,7 @@ private fun NativeShtemarm() {
                         } else {
                             val data = loaded
                             if (data == null || data.allQuestions.isEmpty()) item {
-                                Text("Այս շտեմարանում դեռ չկան ամբողջությամբ պատասխանված, ցուցադրվող բազմընտրանի հարցեր։")
+                                Text("Այս գրքում առայժմ ստուգված բազմընտրանի հարցեր հասանելի չեն։")
                             } else {
                                 val pool = data.allQuestions
                                 item {
@@ -385,7 +385,7 @@ private fun NativeShtemarm() {
                                         onClick = { begin(pool, pool.size, "Ամբողջ շտեմարան") },
                                         modifier = Modifier.fillMaxWidth()
                                     ) { Text("Բոլոր հասանելի հարցերը") }
-                                    Text("Պատահական թեստերը պաշտոնական քննության կառուցվածքը չեն կրկնում։",
+                                    Text("Սրանք ուսումնական թեստեր են․ դրանք չեն կրկնում ԳԹԿ պաշտոնական քննության ամբողջ կառուցվածքը։",
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
@@ -507,7 +507,7 @@ private fun NativeShtemarm() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("Վարժանքն ավարտված է", fontSize = 26.sp, fontWeight = FontWeight.Bold,
+                        Text("Վարժանքն ավարտվեց", fontSize = 26.sp, fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center)
                         Spacer(Modifier.height(24.dp))
                         Text(score.toString() + " / " + session.size,
@@ -527,7 +527,7 @@ private fun NativeShtemarm() {
                             Text("Մոտավոր CEFR մակարդակ՝ " + estimate,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.SemiBold)
-                            Text("Սա միայն մոտավոր գնահատում է, ոչ պաշտոնական լեզվական հավաստագիր։",
+                            Text("Սա մոտավոր գնահատական է և չի համարվում լեզվի իմացության պաշտոնական հավաստագիր։",
                                 fontSize = 12.sp, textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -552,7 +552,7 @@ private fun NativeShtemarm() {
                         item { ScreenHeading("Պահպանված հարցերը", "Կրկնիր նշված հարցերը՝ առանց ինտերնետի։") }
                         if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                         else if (savedQuestions.isEmpty()) item {
-                            Text("Դեռ պահպանված հարցեր չկան։ Վարժանքի ընթացքում սեղմիր ☆ կոճակը։")
+                            Text("Դու դեռ հարցեր չես պահպանել։ Վարժանքի ընթացքում սեղմիր «Պահպանել հարցը» կոճակը։")
                         } else {
                             item {
                                 Text("Պահպանված՝ " + savedQuestions.size, fontWeight = FontWeight.Bold)
@@ -597,7 +597,7 @@ private fun NativeShtemarm() {
                                             progress = { stats.accuracy / 100f },
                                             modifier = Modifier.fillMaxWidth()
                                         )
-                                        Text("Ճշտություն՝ " + stats.accuracy + "%", fontSize = 13.sp)
+                                        Text("Ճիշտ պատասխանների տոկոսը՝ " + stats.accuracy + "%", fontSize = 13.sp)
                                     }
                                 }
                             }
