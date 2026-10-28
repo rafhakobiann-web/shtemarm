@@ -9,7 +9,7 @@ import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/Unit
 import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
   validateSearch: z.object({ mode: z.enum(["game", "classic"]).catch("game") }),
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/study/$bookId/$sectionId")({
 
 function StudyPage() {
   const tx = useTx();
+  const lang = useLang();
   const { bookId, sectionId } = Route.useParams();
   const { mode } = Route.useSearch();
   const { data: book, error, isPending, refetch } = useBook(Number(bookId));
@@ -55,6 +56,11 @@ function StudyPage() {
           ))}
         </div>
       </div>
+      {[1, 2, 3].includes(Number(bookId)) && <Link to="/english-grammar"
+        search={{book:Number(bookId),section:Number(sectionId),topic:undefined}}
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
+        {lang==="en"?"Learn rules for this section":lang==="ru"?"Правила этого раздела":"Սովորել այս բաժնի կանոնները"}
+      </Link>}
       {error && !book ? (
         <LoadError onRetry={() => void refetch()} detail={error instanceof Error ? error.message : String(error)} />
       ) : isPending && !book ? (
