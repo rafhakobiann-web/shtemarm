@@ -20,7 +20,7 @@ import org.json.JSONObject
  * Scores ONLY source-verified, complete multiple-choice questions.
  * Missing transcription or answer keys are never guessed.
  */
-private suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
+internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
     withContext(Dispatchers.IO) {
         val index = context.assets.open("math-books-index.json").bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
