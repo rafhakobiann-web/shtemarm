@@ -1,0 +1,30 @@
+name: Verify Liquid Glass mobile navigation
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/MobileNav.tsx'
+      - 'src/styles.css'
+      - 'src/lib/theme.ts'
+      - 'src/test/mobile-liquid-nav.test.tsx'
+      - 'src/test/theme.test.ts'
+      - '.github/workflows/verify-liquid-mobile-nav.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Verify routes, dock animations and appearance preferences
+        run: bunx vitest run src/test/mobile-liquid-nav.test.tsx src/test/theme.test.ts src/test/app-routing.test.tsx
+      - name: Build application
+        run: bun run build
