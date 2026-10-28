@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
+import { recordMathMistake } from "@/lib/mathMistakes";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -174,6 +175,7 @@ function PlayPage() {
   const q = useIndex();
   const { progress, setAnswer, addExam } = useMathProgress();
   const tx = useTx();
+  const lang = useLang();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
 
   useEffect(() => {
@@ -212,12 +214,28 @@ function PlayPage() {
   const sectionHref = `/math/books?book=${params.book}&sec=${params.chapter}-${params.section}`;
   const bookTitle = q.data.books[params.book]?.title ?? "";
   const correctOf = (it: Item, v: string | undefined) => v !== undefined && it.answer !== undefined && isRight(it.answer, v);
+  const rememberWrongAnswer = (item:Item,chosen:string) => {
+    if (!item.answer || correctOf(item,chosen)) return;
+    if (item.bookId!=="matem-1" && item.bookId!=="matem-2") return;
+    const [book,chapter,section]=item.id.split(":");
+    if (book!==item.bookId) return;
+    recordMathMistake({
+      id:item.id,book:item.bookId,chapter:Number(chapter),section:Number(section),
+      task:item.task,sub:item.sub,prompt:item.prompt,options:item.options,
+      kind:item.open||isShortAnswer(item.answer)?"open":item.answer==="T"||item.answer==="F"?"tf":"choice",
+      chosen,correct:item.answer,
+    });
+  };
 
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <a href={sectionHref} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 shrink-0" />
         <span className="truncate">{bookTitle} · {tx("Բաժին {n}", { n: params.section })}</span>
+      </a>
+      <a href={`/math-handbook?book=${params.book}&chapter=${params.chapter}&section=${params.section}`}
+        className="inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+        {lang==="en"?"Learn the methods for this section":lang==="ru"?"Изучить правила этого раздела":"Սովորել այս բաժնի բանաձևերն ու կանոնները"}
       </a>
       {!isTest && (
         <div className="flex rounded-2xl bg-muted/70 p-1 text-sm font-bold">
@@ -245,6 +263,10 @@ function PlayPage() {
         ))}
         {!submitted ? (
           <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={() => {
+            round.forEach(item=>{
+              const chosen=testAnswers[item.id];
+              if(chosen!==undefined)rememberWrongAnswer(item,chosen);
+            });
             setSubmitted(true);
             addExam(round.filter((x) => correctOf(x, testAnswers[x.id])).length, round.length);
           }}>{tx("Ավարտել")}</Button>
@@ -268,6 +290,7 @@ function PlayPage() {
     if (correctOf(it, v)) {
       setStreak((s) => s + 1);
     } else {
+      rememberWrongAnswer(it,v);
       setStreak(0);
       setLives((l) => Math.max(0, l - 1));
     }

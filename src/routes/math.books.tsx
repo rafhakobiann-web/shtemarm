@@ -7,7 +7,8 @@ import { MathDemandReference } from "@/components/MathDemandReference";
 import { ArrowLeft, BookText, Calculator, ClipboardCheck, Gamepad2, Loader2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MathExplain, taskPages } from "@/components/MathExplain";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
+import { recordMathMistake } from "@/lib/mathMistakes";
 
 export const Route = createFileRoute("/math/books")({
   head: () => ({
@@ -150,6 +151,18 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
   const subs = task.answers ? task.answers.length : task.sub_count;
   const isTF = task.answers?.some((a) => a === "T" || a === "F") ?? false;
   const label = tx("Մաթեմատիկա • Մաս {m} • Գլուխ {c} • Բաժին {s} • Առաջադրանք {t} • Հարցեր 1–{k}", { m: bookNo, c: sec.chapter, s: sec.section, t: task.task, k: subs });
+  const answerAndRemember = (id:string, value:string, sub:number, correct:string|undefined) => {
+    if (correct !== undefined && !isRight(correct,value) && (bookId==="matem-1"||bookId==="matem-2")) {
+      const source=task.questions?.[sub-1];
+      recordMathMistake({
+        id,book:bookId,chapter:sec.chapter,section:sec.section,task:task.task,sub,
+        prompt:source?.prompt,options:source?.options,
+        kind:shortSection||isShortAnswer(correct)?"open":correct==="T"||correct==="F"?"tf":"choice",
+        chosen:value,correct
+      });
+    }
+    onAnswer(id,value);
+  };
 
   return (
     <article className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
@@ -182,7 +195,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           if (shortSection || (correct !== undefined && isShortAnswer(correct))) {
             return (
               <Fragment key={n}>
-                <ShortAnswerRow id={id} n={n} saved={saved[id]} correct={correct} onAnswer={onAnswer} />
+                <ShortAnswerRow id={id} n={n} saved={saved[id]} correct={correct} onAnswer={(rowId,value)=>answerAndRemember(rowId,value,n,correct)} />
                 {explainFor()}
               </Fragment>
             );
@@ -203,7 +216,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                     key={c}
                     type="button"
                     disabled={chosen !== undefined || !correct}
-                    onClick={() => onAnswer(id, c)}
+                    onClick={() => answerAndRemember(id,c,n,correct)}
                     className={`min-h-10 min-w-0 rounded-xl border-2 px-2 py-2 text-center text-sm font-bold leading-snug transition sm:px-3 ${
                       isRight_ ? "border-emerald-600 bg-emerald-50 text-emerald-800"
                       : isWrong ? "border-red-500 bg-red-50 text-red-700"
@@ -227,6 +240,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
 function BooksPage() {
   const q = useIndex();
   const tx = useTx();
+  const lang = useLang();
   const questionCounts = useMemo(() => {
     const out: Record<string, number> = {};
     if (!q.data) return out;
@@ -303,6 +317,12 @@ function BooksPage() {
         )}
       </div>
 
+      <Link to="/math-handbook"
+        search={{book:bookId==="matem-2"?"matem-2":"matem-1",chapter:section?.chapter??1,section:section?.section??1,topic:undefined}}
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+        <BookText className="size-4"/>
+        {lang==="en"?"Mathematics rules & worked examples":lang==="ru"?"Формулы и разобранные примеры":"Մաթեմատիկայի բանաձևեր և լուծված օրինակներ"}
+      </Link>
       {!bookId && (
         <section className="space-y-5">
           <h2 className="text-xl font-bold sm:text-2xl">{tx("Ընտրիր շտեմարանը")}</h2>
