@@ -157,21 +157,21 @@ private fun NativeShtemarm() {
                 when (page) {
                     Page.ADVANCED -> {
                         val activeBook = book
-                        if (activeBook != null) NativeAdvancedPractice(activeBook) { page = Page.SECTIONS }
+                        if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
                     }
-                    Page.MATH -> NativeMath(if (book?.title?.contains("Մաս 2") == true) 2 else 1)
-                    Page.EXAMS -> NativeExams(repository) { selectedSubject, pool, count, name ->
+                    Page.MATH -> Box(Modifier.fillMaxSize().padding(padding)) { NativeMath(if (book?.title?.contains("Մաս 2") == true) 2 else 1) }
+                    Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
-                    }
-                    Page.GAMES -> NativeGames(repository) { selectedSubject, pool, count, name ->
+                    } }
+                    Page.GAMES -> Box(Modifier.fillMaxSize().padding(padding)) { NativeGames(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
-                    }
-                    Page.TOOLS -> NativeTools(repository) { selectedSubject, pool, count, name ->
+                    } }
+                    Page.TOOLS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeTools(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
-                    }
+                    } }
                     Page.HOME -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
