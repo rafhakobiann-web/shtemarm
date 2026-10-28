@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History, Headphones } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Timer, Bookmark, History } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
