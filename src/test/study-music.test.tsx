@@ -145,7 +145,7 @@ describe("original procedural ambient audio (not copied from YouTube)",()=>{
 
   it("vendors the actual MIT-licensed Howler.js release, loaded lazily",()=>{
     expect(readFileSync("public/vendor/howler.core.min.js","utf8")).toContain("howler.js v2.2.4");
-    expect(readFileSync("public/vendor/HOWLER-LICENSE.md","utf8")).toContain("MIT");
+    expect(readFileSync("public/vendor/HOWLER-LICENSE.md","utf8")).toContain("Permission is hereby granted");
     expect(readFileSync("src/lib/study-ambience.ts","utf8")).toContain('src:[url],format:["wav"]');
   });
 });
