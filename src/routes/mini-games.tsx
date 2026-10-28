@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Brain, CheckCircle2, Gamepad2, Layers3, RotateCcw, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Brain, CheckCircle2, Gamepad2, Layers3, RotateCcw, Sparkles, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTx } from "@/lib/lang";
 import { SUBJECTS, QUICK_QUIZ_ITEMS, makeRound, resultPercent,
   type GameSubjectId, type QuizItem } from "@/lib/mini-game-data";
 import { TrueFalseGame, MatchingGame, FlashcardsGame } from "@/components/AdditionalMiniGames";
+import { CooperativeQuiz } from "@/components/CooperativeQuiz";
 import { bestResult, recordResult, type MiniGameMode, type MiniGameResult } from "@/lib/mini-game-progress";
 
 export const Route = createFileRoute("/mini-games")({
@@ -19,14 +20,15 @@ const MODES=[
   {id:"truefalse",label:"Ճիշտ թե սխալ",icon:CheckCircle2},
   {id:"matching",label:"Համապատասխանեցում",icon:Layers3},
   {id:"flashcards",label:"Հիշողության քարտեր",icon:Brain},
-] as const satisfies readonly {id:MiniGameMode;label:string;icon:typeof Brain}[];
+  {id:"coop",label:"Թիմային խաղ",icon:Users},
+] as const satisfies readonly {id:MiniGameMode | "coop";label:string;icon:typeof Brain}[];
 
 function MiniGamesPage(){
   const tx=useTx();
-  const [game,setGame]=useState<MiniGameMode>("quiz");
+  const [game,setGame]=useState<MiniGameMode | "coop">("quiz");
   const [subject,setSubject]=useState<GameSubjectId>("mixed");
   const [attempt,setAttempt]=useState(0);
-  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,subject==="mixed"?20:10),
+  const questions=useMemo(()=>makeRound(QUICK_QUIZ_ITEMS,subject,subject==="mixed"?50:30),
     [subject,attempt]);
   const [index,setIndex]=useState(0);
   const [picked,setPicked]=useState<string|null>(null);
@@ -34,7 +36,7 @@ function MiniGamesPage(){
   const [finished,setFinished]=useState(false);
   const [answers,setAnswers]=useState<Response[]>([]);
   const [best,setBest]=useState<MiniGameResult|null>(null);
-  useEffect(()=>{setBest(bestResult(game,subject));},[game,subject]);
+  useEffect(()=>{setBest(game==="coop"?null:bestResult(game,subject));},[game,subject]);
   const current=questions[index];
   const reset=()=>{
     setAttempt(n=>n+1);setIndex(0);setPicked(null);setScore(0);
@@ -44,7 +46,7 @@ function MiniGamesPage(){
     if(id===subject)return;
     setSubject(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);setAnswers([]);
   };
-  const switchGame=(id:MiniGameMode)=>{
+  const switchGame=(id:MiniGameMode | "coop")=>{
     if(id===game)return;
     setGame(id);setIndex(0);setPicked(null);setScore(0);setFinished(false);setAnswers([]);
   };
@@ -90,7 +92,7 @@ function MiniGamesPage(){
     </section>
     <section className="space-y-4">
       <h2 className="text-base font-black">{tx("Խաղի ընտրություն")}</h2>
-      <div role="group" aria-label={tx("Խաղի ընտրություն")} className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div role="group" aria-label={tx("Խաղի ընտրություն")} className="grid grid-cols-2 gap-2 lg:grid-cols-5">
         {MODES.map(({id,label,icon:Icon})=><button type="button" key={id}
           aria-pressed={game===id} onClick={()=>switchGame(id)}
           className={"flex min-h-16 min-w-0 items-center justify-center gap-2 rounded-2xl border p-3 text-center text-xs font-bold transition-colors sm:min-h-20 sm:text-sm "+
@@ -115,7 +117,8 @@ function MiniGamesPage(){
       <Trophy className="size-4 text-primary"/><span className="font-bold">{tx("Լավագույն արդյունք")}</span>
       <strong className="ml-auto tabular-nums">{best.correct}/{best.total} · {resultPercent(best.correct,best.total)}%</strong>
     </div>}
-    {game==="truefalse" ? <TrueFalseGame key={"tf-"+subject} subject={subject}
+    {game==="coop" ? <CooperativeQuiz key={"coop-"+subject} subject={subject}/> :
+      game==="truefalse" ? <TrueFalseGame key={"tf-"+subject} subject={subject}
       onComplete={(c,t)=>complete("truefalse",c,t)}/> :
       game==="matching" ? <MatchingGame key={"pairs-"+subject} subject={subject}
         onComplete={(c,t)=>complete("matching",c,t)}/> :
