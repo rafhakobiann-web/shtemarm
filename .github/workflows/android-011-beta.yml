@@ -73,6 +73,11 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
+          # The default 6-GiB userdata image could not fit on the hosted runner.
+          # 2 GiB is sufficient for an offline 20-MB app and a startup smoke test.
+          disk-size: 2048M
+          ram-size: 1536M
+          heap-size: 256M
           emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           script: bash android/scripts/smoke_011.sh
       - name: Upload emulator smoke-test evidence
