@@ -37,6 +37,7 @@ function AboutPage() {
         <p className="mt-3 leading-relaxed text-muted-foreground">{tx("Shtemarm-ը ստեղծվել է աշակերտների համար՝ քննություններին պատրաստվելն ավելի մատչելի և հարմար դարձնելու նպատակով։ Նախագիծը շարունակաբար զարգացվում է, և օգտատերերի առաջարկները օգնում են որոշել հաջորդ բարելավումները։")}</p>
         <a href="https://www.tiktok.com/@shtemarm_official" target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-transform hover:-translate-y-0.5"><MessageCircle className="size-4" />@shtemarm_official</a>
       </section>
+      <Link to="/support" className="inline-flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/20"><HeartHandshake className="size-4" />{tx("Աջակցել Shtemarm-ին")}</Link>
       <Link to="/feedback" className="inline-flex items-center gap-2 rounded-xl border bg-background px-4 py-3 text-sm font-bold transition-colors hover:bg-muted"><MessageCircle className="size-4" />{tx("Կապ մեզ հետ")}</Link>
     </div>
   );
