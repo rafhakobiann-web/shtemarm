@@ -15,6 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
+private object VerifiedMathCache {
+    // The two official book parts are large; parse each at most once per process.
+    private val byPart = mutableMapOf<Int, LoadedBook>()
+    fun get(part: Int): LoadedBook? = synchronized(byPart) { byPart[part] }
+    fun put(part: Int, book: LoadedBook) { synchronized(byPart) { byPart[part] = book } }
+}
+
 /**
  * Mirrors src/lib/math-bank.ts mergeMathQuestions on native Android.
  * Scores ONLY source-verified, complete multiple-choice questions.
@@ -22,6 +29,7 @@ import org.json.JSONObject
  */
 internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
     withContext(Dispatchers.IO) {
+        VerifiedMathCache.get(part)?.let { return@withContext it }
         val index = context.assets.open("math-books-index.json").bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
         val textBank = context.assets.open("math-text-questions.json").bufferedReader(Charsets.UTF_8)
@@ -86,7 +94,7 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
                 )
             }
         }
-        LoadedBook(result)
+        LoadedBook(result).also { VerifiedMathCache.put(part, it) }
     }
 
 @Composable
@@ -99,6 +107,7 @@ fun NativeMathPractice(
     var loading by remember(bookPart) { mutableStateOf(true) }
     var error by remember(bookPart) { mutableStateOf("") }
     var showUnscoredReader by remember(bookPart) { mutableStateOf(false) }
+    var chapterQuery by remember(bookPart) { mutableStateOf("") }
 
     LaunchedEffect(bookPart) {
         loading = true
@@ -165,7 +174,24 @@ fun NativeMathPractice(
                     Text("Ուսումնական թեստը ԳԹԿ քննության պաշտոնական կառուցվածքը չի կրկնում։",
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 }
-                items(sections.size) { index ->
+                item {
+                    OutlinedTextField(
+                        value = chapterQuery,
+                        onValueChange = { chapterQuery = it.take(100) },
+                        label = { Text("Փնտրել մաթեմատիկայի բաժին") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                val visible = sections.indices.filter { index ->
+                    BookStudyHelpers.matches(chapterQuery, sections[index].title)
+                }
+                if (visible.isEmpty()) item {
+                    Text("Այս անվանումով բաժին չգտնվեց։",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                items(visible.size) { visibleIndex ->
+                    val index = visible[visibleIndex]
                     val section = sections[index]
                     AcademyBookSectionCard(
                         index = index + 1,
