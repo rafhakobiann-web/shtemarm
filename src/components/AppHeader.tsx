@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -75,6 +75,16 @@ export function AppHeader() {
             <span className="hidden text-muted-foreground md:inline">· {t.level} {level(p.xp)}</span>
           </span>
 
+          <Link
+            to="/download"
+            title={lang === "en" ? "Download Shtemarm" : lang === "ru" ? "Скачать Shtemarm" : "Ներբեռնել Shtemarm-ը"}
+            aria-label={lang === "en" ? "Download app" : lang === "ru" ? "Скачать приложение" : "Ներբեռնել հավելվածը"}
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-primary/25 bg-primary/10 px-2.5 text-xs font-extrabold text-primary transition-colors hover:bg-primary/15 sm:px-3"
+          >
+            <Download className="size-[18px] shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">{lang === "en" ? "Download" : lang === "ru" ? "Скачать" : "Ներբեռնել"}</span>
+          </Link>
+
           <Sheet open={open} onOpenChange={setOpen}>
             <Button variant="outline" size="icon" className="size-11 rounded-xl border-primary/15 bg-muted/35 hover:bg-primary/10" aria-label={t.openMenu} onClick={() => setOpen(true)}>
               <Menu className="size-5" />
@@ -88,6 +98,14 @@ export function AppHeader() {
               <Link to="/auth" onClick={close} className={item}>
                 <User className="size-4" />
                 <span className="truncate">{email ?? t.account}</span>
+              </Link>
+              <Link
+                to="/download"
+                onClick={close}
+                className="flex min-h-12 items-center gap-3 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2.5 text-sm font-extrabold text-primary transition-colors hover:bg-primary/15"
+              >
+                <Download className="size-5" aria-hidden="true" />
+                {lang === "en" ? "Download Shtemarm" : lang === "ru" ? "Скачать Shtemarm" : "Ներբեռնել հավելվածը"}
               </Link>
 
               <div className="space-y-1">
