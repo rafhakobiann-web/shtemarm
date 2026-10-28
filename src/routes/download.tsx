@@ -171,15 +171,20 @@ function DownloadPage() {
             <h2 id="web-app-title" className="text-xl font-black">{text.web}</h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">{text.webInfo}</p>
           </div>
-          <button
-            type="button"
-            disabled={!installable || installed}
-            onClick={launchInstall}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground enabled:hover:bg-primary/90 disabled:cursor-default disabled:opacity-65"
-          >
-            {installed ? <CheckCircle2 className="size-5" /> : <Download className="size-5" />}
-            {installed ? text.installed : installable ? text.install : text.manual}
-          </button>
+          {installable && !installed ? (
+            <button
+              type="button"
+              onClick={launchInstall}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+            >
+              <Download className="size-5" />{text.install}
+            </button>
+          ) : (
+            <p className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-bold text-primary">
+              {installed ? <CheckCircle2 className="size-5" /> : <MonitorDown className="size-5" />}
+              {installed ? text.installed : text.manual}
+            </p>
+          )}
           <p className="text-sm leading-6 text-muted-foreground">{text.noPrompt}</p>
           <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-muted-foreground">
             <li>{text.androidSteps}</li>
