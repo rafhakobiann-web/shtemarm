@@ -79,7 +79,7 @@ private fun NativeShtemarm() {
 
     fun begin(pool: List<StudyQuestion>, count: Int, name: String) {
         if (pool.isEmpty()) return
-        sessionOrigin = page
+        if (page != Page.RESULT) sessionOrigin = page
         session = pool.shuffled().take(count.coerceAtLeast(1))
         sessionTitle = name
         sessionIndex = 0
@@ -426,6 +426,13 @@ private fun NativeShtemarm() {
                         Spacer(Modifier.height(26.dp))
                         Button(onClick = { begin(session, session.size, sessionTitle) },
                             modifier = Modifier.fillMaxWidth()) { Text("Կրկնել վարժանքը") }
+                        val missed = session.filter { it.id !in correctIds }
+                        if (missed.isNotEmpty()) {
+                            OutlinedButton(
+                                onClick = { begin(missed, missed.size, "Սխալների կրկնություն") },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Կրկնել սխալ պատասխանները · " + missed.size) }
+                        }
                         OutlinedButton(onClick = { page = Page.PROGRESS },
                             modifier = Modifier.fillMaxWidth()) { Text("Իմ առաջընթացը") }
                         TextButton(onClick = { page = sessionOrigin }) { Text("Վերադառնալ") }
