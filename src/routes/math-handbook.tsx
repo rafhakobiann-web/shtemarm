@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { ArrowLeft, BookOpenText, Search, CheckCircle2, AlertTriangle, GraduationCap, Calculator, ExternalLink } from "lucide-react";
@@ -10,6 +10,7 @@ import type { MathLocale, MathCategory, MathTopic, MathText } from "@/lib/mathHa
 import type { MathHandbookSection } from "@/lib/mathHandbookSections";
 import { MathContent } from "@/components/MathText";
 import { useLang } from "@/lib/lang";
+import { getMathMistakes, MATH_MISTAKES_CHANGED } from "@/lib/mathMistakes";
 
 const schema = z.object({
   book: z.enum(["matem-1", "matem-2"]).catch("matem-1"),
@@ -33,7 +34,7 @@ const LABELS = {
     all:"Բոլոր թեմաները", formula:"Բանաձև", problem:"Լուծված օրինակ", steps:"Լուծման քայլերը", result:"Պատասխան", mistake:"Տարածված սխալ",
     goBook:"Բացել բաժնի բոլոր առաջադրանքները", practice:"Լուծել խաղային ռեժիմով", test:"Անցնել բաժնի թեստը",
     tip:"Թեմաները կապված են բաժնի բովանդակության հետ։ Օրինակները ձեռնարկի հեղինակային օրինակներ են, ոչ թե բնօրինակ շտեմարանի յուրաքանչյուր հարցի անհատական լուծումներ։",
-    notFound:"Համապատասխան թեմա չգտնվեց։ Փորձիր այլ որոնում։", topics:"Կանոններ և մեթոդներ",
+    notFound:"Համապատասխան թեմա չգտնվեց։ Փորձիր այլ որոնում։", topics:"Կանոններ և մեթոդներ", review:"Սխալների տետր",
   },
   en: {
     home:"Home", title:"Mathematics learning handbook", subtitle:"2 question books · formulas and worked examples · no AI",
@@ -41,7 +42,7 @@ const LABELS = {
     all:"All topics", formula:"Formula", problem:"Worked example", steps:"Solution steps", result:"Answer", mistake:"Common mistake",
     goBook:"Open this section's exercises", practice:"Practise in game mode", test:"Take a section test",
     tip:"Topics are related to each section. Worked examples are original teaching examples, not individual solutions to every source question.",
-    notFound:"No matching lesson. Try another search.", topics:"Rules and methods",
+    notFound:"No matching lesson. Try another search.", topics:"Rules and methods", review:"Mistake notebook",
   },
   ru: {
     home:"Главная", title:"Справочник по математике", subtitle:"2 сборника · формулы и решения по шагам · без ИИ",
@@ -49,7 +50,7 @@ const LABELS = {
     all:"Все темы", formula:"Формула", problem:"Разобранный пример", steps:"Шаги решения", result:"Ответ", mistake:"Типичная ошибка",
     goBook:"Открыть задания раздела", practice:"Практика в игровом режиме", test:"Пройти тест раздела",
     tip:"Темы привязаны к разделам. Разобранные примеры — авторские учебные задачи, а не решения каждого задания сборника.",
-    notFound:"Тема не найдена. Попробуйте другой запрос.", topics:"Правила и методы",
+    notFound:"Тема не найдена. Попробуйте другой запрос.", topics:"Правила и методы", review:"Тетрадь ошибок",
   },
 } as const;
 const CATEGORIES: Record<MathCategory, MathText> = {
@@ -108,6 +109,13 @@ function MathHandbookPage() {
   const {book,chapter,section,topic:topicId}=Route.useSearch();
   const [query,setQuery]=useState("");
   const [showAll,setShowAll]=useState(false);
+  const [pendingCount,setPendingCount]=useState(0);
+  useEffect(()=>{
+    const refresh=()=>setPendingCount(getMathMistakes().filter(m=>!m.mastered).length);
+    refresh();
+    window.addEventListener(MATH_MISTAKES_CHANGED,refresh);
+    return ()=>window.removeEventListener(MATH_MISTAKES_CHANGED,refresh);
+  },[]);
   const sections=MATH_HANDBOOK_SECTIONS.filter(s=>s.book===book);
   const grouped=useMemo(()=>{
     const groups=new Map<number,MathHandbookSection[]>();
@@ -134,6 +142,9 @@ function MathHandbookPage() {
         <div><h1 className="text-2xl font-black sm:text-3xl">{t.title}</h1><p className="text-sm text-muted-foreground">{t.subtitle}</p></div>
       </div>
       <p className="text-sm leading-relaxed text-muted-foreground">{t.tip}</p>
+      <Link to="/math-review" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+        <CheckCircle2 className="size-4"/>{t.review}{pendingCount>0?` · ${pendingCount}`:""}
+      </Link>
     </header>
     <div className="grid gap-4 md:grid-cols-[18rem_minmax(0,1fr)] md:items-start">
       <aside className="space-y-4 rounded-3xl border bg-card p-4 md:sticky md:top-24">
