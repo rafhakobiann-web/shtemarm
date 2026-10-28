@@ -121,6 +121,39 @@ class QuestionRepository(private val context: Context) {
         parsed
     }
 
+    /** Unified verified question source for exams, games, and study generators. */
+    suspend fun sectionsForSubject(subject: String): List<StudySection> =
+        withContext(Dispatchers.IO) {
+            val sections = mutableListOf<StudySection>()
+            if (subject == "Մաթեմատիկա") {
+                for (part in 1..2) {
+                    try {
+                        sections += loadScoredMath(context, part).sections.map {
+                            it.copy(title = "Մաս $part · " + it.title)
+                        }
+                    } catch (_: Exception) { /* Other verified parts remain available. */ }
+                }
+            } else {
+                for (book in BookCatalog.books.filter {
+                    it.subject == subject
+                }.distinctBy { it.asset }) {
+                    try {
+                        sections += load(book).sections.map {
+                            it.copy(title = book.title + " · " + it.title)
+                        }
+                    } catch (_: Exception) { /* Do not hide other accessible books. */ }
+                }
+            }
+            sections
+        }
+
+    suspend fun practiceForSubject(subject: String): List<StudyQuestion> =
+        withContext(Dispatchers.IO) {
+            BookStudyHelpers.uniquePracticeQuestions(
+                sectionsForSubject(subject).flatMap { it.questions }
+            )
+        }
+
     private fun parseUnit(
         source: String, section: Int, unitIndex: Int,
         unit: JSONObject, output: MutableList<StudyQuestion>
