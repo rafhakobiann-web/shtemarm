@@ -1,0 +1,36 @@
+name: Verify mathematics handbook and mistake review
+on:
+  pull_request:
+    paths:
+      - 'src/lib/mathHandbook*'
+      - 'src/lib/mathMistakes.ts'
+      - 'src/routes/math-handbook.tsx'
+      - 'src/routes/math-review.tsx'
+      - 'src/routes/math.books.tsx'
+      - 'src/routes/math.play.tsx'
+      - 'src/components/MathExplain.tsx'
+      - 'src/test/math-handbook.test.ts'
+      - '.github/workflows/verify-math-handbook.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/lib/mathHandbook*'
+      - 'src/lib/mathMistakes.ts'
+      - 'src/routes/math-handbook.tsx'
+      - 'src/routes/math-review.tsx'
+      - 'src/test/math-handbook.test.ts'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/math-handbook.test.ts
+      - run: bun run build
