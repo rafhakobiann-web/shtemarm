@@ -32,12 +32,15 @@ object BookCatalog {
         StudyBook("Հայոց պատմություն", "Շտեմարան 2", "history-book2.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 3", "history-book3.json"),
         StudyBook("Հայոց պատմություն", "2026 թեստերի հարցեր", "history-tests.json"),
+        StudyBook("Հայոց պատմություն", "Ստուգված հարցաշար · Մաս 1", "history-bank-book1.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 1", "bio-book1.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 2", "bio-book2.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 1", "physics-book1.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 2", "physics-book2.json"),
         StudyBook("Ֆիզիկա", "Բնօրինակ · Մաս 1", "physics-original-book1.json"),
         StudyBook("Ֆիզիկա", "Բնօրինակ · Մաս 2", "physics-original-book2.json"),
+        StudyBook("Ֆիզիկա", "Սկզբնաղբյուրից ստուգված հարցեր", "physics-original-transcribed.json"),
+        StudyBook("Ֆիզիկա", "Լրացուցիչ վարժություններ", "original-physics.json"),
         StudyBook("Քիմիա", "Հարցերի հավաքածու", "original-chemistry.json"),
         StudyBook("Աշխարհագրություն", "Հարցերի հավաքածու", "original-geography.json"),
         StudyBook("Ռուսերեն", "Հարցերի հավաքածու", "original-russian.json")
@@ -63,9 +66,10 @@ class QuestionRepository(private val context: Context) {
         if (sections != null) {
             for (si in 0 until sections.length()) {
                 val section = sections.optJSONObject(si) ?: continue
-                val title = section.optString("title").ifBlank {
-                    section.optString("label").ifBlank { "Բաժին " + (si + 1) }
-                }
+                val title = BookStudyHelpers.sectionTitle(
+                    book.subject, section.optString("title"), section.optString("label"),
+                    section.optString("instr_hy"), si
+                )
                 val questions = mutableListOf<StudyQuestion>()
                 val units = section.optJSONArray("units") ?: continue
                 for (ui in 0 until units.length()) {
@@ -88,6 +92,27 @@ class QuestionRepository(private val context: Context) {
                     }
                     if (questions.isNotEmpty())
                         result.add(StudySection("Թեստ " + test.optInt("id", ti + 1), questions))
+                }
+            } else {
+                // Existing source-reviewed history and physics banks are flat
+                // question arrays, not sections/units. Preserve their real
+                // chapter names and score only keyed, non-illustrated choices.
+                val flat = json.optJSONArray("questions") ?: json.optJSONArray("items")
+                if (flat != null) {
+                    val verifiedRoot = json.has("verified")
+                    val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
+                    for (i in 0 until flat.length()) {
+                        val question = flat.optJSONObject(i) ?: continue
+                        if (!verifiedRoot &&
+                            question.optString("status") != "source-reviewed") continue
+                        val parsed = parseFlatQuestion(book.asset, i, question) ?: continue
+                        val section = question.optString("section").trim()
+                            .ifBlank { "Ընդհանուր հարցեր" }
+                        grouped.getOrPut(section) { mutableListOf() }.add(parsed)
+                    }
+                    for ((title, questions) in grouped) {
+                        if (questions.isNotEmpty()) result.add(StudySection(title, questions))
+                    }
                 }
             }
         }
@@ -145,6 +170,33 @@ class QuestionRepository(private val context: Context) {
                 )
             )
         }
+    }
+
+    private fun parseFlatQuestion(
+        source: String, index: Int, q: JSONObject
+    ): StudyQuestion? {
+        if (hasVisual(q)) return null
+        val stem = q.optString("stem").trim()
+        if (stem.isBlank() || stem.contains("<img", ignoreCase = true) ||
+            stem.contains("\\includegraphics", ignoreCase = true)) return null
+        val options = q.optJSONObject("options") ?: return null
+        val keys = when {
+            options.has("1") -> listOf("1", "2", "3", "4")
+            options.has("a") -> listOf("a", "b", "c", "d")
+            else -> return null
+        }.takeWhile { options.optString(it).isNotBlank() }
+        if (keys.size !in 2..4) return null
+        val choices = keys.map { options.optString(it).trim() }
+        if (choices.any { it.isBlank() } || choices.distinct().size != choices.size) return null
+        val answer = keys.indexOf(q.optString("answer").trim().lowercase())
+        if (answer !in choices.indices) return null
+        return StudyQuestion(
+            id = source + ":flat:" + index,
+            stem = stem,
+            choices = choices,
+            correctIndex = answer,
+            explanation = q.optString("explanation").trim()
+        )
     }
 
     private fun hasVisual(q: JSONObject): Boolean =
