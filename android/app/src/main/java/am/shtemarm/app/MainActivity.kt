@@ -180,7 +180,14 @@ private fun NativeShtemarm() {
                         val activeBook = book
                         if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
                     }
-                    Page.MATH -> Box(Modifier.fillMaxSize().padding(padding)) { NativeMath(if (book?.title?.contains("Մաս 2") == true) 2 else 1) }
+                    Page.MATH -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        NativeMathPractice(
+                            bookPart = if (book?.title?.contains("Մաս 2") == true) 2 else 1
+                        ) { pool, count, name ->
+                            subject = "Մաթեմատիկա"
+                            begin(pool, count, name)
+                        }
+                    }
                     Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
