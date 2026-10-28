@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { MobileNav } from "@/components/MobileNav";
+import { TouchGlassEffects } from "@/components/TouchGlassEffects";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
@@ -170,6 +171,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <a className="skip-link" href="#main-content">Skip to content</a>
+      <TouchGlassEffects />
       <AppHeader />
       <PersonalizationControls />
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
