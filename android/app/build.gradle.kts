@@ -10,8 +10,22 @@ android {
         applicationId = "am.shtemarm.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.1.0-beta.1"
+        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 3
+        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.1.0-beta.1"
+    }
+    // Release signing is configured ONLY when a secure CI keystore is supplied.
+    // No keystore or password is ever committed to this repository.
+    val releaseStore = System.getenv("ANDROID_SIGNING_STORE_FILE")
+    if (!releaseStore.isNullOrBlank()) {
+        signingConfigs {
+            create("production") {
+                storeFile = file(releaseStore)
+                storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_SIGNING_KEY_PASSWORD")
+            }
+        }
+        buildTypes.getByName("release").signingConfig = signingConfigs.getByName("production")
     }
     buildFeatures { compose = true }
     sourceSets.getByName("main").assets.srcDir(file("../../public/data"))
