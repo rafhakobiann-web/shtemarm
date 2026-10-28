@@ -675,6 +675,9 @@ fun AcademyBookSectionCard(
     index: Int,
     title: String,
     count: Int,
+    attempts: Int = 0,
+    answered: Int = 0,
+    correct: Int = 0,
     onPlay: () -> Unit,
     onClassic: () -> Unit,
     onTest: () -> Unit
@@ -699,6 +702,13 @@ fun AcademyBookSectionCard(
                     Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(count.toString() + " հասանելի հարց",
                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    if (attempts > 0 && answered > 0) {
+                        val accuracy = (correct * 100 / answered).coerceIn(0, 100)
+                        Spacer(Modifier.height(4.dp))
+                        Text("Վարժանքներ՝ $attempts · Ճշտություն՝ $accuracy%",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
                 }
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
