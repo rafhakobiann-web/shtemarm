@@ -64,20 +64,28 @@ jobs:
           gradle-version: '8.9'
       - name: Build native beta APK from current main
         working-directory: android
-        run: gradle --no-daemon assembleDebug --stacktrace
+        run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
       - name: Verify APK and create public metadata
         run: |
           set -euo pipefail
           mkdir -p public/downloads
           cp android/app/build/outputs/apk/debug/app-debug.apk public/downloads/shtemarm-android.apk
           unzip -t public/downloads/shtemarm-android.apk >/dev/null
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify public/downloads/shtemarm-android.apk
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging public/downloads/shtemarm-android.apk)
+          SHTEMARM_APK_VERSION=$(sed -n "s/.*versionName='\\([^']*\\)'.*/\\1/p" <<< "$BADGING" | head -n 1)
+          SHTEMARM_APK_CODE=$(sed -n "s/.*versionCode='\\([^']*\\)'.*/\\1/p" <<< "$BADGING" | head -n 1)
+          test -n "$SHTEMARM_APK_VERSION"
+          test -n "$SHTEMARM_APK_CODE"
+          export SHTEMARM_APK_VERSION SHTEMARM_APK_CODE
           python3 - <<'PY'
           import hashlib, json, os
           from pathlib import Path
           apk = Path("public/downloads/shtemarm-android.apk")
           payload = {
               "path": "/downloads/shtemarm-android.apk",
-              "version": "0.1.0-beta",
+              "version": os.environ["SHTEMARM_APK_VERSION"],
+              "version_code": int(os.environ["SHTEMARM_APK_CODE"]),
               "channel": "debug-beta",
               "size": apk.stat().st_size,
               "sha256": hashlib.file_digest(apk.open("rb"), "sha256").hexdigest(),
