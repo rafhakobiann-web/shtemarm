@@ -59,7 +59,9 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         verticalArrangement = Arrangement.spacedBy(13.dp)
     ) {
         item {
-            Text("Քննություններ և թեստեր", fontSize = 25.sp, fontWeight = FontWeight.Bold)
+            AcademyEyebrow("Գիտելիքների ստուգում")
+            Spacer(Modifier.height(8.dp))
+            AcademySectionTitle("Փորձնական քննություններ")
             Spacer(Modifier.height(5.dp))
             Text("Կազմիր փորձնական թեստ առկա շտեմարաններից։", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -155,7 +157,9 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
     }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            Text("Մինի խաղեր", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+            AcademyEyebrow("Սովորիր խաղալով")
+            Spacer(Modifier.height(8.dp))
+            AcademySectionTitle("Մինի խաղեր")
             Text("Սովորիր խաղալով՝ առանց ինտերնետի։", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
@@ -275,7 +279,9 @@ fun NativeTools(
     }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            Text("Ուսումնական գործիքներ", fontSize = 25.sp, fontWeight = FontWeight.Bold)
+            AcademyEyebrow("Ուսումնական միջավայր")
+            Spacer(Modifier.height(8.dp))
+            AcademySectionTitle("Ուսումնական գործիքներ")
             Text("Կազմիր թեմատիկ և ամփոփիչ աշխատանքներ։", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
