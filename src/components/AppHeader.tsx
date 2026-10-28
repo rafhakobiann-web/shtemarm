@@ -133,7 +133,7 @@ export function AppHeader() {
                   <Bookmark className="size-4" />{lang === "en" ? "My vocabulary" : lang === "ru" ? "Мой словарь" : "Իմ բառապաշարը"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
-                  <Headphones className="size-4" />{lang === "en" ? "Spotify study music" : lang === "ru" ? "Spotify для учёбы" : "Ուսման երաժշտություն · Spotify"}
+                  <Headphones className="size-4" />{lang === "en" ? "Study sounds · YouTube + ambience" : lang === "ru" ? "Музыка для учёбы · YouTube и шум" : "Ուսման ձայներ · YouTube և բնության ձայներ"}
                 </Link>
                 <Link to="/study-tools" onClick={close} className={item}>
                   <Timer className="size-4" />{lang === "en" ? "Study tools / Focus" : lang === "ru" ? "Инструменты / Фокус" : "Ուսումնական գործիքներ / Կենտրոնացում"}
