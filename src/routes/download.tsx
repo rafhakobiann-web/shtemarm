@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
-import { PRIVATE_BETA_URL, safePublicApkUrl } from "@/lib/app-download";
+import { PRIVATE_BETA_URL, LATEST_ANDROID_VERSION, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -24,6 +24,7 @@ function DownloadPage() {
   const [installable, setInstallable] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [publishedApk, setPublishedApk] = useState<string | null>(null);
+  const [publishedVersion, setPublishedVersion] = useState<string | null>(null);
   const promptRef = useRef<InstallPrompt | null>(null);
 
   useEffect(() => {
@@ -69,7 +70,12 @@ function DownloadPage() {
         const candidate = (value as { path?: unknown }).path;
         if (typeof candidate !== "string") return;
         const url = safePublicApkUrl(candidate);
-        if (url?.startsWith("/downloads/")) setPublishedApk(url);
+        if (url?.startsWith("/downloads/")) {
+          setPublishedApk(url);
+          if ("version" in value && typeof value.version === "string") {
+            setPublishedVersion(value.version);
+          }
+        }
       })
       .catch(() => { /* No public APK yet: continue with private beta. */ });
     return () => controller.abort();
@@ -93,6 +99,7 @@ function DownloadPage() {
     home: "Home", badge: "SHTEMARM · ANDROID", title: "Take Shtemarm with you",
     description: "Study through the Android app or add the website to your home screen.",
     android: "Android application", native: "Native Android · Early beta",
+    versionLabel: "Version", updateNote: "Important: earlier test APKs may use a different signing key. If Android refuses an update, uninstalling the old app can delete your saved progress.",
     apkAvailable: "Download Android APK", apkPrivate: "Android beta for invited testers",
     privateNote: "The beta APK is currently hosted in a private GitHub repository. Only invited collaborators can access it. A public download will be enabled after the release and distribution review.",
     appNote: "Beta app: some textbooks and examination modes are still incomplete. Only install an APK you trust.",
@@ -107,6 +114,7 @@ function DownloadPage() {
     home: "Главная", badge: "SHTEMARM · ANDROID", title: "Shtemarm всегда с собой",
     description: "Учитесь в Android-приложении или добавьте сайт на главный экран.",
     android: "Приложение для Android", native: "Нативный Android · Бета-версия",
+    versionLabel: "Версия", updateNote: "Важно: предыдущий тестовый APK мог быть подписан другим ключом. Если обновление не устанавливается, удаление старого приложения может стереть сохранённый прогресс.",
     apkAvailable: "Скачать Android APK", apkPrivate: "Android-бета для приглашённых участников",
     privateNote: "APK находится в закрытом репозитории GitHub. Доступ есть только у приглашённых участников. Публичная загрузка появится после проверки релиза и прав на материалы.",
     appNote: "Бета-версия: некоторые сборники и форматы экзаменов ещё не завершены. Устанавливайте только доверенные APK.",
@@ -121,6 +129,7 @@ function DownloadPage() {
     home: "Գլխավոր էջ", badge: "SHTEMARM · ANDROID", title: "Shtemarm-ը՝ քո հեռախոսում",
     description: "Սովորիր Android հավելվածով կամ տեղադրիր կայքը հեռախոսի գլխավոր էկրանին։",
     android: "Android հավելված", native: "Իրական Android հավելված · Փորձնական տարբերակ",
+    versionLabel: "Տարբերակ", updateNote: "Կարևոր․ նախորդ փորձնական APK-ն կարող է ունենալ այլ ստորագրություն։ Եթե թարմացումը չի տեղադրվում, հին հավելվածը հեռացնելիս հնարավոր է կորցնես պահպանված առաջընթացը։",
     apkAvailable: "Ներբեռնել Android APK-ն", apkPrivate: "Android-ի փորձնական տարբերակը՝ հրավիրված մասնակիցների համար",
     privateNote: "APK-ն այժմ պահվում է GitHub-ի փակ պահոցում։ Այն հասանելի է միայն հրավիրված մասնակիցներին։ Հանրային ներբեռնումը հասանելի կդառնա թողարկման և նյութերի տարածման իրավունքների ստուգումից հետո։",
     appNote: "Փորձնական տարբերակ․ որոշ շտեմարաններ և քննական ռեժիմներ դեռ ամբողջական չեն։ Տեղադրիր միայն վստահելի աղբյուրից ստացված APK։",
@@ -152,6 +161,9 @@ function DownloadPage() {
           <div>
             <h2 id="android-app-title" className="text-xl font-black">{text.android}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{text.native}</p>
+            <p className="mt-1 text-sm font-bold text-primary">
+              {text.versionLabel}: {apkUrl ? (publishedVersion ?? LATEST_ANDROID_VERSION) : LATEST_ANDROID_VERSION}
+            </p>
           </div>
           {apkUrl ? (
             <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
@@ -164,6 +176,7 @@ function DownloadPage() {
           )}
           <p className="text-sm leading-6 text-muted-foreground">{apkUrl ? text.publicNote : text.privateNote}</p>
           <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-5 text-muted-foreground">{text.appNote}</p>
+          <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-5 text-muted-foreground">{text.updateNote}</p>
         </section>
         <section className="academy-bento space-y-4 p-5 sm:p-7" aria-labelledby="web-app-title">
           <span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><MonitorDown className="size-6" /></span>
