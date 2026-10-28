@@ -48,7 +48,7 @@ describe("Spotify study music preferences", () => {
     expect(player).toHaveAttribute("allow", expect.stringContaining("encrypted-media"));
     expect(player).toHaveAttribute("src", spotifyEmbedSrc("lofi"));
     expect(screen.getAllByTitle(/Spotify ·/)).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Անջատել երաժշտությունը" }).closest("button")!);
+    fireEvent.click(screen.getAllByRole("button", { name: "Անջատել երաժշտությունը" })[0]!);
     expect(screen.queryByTitle(/Spotify ·/)).not.toBeInTheDocument();
   });
   it("lets the student choose their own soundtrack from Focus Mode", () => {
