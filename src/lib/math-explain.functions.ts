@@ -73,7 +73,7 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
       return { text: "Առաջադրանքի պայմանը բացակայում է․ խնդրում ենք փորձել մեկ այլ հարց։", cached: false, error: true, offline: true };
 
     const cacheKey = await sha256Hex([
-      "math-v3", data.item, data.kind, data.correct, data.chosen ?? "",
+      "math-v4", data.locale??"hy", data.item, data.kind, data.correct, data.chosen ?? "",
       data.question, ...data.options, ...data.pages,
     ]);
     const cached = await getSavedExplanation(cacheKey);
