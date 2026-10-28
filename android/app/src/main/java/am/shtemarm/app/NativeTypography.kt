@@ -21,6 +21,11 @@ private val AcademyArmenian = FontFamily(
     Font(R.font.noto_sans_armenian, weight = FontWeight.Black)
 )
 
+val StudyReadingFont = FontFamily(
+    Font(R.font.noto_serif_armenian, weight = FontWeight.Normal),
+    Font(R.font.noto_serif_armenian, weight = FontWeight.SemiBold)
+)
+
 val ShtemarmTypography = Typography(
     displayLarge = TextStyle(fontFamily = AcademyArmenian, fontWeight = FontWeight.Black,
         fontSize = 42.sp, lineHeight = 54.sp, letterSpacing = 0.sp),
