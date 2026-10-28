@@ -1,7 +1,8 @@
 {
   "path": "/downloads/shtemarm-android.apk",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta.1",
+  "version_code": 4,
   "channel": "debug-beta",
-  "size": 19314870,
-  "sha256": "d4a9f19dfceaa907c18a36e9d45270ee4871bf584767128dfb2d39ad014511b2"
+  "size": 19331250,
+  "sha256": "8b73106fb52f2a2facac432311646cc88d79bd93455060b46ac8efd80e248ffa"
 }
