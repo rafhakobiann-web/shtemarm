@@ -5,6 +5,9 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/android-debug-apk.yml'
+concurrency:
+  group: native-android-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
