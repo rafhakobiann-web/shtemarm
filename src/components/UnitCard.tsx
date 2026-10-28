@@ -6,9 +6,9 @@ import type { Unit, MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 import { RichExplanation } from "@/components/RichExplanation";
-import { SECTION_ONE_EXPLANATIONS } from "@/lib/englishSectionOneExplanations";
+import { getOfflineEnglishExplanation } from "@/lib/englishSectionOneMultilingual";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -221,6 +221,7 @@ export function UnitCard(props: {
 }) {
   const { unit: u, value: a, onChange, revealed } = props;
   const tx = useTx();
+  const language = useLang();
 
   const mcBlock = (q: MCQuestion) => {
     const show = revealed(q.n);
@@ -264,15 +265,15 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
-        {show && (q.explanation || SECTION_ONE_EXPLANATIONS[`${u.id}:${q.n}`]) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
-          <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || SECTION_ONE_EXPLANATIONS[`${u.id}:${q.n}`]}
+        {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
+          <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
         {show && chosen === q.answer && (
           <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
             <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
           </div>
         )}
-        {show && !SECTION_ONE_EXPLANATIONS[`${u.id}:${q.n}`] && (
+        {show && !getOfflineEnglishExplanation(u.id, q.n, language) && (
           <Explain
             instruction={props.instructionEn ?? props.instruction}
             passage={u.passage}
