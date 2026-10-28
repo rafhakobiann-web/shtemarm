@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Users, RotateCcw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SUBJECTS, QUICK_QUIZ_ITEMS, makeRound, type GameSubjectId } from "@/lib/mini-game-data";
+import { QUICK_QUIZ_ITEMS, makeRound, type GameSubjectId } from "@/lib/mini-game-data";
 import { useTx } from "@/lib/lang";
 
 type Team = 0 | 1;
