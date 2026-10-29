@@ -29,7 +29,7 @@ export const Route = createFileRoute("/math-handbook")({
 
 const LABELS = {
   hy: {
-    home:"Գլխավոր էջ", title:"Մաթեմատիկայի ուսումնական ձեռնարկ", subtitle:"2 շտեմարան · բանաձևեր և քայլ առ քայլ լուծումներ · առանց AI-ի",
+    home:"Գլխավոր էջ", title:"Մաթեմատիկայի ուսումնական ձեռնարկ", subtitle:"2 շտեմարան · բանաձևեր և քայլ առ քայլ լուծումներ",
     chooseBook:"Շտեմարան", part:"Մաս", chapter:"Գլուխ", section:"Բաժին", pages:"Էջեր", tasks:"Առաջադրանք", search:"Փնտրել թեմա կամ բանաձև…",
     all:"Բոլոր թեմաները", formula:"Բանաձև", problem:"Լուծված օրինակ", steps:"Լուծման քայլերը", result:"Պատասխան", mistake:"Տարածված սխալ",
     goBook:"Բացել բաժնի բոլոր առաջադրանքները", practice:"Լուծել խաղային ռեժիմով", test:"Անցնել բաժնի թեստը",
@@ -37,7 +37,7 @@ const LABELS = {
     notFound:"Համապատասխան թեմա չգտնվեց։ Փորձիր այլ որոնում։", topics:"Կանոններ և մեթոդներ", review:"Սխալների տետր",
   },
   en: {
-    home:"Home", title:"Mathematics learning handbook", subtitle:"2 question books · formulas and worked examples · no AI",
+    home:"Home", title:"Mathematics learning handbook", subtitle:"2 question books · formulas and worked examples",
     chooseBook:"Question book", part:"Part", chapter:"Chapter", section:"Section", pages:"Pages", tasks:"Tasks", search:"Search topic or formula…",
     all:"All topics", formula:"Formula", problem:"Worked example", steps:"Solution steps", result:"Answer", mistake:"Common mistake",
     goBook:"Open this section's exercises", practice:"Practise in game mode", test:"Take a section test",
@@ -45,7 +45,7 @@ const LABELS = {
     notFound:"No matching lesson. Try another search.", topics:"Rules and methods", review:"Mistake notebook",
   },
   ru: {
-    home:"Главная", title:"Справочник по математике", subtitle:"2 сборника · формулы и решения по шагам · без ИИ",
+    home:"Главная", title:"Справочник по математике", subtitle:"2 сборника · формулы и решения по шагам",
     chooseBook:"Сборник", part:"Часть", chapter:"Глава", section:"Раздел", pages:"Страницы", tasks:"Задания", search:"Поиск темы или формулы…",
     all:"Все темы", formula:"Формула", problem:"Разобранный пример", steps:"Шаги решения", result:"Ответ", mistake:"Типичная ошибка",
     goBook:"Открыть задания раздела", practice:"Практика в игровом режиме", test:"Пройти тест раздела",
