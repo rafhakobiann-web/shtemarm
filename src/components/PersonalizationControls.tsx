@@ -136,6 +136,13 @@ export function PersonalizationControls() {
             <SheetTitle className="flex items-center gap-2 font-display text-xl font-black"><MonitorCog className="size-5 text-primary" />{t.settings}</SheetTitle>
             <SheetDescription>{t.subtitle}</SheetDescription>
           </SheetHeader>
+          <section className="space-y-2">
+            <label htmlFor="personal-username" className="text-sm font-bold">{t.username}</label>
+            <input id="personal-username" type="text" maxLength={24} autoComplete="nickname"
+              value={prefs.username} onChange={(event) => update({ username: event.target.value.replace(/[^\\p{L}\\p{N}_-]/gu, "").slice(0, 24) })}
+              className="min-h-11 w-full rounded-xl border bg-background px-3 text-sm" placeholder="student_01" />
+            <p className="text-xs leading-relaxed text-muted-foreground">{t.usernameHelp}</p>
+          </section>
           <section className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.appearance}</h3>
             <fieldset className="space-y-2">
