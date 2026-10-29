@@ -14,8 +14,24 @@ export const Route = createFileRoute("/changelog")({
 
 const updates = [
   {
-    date: "October 26, 2026",
+    date: "October 29, 2026",
     label: "Latest update",
+    title: "Smarter study guides and personalization",
+    titleHy: "Ուսումնական ձեռնարկների և անհատականացման բարելավումներ",
+    icon: Sparkles,
+    tone: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+    items: [
+      { emoji: "📚", en: "Added eight English grammar topics with Armenian, English and Russian explanations (PR #92).", hy: "Ավելացվել է անգլերենի քերականության 8 նոր թեմա՝ հայերեն, անգլերեն և ռուսերեն բացատրություններով (PR #92)։" },
+      { emoji: "🧠", en: "Added step-by-step reasoning, comparisons and common pitfalls for these eight topics (PR #93).", hy: "Այդ 8 թեմաների համար ավելացվել են քայլ առ քայլ բացատրություններ, համեմատություններ և տարածված սխալներ (PR #93)։" },
+      { emoji: "🧮", en: "Added two original worked math lessons on the website and six offline math reference topics in the Android code (PR #94).", hy: "Կայքում ավելացվել են մաթեմատիկայի 2 լուծված դաս, իսկ Android հավելվածի կոդում՝ 6 նոր թեմա (PR #94)։" },
+      { emoji: "🎨", en: "Added a local-only username setting and simplified handbook subtitles. Public leaderboard is not live yet (PR #94).", hy: "Ավելացվել է սարքում պահպանվող օգտանուն և պարզեցվել են ձեռնարկների ենթավերնագրերը։ Հանրային վարկանիշը դեռ գործարկված չէ (PR #94)։" },
+      { emoji: "📱", en: "Merged a mobile horizontal-overflow layout fix; visual verification on devices is still needed (PR #91).", hy: "Միավորվել է բջջային էջի հորիզոնական լայնության շտկումը․ անհրաժեշտ է ստուգել իրական սարքերով (PR #91)։" },
+      { emoji: "⏳", en: "Still in progress: verified explanations for every book question, a secure opt-in leaderboard, and a signed Android update.", hy: "Դեռ ընթացքի մեջ են բոլոր առաջադրանքների ստուգված բացատրությունները, անվտանգ կամավոր վարկանիշը և ստորագրված Android թարմացումը։" },
+    ],
+  },
+  {
+    date: "October 26, 2026",
+    label: "Vocabulary expansion",
     title: "Vocabulary expansion",
     titleHy: "Բառապաշարի ընդլայնում",
     icon: Languages,
@@ -119,7 +135,7 @@ function ChangelogPage() {
             <article key={update.date} className="relative grid gap-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-6">
               <div className="pt-2 sm:text-right">
                 <p className="text-sm font-black">{update.date}</p>
-                <p className="mt-1 text-xs font-semibold text-muted-foreground">{en ? update.label : index === 0 ? "Վերջին թարմացում" : index === 1 ? "Հարթակի բարելավումներ" : index === 2 ? "Բովանդակության աշխատանք" : "Ուսուցման փորձառություն"}</p>
+                <p className="mt-1 text-xs font-semibold text-muted-foreground">{en ? update.label : index === 0 ? "Վերջին թարմացում" : update.titleHy}</p>
               </div>
               <div className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6">
                 <div className="flex items-start gap-3">
