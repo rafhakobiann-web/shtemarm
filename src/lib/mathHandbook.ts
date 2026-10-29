@@ -1,5 +1,6 @@
 import { MATH_FOUNDATIONS } from "./mathHandbookFoundations";
 import { MATH_ALGEBRA } from "./mathHandbookAlgebra";
+import { MATH_ADDITIONAL_EXPLANATIONS } from "./mathHandbookAdditional";
 import { MATH_GEOMETRY } from "./mathHandbookGeometry";
 import { MATH_HANDBOOK_SECTIONS, type MathHandbookSection } from "./mathHandbookSections";
 import type { MathCategory, MathTopic } from "./mathHandbookTypes";
@@ -8,7 +9,7 @@ export { MATH_HANDBOOK_SECTIONS };
 export type { MathHandbookSection } from "./mathHandbookSections";
 
 export const MATH_HANDBOOK_TOPICS: readonly MathTopic[] = [
-  ...MATH_FOUNDATIONS, ...MATH_ALGEBRA, ...MATH_GEOMETRY
+  ...MATH_FOUNDATIONS, ...MATH_ALGEBRA, ...MATH_GEOMETRY, ...MATH_ADDITIONAL_EXPLANATIONS
 ];
 
 /** Match actual math-book section headings, not guessed per-question keywords. */
