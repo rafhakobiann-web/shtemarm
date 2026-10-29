@@ -1,0 +1,125 @@
+name: Publish Android 0.2.0 in-place update (certificate verified)
+
+on:
+  workflow_dispatch:
+    inputs:
+      content_distribution_approved:
+        description: 'I confirm rights to distribute the bundled question banks.'
+        type: boolean
+        required: true
+        default: false
+      replace_existing_apk:
+        description: 'I understand the existing APK must have the EXACT same signing certificate.'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shtemarm-signed-update-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Confirm distribution and upgrade requirements
+        env:
+          RIGHTS: ${{ inputs.content_distribution_approved }}
+          APPROVE: ${{ inputs.replace_existing_apk }}
+        run: |
+          test "$RIGHTS" = "true" && test "$APPROVE" = "true" || {
+            echo "Explicit owner approval required." >&2
+            exit 1
+          }
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Validate bundled content and secrets
+        run: |
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Load persistent signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$KEYSTORE_BASE64" || -z "$STORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
+            echo "Four persistent ANDROID signing secrets are required. Never use a CI-generated debug key for updates." >&2
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/shtemarm-release.jks"
+          chmod 600 "$RUNNER_TEMP/shtemarm-release.jks"
+          echo "ANDROID_SIGNING_STORE_FILE=$RUNNER_TEMP/shtemarm-release.jks" >> "$GITHUB_ENV"
+      - name: Build signed 0.2.0 update
+        working-directory: android
+        env:
+          ANDROID_SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          gradle --no-daemon testDebugUnitTest assembleRelease \
+            -Pshtemarm.versionName=0.2.0-beta.1 -Pshtemarm.versionCode=5
+      - name: Require identical APK certificate and increasing version
+        run: |
+          set -euo pipefail
+          OLD=public/downloads/shtemarm-android.apk
+          NEW=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$OLD" && test -s "$NEW"
+          SIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          "$SIGNER" verify --verbose "$NEW"
+          "$SIGNER" verify --verbose "$OLD"
+          old_cert=$("$SIGNER" verify --print-certs "$OLD" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
+          new_cert=$("$SIGNER" verify --print-certs "$NEW" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
+          test -n "$old_cert" && test -n "$new_cert"
+          if [[ "$old_cert" != "$new_cert" ]]; then
+            echo "BLOCKED: installed 0.1.1 APK and new 0.2.0 APK have different signing certificates." >&2
+            echo "In-place update is impossible with this signing key. Existing APK has NOT been replaced." >&2
+            exit 1
+          fi
+          old_code=$("$AAPT" dump badging "$OLD" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" | head -n 1)
+          new_code=$("$AAPT" dump badging "$NEW" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" | head -n 1)
+          old_package=$("$AAPT" dump badging "$OLD" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n 1)
+          new_package=$("$AAPT" dump badging "$NEW" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n 1)
+          test "$old_package" = "am.shtemarm.app" && test "$new_package" = "$old_package"
+          test "$new_code" -gt "$old_code"
+          test "$new_code" = "5"
+      - name: Publish matching-signature APK and manifest
+        run: |
+          set -euo pipefail
+          cp android/app/build/outputs/apk/release/app-release.apk public/downloads/shtemarm-android.apk
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path("public/downloads/shtemarm-android.apk")
+          payload={"path":"/downloads/shtemarm-android.apk","version":"0.2.0-beta.1","version_code":5,
+                   "channel":"signed-beta","size":p.stat().st_size,
+                   "sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
+          Path("public/downloads/android-release.json").write_text(json.dumps(payload,indent=2)+"\n")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f public/downloads/shtemarm-android.apk
+          git add public/downloads/android-release.json
+          git commit -m "release(android): publish certificate-matched 0.2.0 in-place update"
+          git push origin HEAD:main
