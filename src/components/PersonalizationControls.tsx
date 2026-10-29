@@ -91,15 +91,15 @@ export function PersonalizationControls() {
     });
   };
   const changeLanguage = (next: Lang) => setLang(next);
-  const floatingSide = prefs.dock === "left" ? "left-4" : "right-4";
+  const floatingSide = prefs.dock === "left" ? "left-3 sm:left-4" : "right-3 sm:right-4";
 
   return (
     <>
-      <div className={`fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col gap-2 md:bottom-6`}>
-        <Button type="button" variant="outline" size="icon" className="size-11 rounded-xl border bg-card shadow-md transition-colors hover:border-primary/40 hover:bg-muted md:size-12" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
+      <div className={`site-floating-controls fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-center gap-2 md:bottom-6`}>
+        <Button type="button" variant="outline" size="icon" className="size-10 shrink-0 rounded-xl border bg-card shadow-md transition-colors hover:border-primary/40 hover:bg-muted md:size-12" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
           <Accessibility className="size-5" />
         </Button>
-        <Button type="button" variant="outline" size="icon" className="size-12 rounded-2xl border bg-background/95 shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5" aria-label={t.settings} title={t.settings} onClick={() => setSettingsOpen(true)}>
+        <Button type="button" variant="outline" size="icon" className="size-10 shrink-0 rounded-xl border bg-background/95 shadow-lg transition-colors hover:bg-muted md:size-12" aria-label={t.settings} title={t.settings} onClick={() => setSettingsOpen(true)}>
           <Settings2 className="size-5" />
         </Button>
       </div>
