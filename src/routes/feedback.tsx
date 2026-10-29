@@ -12,9 +12,9 @@ import { submitFeedback, getMyFeedback } from "@/lib/feedback.functions";
 export const Route = createFileRoute("/feedback")({
   head: () => ({
     meta: [
-      { title: "Կապ և առաջարկներ · Shtemarm" },
+      { title: "Գրել մշակողին · Shtemarm" },
       { name: "description", content: "Ուղարկեք ձեր առաջարկը, սխալը կամ հարցը։" },
-      { property: "og:title", content: "Կապ և առաջարկներ · Shtemarm" },
+      { property: "og:title", content: "Գրել մշակողին · Shtemarm" },
     ],
   }),
   component: FeedbackPage,
@@ -89,10 +89,10 @@ function FeedbackPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <header className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-black sm:text-3xl">
-          <MessageSquare className="size-7 text-primary" /> {tx("Կապ և առաջարկներ")}
+          <MessageSquare className="size-7 text-primary" /> {tx("Գրել մշակողին")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {tx("Գրեք ձեր առաջարկը, սխալը կամ հարցը։ Կարդում ենք բոլոր հաղորդագրությունները և պատասխանում ենք այստեղ։")}
+          {tx("Գրեք ձեր հարցը կամ առաջարկը։ Հաղորդագրությունները տեսնում է միայն լիազորված մշակողը, իսկ պատասխանը կհայտնվի այստեղ՝ նույն սարքում։")}
         </p>
       </header>
 
@@ -106,10 +106,13 @@ function FeedbackPage() {
         </section>
       ) : (
         <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
+          <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">
+            {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Ձեր պատասխանները հասանելի են այս դիտարկչում պահվող մասնավոր նույնացուցիչով։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
+          </p>
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={tx("Ինչ պետք է բարելավել կամ ինչ սխալ եք գտել…")}
+            placeholder={tx("Գրեք ձեր հաղորդագրությունը մշակողին…")}
             rows={6}
             maxLength={2000}
             aria-label={tx("Հաղորդագրություն")}
