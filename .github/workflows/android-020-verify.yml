@@ -1,0 +1,42 @@
+name: Verify Android 0.2.0 study update
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-020-verify.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Verify offline data sources
+        run: |
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Build and run Android unit tests
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
+      - name: Verify 0.2.0 beta APK
+        run: |
+          test -s android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -F "versionName='0.2.0-beta.1'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shtemarm-Android-0.2.0-beta.1
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
