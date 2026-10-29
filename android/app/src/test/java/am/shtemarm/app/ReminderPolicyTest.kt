@@ -21,6 +21,12 @@ class ReminderPolicyTest {
         assertFalse(ReminderPolicy.isDue(15 * day, 14 * day, 0L))
     }
 
+    @Test fun quietHoursProtectRestTime() {
+        for (hour in 0..8) assertTrue(ReminderPolicy.withinQuietHours(hour))
+        for (hour in 9..20) assertFalse(ReminderPolicy.withinQuietHours(hour))
+        for (hour in 21..23) assertTrue(ReminderPolicy.withinQuietHours(hour))
+    }
+
     @Test fun invalidFutureTimestampsDoNotTrigger() {
         assertFalse(ReminderPolicy.isDue(10 * day, 11 * day, 0L))
         assertFalse(ReminderPolicy.isDue(10 * day, 0L, 11 * day))
