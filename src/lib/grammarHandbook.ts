@@ -1,9 +1,10 @@
 import { GRAMMAR_FOUNDATION } from "./grammarTopicsFoundation";
 import { GRAMMAR_ADVANCED } from "./grammarTopicsAdvanced";
+import { GRAMMAR_SUPPLEMENT } from "./grammarTopicsSupplement";
 import { GRAMMAR_SKILLS } from "./grammarTopicsSkills";
 import type { GrammarTopic, GrammarLanguage } from "./grammarHandbookTypes";
 export type { GrammarTopic, GrammarLanguage } from "./grammarHandbookTypes";
-export const GRAMMAR_TOPICS: readonly GrammarTopic[] = [...GRAMMAR_FOUNDATION, ...GRAMMAR_ADVANCED, ...GRAMMAR_SKILLS];
+export const GRAMMAR_TOPICS: readonly GrammarTopic[] = [...GRAMMAR_FOUNDATION, ...GRAMMAR_ADVANCED, ...GRAMMAR_SUPPLEMENT, ...GRAMMAR_SKILLS];
 export type SectionGuide = {
  section:number; title:Record<GrammarLanguage,string>;
  description:Record<GrammarLanguage,string>; topicIds:string[];
@@ -51,6 +52,9 @@ export const GRAMMAR_SECTION_GUIDES: readonly SectionGuide[] = [
       "past-continuous",
       "present-perfect",
       "past-perfect",
+      "past-perfect-continuous",
+      "future-perfect",
+      "future-continuous",
       "present-perfect-continuous",
       "future-forms"
     ]
@@ -74,6 +78,10 @@ export const GRAMMAR_SECTION_GUIDES: readonly SectionGuide[] = [
       "quantifiers",
       "second-conditional",
       "gerund-infinitive",
+      "neither-either",
+      "so-such",
+      "adjective-order",
+      "determiners",
       "dependent-prepositions",
       "vocabulary-context"
     ]
@@ -115,6 +123,7 @@ export const GRAMMAR_SECTION_GUIDES: readonly SectionGuide[] = [
       "zero-first-conditional",
       "second-conditional",
       "third-conditional",
+      "mixed-conditionals",
       "wish-if-only",
       "prepositions",
       "modals",
@@ -301,10 +310,14 @@ export function matchGrammarTopic(skill:string, explanation:string):GrammarTopic
  if (/\bquestion(s)?\b/.test(source) && /\b(do|does|did)\b/.test(source)) return getGrammarTopic("questions");
  const patterns: readonly [RegExp,string][] = [
   [/\b(be used to|used to.*gerund)\b/,"used-to"],
+  [/\bmixed conditional\b/,"mixed-conditionals"],
   [/\bthird conditional\b/,"third-conditional"],
   [/\bsecond conditional\b|\bif.clause\b/,"second-conditional"],
   [/\bfirst conditional\b/,"zero-first-conditional"],
   [/\bpresent perfect continuous\b/,"present-perfect-continuous"],
+  [/\bpast perfect continuous\b/,"past-perfect-continuous"],
+  [/\bfuture perfect\b/,"future-perfect"],
+  [/\bfuture continuous\b/,"future-continuous"],
   [/\bpast perfect\b/,"past-perfect"],
   [/\bpresent perfect\b/,"present-perfect"],
   [/\bpast continuous\b/,"past-continuous"],
@@ -314,6 +327,10 @@ export function matchGrammarTopic(skill:string, explanation:string):GrammarTopic
   [/\bpresent simple\b|\bthird.person singular\b|\bbase verb with\b/,"present-simple"],
   [/\b(question tag|tag question)\b/,"question-tags"],
   [/\bindirect question\b/,"indirect-questions"],
+  [/\b(either.*or|neither.*nor)\b/,"neither-either"],
+  [/\b(so vs such|such an|too vs enough)\b/,"so-such"],
+  [/\badjective order\b/,"adjective-order"],
+  [/\b(each vs every|each and every)\b/,"determiners"],
   [/\bmodal\b|\bmust.*obligation\b|\bcan.*base form\b/,"modals"],
   [/\bcomparative\b|\bsuperlative\b|\bcheaper\b/,"comparison"],
   [/\buncountable\b/,"countable-uncountable"],
