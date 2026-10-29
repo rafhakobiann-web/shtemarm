@@ -52,7 +52,7 @@ class StudyProgress(context: Context) {
             val current = stats(subject)
             // commit() is deliberate: scores and the de-duplication token
             // must reach disk in the same transaction before success.
-            val today = LocalDate.now().toString()
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())
             val newDaily = (answeredToday(today) + answered).coerceAtMost(100000)
             val editor = prefs.edit()
                 .putString("daily_answered_date", today)
