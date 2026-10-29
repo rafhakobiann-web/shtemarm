@@ -2,6 +2,16 @@
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
 
+## 🟢 October 29, 2026 — Study guides, math lessons and personalization
+- 📖 Expanded the English grammar handbook with eight trilingual topics: Future Perfect, Future Continuous, Past Perfect Continuous, mixed conditionals, either/neither/both, so/such/too/enough, adjective order, and each/every/all (PR #92).
+- 🧠 Added step-by-step guidance, comparisons and common pitfalls in Armenian, English and Russian for those eight grammar topics (PR #93). Other topics still need the same depth.
+- 🧮 Added two original worked mathematics lessons on the website: geometric progressions and inequalities with negative coefficients (PR #94).
+- 📱 Added six offline math reference topics to the native Android study guide in Armenian, English and Russian (PR #94). **This code change does not itself publish a new APK.**
+- 🎨 Added a device-local username field to website personalization settings. **No public leaderboard is live yet**; secure account-based scoring and opt-in are still required (PR #94).
+- 🧹 Removed the unnecessary “without AI” wording from the English and math handbook subtitles (PR #94).
+- 📐 Applied a mobile viewport overflow fix to reduce unwanted empty space on the right; device-side confirmation remains necessary (PR #91).
+- 🔎 **Still in progress:** complete source-verified per-question math and English explanations, broader grammar coverage, cross-device profile sync, leaderboard security, and an installable signed Android update.
+
 ## 🟢 October 28, 2026 — Website 0.1.1 stability fixes
 - 🧭 Fixed the mobile Liquid Glass navigation highlight: it now moves the full width of a tab instead of one-fifth of a tab.
 - 🧪 Added five-position navigation regression tests to prevent the highlight from drifting again.
