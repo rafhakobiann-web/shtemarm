@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download, HeartHandshake } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -194,6 +194,9 @@ export function AppHeader() {
                 </Link>
                 <Link to="/calc" onClick={close} className={item}>
                   <Calculator className="size-4" />{t.calc}
+                </Link>
+                <Link to="/support" onClick={close} className={item}>
+                  <HeartHandshake className="size-4" />{lang === "en" ? "Support Shtemarm · Donations" : lang === "ru" ? "Поддержать Shtemarm · Пожертвования" : "Աջակցել Shtemarm-ին · Նվիրատվություններ"}
                 </Link>
                 <Link to="/feedback" onClick={close} className={item}>
                   <MessageCircle className="size-4" />{lang === "en" ? "Message the developer" : lang === "ru" ? "Написать разработчику" : "Գրել մշակողին"}
