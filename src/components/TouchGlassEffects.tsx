@@ -13,6 +13,7 @@ export function TouchGlassEffects() {
     let frame = 0;
     let x = 50;
     let y = 50;
+    let scrolling = false;
     const enabled = () => !reduced.matches && !root.classList.contains("user-reduced-motion") &&
       !root.classList.contains("user-high-contrast") && root.dataset.surface === "liquid";
 
@@ -31,7 +32,7 @@ export function TouchGlassEffects() {
       }
     };
     const move = (event: PointerEvent) => {
-      if (!enabled()) { clear(); return; }
+      if (!enabled() || scrolling) { clear(); return; }
       if (event.pointerType === "mouse" && event.type === "pointermove" && event.buttons === 0) {
         // Hover can show a highlight, but never animate the whole page.
       }
@@ -48,13 +49,26 @@ export function TouchGlassEffects() {
       y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
       if (!frame) frame = requestAnimationFrame(paint);
     };
-    document.addEventListener("pointerdown", move, { passive: true });
+    // Touch glow should not compete with compositor-driven scrolling.
+    // Resume only on the next intentional pointerdown after a scroll.
+    const onScroll = () => {
+      scrolling = true;
+      clear();
+    };
+    const onDown = (event: PointerEvent) => {
+      scrolling = false;
+      move(event);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("pointerdown", onDown, { passive: true });
+    // Only mouse hover needs continuous tracking; touchmove is reserved for scrolling.
     document.addEventListener("pointermove", move, { passive: true });
     document.addEventListener("pointerup", clear, { passive: true });
     document.addEventListener("pointercancel", clear, { passive: true });
     window.addEventListener("blur", clear);
     return () => {
-      document.removeEventListener("pointerdown", move);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("pointermove", move);
       document.removeEventListener("pointerup", clear);
       document.removeEventListener("pointercancel", clear);
