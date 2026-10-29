@@ -2,6 +2,13 @@
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
 
+## 🟣 October 29, 2026 — Private messages and optional study reminders
+- ✉️ Improved the existing website feedback flow so users can find “Message the developer” and see replies on the same browser. The admin inbox is protected by a server-side developer password.
+- 🔐 Hardened password comparison and added a Supabase migration to remove direct public feedback table access. **Deployment requires applying the migration and configuring ADMIN_PASSWORD**; do not claim the production inbox is private until this is verified.
+- 🔔 Added Android opt-in local study reminders, with notification permission on Android 13+, no notifications before three days of inactivity, and a maximum of one reminder every seven days.
+- 🌐 Reminder text supports Armenian, English and Russian. Reminders can be disabled in Settings and do not upload usage history.
+- 🧪 Added reminder scheduling-policy tests. **Android APK build, signing and publication remain pending.**
+
 ## 🟢 October 29, 2026 — Study guides, math lessons and personalization
 - 📖 Expanded the English grammar handbook with eight trilingual topics: Future Perfect, Future Continuous, Past Perfect Continuous, mixed conditionals, either/neither/both, so/such/too/enough, adjective order, and each/every/all (PR #92).
 - 🧠 Added step-by-step guidance, comparisons and common pitfalls in Armenian, English and Russian for those eight grammar topics (PR #93). Other topics still need the same depth.
