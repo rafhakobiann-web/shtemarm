@@ -3,7 +3,9 @@ package am.shtemarm.app
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.LocalDate
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class SubjectStats(val answered: Int, val correct: Int, val sessions: Int) {
     val accuracy: Int get() = if (answered == 0) 0 else (correct * 100 / answered)
@@ -22,7 +24,7 @@ class StudyProgress(context: Context) {
             if (StudyGoals.validTarget(value)) prefs.edit().putInt("daily_question_target", value).apply()
         }
 
-    fun answeredToday(today: String = LocalDate.now().toString()): Int =
+    fun answeredToday(today: String = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())): Int =
         if (prefs.getString("daily_answered_date", "") == today)
             prefs.getInt("daily_answered_count", 0).coerceAtLeast(0) else 0
 
