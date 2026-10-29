@@ -29,6 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
+      - name: Prevent replacing installed APK with a new runner debug signature
+        run: |
+          echo "Deprecated: a fresh debug APK uses a different signing certificate and breaks in-place updates." >&2
+          echo "Use the Android 0.2.0 certificate-verified signed update workflow instead." >&2
+          exit 1
       - name: Confirm distribution rights and test-build limitations
         env:
           RIGHTS: ${{ inputs.content_distribution_approved }}
