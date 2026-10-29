@@ -45,6 +45,21 @@ describe("English grammar handbook", () => {
     for(const guide of GRAMMAR_SECTION_GUIDES)
       for(const topicId of guide.topicIds) expect(getGrammarTopic(topicId),topicId).toBeDefined();
   });
+  it("covers additional advanced and commonly confused rules in three languages", () => {
+    const ids = ["future-perfect","future-continuous","past-perfect-continuous","mixed-conditionals","neither-either","so-such","adjective-order","determiners"];
+    for (const id of ids) {
+      const topic = getGrammarTopic(id);
+      expect(topic, id).toBeDefined();
+      for (const lang of langs) {
+        expect(topic?.content[lang].summary.length).toBeGreaterThan(35);
+        expect(topic?.content[lang].why.length).toBeGreaterThan(15);
+      }
+    }
+    expect(getSectionTopics(2).some(t => t.id === "future-perfect")).toBe(true);
+    expect(getSectionTopics(3).some(t => t.id === "determiners")).toBe(true);
+    expect(matchGrammarTopic("grammar", "Use the future perfect tense.")?.id).toBe("future-perfect");
+    expect(matchGrammarTopic("grammar", "This is a mixed conditional.")?.id).toBe("mixed-conditionals");
+  });
   it("distinguishes grammar from reading/vocabulary to avoid invented rules",()=>{
     expect(getSectionTopics(1).some(t=>t.category==="reading")).toBe(true);
     expect(getSectionTopics(12).some(t=>t.category==="vocabulary")).toBe(true);
