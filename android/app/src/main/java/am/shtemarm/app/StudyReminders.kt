@@ -26,8 +26,6 @@ object StudyReminders {
     private const val PREFS = "shtemarm_reminders_v1"
     private const val WORK = "shtemarm_optional_study_reminders"
     private const val CHANNEL = "shtemarm_study_reminders"
-    private const val THREE_DAYS = 3L * 24 * 60 * 60 * 1000
-    private const val SEVEN_DAYS = 7L * 24 * 60 * 60 * 1000
 
     fun enabled(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("enabled", false)
@@ -69,7 +67,7 @@ object StudyReminders {
         if (!prefs.getBoolean("enabled", false)) return
         val lastOpened = prefs.getLong("last_opened", now)
         val lastSent = prefs.getLong("last_sent", 0L)
-        if (now - lastOpened < THREE_DAYS || now - lastSent < SEVEN_DAYS) return
+        if (!ReminderPolicy.isDue(now, lastOpened, lastSent)) return
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
 
