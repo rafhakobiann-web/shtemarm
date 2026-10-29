@@ -139,7 +139,7 @@ export function PersonalizationControls() {
           <section className="space-y-2">
             <label htmlFor="personal-username" className="text-sm font-bold">{t.username}</label>
             <input id="personal-username" type="text" maxLength={24} autoComplete="nickname"
-              value={prefs.username} onChange={(event) => update({ username: event.target.value.replace(/[^\\p{L}\\p{N}_-]/gu, "").slice(0, 24) })}
+              value={prefs.username} onChange={(event) => update({ username: event.target.value.replace(/[^\p{L}\p{N}_-]/gu, "").slice(0, 24) })}
               className="min-h-11 w-full rounded-xl border bg-background px-3 text-sm" placeholder="student_01" />
             <p className="text-xs leading-relaxed text-muted-foreground">{t.usernameHelp}</p>
           </section>
