@@ -2,6 +2,27 @@ import type { ExplanationInput } from "./explanation";
 type Locale="hy"|"en"|"ru";
 type Rule={id:string;test:RegExp;texts:Record<Locale,string>};
 const RULES:Rule[]=[
+{id:"articles",test:/\b(articles?|a\s*\/\s*an\s*\/\s*the|definite article|indefinite article)\b/i,texts:{
+hy:"a/an-ը օգտագործվում է եզակի հաշվելի գոյականի հետ՝ առաջին հիշատակման կամ ոչ որոշակիության դեպքում։ a կամ an ընտրիր ըստ հաջորդող բառի արտասանության, ոչ միայն առաջին տառի։ the-ն օգտագործվում է որոշակի կամ արդեն հայտնի առարկայի դեպքում։",
+en:"Use a/an with a singular countable noun when its identity is not specified; choose a or an by the following sound, not just the letter. Use the for a specific or previously identified referent.",
+ru:"a/an употребляют с исчисляемым существительным в единственном числе при неопределённости; выбор зависит от звука следующего слова. the указывает на конкретный или уже известный предмет."}},
+{id:"prepositions",test:/\b(prepositions?|preposition of (time|place)|in on at)\b/i,texts:{
+hy:"Ժամանակի համար at-ը հաճախ գործածվում է ճշգրիտ ժամի, on-ը՝ օրերի և ամսաթվերի, in-ը՝ ամիսների, տարիների և ավելի երկար ժամանակահատվածների հետ։ Տեղի նշանակությամբ կիրառությունը կախված է համատեքստից և կայուն կապակցություններից։",
+en:"For time, at commonly marks exact times, on days and dates, and in months, years and longer periods. Place prepositions depend on the specific context and fixed expressions.",
+ru:"Для времени at обычно обозначает точное время, on — дни и даты, in — месяцы, годы и периоды. Предлоги места зависят от контекста и устойчивых выражений."}},
+{id:"modals",test:/\b(modal verbs?|modal auxiliaries|must vs have to|should vs must)\b/i,texts:{
+hy:"Մոդալ բայերից (can, must, should, may) հետո հիմնական բայը սովորաբար դրվում է առանց to-ի սկզբնական ձևով։ must-ը հաճախ արտահայտում է անհրաժեշտություն, should-ը՝ խորհուրդ, may-ը՝ հնարավորություն կամ թույլտվություն։",
+en:"Modal auxiliaries such as can, must, should and may normally take the bare infinitive. Must commonly expresses necessity, should advice, and may possibility or permission.",
+ru:"После can, must, should, may обычно употребляют инфинитив без to. Must часто выражает необходимость, should — совет, may — возможность или разрешение."}},
+{id:"subject-verb-agreement",test:/\b(subject.?verb agreement|subject and verb agreement|singular or plural verb)\b/i,texts:{
+hy:"Ենթական և ստորոգյալը համաձայնեցրու թվով ու դեմքով։ Present Simple-ում եզակի երրորդ դեմքի հետ բայը սովորաբար ստանում է -s/-es, իսկ բազմակի ենթակայի հետ՝ ոչ։ Ստուգիր իրական ենթական, ոչ թե մոտակա գոյականը։",
+en:"Match the verb to the actual subject in person and number. In the present simple, third-person singular usually takes -s/-es. Ignore intervening phrases when identifying the subject.",
+ru:"Согласуйте сказуемое с подлежащим по лицу и числу. В Present Simple третье лицо единственного числа обычно требует -s/-es. Определяйте подлежащее, не ориентируясь на ближайшее существительное."}},
+{id:"question-tags",test:/\b(question tags?|tag questions?)\b/i,texts:{
+hy:"Հարցական պոչիկը սովորաբար հակառակ բևեռականություն ունի. դրական նախադասությանը՝ ժխտական պոչիկ, ժխտականին՝ դրական։ Օժանդակ բայն ու դերանունը համաձայնեցրու հիմնական նախադասությանը։",
+en:"Question tags normally reverse polarity: positive statement, negative tag; negative statement, positive tag. Match the auxiliary and pronoun to the main clause.",
+ru:"Разделительный вопрос обычно меняет полярность: утвердительная часть — отрицательный хвостик, и наоборот. Согласуйте вспомогательный глагол и местоимение."}},
+
 {id:"conditional-third",test:/\b(third conditional|type 3 conditional|if\s+.{0,75}\bhad\s+\w+|would have\s+\w+)\b/i,texts:{
 hy:"Երրորդ պայմանականը նկարագրում է անցյալում չիրականացած պայման. if + Past Perfect, would/could/might have + V3։ Համեմատիր գործողությունների ժամանակները և ընտրիր այս կառուցվածքին համապատասխան ձևը։",
 en:"The third conditional describes an unreal past condition: if + past perfect, would/could/might have + past participle. Check the timing of both clauses.",
