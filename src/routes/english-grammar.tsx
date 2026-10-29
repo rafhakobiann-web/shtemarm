@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpenText, CheckCircle2, Search, XCircle, GraduationCap }
 import { GRAMMAR_TOPICS, GRAMMAR_SECTION_GUIDES, getGrammarTopic, getSectionGuide, getSectionTopics } from "@/lib/grammarHandbook";
 import type { GrammarLanguage, GrammarTopic } from "@/lib/grammarHandbookTypes";
 import { useLang } from "@/lib/lang";
+import { GRAMMAR_DEEP_DIVES } from "@/lib/grammarDeepDives";
 
 const searchSchema = z.object({
   book: z.coerce.number().int().min(1).max(3).catch(1),
@@ -21,14 +22,15 @@ export const Route = createFileRoute("/english-grammar")({
 });
 
 const TEXT = {
-  hy: { home: "Գլխավոր էջ", title: "Անգլերենի կանոնների ձեռնարկ", subtitle: "3 գիրք · 13 բաժին · առանց ԱԲ-ի", selectBook: "Գիրք", selectSection: "Բաժին", search: "Փնտրել կանոն կամ թեմա…", all: "Ցույց տալ բոլոր թեմաները", practice: "Անցնել այս բաժնի առաջադրանքներին", topics: "Թեմաներ", formula: "Կառուցվածք", good: "Ճիշտ օրինակ", bad: "Տարածված սխալ", why: "Ինչու է սխալ", notFound: "Համապատասխան կանոն չգտնվեց։ Փորձիր այլ բառով որոնել։", notice: "Յուրաքանչյուր բաժնում ներկայացված են առավել օգտակար թեմաները։ Ոչ բոլոր առաջադրանքներն ունեն մեկ հստակ քերականական կանոն․ ընթերցանության և բառապաշարի համար կան առանձին ռազմավարություններ։", categories: { grammar: "Քերականություն", reading: "Ընթերցանություն", vocabulary: "Բառապաշար", strategy: "Մեթոդաբանություն" }, level: "Մակարդակ" },
-  en: { home: "Home", title: "English Grammar Handbook", subtitle: "3 books · 13 sections · no AI required", selectBook: "Book", selectSection: "Section", search: "Search rules or topics…", all: "Show all topics", practice: "Practice this section", topics: "Topics", formula: "Pattern", good: "Correct example", bad: "Common mistake", why: "Why it's wrong", notFound: "No matching topic. Try another search.", notice: "Each section highlights useful topics, not a claimed rule for every individual question. Reading and vocabulary sections include separate strategies.", categories: { grammar: "Grammar", reading: "Reading", vocabulary: "Vocabulary", strategy: "Study strategy" }, level: "Level" },
-  ru: { home: "Главная", title: "Справочник по английской грамматике", subtitle: "3 книги · 13 разделов · без ИИ", selectBook: "Книга", selectSection: "Раздел", search: "Поиск правила или темы…", all: "Показать все темы", practice: "Упражнения этого раздела", topics: "Темы", formula: "Схема", good: "Правильный пример", bad: "Типичная ошибка", why: "Почему это ошибка", notFound: "Тема не найдена. Попробуйте другой запрос.", notice: "Для каждого раздела предложены полезные темы, но не каждому заданию соответствует только одно правило. Для чтения и лексики есть отдельные стратегии.", categories: { grammar: "Грамматика", reading: "Чтение", vocabulary: "Лексика", strategy: "Методика" }, level: "Уровень" },
+  hy: { home: "Գլխավոր էջ", title: "Անգլերենի կանոնների ձեռնարկ", subtitle: "3 գիրք · 13 բաժին · առանց ԱԲ-ի", selectBook: "Գիրք", selectSection: "Բաժին", search: "Փնտրել կանոն կամ թեմա…", all: "Ցույց տալ բոլոր թեմաները", practice: "Անցնել այս բաժնի առաջադրանքներին", topics: "Թեմաներ", formula: "Կառուցվածք", good: "Ճիշտ օրինակ", bad: "Տարածված սխալ", why: "Ինչու է սխալ", notFound: "Համապատասխան կանոն չգտնվեց։ Փորձիր այլ բառով որոնել։", notice: "Յուրաքանչյուր բաժնում ներկայացված են առավել օգտակար թեմաները։ Ոչ բոլոր առաջադրանքներն ունեն մեկ հստակ քերականական կանոն․ ընթերցանության և բառապաշարի համար կան առանձին ռազմավարություններ։", categories: { grammar: "Քերականություն", reading: "Ընթերցանություն", vocabulary: "Բառապաշար", strategy: "Մեթոդաբանություն" }, steps: "Ինչպես կիրառել կանոնը", contrast: "Համեմատիր", caution: "Ուշադրություն", level: "Մակարդակ" },
+  en: { home: "Home", title: "English Grammar Handbook", subtitle: "3 books · 13 sections · no AI required", selectBook: "Book", selectSection: "Section", search: "Search rules or topics…", all: "Show all topics", practice: "Practice this section", topics: "Topics", formula: "Pattern", good: "Correct example", bad: "Common mistake", why: "Why it's wrong", notFound: "No matching topic. Try another search.", notice: "Each section highlights useful topics, not a claimed rule for every individual question. Reading and vocabulary sections include separate strategies.", categories: { grammar: "Grammar", reading: "Reading", vocabulary: "Vocabulary", strategy: "Study strategy" }, steps: "How to apply it", contrast: "Compare", caution: "Watch out", level: "Level" },
+  ru: { home: "Главная", title: "Справочник по английской грамматике", subtitle: "3 книги · 13 разделов · без ИИ", selectBook: "Книга", selectSection: "Раздел", search: "Поиск правила или темы…", all: "Показать все темы", practice: "Упражнения этого раздела", topics: "Темы", formula: "Схема", good: "Правильный пример", bad: "Типичная ошибка", why: "Почему это ошибка", notFound: "Тема не найдена. Попробуйте другой запрос.", notice: "Для каждого раздела предложены полезные темы, но не каждому заданию соответствует только одно правило. Для чтения и лексики есть отдельные стратегии.", categories: { grammar: "Грамматика", reading: "Чтение", vocabulary: "Лексика", strategy: "Методика" }, steps: "Как применять правило", contrast: "Сравните", caution: "Важно", level: "Уровень" },
 } as const;
 
 function GrammarCard({ item, lang, selected }: { item: GrammarTopic; lang: GrammarLanguage; selected: boolean }) {
   const t = TEXT[lang];
   const info = item.content[lang];
+  const deepDive = GRAMMAR_DEEP_DIVES[item.id]?.[lang];
   return (
     <details id={`rule-${item.id}`} key={item.id + "-" + (selected ? "selected" : "normal")} defaultOpen={selected}
       className="group scroll-mt-32 overflow-hidden rounded-2xl border bg-card shadow-sm transition-colors open:border-primary/35">
@@ -44,6 +46,20 @@ function GrammarCard({ item, lang, selected }: { item: GrammarTopic; lang: Gramm
       </summary>
       <div className="space-y-4 border-t p-4 sm:p-5">
         <p className="leading-relaxed">{info.summary}</p>
+        {deepDive && <section className="space-y-3 rounded-xl border bg-muted/30 p-4">
+          <h3 className="font-bold">{t.steps}</h3>
+          <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed">
+            {deepDive.steps.map((step, index) => <li key={index}>{step}</li>)}
+          </ol>
+          <div className="border-t pt-3">
+            <p className="text-sm font-bold">{t.contrast}</p>
+            <p className="mt-1 text-sm leading-relaxed">{deepDive.contrast}</p>
+          </div>
+          <div className="border-t pt-3">
+            <p className="text-sm font-bold">{t.caution}</p>
+            <p className="mt-1 text-sm leading-relaxed">{deepDive.caution}</p>
+          </div>
+        </section>}
         <section className="space-y-1.5 rounded-xl bg-muted/70 p-3">
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t.formula}</p>
           <p className="font-mono text-sm leading-relaxed">{item.formula}</p>
