@@ -1,6 +1,8 @@
 package am.shtemarm.app
 
 import android.os.Bundle
+import android.Manifest
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -49,6 +51,7 @@ private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRE
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        StudyReminders.markOpened(applicationContext)
         setContent { NativeShtemarm() }
     }
 }
@@ -67,6 +70,18 @@ private fun NativeShtemarm() {
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
+    var remindersEnabled by remember { mutableStateOf(StudyReminders.enabled(context)) }
+    val requestNotificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            StudyReminders.setEnabled(context, true)
+            remindersEnabled = true
+        } else {
+            StudyReminders.setEnabled(context, false)
+            remindersEnabled = false
+        }
+    }
     var handbookSubject by remember { mutableStateOf("Անգլերեն") }
     var showExplanation by remember { mutableStateOf(false) }
 
@@ -946,6 +961,32 @@ private fun NativeShtemarm() {
                                     label = { Text(language.uppercase()) }
                                 )
                             }
+                        }
+                        Row(
+                            Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(NativeStudyGuide.label(studyLanguage,
+                                    "Ուսման հիշեցումներ", "Study reminders", "Напоминания об учёбе"),
+                                    fontWeight = FontWeight.SemiBold)
+                                Text(NativeStudyGuide.label(studyLanguage,
+                                    "Կամավոր. 3 օր չբացելուց հետո, առավելագույնը շաբաթը մեկ անգամ։",
+                                    "Optional. After 3 days away, at most once a week.",
+                                    "По желанию. После 3 дней отсутствия, не чаще раза в неделю."),
+                                    fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Switch(checked = remindersEnabled, onCheckedChange = { enabled ->
+                                if (!enabled) {
+                                    StudyReminders.setEnabled(context, false)
+                                    remindersEnabled = false
+                                } else if (Build.VERSION.SDK_INT >= 33) {
+                                    requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    StudyReminders.setEnabled(context, true)
+                                    remindersEnabled = true
+                                }
+                            })
                         }
                         Box(Modifier.weight(1f)) {
                         AcademyAppearanceSettings(
