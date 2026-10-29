@@ -74,6 +74,7 @@ private fun NativeShtemarm() {
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
+    var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
     var remindersEnabled by remember { mutableStateOf(StudyReminders.enabled(context)) }
     val requestNotificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -148,6 +149,7 @@ private fun NativeShtemarm() {
                 surfaceStyle = progress.surfaceStyle
                 glassIntensity = progress.glassIntensity
                 studyLanguage = progress.studyLanguage
+                dailyTarget = progress.dailyQuestionTarget
                 "Առաջընթացը հաջողությամբ վերականգնվեց։"
             } else {
                 "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
@@ -391,6 +393,29 @@ private fun NativeShtemarm() {
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
                             item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            item {
+                                val today = progressVersion.let { progress.answeredToday() }
+                                ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
+                                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Text(NativeStudyGuide.label(studyLanguage,
+                                            "Օրվա ուսումնական նպատակը", "Today's study goal", "Цель на сегодня"),
+                                            fontWeight = FontWeight.Bold)
+                                        Text("$today / $dailyTarget " + NativeStudyGuide.label(studyLanguage,
+                                            "հարց", "questions", "вопросов"))
+                                        LinearProgressIndicator(
+                                            progress = { StudyGoals.completion(dailyTarget, today) },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                        Text(if (StudyGoals.remaining(dailyTarget, today) == 0)
+                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
+                                                "Today's goal is complete.", "Цель на сегодня выполнена.")
+                                        else NativeStudyGuide.label(studyLanguage,
+                                            "Մնացել է", "Remaining", "Осталось") +
+                                            ": " + StudyGoals.remaining(dailyTarget, today),
+                                            fontSize = 13.sp)
+                                    }
+                                }
+                            }
                             if (lastBook != null) item {
                                 AcademyQuickAction(
                                     Icons.Default.Book,
@@ -965,6 +990,18 @@ private fun NativeShtemarm() {
                                     onClick = { studyLanguage = language; progress.studyLanguage = language },
                                     label = { Text(language.uppercase()) }
                                 )
+                            }
+                        }
+                        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                            Text(NativeStudyGuide.label(studyLanguage,
+                                "Օրական քանի՞ հարց", "Daily question goal", "Вопросов в день"),
+                                fontWeight = FontWeight.Bold)
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                StudyGoals.allowedDailyTargets.sorted().forEach { target ->
+                                    FilterChip(selected = dailyTarget == target,
+                                        onClick = { dailyTarget = target; progress.dailyQuestionTarget = target },
+                                        label = { Text(target.toString()) })
+                                }
                             }
                         }
                         Row(
