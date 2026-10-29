@@ -139,6 +139,7 @@ class StudyProgress(context: Context) {
             .put("dark", darkMode)
             .put("largeText", largeText)
             .put("feedback", showAnswersImmediately)
+            .put("language", studyLanguage)
         return JSONObject()
             .put("format", "shtemarm-progress-backup")
             .put("version", 1)
@@ -212,7 +213,8 @@ class StudyProgress(context: Context) {
             if (restoredAccent !in setOf("teal", "blue", "violet", "emerald", "rose", "amber") ||
                 restoredSurface !in setOf("classic", "soft", "liquid") ||
                 restoredGlass !in setOf("subtle", "balanced", "vivid")) return false
-            val editor = prefs.edit().clear()
+            val restoredLanguage = settings.optString("language", studyLanguage).takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
+            val editor = prefs.edit().clear().putString("study_language", restoredLanguage)
             for ((subject, stats) in restored) {
                 val prefix = "s_" + subject + "_"
                 editor.putInt(prefix + "answered", stats.answered)

@@ -17,6 +17,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
+import java.util.Calendar
 
 /**
  * Local, opt-in study reminders. No FCM, analytics, remote user tracking or
@@ -68,6 +69,8 @@ object StudyReminders {
         val lastOpened = prefs.getLong("last_opened", now)
         val lastSent = prefs.getLong("last_sent", 0L)
         if (!ReminderPolicy.isDue(now, lastOpened, lastSent)) return
+        val hour = Calendar.getInstance().apply { timeInMillis = now }.get(Calendar.HOUR_OF_DAY)
+        if (ReminderPolicy.withinQuietHours(hour)) return
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
 
