@@ -1,0 +1,226 @@
+{
+  "description": "Source PDF navigation metadata, not copyrighted question transcription. Page numbers are 1-based PDF pages; headings 5–8 require manual verification.",
+  "source": "User-provided hayoc-1.pdf through hayoc-4.pdf",
+  "volumes": [
+    {
+      "volume": 1,
+      "pdf": "hayoc-1.pdf",
+      "totalPages": 256,
+      "sections": [
+        {
+          "number": 1,
+          "title": "Հնչյունաբանություն",
+          "pdfPage": 5,
+          "verifiedTitle": true
+        },
+        {
+          "number": 2,
+          "title": "Բառագիտություն",
+          "pdfPage": 27,
+          "verifiedTitle": true
+        },
+        {
+          "number": 3,
+          "title": "Ձևաբանություն",
+          "pdfPage": 49,
+          "verifiedTitle": true
+        },
+        {
+          "number": 4,
+          "title": "Շարահյուսություն",
+          "pdfPage": 98,
+          "verifiedTitle": true
+        },
+        {
+          "number": 5,
+          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 173,
+          "verifiedTitle": false
+        },
+        {
+          "number": 6,
+          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 187,
+          "verifiedTitle": false
+        },
+        {
+          "number": 7,
+          "title": "Բաժին 7",
+          "pdfPage": 189,
+          "verifiedTitle": false
+        },
+        {
+          "number": 8,
+          "title": "Բաժին 8",
+          "pdfPage": 194,
+          "verifiedTitle": false
+        }
+      ]
+    },
+    {
+      "volume": 2,
+      "pdf": "hayoc-2.pdf",
+      "totalPages": 256,
+      "sections": [
+        {
+          "number": 1,
+          "title": "Հնչյունաբանություն",
+          "pdfPage": 5,
+          "verifiedTitle": true
+        },
+        {
+          "number": 2,
+          "title": "Բառագիտություն",
+          "pdfPage": 30,
+          "verifiedTitle": true
+        },
+        {
+          "number": 3,
+          "title": "Ձևաբանություն",
+          "pdfPage": 52,
+          "verifiedTitle": true
+        },
+        {
+          "number": 4,
+          "title": "Շարահյուսություն",
+          "pdfPage": 74,
+          "verifiedTitle": true
+        },
+        {
+          "number": 5,
+          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 170,
+          "verifiedTitle": false
+        },
+        {
+          "number": 6,
+          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 184,
+          "verifiedTitle": false
+        },
+        {
+          "number": 7,
+          "title": "Բաժին 7",
+          "pdfPage": 188,
+          "verifiedTitle": false
+        },
+        {
+          "number": 8,
+          "title": "Բաժին 8",
+          "pdfPage": 202,
+          "verifiedTitle": false
+        }
+      ]
+    },
+    {
+      "volume": 3,
+      "pdf": "hayoc-3.pdf",
+      "totalPages": 256,
+      "sections": [
+        {
+          "number": 1,
+          "title": "Հնչյունաբանություն",
+          "pdfPage": 5,
+          "verifiedTitle": true
+        },
+        {
+          "number": 2,
+          "title": "Բառագիտություն",
+          "pdfPage": 35,
+          "verifiedTitle": true
+        },
+        {
+          "number": 3,
+          "title": "Ձևաբանություն",
+          "pdfPage": 61,
+          "verifiedTitle": true
+        },
+        {
+          "number": 4,
+          "title": "Շարահյուսություն",
+          "pdfPage": 97,
+          "verifiedTitle": true
+        },
+        {
+          "number": 5,
+          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 169,
+          "verifiedTitle": false
+        },
+        {
+          "number": 6,
+          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 176,
+          "verifiedTitle": false
+        },
+        {
+          "number": 7,
+          "title": "Բաժին 7",
+          "pdfPage": 181,
+          "verifiedTitle": false
+        },
+        {
+          "number": 8,
+          "title": "Բաժին 8",
+          "pdfPage": 190,
+          "verifiedTitle": false
+        }
+      ]
+    },
+    {
+      "volume": 4,
+      "pdf": "hayoc-4.pdf",
+      "totalPages": 256,
+      "sections": [
+        {
+          "number": 1,
+          "title": "Հնչյունաբանություն",
+          "pdfPage": 6,
+          "verifiedTitle": true
+        },
+        {
+          "number": 2,
+          "title": "Բառագիտություն",
+          "pdfPage": 38,
+          "verifiedTitle": true
+        },
+        {
+          "number": 3,
+          "title": "Ձևաբանություն",
+          "pdfPage": 69,
+          "verifiedTitle": true
+        },
+        {
+          "number": 4,
+          "title": "Շարահյուսություն",
+          "pdfPage": 111,
+          "verifiedTitle": true
+        },
+        {
+          "number": 5,
+          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 186,
+          "verifiedTitle": false
+        },
+        {
+          "number": 6,
+          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "pdfPage": 198,
+          "verifiedTitle": false
+        },
+        {
+          "number": 7,
+          "title": "Բաժին 7",
+          "pdfPage": 203,
+          "verifiedTitle": false
+        },
+        {
+          "number": 8,
+          "title": "Բաժին 8",
+          "pdfPage": 210,
+          "verifiedTitle": false
+        }
+      ]
+    }
+  ]
+}
