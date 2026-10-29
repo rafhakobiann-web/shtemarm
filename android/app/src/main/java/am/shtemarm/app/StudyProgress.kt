@@ -11,6 +11,10 @@ data class SubjectStats(val answered: Int, val correct: Int, val sessions: Int) 
 class StudyProgress(context: Context) {
     private val prefs = context.getSharedPreferences("shtemarm_native_v1", Context.MODE_PRIVATE)
 
+    var studyLanguage: String
+        get() = prefs.getString("study_language", "hy")?.takeIf { it in setOf("hy","en","ru") } ?: "hy"
+        set(value) { if (value in setOf("hy","en","ru")) prefs.edit().putString("study_language",value).apply() }
+
     fun stats(subject: String): SubjectStats {
         val prefix = "s_" + subject + "_"
         return SubjectStats(
