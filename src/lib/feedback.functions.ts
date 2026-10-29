@@ -5,7 +5,7 @@ import { timingSafeEqual } from "node:crypto";
 const SubmitInput = z.object({
   message: z.string().trim().min(1).max(2000),
   contact: z.string().trim().max(200).optional(),
-  clientId: z.string().uuid(),
+  clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/),
 });
 
 export const submitFeedback = createServerFn({ method: "POST" })
@@ -27,7 +27,7 @@ export const submitFeedback = createServerFn({ method: "POST" })
   });
 
 export const getMyFeedback = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ clientId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) => z.object({ clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/) }).parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
@@ -66,7 +66,7 @@ export const adminListFeedback = createServerFn({ method: "POST" })
 
 export const adminReplyFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({ password: z.string().min(1).max(200), id: z.string().uuid(), reply: z.string().trim().min(1).max(4000) }).parse(input),
+    z.object({ password: z.string().min(1).max(200), id: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/), reply: z.string().trim().min(1).max(4000) }).parse(input),
   )
   .handler(async ({ data }) => {
     checkAdmin(data.password);
