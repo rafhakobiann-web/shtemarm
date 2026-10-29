@@ -3,6 +3,9 @@ package am.shtemarm.app
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class SubjectStats(val answered: Int, val correct: Int, val sessions: Int) {
     val accuracy: Int get() = if (answered == 0) 0 else (correct * 100 / answered)
@@ -14,6 +17,16 @@ class StudyProgress(context: Context) {
     var studyLanguage: String
         get() = prefs.getString("study_language", "hy")?.takeIf { it in setOf("hy","en","ru") } ?: "hy"
         set(value) { if (value in setOf("hy","en","ru")) prefs.edit().putString("study_language",value).apply() }
+
+    var dailyQuestionTarget: Int
+        get() = prefs.getInt("daily_question_target", 10).takeIf(StudyGoals::validTarget) ?: 10
+        set(value) {
+            if (StudyGoals.validTarget(value)) prefs.edit().putInt("daily_question_target", value).apply()
+        }
+
+    fun answeredToday(today: String = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())): Int =
+        if (prefs.getString("daily_answered_date", "") == today)
+            prefs.getInt("daily_answered_count", 0).coerceAtLeast(0) else 0
 
     fun stats(subject: String): SubjectStats {
         val prefix = "s_" + subject + "_"
@@ -39,7 +52,11 @@ class StudyProgress(context: Context) {
             val current = stats(subject)
             // commit() is deliberate: scores and the de-duplication token
             // must reach disk in the same transaction before success.
+            val today = LocalDate.now().toString()
+            val newDaily = (answeredToday(today) + answered).coerceAtMost(100000)
             val editor = prefs.edit()
+                .putString("daily_answered_date", today)
+                .putInt("daily_answered_count", newDaily)
                 .putInt(prefix + "answered", current.answered + answered)
                 .putInt(prefix + "correct", current.correct + correct)
                 .putInt(prefix + "sessions", current.sessions + 1)
@@ -140,6 +157,7 @@ class StudyProgress(context: Context) {
             .put("largeText", largeText)
             .put("feedback", showAnswersImmediately)
             .put("language", studyLanguage)
+            .put("dailyTarget", dailyQuestionTarget)
         return JSONObject()
             .put("format", "shtemarm-progress-backup")
             .put("version", 1)
@@ -214,7 +232,9 @@ class StudyProgress(context: Context) {
                 restoredSurface !in setOf("classic", "soft", "liquid") ||
                 restoredGlass !in setOf("subtle", "balanced", "vivid")) return false
             val restoredLanguage = settings.optString("language", studyLanguage).takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
+            val restoredTarget = settings.optInt("dailyTarget", 10).takeIf(StudyGoals::validTarget) ?: 10
             val editor = prefs.edit().clear().putString("study_language", restoredLanguage)
+                .putInt("daily_question_target", restoredTarget)
             for ((subject, stats) in restored) {
                 val prefix = "s_" + subject + "_"
                 editor.putInt(prefix + "answered", stats.answered)
