@@ -1,3 +1,11 @@
+## 📱 October 29, 2026 — Android study goals and guided revision
+- 🎯 Native Android daily question target: choose 5, 10, 15, 20 or 30; the home screen shows progress using completed sessions, with a local-day reset.
+- 🧩 Suggested review of the weakest subject with at least five recorded answers, linked to the saved mistake review list. This is a local recommendation, not AI-generated question-by-question tutoring.
+- 📚 Added three original worked mathematics examples (quadratics, arithmetic progressions, Pythagoras) and three step-by-step English grammar explanations (Future Perfect, Mixed Conditionals, articles), localized HY/EN/RU.
+- ✨ Shorter screen transitions and horizontally scrollable daily-goal chips on narrow devices.
+- 💾 Study target is included in compatible progress backups.
+- 🧪 Daily goal tests added. **APK publication remains dependent on passing Android CI and signing verification.**
+
 # 🗞️ Shtemarm — Changelog
 
 > 📅 A dated, emoji-led record of product improvements. Incomplete work is explicitly marked as in progress.
