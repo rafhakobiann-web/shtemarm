@@ -49,9 +49,13 @@ private val BrandTeal = Color(0xFF0B766B)
 private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
 
 class MainActivity : ComponentActivity() {
+    override fun onResume() {
+        super.onResume()
+        StudyReminders.markOpened(applicationContext)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        StudyReminders.markOpened(applicationContext)
         setContent { NativeShtemarm() }
     }
 }
@@ -971,9 +975,9 @@ private fun NativeShtemarm() {
                                     "Ուսման հիշեցումներ", "Study reminders", "Напоминания об учёбе"),
                                     fontWeight = FontWeight.SemiBold)
                                 Text(NativeStudyGuide.label(studyLanguage,
-                                    "Կամավոր. 3 օր չբացելուց հետո, առավելագույնը շաբաթը մեկ անգամ։",
-                                    "Optional. After 3 days away, at most once a week.",
-                                    "По желанию. После 3 дней отсутствия, не чаще раза в неделю."),
+                                    "Կամավոր․ 3 օր բացակայությունից հետո՝ շաբաթը առավելագույնը մեկ անգամ, 09:00–21:00։",
+                                    "Optional. After 3 days away, at most weekly, between 09:00 and 21:00.",
+                                    "По желанию. После 3 дней отсутствия, не чаще раза в неделю, с 09:00 до 21:00."),
                                     fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(checked = remindersEnabled, onCheckedChange = { enabled ->
