@@ -19,6 +19,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -308,7 +310,7 @@ private fun NativeShtemarm() {
                 AnimatedContent(
                     targetState = page,
                     modifier = Modifier.fillMaxSize(),
-                    transitionSpec = { fadeIn(tween(190)) togetherWith fadeOut(tween(140)) },
+                    transitionSpec = { fadeIn(tween(120)) togetherWith fadeOut(tween(90)) },
                     label = "native screen transition"
                 ) { screen ->
                 when (screen) {
@@ -425,6 +427,21 @@ private fun NativeShtemarm() {
                                     subject = lastBook.subject
                                     book = lastBook
                                     page = if (lastBook.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
+                                }
+                            }
+                            if (mistakesCount > 0) item {
+                                val needsWork = BookCatalog.subjects.map { it to progress.stats(it) }
+                                    .filter { it.second.answered >= 5 }
+                                    .minByOrNull { it.second.accuracy }
+                                if (needsWork != null) {
+                                    AcademyQuickAction(Icons.Default.Star,
+                                        NativeStudyGuide.label(studyLanguage,
+                                            "Առաջարկվող կրկնություն", "Recommended review", "Рекомендуемое повторение"),
+                                        needsWork.first + " · " + needsWork.second.accuracy + "% · " +
+                                            NativeStudyGuide.label(studyLanguage,
+                                                "Սկսիր պահպանված սխալներից", "Start with missed questions",
+                                                "Начните с ошибок")
+                                    ) { reviewMistakes = true; page = Page.SAVED }
                                 }
                             }
                             if (mistakesCount > 0) item {
@@ -996,7 +1013,7 @@ private fun NativeShtemarm() {
                             Text(NativeStudyGuide.label(studyLanguage,
                                 "Օրական քանի՞ հարց", "Daily question goal", "Вопросов в день"),
                                 fontWeight = FontWeight.Bold)
-                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 StudyGoals.allowedDailyTargets.sorted().forEach { target ->
                                     FilterChip(selected = dailyTarget == target,
                                         onClick = { dailyTarget = target; progress.dailyQuestionTarget = target },
