@@ -196,7 +196,7 @@ export function AppHeader() {
                   <Calculator className="size-4" />{t.calc}
                 </Link>
                 <Link to="/feedback" onClick={close} className={item}>
-                  <MessageCircle className="size-4" />{t.feedback}
+                  <MessageCircle className="size-4" />{lang === "en" ? "Message the developer" : lang === "ru" ? "Написать разработчику" : "Գրել մշակողին"}
                 </Link>
               </div>
 
