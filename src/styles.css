@@ -989,3 +989,21 @@ html[data-glass-blur="off"] [data-touch-glow="true"]::before { opacity: 0 !impor
     backdrop-filter: none !important;
   }
 }
+
+/* Keep floating accessibility and settings actions inside the viewport and
+   visually centered as a single compact stack above the mobile navigation. */
+@media (max-width: 767px) {
+  .site-floating-controls {
+    width: 2.5rem;
+    max-width: calc(100vw - 1.5rem);
+    align-items: center;
+    justify-content: center;
+  }
+  .site-floating-controls > button {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    flex-shrink: 0;
+    transform: none;
+  }
+}
