@@ -964,3 +964,28 @@ html[data-glass-blur="off"] [data-touch-glow="true"]::before { opacity: 0 !impor
 @media (prefers-reduced-transparency: reduce) {
   html[data-surface="liquid"] [data-touch-glow="true"]::before { opacity: 0 !important; }
 }
+
+/* Mobile scroll fast path: avoid repeatedly rasterizing translucent cards and
+   sticky chrome while long question books pass underneath them. */
+@media (max-width: 767px), (pointer: coarse) {
+  html[data-surface="liquid"] .academy-bento,
+  html[data-surface="liquid"] .academy-quick-action {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .academy-bento,
+  .academy-quick-action {
+    box-shadow: 0 2px 12px rgb(0 0 0 / 5%);
+  }
+  html[data-surface="liquid"] .academy-bento,
+  html[data-surface="liquid"] .academy-quick-action {
+    transition-property: border-color, background-color, color !important;
+  }
+  /* Keep the small dock's liquid outline without costly background sampling. */
+  html:not(.user-high-contrast) .mobile-liquid-dock,
+  html:not(.user-high-contrast)[data-surface="liquid"] .mobile-liquid-dock,
+  html:not(.user-high-contrast)[data-surface="liquid"][data-glass="vivid"] .mobile-liquid-dock {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
