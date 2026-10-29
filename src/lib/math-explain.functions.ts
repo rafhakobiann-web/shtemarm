@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { reliableMathFallback } from "./reliableMathFallback";
 
 // Page images are sent as JPEG data URLs by the browser; each is ~50–70 KB on disk.
 const PageImage = z.string().regex(/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/).max(400_000);
@@ -13,6 +14,7 @@ const Input = z.object({
   pages: z.array(PageImage).max(3),
   question: z.string().max(3500),
   options: z.array(z.string().max(450)).max(6),
+  locale: z.enum(["hy","en","ru"]).optional(),
 });
 
 type Input = z.infer<typeof Input>;
@@ -56,15 +58,9 @@ ${d.chosen !== null ? `Աշակերտի պատասխանը: ${valueLabel(d.kind,
 }
 
 function offlineMathExplanation(data: Input) {
-  const answer = valueLabel(data.kind, data.correct);
-  const selected = data.chosen === null ? "" : data.chosen === data.correct
-    ? "\nՔո պատասխանը համընկնում է պաշտոնական պատասխանի հետ։"
-    : `\nՔո պատասխանը՝ ${valueLabel(data.kind, data.chosen)}, չի համընկնում պաշտոնական պատասխանի հետ։`;
   return {
-    text: `Պաշտոնական ճիշտ պատասխանը՝ ${answer}։${selected}\n\nՏեղային պահուստային ռեժիմում հնարավոր չէ վստահորեն վերականգնել խնդրի ամբողջական քայլային լուծումը։ Մի հորինիր միջանկյալ քայլեր․ համեմատիր խնդրի պայմանը և պատասխանի բանալին։`,
-    cached: false,
-    error: false,
-    offline: true,
+    text: reliableMathFallback(data,data.locale??"hy"),
+    cached:false,error:false,offline:true
   };
 }
 
@@ -72,12 +68,12 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
-    const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
+    const { generateExplanation } = await import("./explanation-providers.server");
     if (!data.pages.length && !data.question.trim())
       return { text: "Առաջադրանքի պայմանը բացակայում է․ խնդրում ենք փորձել մեկ այլ հարց։", cached: false, error: true, offline: true };
 
     const cacheKey = await sha256Hex([
-      "math-v3", data.item, data.kind, data.correct, data.chosen ?? "",
+      "math-v4", data.locale??"hy", data.item, data.kind, data.correct, data.chosen ?? "",
       data.question, ...data.options, ...data.pages,
     ]);
     const cached = await getSavedExplanation(cacheKey);
@@ -103,7 +99,7 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
     const offline = offlineMathExplanation(data);
     return {
       ...offline,
-      error: true,
-      text: errorToUser(ai.reason) + "\n\n" + offline.text,
+      error: false,
+      text: offline.text,
     };
   });
