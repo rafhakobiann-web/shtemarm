@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { timingSafeEqual } from "node:crypto";
 
 const SubmitInput = z.object({
   message: z.string().trim().min(1).max(2000),
@@ -37,7 +38,11 @@ export const getMyFeedback = createServerFn({ method: "POST" })
 function checkAdmin(password: string) {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) throw new Error("admin not configured");
-  if (password !== expected) throw new Error("unauthorized");
+  const supplied = Buffer.from(password, "utf8");
+  const secret = Buffer.from(expected, "utf8");
+  if (supplied.length !== secret.length || !timingSafeEqual(supplied, secret)) {
+    throw new Error("unauthorized");
+  }
 }
 
 export const adminListFeedback = createServerFn({ method: "POST" })
