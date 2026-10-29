@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, HeartHandshake, ShieldCheck, MessageCircle } from "lucide-react";
 import { useState } from "react";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
+import { toast } from "sonner";
+import { TIKTOK_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/support")({
   head: () => ({ meta: [
@@ -14,9 +16,19 @@ export const Route = createFileRoute("/support")({
 const GOAL_AMD = 10000;
 function SupportPage() {
   const tx = useTx();
+  const lang = useLang();
   const [amount, setAmount] = useState(1000);
   const message = `Բարև Ձեզ։ Ցանկանում եմ աջակցել Shtemarm-ին ${amount.toLocaleString("en-US")} ֏ գումարով։ Խնդրում եմ տրամադրել փոխանցման տվյալները։`;
-  const contactUrl = `https://www.tiktok.com/@shtemarm_official`;
+  const contactUrl = TIKTOK_URL;
+  const copyMessage = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(message);
+      toast.success(lang === "en" ? "Message copied" : lang === "ru" ? "Сообщение скопировано" : "Հաղորդագրությունը պատճենված է");
+    } catch {
+      toast.error(lang === "en" ? "Select and copy the message manually" : lang === "ru" ? "Выделите и скопируйте сообщение вручную" : "Ընտրեք և պատճենեք հաղորդագրությունը ձեռքով");
+    }
+  };
   return (
     <div className="mx-auto max-w-3xl space-y-6 py-5">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />{tx("Գլխավոր էջ")}</Link>
@@ -42,9 +54,10 @@ function SupportPage() {
             <div className="rounded-2xl border bg-background/60 p-4 text-sm">
               <p className="mb-2 font-semibold">{tx("Պատրաստի հաղորդագրություն")}</p>
               <p className="break-words text-muted-foreground">{message}</p>
-              <button type="button" onClick={() => navigator.clipboard?.writeText(message)} className="mt-3 rounded-xl border px-4 py-2 font-semibold hover:bg-muted">{tx("Պատճենել հաղորդագրությունը")}</button>
+              <button type="button" onClick={() => void copyMessage()} className="mt-3 rounded-xl border px-4 py-2 font-semibold hover:bg-muted">{tx("Պատճենել հաղորդագրությունը")}</button>
             </div>
           </div>
+          <p className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">{lang === "en" ? "Donations are optional. This is not an online checkout: no money is collected on this page. Arrange any transfer with a parent or guardian and comply with your bank’s requirements. Core study tools remain free." : lang === "ru" ? "Пожертвования добровольны. Это не платёжная страница: здесь деньги не принимаются. Оформляйте переводы с родителем или опекуном с соблюдением требований банка. Основные учебные инструменты остаются бесплатными." : "Նվիրատվությունը կամավոր է։ Սա վճարային էջ չէ․ այստեղ գումար չի գանձվում։ Փոխանցումը կազմակերպեք ծնողի կամ խնամակալի հետ՝ պահպանելով բանկի պահանջները։ Հիմնական ուսումնական գործիքները մնում են անվճար։"}</p>
           <p className="flex items-start gap-2 text-sm text-muted-foreground"><ShieldCheck className="mt-0.5 size-5 shrink-0" />{tx("Քարտի տվյալները հրապարակված չեն։ Փոխանցումը կատարվում է քո բանկային հավելվածում՝ տվյալները անձնական հաղորդագրությամբ ստանալուց հետո։ Երբեք մի փոխանցիր CVV, PIN կամ գաղտնաբառ։")}</p>
         </div>
       </section>
