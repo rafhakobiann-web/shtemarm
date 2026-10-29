@@ -147,6 +147,7 @@ private fun NativeShtemarm() {
                 accent = progress.accent
                 surfaceStyle = progress.surfaceStyle
                 glassIntensity = progress.glassIntensity
+                studyLanguage = progress.studyLanguage
                 "Առաջընթացը հաջողությամբ վերականգնվեց։"
             } else {
                 "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
