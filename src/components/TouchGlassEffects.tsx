@@ -14,7 +14,6 @@ export function TouchGlassEffects() {
     let x = 50;
     let y = 50;
     let scrolling = false;
-    let lastScrollAt = 0;
     const enabled = () => !reduced.matches && !root.classList.contains("user-reduced-motion") &&
       !root.classList.contains("user-high-contrast") && root.dataset.surface === "liquid";
 
@@ -53,12 +52,11 @@ export function TouchGlassEffects() {
     // Touch glow should not compete with compositor-driven scrolling.
     // Resume only on the next intentional pointerdown after a scroll.
     const onScroll = () => {
-      lastScrollAt = performance.now();
       scrolling = true;
       clear();
     };
     const onDown = (event: PointerEvent) => {
-      if (performance.now() - lastScrollAt > 180) scrolling = false;
+      scrolling = false;
       move(event);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
