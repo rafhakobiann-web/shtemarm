@@ -11,6 +11,18 @@ object NativeStudyGuide {
     }
 
     val grammar = listOf(
+        Rule("future-perfect", "Future Perfect",
+            "1. Գտիր ապագայի սահմանը՝ by Friday։ 2. Ստուգիր՝ գործողությունը մինչև այդ կավարտվի՞։ 3. Կազմիր will have + V3։ Օրինակ՝ By Friday, I will have finished. Մի՛ գրիր will has։",
+            "1. Find a future deadline (by Friday). 2. Ask whether the action will be complete by then. 3. Use will have + past participle: By Friday, I will have finished. Never use will has.",
+            "1. Найдите будущий срок (by Friday). 2. Проверьте завершённость к сроку. 3. Используйте will have + V3: By Friday, I will have finished. Не пишите will has."),
+        Rule("mixed-conditionals", "Mixed Conditionals",
+            "1. Որոշիր պայմանի և հետևանքի ժամանակները։ 2. Անցյալում չկատարված պայման՝ if + had + V3։ 3. Ներկայի հետևանք՝ would + V։ Օրինակ՝ If I had slept, I would feel better now։",
+            "1. Identify the condition's time and the result's time. 2. Unreal past condition: if + had + V3. 3. Unreal present result: would + base verb. Example: If I had slept, I would feel better now.",
+            "1. Определите времена условия и результата. 2. Нереальное прошлое: if + had + V3. 3. Результат сейчас: would + V. Пример: If I had slept, I would feel better now."),
+        Rule("articles", "Articles: a / an / the",
+            "1. Որոշիր՝ գոյականը հաշվելի՞ է և եզակի՞։ 2. Առաջին հիշատակման դեպքում՝ a/an ըստ հնչյունի (an hour, a university)։ 3. Կոնկրետ հայտնի առարկայի դեպքում՝ the։ Օրինակ՝ I saw a dog. The dog was friendly։",
+            "1. Check if the noun is singular countable. 2. For a new nonspecific item, choose a/an by sound (an hour, a university). 3. For an identifiable item, use the: I saw a dog. The dog was friendly.",
+            "1. Проверьте, исчисляемое ли существительное в единственном числе. 2. Для нового предмета — a/an по звуку (an hour, a university). 3. Для известного предмета — the: I saw a dog. The dog was friendly."),
         Rule("conditionals", "Conditionals",
             "Պայմանական նախադասություններ. I տեսակ՝ if + Present Simple, will + V1։ II տեսակ՝ if + Past Simple, would + V1։ III տեսակ՝ if + Past Perfect, would have + V3։",
             "Conditionals: Type 1 uses if + present simple, will + base verb. Type 2 uses if + past simple, would + base verb. Type 3 uses if + past perfect, would have + past participle.",
@@ -45,6 +57,18 @@ object NativeStudyGuide {
         fun explanation(lang: String) = label(lang, hy, en, ru)
     }
     val math = listOf(
+        Formula("Quadratic equation — worked example",
+            "Լուծիր x² − 5x + 6 = 0։ 1. a = 1, b = −5, c = 6։ 2. D = 25 − 24 = 1։ 3. x = (5 ± 1)/2, հետևաբար x₁ = 2, x₂ = 3։ Ստուգում՝ (x−2)(x−3)=0։",
+            "Solve x² − 5x + 6 = 0. 1. a = 1, b = −5, c = 6. 2. D = 25 − 24 = 1. 3. x = (5 ± 1)/2, giving x = 2 or 3. Check: (x−2)(x−3)=0.",
+            "Решите x² − 5x + 6 = 0. 1. a = 1, b = −5, c = 6. 2. D = 25 − 24 = 1. 3. x = (5 ± 1)/2, то есть x = 2 или 3. Проверка: (x−2)(x−3)=0."),
+        Formula("Arithmetic progression — worked example",
+            "Տրված է 3, 7, 11, …։ 1. d = 7 − 3 = 4։ 2. a₅ = 3 + 4·4 = 19։ 3. S₅ = 5(3 + 19)/2 = 55։ Ստուգում՝ 3+7+11+15+19=55։",
+            "Given 3, 7, 11, … . 1. d = 7 − 3 = 4. 2. a₅ = 3 + 4·4 = 19. 3. S₅ = 5(3 + 19)/2 = 55. Check: 3+7+11+15+19=55.",
+            "Дано 3, 7, 11, … . 1. d = 7 − 3 = 4. 2. a₅ = 3 + 4·4 = 19. 3. S₅ = 5(3 + 19)/2 = 55. Проверка: 3+7+11+15+19=55."),
+        Formula("Pythagoras — worked example",
+            "Ուղղանկյուն եռանկյան էջերը 6 և 8 են։ 1. c² = 6² + 8²։ 2. c² = 100։ 3. c = 10։ Մի՛ գումարիր էջերը՝ ներքնաձիգը գտնելու համար։",
+            "The legs of a right triangle are 6 and 8. 1. c² = 6² + 8². 2. c² = 100. 3. c = 10. Do not simply add the legs.",
+            "Катеты прямоугольного треугольника равны 6 и 8. 1. c² = 6² + 8². 2. c² = 100. 3. c = 10. Не складывайте катеты напрямую."),
         Formula("Linear equations", "ax + b = c, a ≠ 0 ⇒ x = (c − b) / a։ Երկու կողմերից հանիր b-ն, ապա բաժանիր a-ի։",
             "ax + b = c, a ≠ 0 ⇒ x = (c − b) / a. Subtract b, then divide by a.",
             "ax + b = c, a ≠ 0 ⇒ x = (c − b) / a. Вычтите b и разделите на a."),
