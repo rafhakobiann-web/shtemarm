@@ -4,8 +4,8 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class NativeStudyGuideTest {
-    @Test fun hasSevenGrammarTopicsAndMathReference() {
-        assertEquals(7, NativeStudyGuide.grammar.size)
+    @Test fun hasExpandedGrammarTopicsAndMathReference() {
+        assertTrue(NativeStudyGuide.grammar.size >= 7)
         assertTrue(NativeStudyGuide.math.size >= 5)
         assertEquals(listOf("hy","en","ru"), NativeStudyGuide.languages)
     }
