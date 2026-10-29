@@ -37,7 +37,10 @@ export const BIO_BOOKS = [
 
 /** Original Armenian-language practice bank; official past-paper links are shown separately. */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Փորձնական հարցաշար · 32 հարց", cover: "/covers/armenian-language.svg" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
 ] as const;
 
 /** Two playable original physics practice volumes, corresponding to the two
@@ -96,7 +99,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id === 41 ? "/data/armenian-book1.json" : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then(async (r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           const type = r.headers.get("content-type") ?? "";
