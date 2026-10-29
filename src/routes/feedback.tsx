@@ -44,13 +44,17 @@ function FeedbackPage() {
   const [sent, setSent] = useState(false);
   const [clientId, setClientId] = useState<string | null>(null);
   const [mine, setMine] = useState<Mine[] | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const loadMine = async (id: string) => {
     try {
       const feedback = await getMyFeedback({ data: { clientId: id } });
       setMine(Array.isArray(feedback) ? (feedback as Mine[]) : []);
+      setLoadFailed(false);
     } catch {
       setMine([]);
+      setLoadFailed(true);
       toast.error(tx("Չհաջողվեց բեռնել հաղորդագրությունները։"));
     }
   };
@@ -72,14 +76,20 @@ function FeedbackPage() {
     const text = message.trim();
     if (!text || busy || !clientId) return;
     setBusy(true);
+    setSendError(null);
     try {
       await submitFeedback({ data: { message: text.slice(0, 2000), contact: contact.trim().slice(0, 200), clientId } });
       setSent(true);
       setMessage("");
       setContact("");
       void loadMine(clientId);
-    } catch {
-      toast.error(tx("Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ գրեք TikTok-ում։"));
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "";
+      const note = reason.includes("rate_limited")
+        ? tx("Սպասեք մեկ րոպե՝ հաջորդ հաղորդագրությունն ուղարկելուց առաջ։")
+        : tx("Չհաջողվեց ուղարկել։ Հնարավոր է՝ հետադարձ կապի ծառայությունը ժամանակավորապես անհասանելի է։");
+      setSendError(note);
+      toast.error(note);
     } finally {
       setBusy(false);
     }
@@ -109,6 +119,7 @@ function FeedbackPage() {
           <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">
             {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Ձեր պատասխանները հասանելի են այս դիտարկչում պահվող մասնավոր նույնացուցիչով։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
           </p>
+          {sendError && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{sendError}</p>}
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -132,6 +143,7 @@ function FeedbackPage() {
 
       <section className="shadow-card glass space-y-3 rounded-3xl p-5 sm:p-6">
         <h2 className="font-bold">{tx("Ձեր հաղորդագրությունները և պատասխանները")}</h2>
+        {loadFailed && clientId && <Button variant="outline" onClick={() => void loadMine(clientId)}>{tx("Կրկին փորձել")}</Button>}
         {mine === null && <p className="text-sm text-muted-foreground">{tx("Բեռնվում է…")}</p>}
         {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Դեռ հաղորդագրություններ չկան։")}</p>}
         {mine?.map((m) => (

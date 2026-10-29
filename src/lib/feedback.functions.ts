@@ -5,24 +5,29 @@ import { timingSafeEqual } from "node:crypto";
 const SubmitInput = z.object({
   message: z.string().trim().min(1).max(2000),
   contact: z.string().trim().max(200).optional(),
-  clientId: z.string().min(8).max(100),
+  clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/),
 });
 
 export const submitFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => SubmitInput.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const cutoff = new Date(Date.now() - 60_000).toISOString();
+    const { data: recent, error: lookupError } = await supabaseAdmin.from("feedback")
+      .select("id").eq("client_id", data.clientId).gte("created_at", cutoff).limit(1);
+    if (lookupError) { console.error("[feedback] rate-limit lookup failed", lookupError.code); throw new Error("service_unavailable"); }
+    if (recent?.length) throw new Error("rate_limited");
     const { error } = await supabaseAdmin.from("feedback").insert({
       message: data.message,
       contact: data.contact ? data.contact : null,
       client_id: data.clientId,
     });
-    if (error) throw new Error("save failed");
+    if (error) { console.error("[feedback] write failed", error.code); throw new Error("service_unavailable"); }
     return { ok: true };
   });
 
 export const getMyFeedback = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ clientId: z.string().min(8).max(100) }).parse(input))
+  .inputValidator((input: unknown) => z.object({ clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/) }).parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
@@ -31,7 +36,7 @@ export const getMyFeedback = createServerFn({ method: "POST" })
       .eq("client_id", data.clientId)
       .order("created_at", { ascending: false })
       .limit(50);
-    if (error) throw new Error("load failed");
+    if (error) { console.error("[feedback] read failed", error.code); throw new Error("service_unavailable"); }
     return rows ?? [];
   });
 
@@ -61,7 +66,7 @@ export const adminListFeedback = createServerFn({ method: "POST" })
 
 export const adminReplyFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({ password: z.string().min(1).max(200), id: z.string().uuid(), reply: z.string().trim().min(1).max(4000) }).parse(input),
+    z.object({ password: z.string().min(1).max(200), id: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/), reply: z.string().trim().min(1).max(4000) }).parse(input),
   )
   .handler(async ({ data }) => {
     checkAdmin(data.password);
