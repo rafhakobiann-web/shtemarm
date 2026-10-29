@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +66,9 @@ private fun NativeShtemarm() {
     var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var progressVersion by remember { mutableIntStateOf(0) }
+    var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
+    var handbookSubject by remember { mutableStateOf("Անգլերեն") }
+    var showExplanation by remember { mutableStateOf(false) }
 
     var page by remember { mutableStateOf(Page.HOME) }
     var sessionOrigin by remember { mutableStateOf(Page.SECTIONS) }
@@ -158,6 +161,7 @@ private fun NativeShtemarm() {
             Page.SECTIONS -> Page.BOOKS
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
+            Page.HANDBOOK -> Page.HOME
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
         }
@@ -170,6 +174,7 @@ private fun NativeShtemarm() {
         sessionTitle = name
         sessionIndex = 0
         chosen = -1
+        showExplanation = false
         score = 0
         correctIds = emptySet()
         sessionId = UUID.randomUUID().toString()
@@ -255,7 +260,7 @@ private fun NativeShtemarm() {
                     AcademyFloatingDock(
                         selected = when (page) {
                             Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
-                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED -> 1
+                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
                             Page.TOOLS -> 4
@@ -285,6 +290,50 @@ private fun NativeShtemarm() {
                     label = "native screen transition"
                 ) { screen ->
                 when (screen) {
+                    Page.HANDBOOK -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            item {
+                                ScreenHeading(
+                                    NativeStudyGuide.label(studyLanguage, "Կանոններ և բացատրություններ", "Rules and explanations", "Правила и объяснения"),
+                                    NativeStudyGuide.label(studyLanguage, "Աշխատում է առանց ինտերնետի", "Works offline", "Работает без интернета")
+                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    listOf("Անգլերեն", "Մաթեմատիկա").forEach { name ->
+                                        FilterChip(
+                                            selected = handbookSubject == name,
+                                            onClick = { handbookSubject = name },
+                                            label = { Text(if (name == "Անգլերեն") NativeStudyGuide.label(studyLanguage,"Անգլերեն","English","Английский") else NativeStudyGuide.label(studyLanguage,"Մաթեմատիկա","Mathematics","Математика")) }
+                                        )
+                                    }
+                                }
+                            }
+                            if (handbookSubject == "Անգլերեն") {
+                                items(NativeStudyGuide.grammar) { rule ->
+                                    ElevatedCard(shape = RoundedCornerShape(18.dp)) {
+                                        Column(Modifier.padding(18.dp)) {
+                                            Text(rule.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                            Spacer(Modifier.height(8.dp))
+                                            Text(rule.explanation(studyLanguage), lineHeight = 24.sp)
+                                        }
+                                    }
+                                }
+                            } else {
+                                items(NativeStudyGuide.math) { formula ->
+                                    ElevatedCard(shape = RoundedCornerShape(18.dp)) {
+                                        Column(Modifier.padding(18.dp)) {
+                                            Text(formula.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                            Spacer(Modifier.height(8.dp))
+                                            Text(formula.explanation(studyLanguage), lineHeight = 24.sp)
+                                        }
+                                    }
+                                }
+                            }
+                            item { Spacer(Modifier.height(24.dp)) }
+                        }
+                    }
                     Page.ADVANCED -> {
                         val activeBook = book
                         if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
@@ -350,6 +399,11 @@ private fun NativeShtemarm() {
                                     }
                                     AcademyQuickAction(Icons.Default.Star, "Թեմատիկ աշխատանք", "Ստեղծիր առաջադրանքներ") {
                                         page = Page.TOOLS
+                                    }
+                                    AcademyQuickAction(Icons.Default.Book,
+                                        NativeStudyGuide.label(studyLanguage,"Կանոններ և բացատրություններ","Rules and explanations","Правила и объяснения"),
+                                        NativeStudyGuide.label(studyLanguage,"Անգլերեն և մաթեմատիկա · Offline","English and math · Offline","Английский и математика · Offline")) {
+                                        page = Page.HANDBOOK
                                     }
                                     AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ", "Կենտրոնացում և կրկնություն") {
                                         page = Page.TOOLS
@@ -696,7 +750,32 @@ private fun NativeShtemarm() {
                                     if (immediateFeedback) {
                                         Text(if (chosen == q.correctIndex) "Ճիշտ է ✓" else "Սխալ պատասխան",
                                             fontWeight = FontWeight.Bold)
-                                        if (q.explanation.isNotBlank()) Text(q.explanation)
+
+                                    }
+                                    OutlinedButton(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = { showExplanation = !showExplanation }
+                                    ) {
+                                        Text(if (showExplanation)
+                                            NativeStudyGuide.label(studyLanguage,"Թաքցնել բացատրությունը","Hide explanation","Скрыть объяснение")
+                                        else NativeStudyGuide.label(studyLanguage,"Բացել բացատրությունը","Show explanation","Показать объяснение"))
+                                    }
+                                    if (showExplanation) {
+                                        ElevatedCard(shape = RoundedCornerShape(16.dp)) {
+                                            Column(Modifier.padding(16.dp)) {
+                                                Text(NativeStudyGuide.label(studyLanguage,"Բացատրություն","Explanation","Объяснение"),
+                                                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                                Spacer(Modifier.height(8.dp))
+                                                Text(NativeStudyGuide.explanation(q,subject,studyLanguage),lineHeight = 24.sp)
+                                                Spacer(Modifier.height(8.dp))
+                                                TextButton(onClick = {
+                                                    handbookSubject = if (subject == "Մաթեմատիկա") "Մաթեմատիկա" else "Անգլերեն"
+                                                    page = Page.HANDBOOK
+                                                }) {
+                                                    Text(NativeStudyGuide.label(studyLanguage,"Կարդալ կանոնները","Study the rules","Изучить правила"))
+                                                }
+                                            }
+                                        }
                                     }
                                     Button(
                                         onClick = {
@@ -709,6 +788,7 @@ private fun NativeShtemarm() {
                                             } else {
                                                 sessionIndex++
                                                 chosen = -1
+                                                showExplanation = false
                                             }
                                         },
                                         modifier = Modifier.fillMaxWidth()
@@ -857,7 +937,17 @@ private fun NativeShtemarm() {
                             }
                         }
                     }
-                    Page.SETTINGS -> Box(Modifier.fillMaxSize().padding(padding)) {
+                    Page.SETTINGS -> Column(Modifier.fillMaxSize().padding(padding)) {
+                        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp),horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf("hy","en","ru").forEach { language ->
+                                FilterChip(
+                                    selected = studyLanguage == language,
+                                    onClick = { studyLanguage = language; progress.studyLanguage = language },
+                                    label = { Text(language.uppercase()) }
+                                )
+                            }
+                        }
+                        Box(Modifier.weight(1f)) {
                         AcademyAppearanceSettings(
                             dark = dark,
                             onDark = { dark = it; progress.darkMode = it },
@@ -885,6 +975,7 @@ private fun NativeShtemarm() {
                                 importProgress.launch(arrayOf("application/json", "text/plain"))
                             }
                         )
+                        }
                     }
                 }
                 } // AnimatedContent
