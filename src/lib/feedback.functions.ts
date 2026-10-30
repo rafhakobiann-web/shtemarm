@@ -40,7 +40,14 @@ export const getMyFeedback = createServerFn({ method: "POST" })
     return rows ?? [];
   });
 
-function checkAdmin(password: string) {
+async function checkAdmin(password: string, accessToken: string) {
+  const allowedEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (!allowedEmail) throw new Error("admin not configured");
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
+  if (error || !data.user || data.user.email?.toLowerCase() !== allowedEmail ||
+      !data.user.email_confirmed_at) throw new Error("unauthorized");
+
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) throw new Error("admin not configured");
   const supplied = Buffer.from(password, "utf8");
@@ -51,9 +58,9 @@ function checkAdmin(password: string) {
 }
 
 export const adminListFeedback = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200) }).parse(input))
+  .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200), accessToken: z.string().min(20).max(4096) }).parse(input))
   .handler(async ({ data }) => {
-    checkAdmin(data.password);
+    await checkAdmin(data.password, data.accessToken);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
       .from("feedback")
@@ -66,10 +73,10 @@ export const adminListFeedback = createServerFn({ method: "POST" })
 
 export const adminReplyFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({ password: z.string().min(1).max(200), id: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/), reply: z.string().trim().min(1).max(4000) }).parse(input),
+    z.object({ password: z.string().min(1).max(200), accessToken: z.string().min(20).max(4096), id: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/), reply: z.string().trim().min(1).max(4000) }).parse(input),
   )
   .handler(async ({ data }) => {
-    checkAdmin(data.password);
+    await checkAdmin(data.password, data.accessToken);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("feedback")
