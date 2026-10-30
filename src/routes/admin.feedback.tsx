@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { adminListFeedback, adminReplyFeedback } from "@/lib/feedback.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/feedback")({
   head: () => ({ meta: [{ title: "Հետադարձ կապ · Admin" }, { name: "robots", content: "noindex" }] }),
@@ -20,10 +21,16 @@ function AdminFeedbackPage() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
 
+  const adminToken = async () => {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.access_token) throw new Error("Sign in to your administrator account first.");
+    return data.session.access_token;
+  };
+
   const load = async () => {
     setBusy(true);
     try {
-      setRows((await adminListFeedback({ data: { password } })) as Row[]);
+      setRows((await adminListFeedback({ data: { password, accessToken: await adminToken() } })) as Row[]);
     } catch (e) {
       toast.error(e instanceof Error && e.message === "unauthorized" ? "Սխալ գաղտնաբառ" : "Չհաջողվեց բեռնել");
     } finally {
@@ -35,7 +42,7 @@ function AdminFeedbackPage() {
     const text = (drafts[id] ?? "").trim();
     if (!text) return;
     try {
-      await adminReplyFeedback({ data: { password, id, reply: text } });
+      await adminReplyFeedback({ data: { password, accessToken: await adminToken(), id, reply: text } });
       toast.success("Պատասխանը պահպանված է");
       setDrafts((d) => ({ ...d, [id]: "" }));
       await load();
@@ -52,6 +59,7 @@ function AdminFeedbackPage() {
 
       {rows === null ? (
         <section className="shadow-card glass space-y-3 rounded-3xl p-5">
+          <p className="text-sm text-muted-foreground">Նախ մուտք գործեք ձեր հաստատված ադմինիստրատորի հաշվով <a className="underline" href="/auth">Մուտք</a> էջում։</p>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Գաղտնաբառ" />
           <Button className="w-full" onClick={load} disabled={busy || !password}>
             {busy ? <Loader2 className="animate-spin" /> : null} Մուտք
