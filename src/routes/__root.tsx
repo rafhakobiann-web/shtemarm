@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
+import { RelaunchScreen } from "@/components/RelaunchScreen";
 import { MobileNav } from "@/components/MobileNav";
 import { TouchGlassEffects } from "@/components/TouchGlassEffects";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
@@ -146,7 +147,14 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const maintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === "true";
+
 function RootComponent() {
+  if (maintenanceMode) return <RelaunchScreen />;
+  return <ActiveApp />;
+}
+
+function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => {
     return initAppearance();

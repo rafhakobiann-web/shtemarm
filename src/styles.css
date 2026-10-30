@@ -1049,3 +1049,21 @@ body {
     overflow-x: auto;
   }
 }
+
+/* Relaunch typography: consistent Armenian glyphs and less costly motion. */
+html[lang="hy"] button,
+html[lang="hy"] input,
+html[lang="hy"] textarea,
+html[lang="hy"] select {
+  font-family: "Noto Sans Armenian", "Noto Sans", system-ui, sans-serif;
+  font-synthesis: none;
+}
+html[lang="hy"] { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
