@@ -12,7 +12,23 @@
       "n": 1,
       "title": "Կենդանի օրգանիզմների բազմազանությունը",
       "startPage": 5,
-      "endPage": 61
+      "endPage": 61,
+      "numberingAudit": {
+        "firstQuestion": 1,
+        "lastQuestion": 305,
+        "questionIdsDetected": 305,
+        "questionPages": 57,
+        "pagesWithMissingSequentialIds": [],
+        "status": "machine-indexed-not-visually-proofread"
+      },
+      "answerKeyAudit": {
+        "firstAnswerId": 1,
+        "lastAnswerId": 181,
+        "entriesDetected": 181,
+        "sourcePage": 362,
+        "status": "machine-indexed-not-visually-proofread",
+        "remainingAnswers": "pending"
+      }
     },
     {
       "n": 2,
