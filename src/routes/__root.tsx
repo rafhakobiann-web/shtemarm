@@ -150,6 +150,11 @@ function RootShell({ children }: { children: ReactNode }) {
 const maintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === "true";
 
 function RootComponent() {
+  if (maintenanceMode) return <RelaunchScreen />;
+  return <ActiveApp />;
+}
+
+function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => {
     return initAppearance();
@@ -169,8 +174,6 @@ function RootComponent() {
       console.warn("[Shtemarm] Auth not available; offline library remains accessible", error);
     }
   }, []);
-
-  if (maintenanceMode) return <RelaunchScreen />;
 
   return (
     <QueryClientProvider client={queryClient}>
