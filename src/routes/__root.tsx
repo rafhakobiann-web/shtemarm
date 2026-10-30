@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
+import { RelaunchScreen } from "@/components/RelaunchScreen";
 import { MobileNav } from "@/components/MobileNav";
 import { TouchGlassEffects } from "@/components/TouchGlassEffects";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
@@ -146,6 +147,8 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const maintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === "true";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => {
@@ -166,6 +169,8 @@ function RootComponent() {
       console.warn("[Shtemarm] Auth not available; offline library remains accessible", error);
     }
   }, []);
+
+  if (maintenanceMode) return <RelaunchScreen />;
 
   return (
     <QueryClientProvider client={queryClient}>
