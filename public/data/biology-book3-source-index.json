@@ -1,0 +1,70 @@
+{
+  "id": 33,
+  "title": "Կենսաբանության թեստային առաջադրանքների շտեմարան, մաս 3",
+  "year": 2018,
+  "publisher": "Աստղիկ գրատուն",
+  "pages": 384,
+  "approvedBy": "Գնահատման և թեստավորման կենտրոն",
+  "sourceFile": "kensab-3.pdf (user-provided; not included in repository)",
+  "pageNumbering": "Printed pages coincide with PDF page numbers",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Կենդանի օրգանիզմների բազմազանությունը",
+      "startPage": 5,
+      "endPage": 61
+    },
+    {
+      "n": 2,
+      "title": "Մարդ",
+      "startPage": 62,
+      "endPage": 124
+    },
+    {
+      "n": 3,
+      "title": "Կենդանի նյութի քիմիական կազմավորվածությունը։ Բջջի կառուցվածքն ու ֆունկցիաները։ Նյութերի փոխանակությունը և էներգիայի փոխակերպումները բջջում",
+      "startPage": 125,
+      "endPage": 191
+    },
+    {
+      "n": 4,
+      "title": "Բջջի կենսական փուլերը։ Օրգանիզմների բազմացումը և անհատական զարգացումը։ Ժառանգականության և փոփոխականության օրինաչափությունները",
+      "startPage": 192,
+      "endPage": 262
+    },
+    {
+      "n": 5,
+      "title": "Էվոլյուցիոն տեսություն։ Օրգանական աշխարհի զարգացումը։ Էկոլոգիայի հիմունքները և կենսոլորտը",
+      "startPage": 263,
+      "endPage": 295
+    },
+    {
+      "n": 6,
+      "title": "Խնդիրներ",
+      "startPage": 296,
+      "endPage": 361
+    }
+  ],
+  "answers": {
+    "startPage": 362,
+    "endPage": 384
+  },
+  "verification": {
+    "toc": "checked against uploaded PDF pages 3 and 5",
+    "officialQuestionsTranscribed": 0,
+    "officialAnswersCrossChecked": 0,
+    "originalPracticeQuestions": 36,
+    "notes": "36 original practice questions are grouped under six source chapter topics. They are not official transcriptions; official answer-key matching is pending."
+  },
+  "pageAudit": {
+    "totalPages": 384,
+    "questionPages": 357,
+    "answerKeyAndBackMatterPages": 23,
+    "frontMatterPages": 4,
+    "pagesWithEmbeddedImages": 191,
+    "verifiedQuestions": 0,
+    "verifiedAnswers": 0,
+    "status": "per-page-structural-scan-completed; manual visual question-and-answer matching pending",
+    "script": "scripts/audit_biology3_pdf.py"
+  }
+}

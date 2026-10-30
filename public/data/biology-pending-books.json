@@ -3,14 +3,18 @@
   "referenceYear": 2019,
   "sourceArchive": "https://test.am/pdf.php?page=111",
   "formatGuide2027": "https://escs.gov.am/api/assets/53efbc2e-cbb3-41ef-bd52-8d6ea8db1f21",
-  "note": "ԳԹԿ-ի 3-րդ և 4-րդ շտեմարանները ցուցակագրված են, սակայն ամբողջական թվայնացված առաջադրանքները այս repository-ում չկան։ Առանց ստուգված բնօրինակների ու օգտագործման թույլտվության բովանդակություն չենք ներմուծում։",
+  "note": "Կենսաբանության 3-րդ մասի PDF-ի վեց բաժինները քարտեզագրված են։ 36 հեղինակային վարժանքները թեմատիկորեն դասավորված են, բայց պաշտոնական հարցերի և պատասխանների բնօրինակային ստուգումն առայժմ ավարտված չէ։",
   "books": [
     {
       "id": 33,
       "part": 3,
-      "status": "awaiting-verified-source",
+      "status": "source-indexed-six-chapters-original-practice-available",
       "verifiedQuestions": 0,
-      "targetFile": "public/data/bio-book3.json"
+      "targetFile": "public/data/bio-book3.json",
+      "originalPracticeQuestions": 36,
+      "sourceIndex": "public/data/biology-book3-source-index.json",
+      "sourceYear": 2018,
+      "sourcePages": 384
     },
     {
       "id": 34,
