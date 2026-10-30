@@ -21,12 +21,12 @@ The last pages of each book contain answer keys. Source page ranges were checked
 | Volume | Authored practice questions | Online practice sections | Verified original PDF questions |
 |---|---:|---:|---:|
 | I | 96 | 8 | 0 |
-| II | 10 | 1 | 0 |
-| III | 10 | 1 | 0 |
-| IV | 10 | 1 | 0 |
-| **Total** | **126** | **11** | **0** |
+| II | 31 | 8 | 0 |
+| III | 31 | 8 | 0 |
+| IV | 31 | 8 | 0 |
+| **Total** | **189** | **32** | **0** |
 
-**Important:** These are original practice exercises, not transcriptions or answer-key checks of the official PDFs. Online practice section titles do not always align with the corresponding source book section numbers. Never treat matching numbers as proof of a verified source mapping.
+**Important:** These are original practice exercises, not transcriptions or answer-key checks of the official PDFs. Online practice sections now have eight topic headings per volume, but the first-volume question content and the first section of volumes II–IV still need subject-level review. Volumes II–IV reuse some practice prompts; more varied, verified items are needed. Never treat matching numbers as proof of a verified source mapping.
 
 ## Next implementation tasks
 
