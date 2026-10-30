@@ -4,9 +4,9 @@
   "sections": [
     {
       "n": 1,
-      "title": "Բջջի կառուցվածք և նյութափոխանակություն",
+      "title": "Հեղինակային վարժանքներ․ Բջջի կառուցվածք և նյութափոխանակություն",
       "instr_en": "Original biology practice questions. Not a transcription of the official third volume.",
-      "instr_hy": "Հեղինակային ուսումնական հարցեր․ պաշտոնական երրորդ շտեմարանի բնօրինակ հարցեր չեն։",
+      "instr_hy": "Հեղինակային ուսումնական հարցեր, ոչ թե 2018 թ. շտեմարանի բնօրինակ առաջադրանքներ։",
       "units": [
         {
           "id": "33-1",
@@ -86,9 +86,9 @@
     },
     {
       "n": 2,
-      "title": "Ժառանգականություն և փոփոխականություն",
+      "title": "Հեղինակային վարժանքներ․ Ժառանգականություն և փոփոխականություն",
       "instr_en": "Original biology practice questions. Not a transcription of the official third volume.",
-      "instr_hy": "Հեղինակային ուսումնական հարցեր․ պաշտոնական երրորդ շտեմարանի բնօրինակ հարցեր չեն։",
+      "instr_hy": "Հեղինակային ուսումնական հարցեր, ոչ թե 2018 թ. շտեմարանի բնօրինակ առաջադրանքներ։",
       "units": [
         {
           "id": "33-2",
@@ -168,9 +168,9 @@
     },
     {
       "n": 3,
-      "title": "Էվոլյուցիա և էկոլոգիա",
+      "title": "Հեղինակային վարժանքներ․ Էվոլյուցիա և էկոլոգիա",
       "instr_en": "Original biology practice questions. Not a transcription of the official third volume.",
-      "instr_hy": "Հեղինակային ուսումնական հարցեր․ պաշտոնական երրորդ շտեմարանի բնօրինակ հարցեր չեն։",
+      "instr_hy": "Հեղինակային ուսումնական հարցեր, ոչ թե 2018 թ. շտեմարանի բնօրինակ առաջադրանքներ։",
       "units": [
         {
           "id": "33-3",
@@ -250,9 +250,9 @@
     },
     {
       "n": 4,
-      "title": "Մարդու օրգանիզմ և կարգավորում",
+      "title": "Հեղինակային վարժանքներ․ Մարդու օրգանիզմ և կարգավորում",
       "instr_en": "Original biology practice questions. Not a transcription of the official third volume.",
-      "instr_hy": "Հեղինակային ուսումնական հարցեր․ պաշտոնական երրորդ շտեմարանի բնօրինակ հարցեր չեն։",
+      "instr_hy": "Հեղինակային ուսումնական հարցեր, ոչ թե 2018 թ. շտեմարանի բնօրինակ առաջադրանքներ։",
       "units": [
         {
           "id": "33-4",
@@ -330,5 +330,51 @@
         }
       ]
     }
-  ]
+  ],
+  "sourceIndex": {
+    "source": "kensab-3.pdf",
+    "edition": 2018,
+    "pdfPages": 384,
+    "sections": [
+      {
+        "n": 1,
+        "title": "Կենդանի օրգանիզմների բազմազանությունը",
+        "startPage": 5,
+        "endPage": 61
+      },
+      {
+        "n": 2,
+        "title": "Մարդ",
+        "startPage": 62,
+        "endPage": 124
+      },
+      {
+        "n": 3,
+        "title": "Կենդանի նյութի քիմիական կազմը, բջջի կառուցվածքն ու նյութափոխանակությունը",
+        "startPage": 125,
+        "endPage": 191
+      },
+      {
+        "n": 4,
+        "title": "Բջջի կենսական փուլերը, բազմացումը, ժառանգականությունն ու փոփոխականությունը",
+        "startPage": 192,
+        "endPage": 262
+      },
+      {
+        "n": 5,
+        "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+        "startPage": 263,
+        "endPage": 295
+      },
+      {
+        "n": 6,
+        "title": "Խնդիրներ",
+        "startPage": 296,
+        "endPage": 361
+      }
+    ],
+    "answerKeyStartPage": 362,
+    "verification": "table-of-contents-verified",
+    "note": "The 24 original practice questions are NOT source-transcribed or answer-key verified."
+  }
 }
