@@ -7,6 +7,7 @@ The public support page is `/feedback`. The private reply dashboard is `/admin/f
 - `SUPABASE_URL`: URL for the Supabase project **containing** `public.feedback`.
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only Supabase key for that project; never prefix with `VITE_` or expose in browser.
 - `ADMIN_PASSWORD`: strong server-only admin password for the reply dashboard.
+- `ADMIN_EMAIL`: email of a confirmed Supabase Auth account allowed to administer feedback. The admin must sign in at `/auth` first; both account session and admin password are required.
 
 Set these in the **actual deployed server environment** (e.g. Vercel project settings), including Preview/Production as appropriate, then redeploy. Having the table in Lovable Cloud does not imply that Vercel is connected to the same database.
 
