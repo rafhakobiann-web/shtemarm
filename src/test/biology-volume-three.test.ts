@@ -11,8 +11,8 @@ describe("Biology volume III original practice foundation", () => {
   it("has valid, nonduplicate answerable questions", () => {
     const bank = JSON.parse(readFileSync("public/data/bio-book3.json", "utf8"));
     expect(bank.id).toBe(33);
-    expect(bank.sourceStatus).toBe("original-practice-not-official-transcription");
-    expect(bank.sections).toHaveLength(4);
+    expect(bank.sourceStatus).toBe("original-practice-aligned-to-2018-pdf-chapters");
+    expect(bank.sections).toHaveLength(6);
     const seen = new Set<string>();
     let count = 0;
     for (const section of bank.sections) for (const unit of section.units) {
@@ -27,12 +27,19 @@ describe("Biology volume III original practice foundation", () => {
         count++;
       }
     }
-    expect(count).toBe(24);
+    expect(count).toBe(36);
+  });
+  it("matches the six chapter boundaries of the provided 2018 source", () => {
+    const index = JSON.parse(readFileSync("public/data/biology-book3-source-index.json", "utf8"));
+    expect(index.pages).toBe(384);
+    expect(index.sections.map((section: { startPage: number }) => section.startPage)).toEqual([5, 62, 125, 192, 263, 296]);
+    expect(index.answers.startPage).toBe(362);
+    expect(index.verification.officialQuestionsTranscribed).toBe(0);
   });
   it("does not misrepresent original practice as verified source transcription", () => {
     const pending = JSON.parse(readFileSync("public/data/biology-pending-books.json", "utf8"));
     const volume = pending.books.find((b: { id: number }) => b.id === 33);
     expect(volume.verifiedQuestions).toBe(0);
-    expect(volume.originalPracticeQuestions).toBe(24);
+    expect(volume.originalPracticeQuestions).toBe(36);
   });
 });
