@@ -19,7 +19,7 @@ def index(pdf_path):
     pages = []
     for page_num in range(5, 62):
         page = pdf[page_num - 1]
-        raw_numbers = [int(n) for n in re.findall(r"(?m)^(\\d{1,3})\\s*$", page.get_text())]
+        raw_numbers = [int(n) for n in re.findall(r"(?m)^(\d{1,3})\s*$", page.get_text())]
         ids = []
         for number in raw_numbers:
             if number == next_id:
@@ -33,7 +33,7 @@ def index(pdf_path):
             "verification": "numbering-machine-extracted",
         })
     raw_key = pdf[361].get_text()
-    matches = re.findall(r"(?m)^(\\d{1,3})\\s*\\n-\\s*([1-4])\\s*$", raw_key)
+    matches = re.findall(r"(?m)^(\d{1,3})\s*\n-\s*([1-4])\s*$", raw_key)
     keys = {int(n): int(answer) for n, answer in matches if 1 <= int(n) <= 305}
     return {
         "volume": 3,
