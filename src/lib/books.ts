@@ -31,7 +31,7 @@ export const HISTORY_BOOKS = [
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
   { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 36 ուսումնական հարց · բնօրինակի թվայնացումը շարունակվում է", cover: "/covers/bio-3.webp", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · բնօրինակից 6 հարց · լրացվում է", cover: "/covers/bio-3.webp", locked: false },
   { id: 34, title: "Կենսաբանություն", sub: "Մաս չորրորդ", cover: "/covers/bio-4.webp", locked: true },
 ] as const;
 
@@ -99,7 +99,7 @@ export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
     cache.set(
       id,
-      fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
+      fetch(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id === 33 ? `/data/bio-book3-original.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`)
         .then(async (r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           const type = r.headers.get("content-type") ?? "";
