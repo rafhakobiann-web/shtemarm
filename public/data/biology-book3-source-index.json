@@ -55,5 +55,16 @@
     "officialAnswersCrossChecked": 0,
     "originalPracticeQuestions": 36,
     "notes": "36 original practice questions are grouped under six source chapter topics. They are not official transcriptions; official answer-key matching is pending."
+  },
+  "pageAudit": {
+    "totalPages": 384,
+    "questionPages": 357,
+    "answerKeyAndBackMatterPages": 23,
+    "frontMatterPages": 4,
+    "pagesWithEmbeddedImages": 191,
+    "verifiedQuestions": 0,
+    "verifiedAnswers": 0,
+    "status": "per-page-structural-scan-completed; manual visual question-and-answer matching pending",
+    "script": "scripts/audit_biology3_pdf.py"
   }
 }
