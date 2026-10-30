@@ -3,15 +3,18 @@
   "referenceYear": 2019,
   "sourceArchive": "https://test.am/pdf.php?page=111",
   "formatGuide2027": "https://escs.gov.am/api/assets/53efbc2e-cbb3-41ef-bd52-8d6ea8db1f21",
-  "note": "Երրորդ մասի համար ավելացվել է 24 հեղինակային փորձնական հարց՝ ոչ պաշտոնական PDF-ի արտագրություն։ Պաշտոնական երրորդ և չորրորդ մասերի ամբողջական թվայնացումն ու ստուգումը դեռ ավարտված չեն։",
+  "note": "Կենսաբանության 3-րդ մասի 2018թ. 384 էջանոց PDF-ը ստացվել է, ստուգվել են 6 բաժինների և պատասխանների էջային սահմանները։ 24 հեղինակային փորձնական հարցերը պաշտոնական հարցերի արտագրություն չեն, և դրանց պատասխանները դեռ չեն համեմատվել գրքի բանալիների հետ։ 4-րդ մասի PDF-ը դեռ չկա։",
   "books": [
     {
       "id": 33,
       "part": 3,
-      "status": "original-practice-available-official-source-pending",
+      "status": "source-pdf-received-toc-verified-question-verification-pending",
       "verifiedQuestions": 0,
       "targetFile": "public/data/bio-book3.json",
-      "originalPracticeQuestions": 24
+      "originalPracticeQuestions": 24,
+      "sourceIndex": "public/data/biology-book3-source-index.json",
+      "sourceYear": 2018,
+      "sourcePages": 384
     },
     {
       "id": 34,
