@@ -3,6 +3,8 @@ package am.shtemarm.app
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import org.json.JSONObject
 
 /** Bundled data comes from the website repository's public/data directory at build time. */
@@ -59,12 +61,14 @@ class QuestionRepository(private val context: Context) {
 
     suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
         synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
+        ensureActive()
         val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
         val result = mutableListOf<StudySection>()
         val sections = json.optJSONArray("sections")
         if (sections != null) {
             for (si in 0 until sections.length()) {
+                ensureActive()
                 val section = sections.optJSONObject(si) ?: continue
                 val title = BookStudyHelpers.sectionTitle(
                     book.subject, section.optString("title"), section.optString("label"),
@@ -73,6 +77,7 @@ class QuestionRepository(private val context: Context) {
                 val questions = mutableListOf<StudyQuestion>()
                 val units = section.optJSONArray("units") ?: continue
                 for (ui in 0 until units.length()) {
+                    ensureActive()
                     val unit = units.optJSONObject(ui) ?: continue
                     parseUnit(book.asset, si, ui, unit, questions)
                 }
@@ -83,10 +88,12 @@ class QuestionRepository(private val context: Context) {
             val tests = json.optJSONArray("tests")
             if (tests != null) {
                 for (ti in 0 until tests.length()) {
+                    ensureActive()
                     val test = tests.optJSONObject(ti) ?: continue
                     val tasks = test.optJSONArray("tasks") ?: continue
                     val questions = mutableListOf<StudyQuestion>()
                     for (ui in 0 until tasks.length()) {
+                        ensureActive()
                         val unit = tasks.optJSONObject(ui) ?: continue
                         parseUnit(book.asset, ti, ui, unit, questions)
                     }
@@ -102,6 +109,7 @@ class QuestionRepository(private val context: Context) {
                     val verifiedRoot = json.has("verified")
                     val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
                     for (i in 0 until flat.length()) {
+                        ensureActive()
                         val question = flat.optJSONObject(i) ?: continue
                         if (!verifiedRoot &&
                             question.optString("status") != "source-reviewed") continue
@@ -131,6 +139,8 @@ class QuestionRepository(private val context: Context) {
                         sections += loadScoredMath(context, part).sections.map {
                             it.copy(title = "Մաս $part · " + it.title)
                         }
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (_: Exception) { /* Other verified parts remain available. */ }
                 }
             } else {
@@ -141,6 +151,8 @@ class QuestionRepository(private val context: Context) {
                         sections += load(book).sections.map {
                             it.copy(title = book.title + " · " + it.title)
                         }
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (_: Exception) { /* Do not hide other accessible books. */ }
                 }
             }
