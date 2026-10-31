@@ -80,6 +80,10 @@ private fun NativeShtemarm() {
     var accent by remember { mutableStateOf(progress.accent) }
     var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
+    var glassBackground by remember { mutableStateOf(progress.glassBackground) }
+    var glassBlur by remember { mutableIntStateOf(progress.glassBlur) }
+    var glassClarity by remember { mutableIntStateOf(progress.glassClarity) }
+    var glassReflection by remember { mutableIntStateOf(progress.glassReflection) }
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
@@ -156,6 +160,10 @@ private fun NativeShtemarm() {
                 accent = progress.accent
                 surfaceStyle = progress.surfaceStyle
                 glassIntensity = progress.glassIntensity
+                glassBackground = progress.glassBackground
+                glassBlur = progress.glassBlur
+                glassClarity = progress.glassClarity
+                glassReflection = progress.glassReflection
                 studyLanguage = progress.studyLanguage
                 dailyTarget = progress.dailyQuestionTarget
                 "Առաջընթացը հաջողությամբ վերականգնվեց։"
@@ -304,7 +312,11 @@ private fun NativeShtemarm() {
             ),
             LocalAcademySurface provides surfaceStyle,
             LocalGlassIntensity provides glassIntensity,
-            LocalGlassHazeState provides glassHazeState
+            LocalGlassHazeState provides glassHazeState,
+            LocalGlassBackdrop provides glassBackground,
+            LocalGlassBlur provides glassBlur,
+            LocalGlassClarity provides glassClarity,
+            LocalGlassReflection provides glassReflection
         ) {
             AcademyAmbientBackdrop(Modifier.fillMaxSize()) {
             Scaffold(
@@ -1103,6 +1115,26 @@ private fun NativeShtemarm() {
                             onGlassIntensity = {
                                 glassIntensity = it
                                 progress.glassIntensity = it
+                            },
+                            glassBackground = glassBackground,
+                            onGlassBackground = {
+                                glassBackground = it
+                                progress.glassBackground = it
+                            },
+                            glassBlur = glassBlur,
+                            onGlassBlur = {
+                                glassBlur = it
+                                progress.glassBlur = it
+                            },
+                            glassClarity = glassClarity,
+                            onGlassClarity = {
+                                glassClarity = it
+                                progress.glassClarity = it
+                            },
+                            glassReflection = glassReflection,
+                            onGlassReflection = {
+                                glassReflection = it
+                                progress.glassReflection = it
                             },
                             largeText = largeText,
                             onLargeText = { largeText = it; progress.largeText = it },
