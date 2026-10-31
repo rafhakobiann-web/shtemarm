@@ -811,8 +811,8 @@ private fun NativeShtemarm() {
                                     val correct = chosen >= 0 && immediateFeedback && n == q.correctIndex
                                     val wrong = chosen == n && n != q.correctIndex && immediateFeedback
                                     val bg = when {
-                                        correct -> Color(0xFFD1FAE5)
-                                        wrong -> Color(0xFFFEE2E2)
+                                        correct -> MaterialTheme.colorScheme.primaryContainer
+                                        wrong -> MaterialTheme.colorScheme.errorContainer
                                         else -> MaterialTheme.colorScheme.surfaceContainerHigh
                                     }
                                     val animatedBg by animateColorAsState(
@@ -841,14 +841,28 @@ private fun NativeShtemarm() {
                                             verticalAlignment = Alignment.CenterVertically) {
                                             Text(("ABCD".getOrNull(n) ?: '•').toString() + ".",
                                                 fontWeight = FontWeight.Bold, modifier = Modifier.width(30.dp))
-                                            Text(q.choices[n], fontSize = 16.sp)
+                                            Text(
+                                                q.choices[n],
+                                                fontSize = 16.sp,
+                                                color = when {
+                                                    correct -> MaterialTheme.colorScheme.onPrimaryContainer
+                                                    wrong -> MaterialTheme.colorScheme.onErrorContainer
+                                                    else -> MaterialTheme.colorScheme.onSurface
+                                                }
+                                            )
                                         }
                                     }
                                 }
                                 if (chosen >= 0) item {
                                     if (immediateFeedback) {
-                                        Text(if (chosen == q.correctIndex) "Ճիշտ է ✓" else "Սխալ պատասխան",
-                                            fontWeight = FontWeight.Bold)
+                                        Text(
+                                            if (chosen == q.correctIndex)
+                                                NativeStudyGuide.label(studyLanguage, "Ճիշտ է ✓", "Correct ✓", "Верно ✓")
+                                            else NativeStudyGuide.label(studyLanguage, "Սխալ պատասխան", "Incorrect answer", "Неверный ответ"),
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (chosen == q.correctIndex)
+                                                MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                        )
 
                                     }
                                     OutlinedButton(
