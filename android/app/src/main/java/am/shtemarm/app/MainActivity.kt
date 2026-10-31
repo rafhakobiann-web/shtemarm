@@ -726,10 +726,8 @@ private fun NativeShtemarm() {
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
-                                val visibleSectionIndexes = remember(data, chapterFilter) {
-                                    data.sections.indices.filter { idx ->
-                                        BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
-                                    }
+                                val visibleSectionIndexes = data.sections.indices.filter { idx ->
+                                    BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
                                 }
                                 if (visibleSectionIndexes.isEmpty()) item {
                                     Text("Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։",
