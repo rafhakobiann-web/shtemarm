@@ -1067,3 +1067,22 @@ html[lang="hy"] { overflow-wrap: anywhere; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Fluid Glass V6: low-cost compositor motion with finger-drag navigation.
+   Keep blur confined to the small dock; never animate large backdrop filters. */
+@media (max-width: 767px) {
+  .mobile-liquid-dock { touch-action: none; }
+  .mobile-liquid-tab { touch-action: none; }
+  .mobile-liquid-indicator {
+    transition: transform 360ms cubic-bezier(.2,.9,.25,1.12);
+    will-change: transform;
+  }
+  .mobile-liquid-tab.is-selected .mobile-liquid-icon {
+    transform: translate3d(0,-3px,0) scale(1.16);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-liquid-indicator, .mobile-liquid-icon { transition: none !important; }
+}
+html.user-reduced-motion .mobile-liquid-indicator,
+html.user-reduced-motion .mobile-liquid-icon { transition: none !important; }
