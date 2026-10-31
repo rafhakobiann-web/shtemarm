@@ -6,6 +6,7 @@ import android.os.Build
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -122,56 +123,82 @@ private fun NativeShtemarm() {
     var correctIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var sessionId by remember { mutableStateOf("") }
     var backupMessage by remember { mutableStateOf("") }
+    // ActivityResult callbacks run on the main thread. File providers may be slow:
+    // keep SAF reads/writes and JSON snapshot parsing off the UI dispatcher.
+    val backupScope = rememberCoroutineScope()
     val exportProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
-        backupMessage = if (uri == null) "Պահպանումը չեղարկված է։" else try {
-            context.contentResolver.openOutputStream(uri)?.use { stream ->
-                stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
-            } ?: error("Cannot open backup destination")
-            "Առաջընթացի կրկնօրինակը պահպանվեց։"
-        } catch (_: Exception) {
-            "Կրկնօրինակը պահպանել չհաջողվեց։"
+        if (uri == null) {
+            backupMessage = "Պահպանումը չեղարկված է։"
+        } else {
+            backupMessage = "Պահպանվում է…"
+            backupScope.launch {
+                backupMessage = try {
+                    withContext(Dispatchers.IO) {
+                        context.contentResolver.openOutputStream(uri)?.use { stream ->
+                            stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
+                        } ?: error("Cannot open backup destination")
+                    }
+                    "Առաջընթացի կրկնօրինակը պահպանվեց։"
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    "Կրկնօրինակը պահպանել չհաջողվեց։"
+                }
+            }
         }
     }
     val importProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        backupMessage = if (uri == null) "Վերականգնումը չեղարկված է։" else try {
-            val content = context.contentResolver.openInputStream(uri)?.use { stream ->
-                // API 24-compatible bounded read, including older Android phones.
-                val output = ByteArrayOutputStream()
-                val buffer = ByteArray(8192)
-                while (true) {
-                    val count = stream.read(buffer)
-                    if (count < 0) break
-                    if (output.size() + count > 1_048_576) {
-                        error("Backup file exceeds 1 MiB")
+        if (uri == null) {
+            backupMessage = "Վերականգնումը չեղարկված է։"
+        } else {
+            backupMessage = "Վերականգնվում է…"
+            backupScope.launch {
+                try {
+                    val restored = withContext(Dispatchers.IO) {
+                        val content = context.contentResolver.openInputStream(uri)?.use { stream ->
+                            // API 24-compatible bounded read, including older Android phones.
+                            val output = ByteArrayOutputStream()
+                            val buffer = ByteArray(8192)
+                            while (true) {
+                                val count = stream.read(buffer)
+                                if (count < 0) break
+                                if (output.size() + count > 1_048_576) {
+                                    error("Backup file exceeds 1 MiB")
+                                }
+                                output.write(buffer, 0, count)
+                            }
+                            output.toString(StandardCharsets.UTF_8.name())
+                        } ?: error("Cannot open backup file")
+                        progress.importSnapshot(content)
                     }
-                    output.write(buffer, 0, count)
+                    if (restored) {
+                        progressVersion++
+                        dark = progress.darkMode
+                        largeText = progress.largeText
+                        immediateFeedback = progress.showAnswersImmediately
+                        accent = progress.accent
+                        surfaceStyle = progress.surfaceStyle
+                        glassIntensity = progress.glassIntensity
+                        glassBackground = progress.glassBackground
+                        glassBlur = progress.glassBlur
+                        glassClarity = progress.glassClarity
+                        glassReflection = progress.glassReflection
+                        studyLanguage = progress.studyLanguage
+                        dailyTarget = progress.dailyQuestionTarget
+                        backupMessage = "Առաջընթացը հաջողությամբ վերականգնվեց։"
+                    } else {
+                        backupMessage = "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    backupMessage = "Կրկնօրինակը բացել չհաջողվեց։"
                 }
-                output.toString(StandardCharsets.UTF_8.name())
-            } ?: error("Cannot open backup file")
-            if (progress.importSnapshot(content)) {
-                progressVersion++
-                dark = progress.darkMode
-                largeText = progress.largeText
-                immediateFeedback = progress.showAnswersImmediately
-                accent = progress.accent
-                surfaceStyle = progress.surfaceStyle
-                glassIntensity = progress.glassIntensity
-                glassBackground = progress.glassBackground
-                glassBlur = progress.glassBlur
-                glassClarity = progress.glassClarity
-                glassReflection = progress.glassReflection
-                studyLanguage = progress.studyLanguage
-                dailyTarget = progress.dailyQuestionTarget
-                "Առաջընթացը հաջողությամբ վերականգնվեց։"
-            } else {
-                "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
             }
-        } catch (_: Exception) {
-            "Կրկնօրինակը բացել չհաջողվեց։"
         }
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
