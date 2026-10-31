@@ -306,6 +306,9 @@ private fun NativeShtemarm() {
             AcademyAmbientBackdrop(Modifier.fillMaxSize()) {
             Scaffold(
                 containerColor = Color.Transparent,
+                // Transparent scaffold cannot infer a readable content color.
+                // Keep default text/icons legible in both light and dark mode.
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 topBar = {
                     AcademyTopBar(
                         points = BookCatalog.subjects.sumOf { progress.stats(it).correct } * 10,
