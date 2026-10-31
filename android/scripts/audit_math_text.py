@@ -20,6 +20,9 @@ for book_id in ("matem-1", "matem-2"):
     source = bank.get(book_id, {})
     valid = 0
     other = 0
+    missing = 0
+    unscorable = 0
+    missing_examples = []
     for section in book.get("sections", []):
         key = f'{section["chapter"]}-{section["section"]}'
         for task in section.get("tasks", []):
@@ -31,6 +34,9 @@ for book_id in ("matem-1", "matem-2"):
                 question = question or (prior[offset] if offset < len(prior) else None)
                 if not question or not isinstance(question, dict):
                     other += 1
+                    missing += 1
+                    if len(missing_examples) < 20:
+                        missing_examples.append(f"{key}/task-{task['task']}/item-{offset + 1}")
                     continue
                 prompt = str(question.get("prompt") or "").strip()
                 options = question.get("options") or []
@@ -44,7 +50,11 @@ for book_id in ("matem-1", "matem-2"):
                     valid += 1
                 else:
                     other += 1
+                    unscorable += 1
     counts[book_id] = valid
-    print(f"{book_id}: {valid} native-scored math MCQs; {other} other/submitted-image tasks")
+    print(f"{book_id}: {valid} native-scored math MCQs; {missing} missing transcription entries; "
+          f"{unscorable} present but not auto-scorable")
+    if missing_examples:
+        print("  First missing positions: " + ", ".join(missing_examples))
 assert set(counts) == {"matem-1", "matem-2"}, "Both mathematics parts required"
 print("Only questions with verified source answer positions may be auto-scored.")
