@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
 private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
@@ -72,6 +73,7 @@ private fun NativeShtemarm() {
     val context = LocalContext.current.applicationContext
     val repository = remember { QuestionRepository(context) }
     val progress = remember { StudyProgress(context) }
+    val glassHazeState = remember { HazeState() }
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
@@ -301,7 +303,8 @@ private fun NativeShtemarm() {
                 originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
             ),
             LocalAcademySurface provides surfaceStyle,
-            LocalGlassIntensity provides glassIntensity
+            LocalGlassIntensity provides glassIntensity,
+            LocalGlassHazeState provides glassHazeState
         ) {
             AcademyAmbientBackdrop(Modifier.fillMaxSize()) {
             Scaffold(
