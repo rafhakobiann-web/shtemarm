@@ -110,7 +110,6 @@ fun AcademyGlassPanel(
                             scheme.primary.copy(alpha = if (dark) 0.21f else 0.10f),
                             Color.White.copy(alpha = if (dark) 0.14f else 0.54f),
                             Color.Transparent)
-                    )
                     ) else null
                     onDrawBehind {
                         drawRect(brush = reflected)
