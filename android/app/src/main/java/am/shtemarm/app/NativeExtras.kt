@@ -17,6 +17,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val examCounts = mapOf(
     "Մաթեմատիկա" to 65, "Անգլերեն" to 80, "Հայոց լեզու" to 80, "Հայոց պատմություն" to 70,
@@ -40,6 +43,8 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         try {
             pool = repository.practiceForSubject(selected)
             if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) { error = "Հնարավոր չեղավ բացել հարցաշարերը։" }
         isLoading = false
     }
@@ -132,7 +137,9 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
     LaunchedEffect(selected) {
         loading = true
         questions = try {
-            repository.practiceForSubject(selected).shuffled()
+            withContext(Dispatchers.Default) { repository.practiceForSubject(selected).shuffled() }
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) { emptyList() }
         flipIndex = 0; revealed = false
         loading = false
@@ -249,6 +256,8 @@ fun NativeTools(
         loading = true
         sections = try {
             repository.sectionsForSubject(subject)
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) { emptyList() }
         selectedSection = "Բոլոր բաժինները"
         loading = false
