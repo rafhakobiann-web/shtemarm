@@ -10,8 +10,8 @@ android {
         applicationId = "am.shtemarm.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 5
-        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.2.0-beta.1"
+        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 7
+        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.2.5"
     }
     // Release signing is configured ONLY when a secure CI keystore is supplied.
     // No keystore or password is ever committed to this repository.
