@@ -55,11 +55,6 @@ import dev.chrisbanes.haze.HazeState
 private val BrandTeal = Color(0xFF0B766B)
 private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
 
-// The two source-scored math volumes have a dedicated reader. Original
-// practice uses the normal sections loader instead of being routed to volume 1.
-private fun isScoredMathBook(book: StudyBook): Boolean =
-    book.subject == "Մաթեմատիկա" && book.asset == "math-text-questions-extra.json"
-
 class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
@@ -264,7 +259,7 @@ private fun NativeShtemarm() {
         chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
-        if (isScoredMathBook(chosenBook)) {
+        if (chosenBook.subject == "Մաթեմատիկա") {
             loaded = null
             loadError = ""
             loading = false
@@ -301,7 +296,7 @@ private fun NativeShtemarm() {
                 if (ids.isNotEmpty()) {
                     val sourceAssets = SessionGuards.sourceAssets(ids)
                     for (entry in BookCatalog.books.filter {
-                        (it.subject != "Մաթեմատիկա" || it.asset == "original-math.json") && it.asset in sourceAssets
+                        it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                     }.distinctBy { it.asset }) {
                         try {
                             collected += repository.load(entry).allQuestions.filter { it.id in ids }
@@ -511,7 +506,7 @@ private fun NativeShtemarm() {
                                 ) {
                                     subject = lastBook.subject
                                     book = lastBook
-                                    page = if (isScoredMathBook(lastBook)) Page.MATH else Page.SECTIONS
+                                    page = if (lastBook.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
                                 }
                             }
                             if (mistakesCount > 0) item {
@@ -600,7 +595,7 @@ private fun NativeShtemarm() {
                                     onOpenBook = { item ->
                                         subject = s
                                         book = item
-                                        page = if (isScoredMathBook(item)) Page.MATH else Page.SECTIONS
+                                        page = if (s == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
                                     }
                                 )
                             }
@@ -671,7 +666,7 @@ private fun NativeShtemarm() {
                                 onOpenBook = { item ->
                                     subject = s
                                     book = item
-                                    page = if (isScoredMathBook(item)) Page.MATH else Page.SECTIONS
+                                    page = if (s == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
                                 }
                             )
                         }
@@ -711,7 +706,7 @@ private fun NativeShtemarm() {
                         }, key = { it.asset + ":" + it.title }) { item ->
                             AcademyBookTile(item) {
                                 book = item
-                                page = if (isScoredMathBook(item)) Page.MATH else Page.SECTIONS
+                                page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
                             }
                         }
                         if (subject == "Կենսաբանություն") item {
