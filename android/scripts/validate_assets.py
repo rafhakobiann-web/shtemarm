@@ -92,6 +92,40 @@ assert recoverable_english_gaps >= 1000, (
 print(f"Verified {recoverable_english_gaps} English gap-fill blanks; "
       f"{unverified_blank_stems} missing stems are not invented")
 
+# Regression guards for source-checked English transcription repairs.
+# Incorrectly merged OCR items must not silently shift answer options.
+def english_unit(filename, unit_id):
+    for section in read(WEB_DATA / filename).get("sections", []):
+        for unit in section.get("units", []):
+            if unit.get("id") == unit_id:
+                return unit
+    raise AssertionError(f"Missing English unit: {filename}:{unit_id}")
+
+
+french = english_unit("book2.json", "2-1-Text23")["questions"]
+assert len(french) == 10, "English II: Text 23 must contain ten distinct questions"
+assert french[7]["answer"] == "b" and french[8]["answer"] == "c"
+assert french[9]["answer"] == "c", "English II: pronoun question key changed"
+assert all(q.get("stem", "").strip() for q in french), "English II: Text 23 stem lost"
+assert french[8]["options"]["c"] == "constructed", "English II: shifted text options"
+assert french[9]["options"]["c"] == "houses", "English II: shifted pronoun options"
+
+express = english_unit("book2.json", "2-1-Text28")["questions"]
+assert "developed" in express[1]["stem"]
+assert express[1]["options"]["a"] == "came up with", "English II: merged option recurred"
+
+eclipse = english_unit("book2.json", "2-1-Text36")["questions"]
+assert len(eclipse) == 10 and eclipse[5]["answer"] == "a"
+assert eclipse[6]["answer"] == "c" and eclipse[8]["options"]["b"] == "speed"
+
+american_food = english_unit("book3.json", "3-1-Text30")["questions"]
+assert len(american_food) == 10
+assert american_food[4]["stem"].strip() and american_food[7]["stem"].strip()
+assert [american_food[i]["answer"] for i in range(4, 10)] == [
+    "c", "c", "a", "d", "a", "b"
+], "English III: incorrect or shifted answer keys"
+print("Verified source-aligned OCR correction anchors for English volumes II and III")
+
 dictionary = read(APP_ASSETS / "english-armenian-dictionary.json")
 assert isinstance(dictionary, dict) and len(dictionary) >= 8000, "Vocabulary asset incomplete"
 levels = read(APP_ASSETS / "english-level-practice.json").get("questions", [])
