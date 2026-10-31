@@ -31,6 +31,10 @@ object BookCatalog {
         StudyBook("Անգլերեն", "Շտեմարան 2", "book2.json"),
         StudyBook("Անգլերեն", "Շտեմարան 3", "book3.json"),
         StudyBook("Հայոց լեզու", "Շտեմարան 1", "armenian-book1.json"),
+        // These are original topic exercises, NOT transcriptions of official volumes.
+        StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 2 · ուղղագրություն", "armenian-book2.json"),
+        StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 3 · քերականություն", "armenian-book3.json"),
+        StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 4 · բառագիտություն", "armenian-book4.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 1", "history-book1.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 2", "history-book2.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 3", "history-book3.json"),
@@ -38,6 +42,7 @@ object BookCatalog {
         StudyBook("Հայոց պատմություն", "Ստուգված հարցաշար · Մաս 1", "history-bank-book1.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 1", "bio-book1.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 2", "bio-book2.json"),
+        StudyBook("Կենսաբանություն", "Հեղինակային թեմատիկ վարժանքներ · Մաս 3", "bio-book3.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 1", "physics-book1.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 2", "physics-book2.json"),
         StudyBook("Ֆիզիկա", "Բնօրինակ · Մաս 1", "physics-original-book1.json"),
