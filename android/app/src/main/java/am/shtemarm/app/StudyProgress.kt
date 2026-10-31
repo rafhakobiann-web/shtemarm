@@ -99,6 +99,7 @@ class StudyProgress(context: Context) {
         val asset = prefs.getString("last_book_asset", null) ?: return null
         val title = prefs.getString("last_book_title", null) ?: return null
         return BookCatalog.books.firstOrNull { it.asset == asset && it.title == title }
+            ?: BookCatalog.books.singleOrNull { it.asset == asset }
     }
 
     fun mistakeIds(): Set<String> =

@@ -3,10 +3,10 @@ package am.shtemarm.app
 import android.os.Bundle
 import android.Manifest
 import android.os.Build
-import android.content.pm.ApplicationInfo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -62,31 +62,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isDebug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        setContent { if (isDebug) NativeShtemarm() else RelaunchHoldingScreen() }
-    }
-}
-
-@Composable
-private fun RelaunchHoldingScreen() {
-    MaterialTheme(typography = ShtemarmTypography) {
-        Surface(color = Color(0xFF0B1825), modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(28.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("SHTEMARM", color = Color(0xFF9FE8EB), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(24.dp))
-                Text("ՇՈՒՏՈՎ՝ ՆՈՐ ՏԵՍՔ, ՆՈՐ ՖՈՐՄԱՏ", color = Color.White,
-                    fontSize = 28.sp, fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center, lineHeight = 40.sp)
-                Spacer(Modifier.height(18.dp))
-                Text("Պատրաստում ենք ուսման նոր հարթակ՝ շտեմարաններով, քննություններով և համալսարանների ուղեցույցով։",
-                    color = Color(0xFFCBD5E1), fontSize = 16.sp,
-                    lineHeight = 26.sp, textAlign = TextAlign.Center)
-            }
-        }
+        // Both debug and release builds launch the complete native study experience.
+        setContent { NativeShtemarm() }
     }
 }
 
@@ -96,6 +73,7 @@ private fun NativeShtemarm() {
     val context = LocalContext.current.applicationContext
     val repository = remember { QuestionRepository(context) }
     val progress = remember { StudyProgress(context) }
+    val backupScope = rememberCoroutineScope()
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
@@ -143,49 +121,74 @@ private fun NativeShtemarm() {
     val exportProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
-        backupMessage = if (uri == null) "Պահպանումը չեղարկված է։" else try {
-            context.contentResolver.openOutputStream(uri)?.use { stream ->
-                stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
-            } ?: error("Cannot open backup destination")
-            "Առաջընթացի կրկնօրինակը պահպանվեց։"
-        } catch (_: Exception) {
-            "Կրկնօրինակը պահպանել չհաջողվեց։"
+        if (uri == null) {
+            backupMessage = "Պահպանումը չեղարկված է։"
+        } else {
+            backupScope.launch {
+                backupMessage = "Պահպանվում է…"
+                backupMessage = withContext(Dispatchers.IO) {
+                    try {
+                        context.contentResolver.openOutputStream(uri)?.use { stream ->
+                            stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
+                        } ?: error("Cannot open backup destination")
+                        "Առաջընթացի կրկնօրինակը պահպանվեց։"
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        "Կրկնօրինակը պահպանել չհաջողվեց։"
+                    }
+                }
+            }
         }
     }
     val importProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        backupMessage = if (uri == null) "Վերականգնումը չեղարկված է։" else try {
-            val content = context.contentResolver.openInputStream(uri)?.use { stream ->
-                // API 24-compatible bounded read, including older Android phones.
-                val output = ByteArrayOutputStream()
-                val buffer = ByteArray(8192)
-                while (true) {
-                    val count = stream.read(buffer)
-                    if (count < 0) break
-                    if (output.size() + count > 1_048_576) {
-                        error("Backup file exceeds 1 MiB")
+        if (uri == null) {
+            backupMessage = "Վերականգնումը չեղարկված է։"
+        } else {
+            backupScope.launch {
+                backupMessage = "Վերականգնվում է…"
+                val result = withContext(Dispatchers.IO) {
+                    try {
+                        val content = context.contentResolver.openInputStream(uri)?.use { stream ->
+                            // API 24-compatible bounded read, including older Android phones.
+                            val output = ByteArrayOutputStream()
+                            val buffer = ByteArray(8192)
+                            while (true) {
+                                val count = stream.read(buffer)
+                                if (count < 0) break
+                                if (output.size() + count > 1_048_576) {
+                                    error("Backup file exceeds 1 MiB")
+                                }
+                                output.write(buffer, 0, count)
+                            }
+                            output.toString(StandardCharsets.UTF_8.name())
+                        } ?: error("Cannot open backup file")
+                        if (progress.importSnapshot(content)) 1 else 0
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        -1
                     }
-                    output.write(buffer, 0, count)
                 }
-                output.toString(StandardCharsets.UTF_8.name())
-            } ?: error("Cannot open backup file")
-            if (progress.importSnapshot(content)) {
-                progressVersion++
-                dark = progress.darkMode
-                largeText = progress.largeText
-                immediateFeedback = progress.showAnswersImmediately
-                accent = progress.accent
-                surfaceStyle = progress.surfaceStyle
-                glassIntensity = progress.glassIntensity
-                studyLanguage = progress.studyLanguage
-                dailyTarget = progress.dailyQuestionTarget
-                "Առաջընթացը հաջողությամբ վերականգնվեց։"
-            } else {
-                "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                backupMessage = when (result) {
+                    1 -> {
+                        progressVersion++
+                        dark = progress.darkMode
+                        largeText = progress.largeText
+                        immediateFeedback = progress.showAnswersImmediately
+                        accent = progress.accent
+                        surfaceStyle = progress.surfaceStyle
+                        glassIntensity = progress.glassIntensity
+                        studyLanguage = progress.studyLanguage
+                        dailyTarget = progress.dailyQuestionTarget
+                        "Առաջընթացը հաջողությամբ վերականգնվեց։"
+                    }
+                    0 -> "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                    else -> "Կրկնօրինակը բացել չհաջողվեց։"
+                }
             }
-        } catch (_: Exception) {
-            "Կրկնօրինակը բացել չհաջողվեց։"
         }
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
@@ -233,9 +236,12 @@ private fun NativeShtemarm() {
         page = Page.STUDY
     }
 
-    LaunchedEffect(book) {
+    LaunchedEffect(book) { chapterFilter = "" }
+
+    LaunchedEffect(book, page) {
+        // Stop parsing a previous book as soon as its sections screen is left.
+        if (page != Page.SECTIONS) return@LaunchedEffect
         val chosenBook = book ?: return@LaunchedEffect
-        chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
         if (chosenBook.subject == "Մաթեմատիկա") {
@@ -260,8 +266,9 @@ private fun NativeShtemarm() {
     LaunchedEffect(page, reviewMistakes) {
         if (page == Page.SAVED) {
             savedLoading = true
-            val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
+            val mistakesOnly = reviewMistakes
             val matches = withContext(Dispatchers.Default) {
+                val ids = if (mistakesOnly) progress.mistakeIds() else progress.bookmarkedIds()
                 val collected = mutableListOf<StudyQuestion>()
                 if (ids.isNotEmpty()) {
                     val sourceAssets = SessionGuards.sourceAssets(ids)
@@ -285,7 +292,7 @@ private fun NativeShtemarm() {
                         }
                     }
                 }
-                    collected.distinctBy { it.id }
+                collected.distinctBy { it.id }
             }
             savedQuestions = matches
             savedLoading = false
@@ -668,8 +675,9 @@ private fun NativeShtemarm() {
                         if (subject == "Կենսաբանություն") item {
                             ElevatedCard {
                                 Text(
-                                    "3-րդ և 4-րդ մասերի ամբողջական ստուգված հարցաշարերը դեռ հասանելի չեն։ " +
-                                        "Դրանք չեն ներկայացվում որպես ավարտված գրքեր։",
+                                    "3-րդ մասի 36 հեղինակային թեմատիկ հարցերը հասանելի են գրքերի ցանկում, " +
+                                        "բայց պաշտոնական հարցաշարի ամբողջական թվայնացում չեն։ " +
+                                        "4-րդ մասի ստուգված հարցերը դեռ հասանելի չեն։",
                                     Modifier.padding(15.dp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp

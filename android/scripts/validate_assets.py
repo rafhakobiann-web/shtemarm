@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Check that the bundled offline content is readable before publishing an APK."""
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB_DATA = ROOT / "public" / "data"
 APP_ASSETS = ROOT / "android" / "app" / "src" / "main" / "assets"
+ANDROID = ROOT / "android"
 
 BOOKS = [
     "book1.json", "book2.json", "book3.json",
-    "armenian-book1.json", "history-book1.json", "history-book2.json",
+    "armenian-book1.json", "armenian-book2.json", "armenian-book3.json",
+    "armenian-book4.json", "history-book1.json", "history-book2.json",
     "history-book3.json", "history-tests.json",
-    "bio-book1.json", "bio-book2.json", "physics-book1.json",
+    "bio-book1.json", "bio-book2.json", "bio-book3.json", "physics-book1.json",
     "physics-book2.json", "physics-original-book1.json",
     "physics-original-book2.json", "original-chemistry.json",
     "original-geography.json", "original-russian.json",
@@ -22,6 +25,64 @@ def read(path: Path):
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"Missing or empty asset: {path}")
     return json.loads(path.read_text(encoding="utf-8"))
+
+# Every catalog entry must be packaged with the APK, not only the older books
+# enumerated in BOOKS. This catches missing files before runtime navigation.
+catalog = (ANDROID / "app/src/main/java/am/shtemarm/app/QuestionRepository.kt").read_text(encoding="utf-8")
+catalog_assets = set(re.findall(
+    r'StudyBook\(\s*"[^"]+"\s*,\s*"[^"]+"\s*,\s*"([^"]+\.json)"\s*\)', catalog
+))
+assert len(catalog_assets) >= 18, "BookCatalog extraction failed or lost books"
+for asset in sorted(catalog_assets):
+    data = read(WEB_DATA / asset)
+    assert isinstance(data, dict) and any(
+        key in data for key in ("sections", "tests", "questions", "items", "matem-1")
+    ), f"Unsupported or empty book root: {asset}"
+print(f"Verified all {len(catalog_assets)} unique BookCatalog data assets")
+
+# Original study banks may be shown only as clearly labeled practice.
+# Verify their keys/choices so adding them to BookCatalog does not expose
+# unanswerable or malformed items as auto-scored questions.
+original_practice = {
+    "bio-book3.json": 36,
+    "armenian-book2.json": 10,
+    "armenian-book3.json": 10,
+    "armenian-book4.json": 10,
+}
+for filename, expected_count in original_practice.items():
+    assert filename in catalog_assets, f"Original practice bank not exposed: {filename}"
+    book = read(WEB_DATA / filename)
+    checked = 0
+    for section in book.get("sections", []):
+        for unit in section.get("units", []):
+            assert unit.get("kind") == "mc", f"Unexpected question format in {filename}"
+            for question in unit.get("questions", []):
+                stem = str(question.get("stem") or "").strip()
+                options = question.get("options") or {}
+                choices = [str(options.get(str(i)) or "").strip() for i in range(1, 5)]
+                answer = str(question.get("answer") or "").strip()
+                assert stem and all(choices) and len(set(choices)) == 4, (
+                    f"Malformed choices in {filename}"
+                )
+                assert answer in ("1", "2", "3", "4"), f"Missing answer in {filename}"
+                checked += 1
+    assert checked >= expected_count, f"Original practice coverage regressed: {filename}"
+    print(f"{filename}: {checked} original practice MCQs (NOT official transcriptions)")
+
+# Prevent a repeat of PR #109's hidden release-only holding screen.
+activity = (ANDROID / "app/src/main/java/am/shtemarm/app/MainActivity.kt").read_text(encoding="utf-8")
+assert "setContent { NativeShtemarm() }" in activity, "Android release must launch the study app"
+assert "RelaunchHoldingScreen()" not in activity, "Release-only holding gate reintroduced"
+print("Android launch source verified: debug and release use native Shtemarm UI")
+
+
+for font in ("noto_sans_armenian.ttf", "noto_serif_armenian.ttf"):
+    path = ANDROID / "app/src/main/res/font" / font
+    assert path.is_file() and path.stat().st_size > 10_000, f"Missing bundled Armenian font: {font}"
+for license_name in ("OFL-NotoSansArmenian.txt", "OFL-NotoSerifArmenian.txt"):
+    path = ANDROID / "licenses" / license_name
+    assert path.is_file() and path.stat().st_size > 100, f"Missing font license: {license_name}"
+print("Verified bundled Armenian fonts and OFL licenses")
 
 all_questions = 0
 for name in BOOKS:
