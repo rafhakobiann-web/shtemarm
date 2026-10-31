@@ -3,6 +3,8 @@ package am.shtemarm.app
 import android.os.Bundle
 import android.Manifest
 import android.os.Build
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -268,8 +270,9 @@ private fun NativeShtemarm() {
                 for (part in 1..2) {
                     if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
-                            collected += loadScoredMath(context, part)
-                                .allQuestions.filter { it.id in ids }
+                            collected += withContext(Dispatchers.IO) {
+                                loadScoredMath(context, part).allQuestions.filter { it.id in ids }
+                            }
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
