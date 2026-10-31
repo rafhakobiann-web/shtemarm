@@ -45,5 +45,8 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    // Captured-content backdrop blur for Android's actual glass surfaces.
+    // Pinned to Haze v1 to avoid pulling Haze 2's Kotlin 2.4 / Compose 1.12 stack.
+    implementation("dev.chrisbanes.haze:haze:1.6.2")
     testImplementation("junit:junit:4.13.2")
 }
