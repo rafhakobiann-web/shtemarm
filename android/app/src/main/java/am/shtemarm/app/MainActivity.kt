@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.Manifest
 import android.os.Build
 import android.content.pm.ApplicationInfo
+import kotlinx.coroutines.CancellationException
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -246,6 +247,8 @@ private fun NativeShtemarm() {
         loaded = null
         try {
             loaded = repository.load(chosenBook)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -264,6 +267,8 @@ private fun NativeShtemarm() {
                 }.distinctBy { it.asset }) {
                     try {
                         collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
                 // The scored math books have a dedicated verified source loader.
@@ -272,6 +277,8 @@ private fun NativeShtemarm() {
                         try {
                             collected += loadScoredMath(context, part)
                                 .allQuestions.filter { it.id in ids }
+                        } catch (e: CancellationException) {
+                            throw e
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
