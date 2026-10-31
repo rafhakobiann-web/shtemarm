@@ -26,17 +26,22 @@ object BookCatalog {
     val books = listOf(
         StudyBook("Մաթեմատիկա", "Մաս 1 · թվայնացված հարցեր", "math-text-questions-extra.json"),
         StudyBook("Մաթեմատիկա", "Մաս 2 · թվայնացված հարցեր", "math-text-questions-extra.json"),
+        StudyBook("Մաթեմատիկա", "Հեղինակային վարժություններ · 0.3.0", "original-math.json"),
         StudyBook("Անգլերեն", "Շտեմարան 1", "book1.json"),
         StudyBook("Անգլերեն", "Շտեմարան 2", "book2.json"),
         StudyBook("Անգլերեն", "Շտեմարան 3", "book3.json"),
+        StudyBook("Անգլերեն", "Հեղինակային վարժություններ · 0.3.0", "original-english.json"),
         StudyBook("Հայոց լեզու", "Շտեմարան 1", "armenian-book1.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 1", "history-book1.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 2", "history-book2.json"),
         StudyBook("Հայոց պատմություն", "Շտեմարան 3", "history-book3.json"),
         StudyBook("Հայոց պատմություն", "2026 թեստերի հարցեր", "history-tests.json"),
         StudyBook("Հայոց պատմություն", "Ստուգված հարցաշար · Մաս 1", "history-bank-book1.json"),
+        StudyBook("Հայոց պատմություն", "Հեղինակային վարժություններ · 0.3.0", "original-history.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 1", "bio-book1.json"),
         StudyBook("Կենսաբանություն", "Շտեմարան 2", "bio-book2.json"),
+        StudyBook("Կենսաբանություն", "Մաս 3 · 36 հեղինակային վարժություն", "bio-book3.json"),
+        StudyBook("Կենսաբանություն", "Մաս 3 · լրացուցիչ հեղինակային", "original-biology-3.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 1", "physics-book1.json"),
         StudyBook("Ֆիզիկա", "Շտեմարան 2", "physics-book2.json"),
         StudyBook("Ֆիզիկա", "Բնօրինակ · Մաս 1", "physics-original-book1.json"),
@@ -149,6 +154,20 @@ class QuestionRepository(private val context: Context) {
                         throw e
                     } catch (_: Exception) { /* Other verified parts remain available. */ }
                 }
+            }
+            // This original practice bank is separate from the scored source PDFs.
+            // load() dispatches to IO itself; do not add nested IO dispatch.
+            for (practice in BookCatalog.books.filter {
+                it.subject == subject && it.asset == "original-math.json"
+            }) {
+                ensureActive()
+                try {
+                    sections += load(practice).sections.map {
+                        it.copy(title = practice.title + " · " + it.title)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) { /* Keep the existing math books available. */ }
             }
         } else {
             for (book in BookCatalog.books.filter { it.subject == subject }.distinctBy { it.asset }) {
