@@ -272,8 +272,9 @@ private fun NativeShtemarm() {
                 for (part in 1..2) {
                     if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
-                            collected += loadScoredMath(context, part)
-                                .allQuestions.filter { it.id in ids }
+                            collected += withContext(Dispatchers.IO) {
+                                loadScoredMath(context, part).allQuestions.filter { it.id in ids }
+                            }
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
