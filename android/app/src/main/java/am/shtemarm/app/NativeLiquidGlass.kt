@@ -34,6 +34,10 @@ val LocalGlassIntensity = compositionLocalOf { "balanced" }
 // Optional shared capture state. Only navigation glass uses real backdrop blur;
 // scrolling question cards keep a cheap and readable frosted fallback.
 val LocalGlassHazeState = compositionLocalOf<HazeState?> { null }
+val LocalGlassBlur = compositionLocalOf { 24 }
+val LocalGlassClarity = compositionLocalOf { 62 }
+val LocalGlassReflection = compositionLocalOf { 72 }
+val LocalGlassBackdrop = compositionLocalOf { "aurora" }
 
 @Composable
 fun AcademyGlassPanel(
@@ -45,6 +49,9 @@ fun AcademyGlassPanel(
     val liquid = LocalAcademySurface.current == "liquid"
     val intensity = LocalGlassIntensity.current
     val ultra = liquid && intensity == "ultra"
+    val blur = GlassStudioPolicy.blur(LocalGlassBlur.current)
+    val clarity = GlassStudioPolicy.clarity(LocalGlassClarity.current) / 100f
+    val reflection = GlassStudioPolicy.reflection(LocalGlassReflection.current) / 100f
     val hazeState = LocalGlassHazeState.current
     val actualBlur = liquid && backdropBlur && hazeState != null && Build.VERSION.SDK_INT >= 32
     val scheme = MaterialTheme.colorScheme
@@ -53,25 +60,29 @@ fun AcademyGlassPanel(
     val glow = if (dark) Color(0xFF96F5E5) else Color.White
     val low = if (dark) Color(0xFF19383F) else Color(0xFFE6F8F3)
     // Do not rebuild gradient objects on every Compose state update or scroll.
-    val fill = remember(liquid, ultra, dark, strength, scheme.surface, actualBlur) {
+    val fill = remember(liquid, ultra, dark, strength, scheme.surface, actualBlur, clarity) {
         if (liquid) Brush.linearGradient(
             listOf(
-                glow.copy(alpha = (if (dark) 0.17f else if (ultra) 0.49f else 0.94f) * strength),
-                scheme.surface.copy(alpha = if (actualBlur) (if (dark) 0.27f else 0.40f)
+                glow.copy(alpha = (if (actualBlur) (if (dark) 0.10f else 0.32f)
+                    else (if (dark) 0.17f else if (ultra) 0.49f else 0.94f)) * strength),
+                scheme.surface.copy(alpha = if (actualBlur) (0.47f - clarity * 0.37f)
                     else GlassVisualPolicy.surfaceAlpha(intensity, dark)),
                 low.copy(alpha = (if (ultra) (if (dark) 0.42f else 0.35f)
                     else (if (dark) 0.76f else 0.59f)) * strength)
             )
         ) else Brush.verticalGradient(listOf(scheme.surface, scheme.surface))
     }
-    val outline = if (liquid) glow.copy(alpha = GlassVisualPolicy.rimAlpha(intensity, dark) * strength)
+    val outline = if (liquid) glow.copy(alpha = GlassVisualPolicy.rimAlpha(intensity, dark) * strength * (0.45f + reflection * 0.55f))
                   else scheme.outline.copy(alpha = 0.68f)
     Box(
         modifier
             .shadow(if (liquid) 12.dp else 2.dp, shape, ambientColor = scheme.primary.copy(alpha = 0.16f),
                 spotColor = scheme.primary.copy(alpha = 0.19f))
             .clip(shape)
-            .then(if (actualBlur) Modifier.hazeEffect(state = requireNotNull(hazeState)) else Modifier)
+            .then(if (actualBlur && blur > 0) Modifier.hazeEffect(state = requireNotNull(hazeState)) {
+                blurRadius = blur.dp
+                noiseFactor = 0.045f
+            } else Modifier)
             .background(fill)
             .border(BorderStroke(1.dp, outline), shape)
     ) {
@@ -85,7 +96,7 @@ fun AcademyGlassPanel(
                     val radius = maxOf(size.width, size.height).coerceAtLeast(1f)
                     val reflected = Brush.radialGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = (if (dark) 0.13f else 0.29f) * strength),
+                            Color.White.copy(alpha = (if (dark) 0.13f else 0.29f) * strength * reflection),
                             Color.White.copy(alpha = 0.045f * strength),
                             Color.Transparent
                         ),
@@ -103,7 +114,7 @@ fun AcademyGlassPanel(
                     val topGlint = Brush.horizontalGradient(
                         listOf(
                             Color.Transparent,
-                            Color.White.copy(alpha = (if (dark) 0.32f else 0.9f) * strength),
+                            Color.White.copy(alpha = (if (dark) 0.32f else 0.9f) * strength * reflection),
                             Color.White.copy(alpha = 0.24f * strength),
                             Color.Transparent
                         )
@@ -162,12 +173,25 @@ fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable B
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.red < 0.30f
     val hazeState = LocalGlassHazeState.current
-    val backdropBrush = remember(liquid, dark, scheme.background) {
+    val backdrop = GlassStudioPolicy.background(LocalGlassBackdrop.current)
+    val backdropBrush = remember(liquid, dark, scheme.background, backdrop) {
         if (liquid) Brush.verticalGradient(
             listOf(
-                if (dark) Color(0xFF14292F) else Color(0xFFF8FCF6),
-                if (dark) Color(0xFF182F35) else Color(0xFFF4FAF5),
-                if (dark) Color(0xFF1B2932) else Color(0xFFFAFBF6)
+                when (backdrop) {
+                    "paper" -> if (dark) Color(0xFF272630) else Color(0xFFFFFCF4)
+                    "ink" -> if (dark) Color(0xFF0B1423) else Color(0xFFEAF1F5)
+                    else -> if (dark) Color(0xFF0B1931) else Color(0xFFEAF8FB)
+                },
+                when (backdrop) {
+                    "paper" -> if (dark) Color(0xFF2F2A2A) else Color(0xFFF9F5ED)
+                    "ink" -> if (dark) Color(0xFF111B28) else Color(0xFFF5F7F9)
+                    else -> if (dark) Color(0xFF24314F) else Color(0xFFF0F0FE)
+                },
+                when (backdrop) {
+                    "paper" -> if (dark) Color(0xFF211F26) else Color(0xFFFFFEF9)
+                    "ink" -> if (dark) Color(0xFF0D1822) else Color(0xFFEAF1F5)
+                    else -> if (dark) Color(0xFF112B33) else Color(0xFFE9F9F1)
+                }
             )
         ) else Brush.verticalGradient(listOf(scheme.background, scheme.background))
     }
@@ -183,7 +207,7 @@ fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable B
                 Spacer(Modifier.matchParentSize().drawWithCache {
                     val teal = Brush.radialGradient(
                         colors = listOf(
-                            scheme.primary.copy(alpha = if (dark) 0.20f else 0.14f),
+                            scheme.primary.copy(alpha = if (dark) 0.23f else 0.20f),
                             scheme.primary.copy(alpha = if (dark) 0.065f else 0.035f),
                             Color.Transparent
                         ),
@@ -192,7 +216,8 @@ fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable B
                     )
                     val gold = Brush.radialGradient(
                         colors = listOf(
-                            Color(0xFFE3B95F).copy(alpha = if (dark) 0.08f else 0.10f),
+                            (if (backdrop == "aurora") Color(0xFFAF72F4) else Color(0xFFE3B95F))
+                            .copy(alpha = if (dark) 0.24f else 0.18f),
                             Color.Transparent
                         ),
                         center = Offset(size.width * 0.03f, size.height * 0.79f),
