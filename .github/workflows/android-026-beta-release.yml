@@ -1,0 +1,89 @@
+name: Publish private Shtemarm Android 0.2.6 experimental beta
+
+# Publishing on this release branch does NOT touch main, Lovable, or website production.
+# The repository must stay private. The APK is debug-signed and NOT a guaranteed in-place update.
+on:
+  push:
+    branches:
+      - release/android-0-2-6-beta-1
+    paths:
+      - '.github/workflows/android-026-beta-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shtemarm-026-beta-private-release
+  cancel-in-progress: false
+
+jobs:
+  beta:
+    if: github.repository == 'rafhakobiann-web/shtemarm' && github.ref == 'refs/heads/release/android-0-2-6-beta-1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require private repository and pass source security audits
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view --json isPrivate --jq .isPrivate)" = 'true'
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Verify question-bank assets and mathematics text
+        run: |
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Test Android and compile APKs
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug assembleRelease --stacktrace
+      - name: Verify 0.2.6-beta.1 identity, debug signer and checksum
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          find android/app/build/outputs/apk/release -type f -name '*.apk' -size +0c | grep -q .
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionName='0.2.6-beta.1'" <<< "$BADGING"
+          grep -Fq "versionCode='8'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Shtemarm-Android-0.2.6-beta.1-Experimental.apk
+          sha256sum Shtemarm-Android-0.2.6-beta.1-Experimental.apk > Shtemarm-Android-0.2.6-beta.1-Experimental.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shtemarm-Android-0.2.6-beta.1
+          path: |
+            Shtemarm-Android-0.2.6-beta.1-Experimental.apk
+            Shtemarm-Android-0.2.6-beta.1-Experimental.apk.sha256
+          if-no-files-found: error
+      - name: Publish to private GitHub repository as prerelease (NOT production)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=v0.2.6-beta.1
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Version tag already exists; refusing to overwrite release or APK." >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Shtemarm-Android-0.2.6-beta.1-Experimental.apk \
+            Shtemarm-Android-0.2.6-beta.1-Experimental.apk.sha256 \
+            --target "$GITHUB_SHA" \
+            --title 'Shtemarm Android 0.2.6-beta.1 — Experimental Glass Lab' \
+            --notes-file docs/ANDROID_026_BETA_RELEASE.md \
+            --prerelease
+          gh release view "$TAG" --json isDraft,isPrerelease,url \
+            --jq '{draft: .isDraft, prerelease: .isPrerelease, url: .url}'
