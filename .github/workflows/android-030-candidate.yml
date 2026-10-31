@@ -8,6 +8,9 @@ on:
       - release/android-0-3-0-candidate
     paths:
       - '.github/workflows/android-030-candidate.yml'
+      - 'android/**'
+      - 'public/data/original-*.json'
+      - 'public/data/bio-book3.json'
   workflow_dispatch:
 
 permissions:
@@ -78,7 +81,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG=v0.3.0-beta.1
+          # Do not publish a stale APK when a newer candidate commit exists.
+          REMOTE_HEAD=$(gh api repos/rafhakobiann-web/shtemarm/git/ref/heads/release/android-0-3-0-candidate --jq .object.sha)
+          test "$REMOTE_HEAD" = "$GITHUB_SHA" || {
+            echo "The candidate branch advanced; refusing to publish stale APK." >&2
+            exit 1
+          }
+          TAG=v0.3.0-beta.2
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release already exists; refusing to replace its APK or tag." >&2
             exit 1
@@ -87,6 +96,6 @@ jobs:
             Shtemarm-Android-0.3.0-Debug-Test.apk \
             Shtemarm-Android-0.3.0-Debug-Test.apk.sha256 \
             --target "$GITHUB_SHA" \
-            --title 'Shtemarm Android 0.3.0 — Private debug test candidate' \
+            --title 'Shtemarm Android 0.3.0 — Private debug test candidate (beta 2)' \
             --notes-file docs/ANDROID_030_RELEASE_CANDIDATE.md \
             --prerelease
