@@ -164,7 +164,6 @@ private fun NativeShtemarm() {
                             val output = ByteArrayOutputStream()
                             val buffer = ByteArray(8192)
                             while (true) {
-                                ensureActive()
                                 val count = stream.read(buffer)
                                 if (count < 0) break
                                 if (output.size() + count > 1_048_576) {
