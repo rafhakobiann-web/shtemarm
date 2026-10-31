@@ -199,6 +199,12 @@ private fun NativeShtemarm() {
     val savedScroll = rememberLazyListState()
     val progressScroll = rememberLazyListState()
     LaunchedEffect(sessionIndex, session) { studyScroll.scrollToItem(0) }
+    val visibleBooks = remember(subject, bookFilter) {
+        BookCatalog.books.filter {
+            it.subject == subject && BookStudyHelpers.matches(bookFilter, it.title, it.subject)
+        }
+    }
+
     LaunchedEffect(book) { sectionsScroll.scrollToItem(0) }
     LaunchedEffect(subject) {
         booksScroll.scrollToItem(0)
@@ -647,10 +653,7 @@ private fun NativeShtemarm() {
                                 shape = RoundedCornerShape(16.dp)
                             )
                         }
-                        items(BookCatalog.books.filter {
-                            it.subject == subject &&
-                                BookStudyHelpers.matches(bookFilter, it.title, it.subject)
-                        }, key = { it.asset + ":" + it.title }) { item ->
+                        items(visibleBooks, key = { it.asset + ":" + it.title }) { item ->
                             AcademyBookTile(item) {
                                 book = item
                                 page = if (item.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
@@ -716,15 +719,17 @@ private fun NativeShtemarm() {
                                             modifier = Modifier.weight(1f)) { Text("30 հարց") }
                                     }
                                     OutlinedButton(
-                                        onClick = { begin(pool, pool.size, "Ամբողջ շտեմարան") },
+                                        onClick = { begin(pool, pool.size, "Ամբողջ շտեմարան", shuffle = false) },
                                         modifier = Modifier.fillMaxWidth()
                                     ) { Text("Բոլոր հասանելի հարցերը") }
                                     Text("Սրանք ուսումնական թեստեր են․ դրանք չեն կրկնում ԳԹԿ պաշտոնական քննության ամբողջ կառուցվածքը։",
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
                                 item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
-                                val visibleSectionIndexes = data.sections.indices.filter { idx ->
-                                    BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
+                                val visibleSectionIndexes = remember(data, chapterFilter) {
+                                    data.sections.indices.filter { idx ->
+                                        BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
+                                    }
                                 }
                                 if (visibleSectionIndexes.isEmpty()) item {
                                     Text("Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։",
