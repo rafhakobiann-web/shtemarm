@@ -133,7 +133,10 @@ class QuestionRepository(private val context: Context) {
      * load() and loadScoredMath() already switch to Dispatchers.IO.
      * Avoid wrapping those suspend calls in a second IO dispatcher.
      */
-    suspend fun sectionsForSubject(subject: String): List<StudySection> {
+    suspend fun sectionsForSubject(subject: String): List<StudySection> =
+        withContext(Dispatchers.Default) {
+        // Aggregation and section-title copying are CPU work. Individual asset
+        // reads still use IO inside load() / loadScoredMath().
         val sections = mutableListOf<StudySection>()
         if (subject == "Մաթեմատիկա") {
             for (part in 1..2) {
@@ -158,7 +161,7 @@ class QuestionRepository(private val context: Context) {
                 } catch (_: Exception) { /* Do not hide other accessible books. */ }
             }
         }
-        return sections
+        sections
     }
 
     suspend fun practiceForSubject(subject: String): List<StudyQuestion> {
