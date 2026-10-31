@@ -3,6 +3,8 @@ package am.shtemarm.app
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -63,9 +65,11 @@ class QuestionRepository(private val context: Context) {
         val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
         val result = mutableListOf<StudySection>()
+        val coroutineContext = currentCoroutineContext()
         val sections = json.optJSONArray("sections")
         if (sections != null) {
             for (si in 0 until sections.length()) {
+                coroutineContext.ensureActive()
                 val section = sections.optJSONObject(si) ?: continue
                 val title = BookStudyHelpers.sectionTitle(
                     book.subject, section.optString("title"), section.optString("label"),
@@ -74,6 +78,7 @@ class QuestionRepository(private val context: Context) {
                 val questions = mutableListOf<StudyQuestion>()
                 val units = section.optJSONArray("units") ?: continue
                 for (ui in 0 until units.length()) {
+                    if (ui % 16 == 0) coroutineContext.ensureActive()
                     val unit = units.optJSONObject(ui) ?: continue
                     parseUnit(book.asset, si, ui, unit, questions)
                 }
@@ -84,10 +89,12 @@ class QuestionRepository(private val context: Context) {
             val tests = json.optJSONArray("tests")
             if (tests != null) {
                 for (ti in 0 until tests.length()) {
+                    coroutineContext.ensureActive()
                     val test = tests.optJSONObject(ti) ?: continue
                     val tasks = test.optJSONArray("tasks") ?: continue
                     val questions = mutableListOf<StudyQuestion>()
                     for (ui in 0 until tasks.length()) {
+                        if (ui % 16 == 0) coroutineContext.ensureActive()
                         val unit = tasks.optJSONObject(ui) ?: continue
                         parseUnit(book.asset, ti, ui, unit, questions)
                     }
@@ -103,6 +110,7 @@ class QuestionRepository(private val context: Context) {
                     val verifiedRoot = json.has("verified")
                     val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
                     for (i in 0 until flat.length()) {
+                        if (i % 64 == 0) coroutineContext.ensureActive()
                         val question = flat.optJSONObject(i) ?: continue
                         if (!verifiedRoot &&
                             question.optString("status") != "source-reviewed") continue
@@ -118,6 +126,7 @@ class QuestionRepository(private val context: Context) {
             }
         }
         val parsed = LoadedBook(result)
+        coroutineContext.ensureActive()
         synchronized(recentBooks) { recentBooks[book.asset] = parsed }
         parsed
     }
