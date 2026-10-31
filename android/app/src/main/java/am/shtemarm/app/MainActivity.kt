@@ -320,7 +320,7 @@ private fun NativeShtemarm() {
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
-                            Page.TOOLS -> 4
+                            Page.TOOLS, Page.FOCUS -> 4
                             Page.STUDY, Page.RESULT -> when (sessionOrigin) {
                                 Page.EXAMS -> 2
                                 Page.GAMES -> 3
