@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.Manifest
 import android.os.Build
 import android.content.pm.ApplicationInfo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -247,7 +245,7 @@ private fun NativeShtemarm() {
         loadError = ""
         loaded = null
         try {
-            loaded = withContext(Dispatchers.IO) { repository.load(chosenBook) }
+            loaded = repository.load(chosenBook)
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -265,7 +263,7 @@ private fun NativeShtemarm() {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
                     try {
-                        collected += withContext(Dispatchers.IO) { repository.load(entry).allQuestions.filter { it.id in ids } }
+                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
                 // The scored math books have a dedicated verified source loader.
