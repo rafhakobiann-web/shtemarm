@@ -29,7 +29,7 @@ def read(path: Path):
 # enumerated in BOOKS. This catches missing files before runtime navigation.
 catalog = (ANDROID / "app/src/main/java/am/shtemarm/app/QuestionRepository.kt").read_text(encoding="utf-8")
 catalog_assets = set(re.findall(
-    r'StudyBook\\(\\s*"[^"]+"\\s*,\\s*"[^"]+"\\s*,\\s*"([^"]+\\.json)"\\s*\\)', catalog
+    r'StudyBook\(\s*"[^"]+"\s*,\s*"[^"]+"\s*,\s*"([^"]+\.json)"\s*\)', catalog
 ))
 assert len(catalog_assets) >= 18, "BookCatalog extraction failed or lost books"
 for asset in sorted(catalog_assets):
