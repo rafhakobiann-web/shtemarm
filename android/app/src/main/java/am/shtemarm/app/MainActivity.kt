@@ -3,7 +3,6 @@ package am.shtemarm.app
 import android.os.Bundle
 import android.Manifest
 import android.os.Build
-import android.content.pm.ApplicationInfo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,31 +61,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isDebug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        setContent { if (isDebug) NativeShtemarm() else RelaunchHoldingScreen() }
-    }
-}
-
-@Composable
-private fun RelaunchHoldingScreen() {
-    MaterialTheme(typography = ShtemarmTypography) {
-        Surface(color = Color(0xFF0B1825), modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(28.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("SHTEMARM", color = Color(0xFF9FE8EB), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(24.dp))
-                Text("ՇՈՒՏՈՎ՝ ՆՈՐ ՏԵՍՔ, ՆՈՐ ՖՈՐՄԱՏ", color = Color.White,
-                    fontSize = 28.sp, fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center, lineHeight = 40.sp)
-                Spacer(Modifier.height(18.dp))
-                Text("Պատրաստում ենք ուսման նոր հարթակ՝ շտեմարաններով, քննություններով և համալսարանների ուղեցույցով։",
-                    color = Color(0xFFCBD5E1), fontSize = 16.sp,
-                    lineHeight = 26.sp, textAlign = TextAlign.Center)
-            }
-        }
+        // The full study UI must be available in both debug and release builds.
+        setContent { NativeShtemarm() }
     }
 }
 
