@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import org.json.JSONObject
 
 private object VerifiedMathCache {
@@ -29,6 +31,7 @@ private object VerifiedMathCache {
  */
 internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
     withContext(Dispatchers.IO) {
+        ensureActive()
         VerifiedMathCache.get(part)?.let { return@withContext it }
         val index = context.assets.open("math-books-index.json").bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
@@ -42,6 +45,7 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
         val result = mutableListOf<StudySection>()
 
         for (s in 0 until sections.length()) {
+            ensureActive()
             val section = sections.optJSONObject(s) ?: continue
             val chapter = section.optInt("chapter")
             val sectionNum = section.optInt("section")
@@ -49,6 +53,7 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
             val tasks = section.optJSONArray("tasks") ?: continue
             val verified = mutableListOf<StudyQuestion>()
             for (t in 0 until tasks.length()) {
+                ensureActive()
                 val task = tasks.optJSONObject(t) ?: continue
                 val kind = task.optString("answer_type", "choice")
                 if (kind != "choice") continue
@@ -58,6 +63,7 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
                 val previous = task.optJSONArray("questions")
                 val count = task.optInt("sub_count", answers.length()).coerceAtMost(answers.length())
                 for (qIndex in 0 until count) {
+                    ensureActive()
                     // Match the website's overlay priority: text-bank first, then index data.
                     val q = transcription?.optJSONObject(qIndex)
                         ?: previous?.optJSONObject(qIndex) ?: continue
@@ -114,6 +120,8 @@ fun NativeMathPractice(
         error = ""
         book = try {
             loadScoredMath(context, bookPart)
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) {
             error = "Հնարավոր չեղավ բացել մաթեմատիկայի թվայնացված հարցերը։"
             LoadedBook(emptyList())
