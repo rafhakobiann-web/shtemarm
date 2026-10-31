@@ -129,12 +129,18 @@ class QuestionRepository(private val context: Context) {
         parsed
     }
 
-    /** Unified verified question source for exams, games, and study generators. */
-    suspend fun sectionsForSubject(subject: String): List<StudySection> =
-        withContext(Dispatchers.IO) {
-            val sections = mutableListOf<StudySection>()
-            if (subject == "Մաթեմատիկա") {
+    /** Unified verified question source for exams, games, and study generators.
+     * load() already dispatches its own asset reads and JSON parsing to IO.
+     * Avoid wrapping the entire non-math aggregation in a second IO dispatch.
+     */
+    suspend fun sectionsForSubject(subject: String): List<StudySection> {
+        val sections = mutableListOf<StudySection>()
+        if (subject == "Մաթեմատիկա") {
+            // The dedicated scored-math reader is synchronous, so it must
+            // remain on IO. Other subjects rely on load()'s own dispatcher.
+            withContext(Dispatchers.IO) {
                 for (part in 1..2) {
+                    ensureActive()
                     try {
                         sections += loadScoredMath(context, part).sections.map {
                             it.copy(title = "Մաս $part · " + it.title)
@@ -143,28 +149,28 @@ class QuestionRepository(private val context: Context) {
                         throw e
                     } catch (_: Exception) { /* Other verified parts remain available. */ }
                 }
-            } else {
-                for (book in BookCatalog.books.filter {
-                    it.subject == subject
-                }.distinctBy { it.asset }) {
-                    try {
-                        sections += load(book).sections.map {
-                            it.copy(title = book.title + " · " + it.title)
-                        }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) { /* Do not hide other accessible books. */ }
-                }
             }
-            sections
+        } else {
+            for (book in BookCatalog.books.filter { it.subject == subject }.distinctBy { it.asset }) {
+                try {
+                    sections += load(book).sections.map {
+                        it.copy(title = book.title + " · " + it.title)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) { /* Do not hide other accessible books. */ }
+            }
         }
+        return sections
+    }
 
-    suspend fun practiceForSubject(subject: String): List<StudyQuestion> =
-        withContext(Dispatchers.IO) {
-            BookStudyHelpers.uniquePracticeQuestions(
-                sectionsForSubject(subject).flatMap { it.questions }
-            )
+    suspend fun practiceForSubject(subject: String): List<StudyQuestion> {
+        val sections = sectionsForSubject(subject)
+        // De-duplication is CPU work; avoid scheduling another IO dispatch.
+        return withContext(Dispatchers.Default) {
+            BookStudyHelpers.uniquePracticeQuestions(sections.flatMap { it.questions })
         }
+    }
 
     private fun parseUnit(
         source: String, section: Int, unitIndex: Int,
