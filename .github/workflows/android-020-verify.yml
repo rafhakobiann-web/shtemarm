@@ -1,4 +1,4 @@
-name: Verify Android 0.2.0 study update
+name: Verify Android 0.2.1 beta study update
 on:
   pull_request:
     paths:
@@ -34,12 +34,15 @@ jobs:
       - name: Verify unsigned release APK exists (no publication)
         run: |
           find android/app/build/outputs/apk/release -type f -name '*.apk' -size +0c | grep -q .
-      - name: Verify 0.2.0 beta APK
+      - name: Verify 0.2.1 beta APK metadata
         run: |
           test -s android/app/build/outputs/apk/debug/app-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -F "versionName='0.2.0-beta.1'"
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk)
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionName='0.2.1-beta.1'" <<< "$BADGING"
+          grep -Fq "versionCode='6'" <<< "$BADGING"
       - uses: actions/upload-artifact@v4
         with:
-          name: Shtemarm-Android-0.2.0-beta.1
+          name: Shtemarm-Android-0.2.1-beta.1
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
