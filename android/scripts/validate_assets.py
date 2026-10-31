@@ -84,6 +84,9 @@ for filename in ("book1.json", "book2.json", "book3.json"):
     print(f"{filename}: {book_total} MCQ records, {book_keyed} keyed, "
           f"{book_gaps} recoverable gap stems, "
           f"{len(book_missing)} sampled unresolved blank stems")
+    assert book_keyed == book_total, (
+        f"{filename}: {book_total - book_keyed} multiple-choice records have no usable answer choice"
+    )
     if book_missing:
         print("  First unresolved positions: " + ", ".join(book_missing))
 assert recoverable_english_gaps >= 1000, (
@@ -124,6 +127,14 @@ assert american_food[4]["stem"].strip() and american_food[7]["stem"].strip()
 assert [american_food[i]["answer"] for i in range(4, 10)] == [
     "c", "c", "a", "d", "a", "b"
 ], "English III: incorrect or shifted answer keys"
+vocabulary = english_unit("book2.json", "2-1-Text5")["questions"][0]
+assert vocabulary["options"] == {
+    "a": "universal", "b": "ordinary", "c": "unusual", "d": "common"
+}
+grammar = english_unit("book3.json", "3-5-136")["questions"][0]
+assert grammar["options"]["a"].strip() and grammar["answer"] == "a"
+assert grammar["stem"].endswith("________________."), "English III: answer leaked into question"
+
 print("Verified source-aligned OCR correction anchors for English volumes II and III")
 
 dictionary = read(APP_ASSETS / "english-armenian-dictionary.json")
