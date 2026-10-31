@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.abs
@@ -34,14 +36,17 @@ private data class AdvancedTask(
 
 private suspend fun loadAdvanced(context: Context, book: StudyBook): List<AdvancedTask> =
     withContext(Dispatchers.IO) {
+        ensureActive()
         val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
         val result = mutableListOf<AdvancedTask>()
         val sections = json.optJSONArray("sections") ?: return@withContext result
         for (si in 0 until sections.length()) {
+            ensureActive()
             val section = sections.optJSONObject(si) ?: continue
             val units = section.optJSONArray("units") ?: continue
             for (ui in 0 until units.length()) {
+                ensureActive()
                 val unit = units.optJSONObject(ui) ?: continue
                 if (listOf("image", "diagram", "figure").any { unit.has(it) &&
                         !unit.isNull(it) && unit.optString(it).isNotBlank() }) continue
@@ -82,6 +87,7 @@ private suspend fun loadAdvanced(context: Context, book: StudyBook): List<Advanc
                     "num" -> {
                         val questions = unit.optJSONArray("questions") ?: continue
                         for (qi in 0 until questions.length()) {
+                            if (qi % 32 == 0) ensureActive()
                             val q = questions.optJSONObject(qi) ?: continue
                             val stem = q.optString("stem").trim()
                             val answer = q.optString("answer").trim()
@@ -129,6 +135,7 @@ fun NativeAdvancedPractice(book: StudyBook, onExit: () -> Unit) {
         loading = true
         error = ""
         try { allTasks = loadAdvanced(context, book) }
+        catch (e: CancellationException) { throw e }
         catch (_: Exception) { error = "Բազմաքայլ առաջադրանքները հասանելի չեն։" }
         loading = false
     }
