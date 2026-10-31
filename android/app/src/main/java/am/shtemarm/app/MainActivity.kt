@@ -1162,16 +1162,23 @@ private fun NativeShtemarm() {
 }
 
 @Composable private fun ScreenHeading(title: String, subtitle: String) {
-    Text(title, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+    Text(
+        title,
+        fontFamily = StudyReadingFont,
+        fontSize = 27.sp,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 38.sp,
+        color = MaterialTheme.colorScheme.onSurface
+    )
     Spacer(Modifier.height(6.dp))
     Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(13.dp))
 }
 
 @Composable private fun SubjectCard(subject: String, onClick: () -> Unit) {
-    ElevatedCard(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(22.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
