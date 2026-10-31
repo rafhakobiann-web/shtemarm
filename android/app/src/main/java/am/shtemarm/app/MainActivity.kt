@@ -166,6 +166,7 @@ private fun NativeShtemarm() {
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var savedLoading by remember { mutableStateOf(false) }
+    var savedLoadError by remember { mutableStateOf("") }
 
     // Maintain independent scroll positions for each main screen.
     val homeScroll = rememberLazyListState()
@@ -210,7 +211,14 @@ private fun NativeShtemarm() {
     }
 
     LaunchedEffect(book) {
-        val chosenBook = book ?: return@LaunchedEffect
+        val chosenBook = book
+        if (chosenBook == null) {
+            // Leaving the book screen must not preserve a stale loading spinner.
+            loaded = null
+            loadError = ""
+            loading = false
+            return@LaunchedEffect
+        }
         chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
@@ -229,13 +237,22 @@ private fun NativeShtemarm() {
             throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
+        } finally {
+            // Also clear the spinner when a book load is cancelled.
+            loading = false
         }
-        loading = false
     }
 
     LaunchedEffect(page, reviewMistakes) {
-        if (page == Page.SAVED) {
-            savedLoading = true
+        if (page != Page.SAVED) {
+            savedLoadError = ""
+            savedLoading = false
+            return@LaunchedEffect
+        }
+        savedLoading = true
+        savedLoadError = ""
+        savedQuestions = emptyList()
+        try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
             val matches = withContext(Dispatchers.Default) {
                 val collected = mutableListOf<StudyQuestion>()
@@ -264,6 +281,12 @@ private fun NativeShtemarm() {
                     collected.distinctBy { it.id }
             }
             savedQuestions = matches
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Do not crash the saved-questions screen or report an error as an empty list.
+            savedLoadError = "Պահպանված հարցերը բեռնել չհաջողվեց։ Կրկին փորձիր ավելի ուշ։"
+        } finally {
             savedLoading = false
         }
     }
@@ -936,6 +959,9 @@ private fun NativeShtemarm() {
                             }
                         }
                         if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                        else if (savedLoadError.isNotEmpty()) item {
+                            Text(savedLoadError, color = MaterialTheme.colorScheme.error)
+                        }
                         else if (savedQuestions.isEmpty()) item {
                             Text(
                                 if (reviewMistakes) "Դեռ կրկնելու սխալ հարցեր չկան։"
