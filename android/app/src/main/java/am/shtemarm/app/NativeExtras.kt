@@ -125,15 +125,24 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
 fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
     var selected by remember { mutableStateOf("Անգլերեն") }
     var mode by remember { mutableStateOf("quiz") }
+    var gameCount by remember { mutableIntStateOf(20) }
     var questions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
+    var loadFailed by remember { mutableStateOf(false) }
     var flipIndex by remember { mutableIntStateOf(0) }
     var revealed by remember { mutableStateOf(false) }
     LaunchedEffect(selected) {
         loading = true
+        loadFailed = false
+        questions = emptyList()
         questions = try {
             repository.practiceForSubject(selected).shuffled()
-        } catch (_: Exception) { emptyList() }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            loadFailed = true
+            emptyList()
+        }
         flipIndex = 0; revealed = false
         loading = false
     }
@@ -168,8 +177,15 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
             }
         }
         item { Text("Առարկան", fontWeight = FontWeight.SemiBold) }
-        items(BookCatalog.subjects) { s ->
-            FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                BookCatalog.subjects.forEach { s ->
+                    FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+                }
+            }
         }
         item {
             HorizontalDivider()
@@ -207,6 +223,15 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
             }
         } else if (questions.isNotEmpty()) {
             item {
+                Text("Հարցերի քանակը", fontWeight = FontWeight.SemiBold)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(10, 20, 30, 50).forEach { count ->
+                        FilterChip(selected = gameCount == count, onClick = { gameCount = count }, label = { Text("$count") })
+                    }
+                }
+                Text("Հասանելի է՝ ${questions.size} հարց", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            item {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -223,12 +248,12 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
                                 )
                             }
                         } else questions
-                        onStart(selected, pool, 10, if (mode == "truth") "Ճիշտ / սխալ" else "Մինի խաղ · Արագ հարցեր")
+                        onStart(selected, pool, gameCount.coerceAtMost(pool.size), if (mode == "truth") "Ճիշտ / սխալ" else "Մինի խաղ · Արագ հարցեր")
                     }
-                ) { Text(if (mode == "truth") "Սկսել ճիշտ/սխալ խաղը" else "Սկսել 10 հարցանոց խաղը") }
+                ) { Text(if (mode == "truth") "Սկսել ճիշտ/սխալ խաղը" else "Սկսել ${gameCount.coerceAtMost(questions.size)} հարցանոց խաղը") }
             }
         } else if (!loading) {
-            item { Text("Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։") }
+            item { Text(if (loadFailed) "Հարցաշարի բեռնումը ձախողվեց։ Փորձիր ընտրել առարկան կրկին։" else "Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։") }
         }
     }
 }
