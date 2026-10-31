@@ -548,6 +548,14 @@ fun AcademyAppearanceSettings(
     onSurface: (String) -> Unit,
     glassIntensity: String,
     onGlassIntensity: (String) -> Unit,
+    glassBackground: String,
+    onGlassBackground: (String) -> Unit,
+    glassBlur: Int,
+    onGlassBlur: (Int) -> Unit,
+    glassClarity: Int,
+    onGlassClarity: (Int) -> Unit,
+    glassReflection: Int,
+    onGlassReflection: (Int) -> Unit,
     largeText: Boolean,
     onLargeText: (Boolean) -> Unit,
     immediateFeedback: Boolean,
@@ -569,8 +577,14 @@ fun AcademyAppearanceSettings(
             Text("Հարմարեցրու քո ուսումնական միջավայրը։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
         }
+        if (surface == "liquid") item {
+            AcademyGlassLabPreview()
+            Spacer(Modifier.height(8.dp))
+            Text("Կենդանի նախադիտում. գույները շարժվում են իրական մշուշման հետևում։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
         item {
-            Text("Կայքի ոճը", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Text("Հավելվածի ոճը", fontWeight = FontWeight.Bold, fontSize = 17.sp)
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -596,7 +610,34 @@ fun AcademyAppearanceSettings(
                 }
             }
             Spacer(Modifier.height(5.dp))
-            Text("Ultra Glass՝ լրացուցիչ լուսային եզրերով և արտացոլումներով։ Իրական ֆոնային blur դեռ չկա։",
+            Text("Live blur-ը աշխատում է նավիգացիոն ապակու և նախադիտման վրա։ Բեկման շարժիչը դեռ փորձնական փուլում է։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
+        if (surface == "liquid") item {
+            Text("Theme Studio", fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+            Spacer(Modifier.height(8.dp))
+            Text("Ֆոնի ոճ", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            Spacer(Modifier.height(6.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("aurora" to "Ավրորա", "paper" to "Թղթային",
+                    "ink" to "Խորը մուգ").forEach { (value, title) ->
+                    FilterChip(
+                        selected = glassBackground == value,
+                        onClick = { onGlassBackground(value) },
+                        label = { Text(title) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            AcademyStudioSlider("Իրական մշուշում", "${glassBlur} dp",
+                glassBlur.toFloat(), 0f..48f) { onGlassBlur(it.toInt()) }
+            AcademyStudioSlider("Թափանցիկություն", "${glassClarity}%",
+                glassClarity.toFloat(), 20f..100f) { onGlassClarity(it.toInt()) }
+            AcademyStudioSlider("Լուսային անդրադարձումներ", "${glassReflection}%",
+                glassReflection.toFloat(), 0f..100f) { onGlassReflection(it.toInt()) }
+            Text("Blur-ը գործում է Android 12 և նոր տարբերակներում։ Ավելի հին սարքերի վրա պահպանվում է ընթեռնելի պարզեցված ոճը։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
         item {
@@ -665,6 +706,25 @@ fun AcademyAppearanceSettings(
             Spacer(Modifier.height(12.dp))
         }
     }
+}
+
+@Composable
+private fun AcademyStudioSlider(
+    label: String,
+    valueText: String,
+    value: Float,
+    range: ClosedFloatingPointRange<Float>,
+    onChange: (Float) -> Unit
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+        Text(valueText, fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+    }
+    Slider(
+        value = value.coerceIn(range.start, range.endInclusive),
+        onValueChange = onChange,
+        valueRange = range
+    )
 }
 
 @Composable
