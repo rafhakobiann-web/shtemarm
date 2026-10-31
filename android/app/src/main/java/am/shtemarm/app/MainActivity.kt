@@ -247,7 +247,7 @@ private fun NativeShtemarm() {
         loadError = ""
         loaded = null
         try {
-            loaded = withContext(Dispatchers.IO) { repository.load(chosenBook) }
+            loaded = repository.load(chosenBook)
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -265,16 +265,14 @@ private fun NativeShtemarm() {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
                     try {
-                        collected += withContext(Dispatchers.IO) { repository.load(entry).allQuestions.filter { it.id in ids } }
+                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
                 // The scored math books have a dedicated verified source loader.
                 for (part in 1..2) {
                     if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
-                            collected += withContext(Dispatchers.IO) {
-                                loadScoredMath(context, part).allQuestions.filter { it.id in ids }
-                            }
+                            collected += loadScoredMath(context, part).allQuestions.filter { it.id in ids }
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
