@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -96,6 +97,7 @@ private fun NativeShtemarm() {
     val context = LocalContext.current.applicationContext
     val repository = remember { QuestionRepository(context) }
     val progress = remember { StudyProgress(context) }
+    val backupScope = rememberCoroutineScope()
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
@@ -143,49 +145,74 @@ private fun NativeShtemarm() {
     val exportProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
-        backupMessage = if (uri == null) "Պահպանումը չեղարկված է։" else try {
-            context.contentResolver.openOutputStream(uri)?.use { stream ->
-                stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
-            } ?: error("Cannot open backup destination")
-            "Առաջընթացի կրկնօրինակը պահպանվեց։"
-        } catch (_: Exception) {
-            "Կրկնօրինակը պահպանել չհաջողվեց։"
+        if (uri == null) {
+            backupMessage = "Պահպանումը չեղարկված է։"
+        } else {
+            backupScope.launch {
+                backupMessage = "Պահպանվում է…"
+                backupMessage = withContext(Dispatchers.IO) {
+                    try {
+                        context.contentResolver.openOutputStream(uri)?.use { stream ->
+                            stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
+                        } ?: error("Cannot open backup destination")
+                        "Առաջընթացի կրկնօրինակը պահպանվեց։"
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        "Կրկնօրինակը պահպանել չհաջողվեց։"
+                    }
+                }
+            }
         }
     }
     val importProgress = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        backupMessage = if (uri == null) "Վերականգնումը չեղարկված է։" else try {
-            val content = context.contentResolver.openInputStream(uri)?.use { stream ->
-                // API 24-compatible bounded read, including older Android phones.
-                val output = ByteArrayOutputStream()
-                val buffer = ByteArray(8192)
-                while (true) {
-                    val count = stream.read(buffer)
-                    if (count < 0) break
-                    if (output.size() + count > 1_048_576) {
-                        error("Backup file exceeds 1 MiB")
+        if (uri == null) {
+            backupMessage = "Վերականգնումը չեղարկված է։"
+        } else {
+            backupScope.launch {
+                backupMessage = "Վերականգնվում է…"
+                val result = withContext(Dispatchers.IO) {
+                    try {
+                        val content = context.contentResolver.openInputStream(uri)?.use { stream ->
+                            // API 24-compatible bounded read, including older Android phones.
+                            val output = ByteArrayOutputStream()
+                            val buffer = ByteArray(8192)
+                            while (true) {
+                                val count = stream.read(buffer)
+                                if (count < 0) break
+                                if (output.size() + count > 1_048_576) {
+                                    error("Backup file exceeds 1 MiB")
+                                }
+                                output.write(buffer, 0, count)
+                            }
+                            output.toString(StandardCharsets.UTF_8.name())
+                        } ?: error("Cannot open backup file")
+                        if (progress.importSnapshot(content)) 1 else 0
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        -1
                     }
-                    output.write(buffer, 0, count)
                 }
-                output.toString(StandardCharsets.UTF_8.name())
-            } ?: error("Cannot open backup file")
-            if (progress.importSnapshot(content)) {
-                progressVersion++
-                dark = progress.darkMode
-                largeText = progress.largeText
-                immediateFeedback = progress.showAnswersImmediately
-                accent = progress.accent
-                surfaceStyle = progress.surfaceStyle
-                glassIntensity = progress.glassIntensity
-                studyLanguage = progress.studyLanguage
-                dailyTarget = progress.dailyQuestionTarget
-                "Առաջընթացը հաջողությամբ վերականգնվեց։"
-            } else {
-                "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                backupMessage = when (result) {
+                    1 -> {
+                        progressVersion++
+                        dark = progress.darkMode
+                        largeText = progress.largeText
+                        immediateFeedback = progress.showAnswersImmediately
+                        accent = progress.accent
+                        surfaceStyle = progress.surfaceStyle
+                        glassIntensity = progress.glassIntensity
+                        studyLanguage = progress.studyLanguage
+                        dailyTarget = progress.dailyQuestionTarget
+                        "Առաջընթացը հաջողությամբ վերականգնվեց։"
+                    }
+                    0 -> "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                    else -> "Կրկնօրինակը բացել չհաջողվեց։"
+                }
             }
-        } catch (_: Exception) {
-            "Կրկնօրինակը բացել չհաջողվեց։"
         }
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
