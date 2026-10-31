@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK, FOCUS }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -411,6 +411,7 @@ private fun NativeShtemarm() {
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
+                    Page.FOCUS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeFocusMode() }
                     Page.TOOLS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeTools(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
@@ -499,6 +500,9 @@ private fun NativeShtemarm() {
                                         NativeStudyGuide.label(studyLanguage,"Կանոններ և բացատրություններ","Rules and explanations","Правила и объяснения"),
                                         NativeStudyGuide.label(studyLanguage,"Անգլերեն և մաթեմատիկա · Offline","English and math · Offline","Английский и математика · Offline")) {
                                         page = Page.HANDBOOK
+                                    }
+                                    AcademyQuickAction(Icons.Default.Star, "Կենտրոնացման ռեժիմ", "15, 25 կամ 45 րոպեանոց ժամաչափ") {
+                                        page = Page.FOCUS
                                     }
                                     AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ", "Կենտրոնացում և կրկնություն") {
                                         page = Page.TOOLS
