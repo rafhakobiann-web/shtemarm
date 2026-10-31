@@ -233,11 +233,12 @@ private fun NativeShtemarm() {
         page = Page.STUDY
     }
 
+    LaunchedEffect(book) { chapterFilter = "" }
+
     LaunchedEffect(book, page) {
         // Stop parsing a previous book as soon as its sections screen is left.
         if (page != Page.SECTIONS) return@LaunchedEffect
         val chosenBook = book ?: return@LaunchedEffect
-        chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
         if (chosenBook.subject == "Մաթեմատիկա") {
