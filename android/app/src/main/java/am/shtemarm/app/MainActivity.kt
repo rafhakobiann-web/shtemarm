@@ -300,7 +300,10 @@ private fun NativeShtemarm() {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
                     try {
-                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                        val bookQuestions = repository.load(entry).allQuestions
+                        collected += withContext(Dispatchers.Default) {
+                            bookQuestions.filter { it.id in ids }
+                        }
                     } catch (e: CancellationException) {
                         throw e
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
