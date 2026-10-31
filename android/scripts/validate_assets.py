@@ -11,13 +11,11 @@ BOOKS = [
     "book1.json", "book2.json", "book3.json",
     "armenian-book1.json", "history-book1.json", "history-book2.json",
     "history-book3.json", "history-tests.json",
-    "bio-book1.json", "bio-book2.json", "bio-book3.json", "physics-book1.json",
+    "bio-book1.json", "bio-book2.json", "physics-book1.json",
     "physics-book2.json", "physics-original-book1.json",
     "physics-original-book2.json", "original-chemistry.json",
     "original-geography.json", "original-russian.json",
     "math-text-questions-extra.json",
-    "original-math.json", "original-english.json",
-    "original-history.json", "original-biology-3.json",
 ]
 
 def read(path: Path):
@@ -46,35 +44,42 @@ for name in BOOKS:
     print(f"{name}: {amount} individual questions")
 assert all_questions > 4000, f"Unexpectedly low question count: {all_questions}"
 
-# Release 0.3.0: independently validate the four new ORIGINAL practice
-# banks. These questions are intentionally not represented as copyrighted
-# book transcriptions or official GTC answer keys.
-original_banks = (
-    "original-math.json", "original-english.json",
-    "original-history.json", "original-biology-3.json",
-)
-for filename in original_banks:
-    bank = read(WEB_DATA / filename)
-    assert bank.get("sourceStatus") == "original-practice-not-official-transcription", filename
-    ids = set()
-    count = 0
-    for section in bank["sections"]:
-        for unit in section["units"]:
-            assert unit.get("kind") == "mc", (filename, unit.get("id"))
-            for question in unit["questions"]:
-                unique_id = (unit.get("id"), question.get("n"))
-                assert unique_id not in ids, (filename, unique_id)
-                ids.add(unique_id)
-                assert str(question.get("stem") or "").strip(), (filename, unique_id)
-                options = question.get("options", {})
-                expected_keys = ("a", "b", "c", "d") if filename == "original-english.json" else ("1", "2", "3", "4")
-                assert tuple(options.keys()) == expected_keys, (filename, unique_id)
-                assert all(str(v).strip() for v in options.values()), (filename, unique_id)
-                assert len(set(options.values())) == 4, (filename, unique_id)
-                assert question.get("answer") in options, (filename, unique_id)
-                count += 1
-    assert count == 12, f"Expected 12 original practice questions for {filename}; got {count}"
-    print(f"Verified {filename}: {count} original practice questions")
+# Verify that Android's mathematical source mirrors the website's original
+# two book datasets. There are no generated substitute/author-written 0.3.0 banks.
+math_index = read(WEB_DATA / "math-books-index.json")
+math_text = read(WEB_DATA / "math-text-questions.json")
+assert isinstance(math_index.get("books"), dict), "Missing website math books"
+assert isinstance(math_text, dict), "Missing website math text data"
+math_subquestions = 0
+for book_id, expected in (("matem-1", 2640), ("matem-2", 3036)):
+    sections = math_index["books"].get(book_id, {}).get("sections", [])
+    assert sections, f"Missing indexed math sections: {book_id}"
+    assert isinstance(math_text.get(book_id), dict), f"Missing transcribed math text: {book_id}"
+    part_count = 0
+    kinds = set()
+    for section in sections:
+        assert "chapter" in section and "section" in section
+        for task in section.get("tasks", []):
+            kind = task.get("answer_type", "choice")
+            assert kind in {"choice", "open", "tf"}, (book_id, kind)
+            count = task.get("sub_count")
+            assert isinstance(count, int) and count > 0, (book_id, task.get("task"))
+            answers = task.get("answers")
+            assert isinstance(answers, list) and len(answers) == count, (
+                book_id, task.get("task"), "answer count mismatch"
+            )
+            kinds.add(kind)
+            part_count += count
+    assert part_count == expected, (book_id, part_count, expected)
+    assert kinds == {"choice", "open", "tf"}, (book_id, kinds)
+    math_subquestions += part_count
+    print(f"{book_id}: {part_count} indexed website subquestions; types={sorted(kinds)}")
+assert math_subquestions == 5676
+
+# Reject the mistakenly introduced original-practice banks from beta.2.
+for name in ("original-math.json", "original-english.json",
+             "original-history.json", "original-biology-3.json"):
+    assert not (WEB_DATA / name).exists(), f"Unexpected authored bank: {name}"
 
 # The English books use empty stems for numbered gap-fill exercises.
 # Each recovered item must have the corresponding numbered blank in its passage.
