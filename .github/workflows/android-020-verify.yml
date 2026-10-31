@@ -28,9 +28,12 @@ jobs:
         run: |
           python3 android/scripts/validate_assets.py
           python3 android/scripts/audit_math_text.py
-      - name: Build and run Android unit tests
+      - name: Test Android and compile debug and release variants
         working-directory: android
-        run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
+        run: gradle --no-daemon testDebugUnitTest assembleDebug assembleRelease --stacktrace
+      - name: Verify unsigned release APK exists (no publication)
+        run: |
+          find android/app/build/outputs/apk/release -type f -name '*.apk' -size +0c | grep -q .
       - name: Verify 0.2.0 beta APK
         run: |
           test -s android/app/build/outputs/apk/debug/app-debug.apk
