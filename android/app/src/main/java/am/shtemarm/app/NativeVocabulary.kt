@@ -138,16 +138,16 @@ fun NativeVocabulary() {
                 if (results.isEmpty()) Text("Բառեր չեն գտնվել։")
             }
         }
-        items(results, key = { it.english }) { word ->
+        items(results, key = { it.english.lowercase() }) { word ->
             ElevatedCard(shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth().padding(14.dp)) {
                     Column(Modifier.weight(1f)) {
                         Text(word.english, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(4.dp))
                         Text(word.armenian)
-                        if (customWords.any { it.english == word.english }) {
+                        if (customWords.any { it.english.equals(word.english, ignoreCase = true) }) {
                             TextButton(onClick = {
-                                saveCustom(customWords.filterNot { it.english == word.english })
+                                saveCustom(customWords.filterNot { it.english.equals(word.english, ignoreCase = true) })
                             }) { Text("Հեռացնել") }
                         }
                     }
