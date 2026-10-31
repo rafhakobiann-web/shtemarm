@@ -166,6 +166,7 @@ private fun NativeShtemarm() {
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var savedLoading by remember { mutableStateOf(false) }
+    var savedLoadError by remember { mutableStateOf("") }
 
     // Maintain independent scroll positions for each main screen.
     val homeScroll = rememberLazyListState()
@@ -244,10 +245,12 @@ private fun NativeShtemarm() {
 
     LaunchedEffect(page, reviewMistakes) {
         if (page != Page.SAVED) {
+            savedLoadError = ""
             savedLoading = false
             return@LaunchedEffect
         }
         savedLoading = true
+        savedLoadError = ""
         savedQuestions = emptyList()
         try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
@@ -280,6 +283,9 @@ private fun NativeShtemarm() {
             savedQuestions = matches
         } catch (e: CancellationException) {
             throw e
+        } catch (e: Exception) {
+            // Do not crash the saved-questions screen or report an error as an empty list.
+            savedLoadError = "Պահպանված հարցերը բեռնել չհաջողվեց։ Կրկին փորձիր ավելի ուշ։"
         } finally {
             savedLoading = false
         }
@@ -953,6 +959,9 @@ private fun NativeShtemarm() {
                             }
                         }
                         if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                        else if (savedLoadError.isNotEmpty()) item {
+                            Text(savedLoadError, color = MaterialTheme.colorScheme.error)
+                        }
                         else if (savedQuestions.isEmpty()) item {
                             Text(
                                 if (reviewMistakes) "Դեռ կրկնելու սխալ հարցեր չկան։"
