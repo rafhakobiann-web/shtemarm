@@ -188,6 +188,7 @@ fun AcademyTopBar(
 @Composable
 fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     val liquid = LocalAcademySurface.current == "liquid"
+    val ultraMotion = liquid && LocalGlassIntensity.current == "ultra"
     val tabs = listOf(
         Triple("Գլխավոր", Icons.Default.Home, 0),
         Triple("Գրքեր", Icons.Default.Book, 1),
@@ -210,7 +211,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                 val animatedOffset by animateDpAsState(
                     targetValue = tabWidth * selectedTab,
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        dampingRatio = if (ultraMotion) Spring.DampingRatioMediumBouncy
+                            else Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium
                     ),
                     label = "Shtemarm dock selection"
@@ -223,8 +225,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         .background(
                             if (liquid) Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.47f),
-                                    highlight.copy(alpha = 0.21f),
+                                    Color.White.copy(alpha = if (ultraMotion) 0.62f else 0.47f),
+                                    highlight.copy(alpha = if (ultraMotion) 0.29f else 0.21f),
                                     highlight.copy(alpha = 0.10f)
                                 )
                             ) else Brush.verticalGradient(
@@ -579,7 +581,7 @@ fun AcademyAppearanceSettings(
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("subtle" to "Մեղմ", "balanced" to "Հավասարակշռված",
-                    "vivid" to "Արտահայտիչ").forEach { (value, label) ->
+                    "vivid" to "Արտահայտիչ", "ultra" to "Ultra Glass").forEach { (value, label) ->
                     FilterChip(
                         selected = glassIntensity == value,
                         onClick = { onGlassIntensity(value) },
@@ -588,7 +590,7 @@ fun AcademyAppearanceSettings(
                 }
             }
             Spacer(Modifier.height(5.dp))
-            Text("Թափանցիկ, լուսավորված մակերեսներ՝ առանց ծանր ֆոնային մշուշման։",
+            Text("Ultra Glass՝ լրացուցիչ լուսային եզրերով և արտացոլումներով։ Իրական ֆոնային blur դեռ չկա։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
         item {
