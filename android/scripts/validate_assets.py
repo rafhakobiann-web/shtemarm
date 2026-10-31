@@ -39,6 +39,42 @@ for asset in sorted(catalog_assets):
     ), f"Unsupported or empty book root: {asset}"
 print(f"Verified all {len(catalog_assets)} unique BookCatalog data assets")
 
+# Original study banks may be shown only as clearly labeled practice.
+# Verify their keys/choices so adding them to BookCatalog does not expose
+# unanswerable or malformed items as auto-scored questions.
+original_practice = {
+    "bio-book3.json": 36,
+    "armenian-book2.json": 10,
+    "armenian-book3.json": 10,
+    "armenian-book4.json": 10,
+}
+for filename, expected_count in original_practice.items():
+    assert filename in catalog_assets, f"Original practice bank not exposed: {filename}"
+    book = read(WEB_DATA / filename)
+    checked = 0
+    for section in book.get("sections", []):
+        for unit in section.get("units", []):
+            assert unit.get("kind") == "mc", f"Unexpected question format in {filename}"
+            for question in unit.get("questions", []):
+                stem = str(question.get("stem") or "").strip()
+                options = question.get("options") or {}
+                choices = [str(options.get(str(i)) or "").strip() for i in range(1, 5)]
+                answer = str(question.get("answer") or "").strip()
+                assert stem and all(choices) and len(set(choices)) == 4, (
+                    f"Malformed choices in {filename}"
+                )
+                assert answer in ("1", "2", "3", "4"), f"Missing answer in {filename}"
+                checked += 1
+    assert checked >= expected_count, f"Original practice coverage regressed: {filename}"
+    print(f"{filename}: {checked} original practice MCQs (NOT official transcriptions)")
+
+# Prevent a repeat of PR #109's hidden release-only holding screen.
+activity = (ANDROID / "app/src/main/java/am/shtemarm/app/MainActivity.kt").read_text(encoding="utf-8")
+assert "setContent { NativeShtemarm() }" in activity, "Android release must launch the study app"
+assert "RelaunchHoldingScreen()" not in activity, "Release-only holding gate reintroduced"
+print("Android launch source verified: debug and release use native Shtemarm UI")
+
+
 for font in ("noto_sans_armenian.ttf", "noto_serif_armenian.ttf"):
     path = ANDROID / "app/src/main/res/font" / font
     assert path.is_file() and path.stat().st_size > 10_000, f"Missing bundled Armenian font: {font}"
