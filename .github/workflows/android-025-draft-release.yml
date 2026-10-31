@@ -1,0 +1,90 @@
+name: Prepare private draft Shtemarm Android 0.2.5
+
+# Creates a GitHub DRAFT release only after validating its exact source.
+# This does NOT publish a production update or replace website downloads.
+on:
+  push:
+    branches:
+      - release/android-0-2-5-candidate
+    paths:
+      - '.github/workflows/android-025-draft-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shtemarm-025-draft-release
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    if: github.repository == 'rafhakobiann-web/shtemarm' && github.ref == 'refs/heads/release/android-0-2-5-candidate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require private repository and clean source history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view --json isPrivate --jq .isPrivate)" = 'true'
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Validate distributed offline assets and math answer audit
+        run: |
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Run Android unit tests and compile both variants
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug assembleRelease --stacktrace
+      - name: Verify exact debug APK identity, signature and checksum
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          test -s android/app/build/outputs/apk/release/app-release-unsigned.apk || \
+            find android/app/build/outputs/apk/release -name '*.apk' -size +0c | grep -q .
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionName='0.2.5'" <<< "$BADGING"
+          grep -Fq "versionCode='7'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Shtemarm-Android-0.2.5-Debug-Preview.apk
+          sha256sum Shtemarm-Android-0.2.5-Debug-Preview.apk > Shtemarm-Android-0.2.5-Debug-Preview.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shtemarm-Android-0.2.5-Debug-Preview
+          path: |
+            Shtemarm-Android-0.2.5-Debug-Preview.apk
+            Shtemarm-Android-0.2.5-Debug-Preview.apk.sha256
+          if-no-files-found: error
+      - name: Create private DRAFT prerelease (never auto-publish)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=v0.2.5-rc.1
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "The draft tag already exists. Not overwriting any APK or tag." >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Shtemarm-Android-0.2.5-Debug-Preview.apk \
+            Shtemarm-Android-0.2.5-Debug-Preview.apk.sha256 \
+            --target "$GITHUB_SHA" \
+            --title 'Shtemarm Android 0.2.5 — Debug Preview (NOT an in-place update)' \
+            --notes-file docs/ANDROID_025_RELEASE_CANDIDATE.md \
+            --draft --prerelease
+          gh release view "$TAG" --json isDraft,isPrerelease,url \
+            --jq '{draft: .isDraft, prerelease: .isPrerelease, url: .url}'

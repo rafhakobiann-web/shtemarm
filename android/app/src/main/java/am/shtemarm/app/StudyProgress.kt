@@ -153,6 +153,10 @@ class StudyProgress(context: Context) {
             .put("accent", accent)
             .put("surface", surfaceStyle)
             .put("glass", glassIntensity)
+            .put("glassBackground", glassBackground)
+            .put("glassBlur", glassBlur)
+            .put("glassClarity", glassClarity)
+            .put("glassReflection", glassReflection)
             .put("dark", darkMode)
             .put("largeText", largeText)
             .put("feedback", showAnswersImmediately)
@@ -230,9 +234,13 @@ class StudyProgress(context: Context) {
             val restoredGlass = settings.getString("glass")
             if (restoredAccent !in setOf("teal", "blue", "violet", "emerald", "rose", "amber") ||
                 restoredSurface !in setOf("classic", "soft", "liquid") ||
-                restoredGlass !in setOf("subtle", "balanced", "vivid")) return false
+                !GlassVisualPolicy.isSupported(restoredGlass)) return false
             val restoredLanguage = settings.optString("language", studyLanguage).takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
             val restoredTarget = settings.optInt("dailyTarget", 10).takeIf(StudyGoals::validTarget) ?: 10
+            val restoredBackdrop = GlassStudioPolicy.background(settings.optString("glassBackground", "aurora"))
+            val restoredBlur = GlassStudioPolicy.blur(settings.optInt("glassBlur", 24))
+            val restoredClarity = GlassStudioPolicy.clarity(settings.optInt("glassClarity", 62))
+            val restoredReflection = GlassStudioPolicy.reflection(settings.optInt("glassReflection", 72))
             val editor = prefs.edit().clear().putString("study_language", restoredLanguage)
                 .putInt("daily_question_target", restoredTarget)
             for ((subject, stats) in restored) {
@@ -254,6 +262,10 @@ class StudyProgress(context: Context) {
                 .putString("accent", restoredAccent)
                 .putString("surface_style", restoredSurface)
                 .putString("glass_intensity", restoredGlass)
+                .putString("glass_background", restoredBackdrop)
+                .putInt("glass_blur", restoredBlur)
+                .putInt("glass_clarity", restoredClarity)
+                .putInt("glass_reflection", restoredReflection)
                 .putBoolean("dark_mode", settings.getBoolean("dark"))
                 .putBoolean("large_text", settings.getBoolean("largeText"))
                 .putBoolean("immediate_feedback", settings.getBoolean("feedback"))
@@ -294,10 +306,26 @@ class StudyProgress(context: Context) {
     var glassIntensity: String
         get() = prefs.getString("glass_intensity", "balanced") ?: "balanced"
         set(value) {
-            if (value in setOf("subtle", "balanced", "vivid")) {
+            if (GlassVisualPolicy.isSupported(value)) {
                 prefs.edit().putString("glass_intensity", value).apply()
             }
         }
+
+    var glassBackground: String
+        get() = GlassStudioPolicy.background(prefs.getString("glass_background", "aurora") ?: "aurora")
+        set(value) { prefs.edit().putString("glass_background", GlassStudioPolicy.background(value)).apply() }
+
+    var glassBlur: Int
+        get() = GlassStudioPolicy.blur(prefs.getInt("glass_blur", 24))
+        set(value) { prefs.edit().putInt("glass_blur", GlassStudioPolicy.blur(value)).apply() }
+
+    var glassClarity: Int
+        get() = GlassStudioPolicy.clarity(prefs.getInt("glass_clarity", 62))
+        set(value) { prefs.edit().putInt("glass_clarity", GlassStudioPolicy.clarity(value)).apply() }
+
+    var glassReflection: Int
+        get() = GlassStudioPolicy.reflection(prefs.getInt("glass_reflection", 72))
+        set(value) { prefs.edit().putInt("glass_reflection", GlassStudioPolicy.reflection(value)).apply() }
 
     var darkMode: Boolean
         get() = prefs.getBoolean("dark_mode", false)

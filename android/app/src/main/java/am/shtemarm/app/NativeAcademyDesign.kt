@@ -13,6 +13,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,6 +45,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -121,7 +124,8 @@ fun AcademyTopBar(
     var menuOpen by remember { mutableStateOf(false) }
     AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
+        backdropBlur = true
     ) {
         Row(
             Modifier.fillMaxWidth()
@@ -133,7 +137,8 @@ fun AcademyTopBar(
             Row(Modifier.weight(1f).clickable(onClick = onHome), verticalAlignment = Alignment.CenterVertically) {
                 AcademyLogo()
                 Spacer(Modifier.width(9.dp))
-                Text("Shtemarm", fontWeight = FontWeight.Black, fontSize = 19.sp,
+                Text("Shtemarm", fontFamily = StudyReadingFont,
+                    fontWeight = FontWeight.SemiBold, fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(6.dp))
                 Box(
@@ -188,6 +193,8 @@ fun AcademyTopBar(
 @Composable
 fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     val liquid = LocalAcademySurface.current == "liquid"
+    // Fluid spring motion is part of Liquid Glass itself, not Ultra-only.
+    val fluidMotion = liquid
     val tabs = listOf(
         Triple("Գլխավոր", Icons.Default.Home, 0),
         Triple("Գրքեր", Icons.Default.Book, 1),
@@ -202,7 +209,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     ) {
         AcademyGlassPanel(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(29.dp)
+            shape = RoundedCornerShape(29.dp),
+            backdropBlur = true
         ) {
             BoxWithConstraints(Modifier.fillMaxWidth().padding(6.dp)) {
                 val tabWidth = maxWidth / 5
@@ -210,7 +218,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                 val animatedOffset by animateDpAsState(
                     targetValue = tabWidth * selectedTab,
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        dampingRatio = if (fluidMotion) Spring.DampingRatioMediumBouncy
+                            else Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium
                     ),
                     label = "Shtemarm dock selection"
@@ -223,8 +232,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         .background(
                             if (liquid) Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.47f),
-                                    highlight.copy(alpha = 0.21f),
+                                    Color.White.copy(alpha = if (fluidMotion) 0.62f else 0.47f),
+                                    highlight.copy(alpha = if (fluidMotion) 0.29f else 0.21f),
                                     highlight.copy(alpha = 0.10f)
                                 )
                             ) else Brush.verticalGradient(
@@ -241,17 +250,29 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                 Row(Modifier.fillMaxWidth()) {
                     tabs.forEach { (label, icon, id) ->
                         val active = selectedTab == id
+                        val iconScale by animateFloatAsState(
+                            targetValue = if (active && fluidMotion) 1.10f else 1.0f,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            ),
+                            label = "Liquid dock icon response"
+                        )
                         Column(
                             modifier = Modifier.weight(1f).clip(activeShape)
-                                .clickable { onSelect(id) }.height(60.dp)
+                                .selectable(selected = active, role = Role.Tab, onClick = { onSelect(id) })
+                                .height(60.dp)
                                 .padding(top = 7.dp, bottom = 5.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(icon, contentDescription = label,
+                            Icon(icon, contentDescription = null,
                                 tint = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(23.dp))
-                            Text(label, maxLines = 1, fontSize = 10.sp,
+                                modifier = Modifier.size(23.dp).graphicsLayer {
+                                    scaleX = iconScale
+                                    scaleY = iconScale
+                                })
+                            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp,
                                 fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
                                 color = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -264,84 +285,82 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 fun AcademyHero(onSubjects: () -> Unit, onExams: () -> Unit) {
-    Box(
-        Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(27.dp))
-            .background(Brush.linearGradient(listOf(
-                Color(0xFF103D44), Color(0xFF0E5A58), Color(0xFF147C70)
-            )))
+    val palette = MaterialTheme.colorScheme
+    AcademyGlassPanel(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(31.dp),
+        backdropBlur = true
     ) {
-        Column(Modifier.padding(23.dp), verticalArrangement = Arrangement.spacedBy(17.dp)) {
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = 23.dp, vertical = 26.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
             Row(
-                Modifier.clip(RoundedCornerShape(24.dp))
-                    .background(Color.White.copy(alpha = 0.11f))
-                    .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(24.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                Modifier.clip(RoundedCornerShape(50))
+                    .background(palette.primary.copy(alpha = .11f))
+                    .border(1.dp, palette.primary.copy(alpha = .25f), RoundedCornerShape(50))
+                    .padding(horizontal = 13.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.School, null, tint = Color(0xFFD9F9E9),
-                    modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("SHTEMARM · ACADEMY", fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp, letterSpacing = 1.1.sp, color = Color(0xFFD9F9E9))
+                Icon(Icons.Default.School, null, tint = palette.primary,
+                    modifier = Modifier.size(15.dp))
+                Spacer(Modifier.width(7.dp))
+                Text("SHTEMARM · ACADEMY", color = palette.primary,
+                    fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = .9.sp)
             }
             Text(
                 "Սովորիր վստահ։\nՊատրաստվիր խելացի։",
-                fontWeight = FontWeight.Black, fontSize = 29.sp,
-                lineHeight = 39.sp, color = Color.White
+                color = palette.onSurface,
+                fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 29.sp,
+                lineHeight = 40.sp
             )
             Text(
-                "Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։",
-                color = Color(0xFFDCEFEA), fontSize = 14.sp, lineHeight = 23.sp
+                "Քո շտեմարանները, վարժությունները և փորձնական քննությունները՝ միասնական ուսումնական տարածքում։",
+                color = palette.onSurfaceVariant, fontSize = 14.sp, lineHeight = 23.sp
             )
-            Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
-                    onClick = onSubjects, modifier = Modifier.fillMaxWidth().heightIn(min = 47.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF124E4B)
-                    ),
-                    shape = RoundedCornerShape(13.dp)
+                    onClick = onSubjects,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 51.dp),
+                    shape = RoundedCornerShape(19.dp)
                 ) {
                     Icon(Icons.Default.Book, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Ընտրել առարկան", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text("Բացել շտեմարանները", fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.weight(1f))
                     Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
                 }
                 OutlinedButton(
-                    onClick = onExams, modifier = Modifier.fillMaxWidth().heightIn(min = 47.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.27f)),
-                    shape = RoundedCornerShape(13.dp)
+                    onClick = onExams,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+                    shape = RoundedCornerShape(19.dp),
+                    border = BorderStroke(1.dp, palette.outline.copy(alpha = .68f))
                 ) {
-                    Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(17.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Անցնել թեստ", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.CheckCircle, null, tint = palette.primary,
+                        modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text("Փորձնական քննություն", color = palette.onSurface,
+                        fontWeight = FontWeight.SemiBold)
                 }
             }
-            Column(
-                Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(19.dp))
-                    .background(Color.White.copy(alpha = 0.10f))
-                    .border(1.dp, Color.White.copy(alpha = 0.13f), RoundedCornerShape(19.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(13.dp)
-            ) {
-                Text("ՈՒՍՈՒՄՆԱԿԱՆ ՔԱՅԼԵՐ", color = Color(0xFFCAEBE3),
-                    fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
-                listOf(
-                    "01" to ("Ընտրիր առարկան" to "Գտիր քո շտեմարանը"),
-                    "02" to ("Սովորիր թեմաներով" to "Բացատրություններ ու վարժություններ"),
-                    "03" to ("Ստուգիր գիտելիքներդ" to "Փորձնական քննություններ")
-                ).forEach { (number, text) ->
-                    Row(verticalAlignment = Alignment.Top) {
-                        Text(number, color = Color(0xFFF1D08C), fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp, modifier = Modifier.width(36.dp))
-                        Column {
-                            Text(text.first, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text(text.second, color = Color(0xFFC9DFD9), fontSize = 12.sp)
-                        }
+            HorizontalDivider(color = palette.outline.copy(alpha = .48f))
+            Text("ՔՈ ՈՒՍՈՒՄՆԱԿԱՆ ՈՒՂԻՆ", color = palette.primary,
+                fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+            listOf(
+                "01" to ("Ընտրիր առարկան" to "Գտիր անհրաժեշտ շտեմարանը"),
+                "02" to ("Սովորիր թեմաներով" to "Վարժություններ և բացատրություններ"),
+                "03" to ("Ստուգիր գիտելիքներդ" to "Փորձնական քննություններ")
+            ).forEach { (number, line) ->
+                Row(verticalAlignment = Alignment.Top) {
+                    Text(number, color = palette.primary,
+                        fontFamily = StudyReadingFont, fontSize = 17.sp,
+                        modifier = Modifier.width(43.dp))
+                    Column {
+                        Text(line.first, color = palette.onSurface,
+                            fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text(line.second, color = palette.onSurfaceVariant, fontSize = 12.sp)
                     }
                 }
             }
@@ -386,8 +405,9 @@ fun AcademySectionTitle(title: String) {
         Box(Modifier.width(5.dp).height(27.dp).clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.primary))
         Spacer(Modifier.width(11.dp))
-        Text(title, fontWeight = FontWeight.Black, fontSize = 23.sp,
-            lineHeight = 31.sp, color = MaterialTheme.colorScheme.onSurface)
+        Text(title, fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp, lineHeight = 36.sp,
+            color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
@@ -407,7 +427,8 @@ fun AcademyStatCard(label: String, value: String, caption: String, icon: ImageVe
                 Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
             }
-            Text(value, fontWeight = FontWeight.Black, fontSize = 26.sp)
+            Text(value, fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold, fontSize = 27.sp)
             Text(caption, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
     }
@@ -540,6 +561,14 @@ fun AcademyAppearanceSettings(
     onSurface: (String) -> Unit,
     glassIntensity: String,
     onGlassIntensity: (String) -> Unit,
+    glassBackground: String,
+    onGlassBackground: (String) -> Unit,
+    glassBlur: Int,
+    onGlassBlur: (Int) -> Unit,
+    glassClarity: Int,
+    onGlassClarity: (Int) -> Unit,
+    glassReflection: Int,
+    onGlassReflection: (Int) -> Unit,
     largeText: Boolean,
     onLargeText: (Boolean) -> Unit,
     immediateFeedback: Boolean,
@@ -561,8 +590,14 @@ fun AcademyAppearanceSettings(
             Text("Հարմարեցրու քո ուսումնական միջավայրը։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
         }
+        if (surface == "liquid") item {
+            AcademyGlassLabPreview()
+            Spacer(Modifier.height(8.dp))
+            Text("Կենդանի նախադիտում. գույները շարժվում են իրական մշուշման հետևում։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
         item {
-            Text("Կայքի ոճը", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            Text("Հավելվածի ոճը", fontWeight = FontWeight.Bold, fontSize = 17.sp)
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -579,7 +614,7 @@ fun AcademyAppearanceSettings(
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("subtle" to "Մեղմ", "balanced" to "Հավասարակշռված",
-                    "vivid" to "Արտահայտիչ").forEach { (value, label) ->
+                    "vivid" to "Արտահայտիչ", "ultra" to "Ultra Glass").forEach { (value, label) ->
                     FilterChip(
                         selected = glassIntensity == value,
                         onClick = { onGlassIntensity(value) },
@@ -588,7 +623,34 @@ fun AcademyAppearanceSettings(
                 }
             }
             Spacer(Modifier.height(5.dp))
-            Text("Թափանցիկ, լուսավորված մակերեսներ՝ առանց ծանր ֆոնային մշուշման։",
+            Text("Live blur-ը աշխատում է նավիգացիոն ապակու և նախադիտման վրա։ Բեկման շարժիչը դեռ փորձնական փուլում է։",
+                color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
+        if (surface == "liquid") item {
+            Text("Theme Studio", fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+            Spacer(Modifier.height(8.dp))
+            Text("Ֆոնի ոճ", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            Spacer(Modifier.height(6.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("aurora" to "Ավրորա", "paper" to "Թղթային",
+                    "ink" to "Խորը մուգ").forEach { (value, title) ->
+                    FilterChip(
+                        selected = glassBackground == value,
+                        onClick = { onGlassBackground(value) },
+                        label = { Text(title) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            AcademyStudioSlider("Իրական մշուշում", "${glassBlur} dp",
+                glassBlur.toFloat(), 0f..48f) { onGlassBlur(it.toInt()) }
+            AcademyStudioSlider("Թափանցիկություն", "${glassClarity}%",
+                glassClarity.toFloat(), 20f..100f) { onGlassClarity(it.toInt()) }
+            AcademyStudioSlider("Լուսային անդրադարձումներ", "${glassReflection}%",
+                glassReflection.toFloat(), 0f..100f) { onGlassReflection(it.toInt()) }
+            Text("Blur-ը գործում է Android 12 և նոր տարբերակներում։ Ավելի հին սարքերի վրա պահպանվում է ընթեռնելի պարզեցված ոճը։",
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
         item {
@@ -657,6 +719,25 @@ fun AcademyAppearanceSettings(
             Spacer(Modifier.height(12.dp))
         }
     }
+}
+
+@Composable
+private fun AcademyStudioSlider(
+    label: String,
+    valueText: String,
+    value: Float,
+    range: ClosedFloatingPointRange<Float>,
+    onChange: (Float) -> Unit
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+        Text(valueText, fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+    }
+    Slider(
+        value = value.coerceIn(range.start, range.endInclusive),
+        onValueChange = onChange,
+        valueRange = range
+    )
 }
 
 @Composable

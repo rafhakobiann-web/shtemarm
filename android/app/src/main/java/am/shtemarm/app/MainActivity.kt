@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
 private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
@@ -72,12 +73,17 @@ private fun NativeShtemarm() {
     val context = LocalContext.current.applicationContext
     val repository = remember { QuestionRepository(context) }
     val progress = remember { StudyProgress(context) }
+    val glassHazeState = remember { HazeState() }
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
     var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
+    var glassBackground by remember { mutableStateOf(progress.glassBackground) }
+    var glassBlur by remember { mutableIntStateOf(progress.glassBlur) }
+    var glassClarity by remember { mutableIntStateOf(progress.glassClarity) }
+    var glassReflection by remember { mutableIntStateOf(progress.glassReflection) }
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
@@ -154,6 +160,10 @@ private fun NativeShtemarm() {
                 accent = progress.accent
                 surfaceStyle = progress.surfaceStyle
                 glassIntensity = progress.glassIntensity
+                glassBackground = progress.glassBackground
+                glassBlur = progress.glassBlur
+                glassClarity = progress.glassClarity
+                glassReflection = progress.glassReflection
                 studyLanguage = progress.studyLanguage
                 dailyTarget = progress.dailyQuestionTarget
                 "Առաջընթացը հաջողությամբ վերականգնվեց։"
@@ -166,6 +176,7 @@ private fun NativeShtemarm() {
     }
     var savedQuestions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var savedLoading by remember { mutableStateOf(false) }
+    var savedLoadError by remember { mutableStateOf("") }
 
     // Maintain independent scroll positions for each main screen.
     val homeScroll = rememberLazyListState()
@@ -210,7 +221,14 @@ private fun NativeShtemarm() {
     }
 
     LaunchedEffect(book) {
-        val chosenBook = book ?: return@LaunchedEffect
+        val chosenBook = book
+        if (chosenBook == null) {
+            // Leaving the book screen must not preserve a stale loading spinner.
+            loaded = null
+            loadError = ""
+            loading = false
+            return@LaunchedEffect
+        }
         chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
@@ -229,13 +247,22 @@ private fun NativeShtemarm() {
             throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
+        } finally {
+            // Also clear the spinner when a book load is cancelled.
+            loading = false
         }
-        loading = false
     }
 
     LaunchedEffect(page, reviewMistakes) {
-        if (page == Page.SAVED) {
-            savedLoading = true
+        if (page != Page.SAVED) {
+            savedLoadError = ""
+            savedLoading = false
+            return@LaunchedEffect
+        }
+        savedLoading = true
+        savedLoadError = ""
+        savedQuestions = emptyList()
+        try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
             val matches = withContext(Dispatchers.Default) {
                 val collected = mutableListOf<StudyQuestion>()
@@ -264,6 +291,12 @@ private fun NativeShtemarm() {
                     collected.distinctBy { it.id }
             }
             savedQuestions = matches
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Do not crash the saved-questions screen or report an error as an empty list.
+            savedLoadError = "Պահպանված հարցերը բեռնել չհաջողվեց։ Կրկին փորձիր ավելի ուշ։"
+        } finally {
             savedLoading = false
         }
     }
@@ -278,11 +311,19 @@ private fun NativeShtemarm() {
                 originalDensity.density, originalDensity.fontScale * if (largeText) 1.22f else 1f
             ),
             LocalAcademySurface provides surfaceStyle,
-            LocalGlassIntensity provides glassIntensity
+            LocalGlassIntensity provides glassIntensity,
+            LocalGlassHazeState provides glassHazeState,
+            LocalGlassBackdrop provides glassBackground,
+            LocalGlassBlur provides glassBlur,
+            LocalGlassClarity provides glassClarity,
+            LocalGlassReflection provides glassReflection
         ) {
             AcademyAmbientBackdrop(Modifier.fillMaxSize()) {
             Scaffold(
                 containerColor = Color.Transparent,
+                // Transparent scaffold cannot infer a readable content color.
+                // Keep default text/icons legible in both light and dark mode.
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 topBar = {
                     AcademyTopBar(
                         points = BookCatalog.subjects.sumOf { progress.stats(it).correct } * 10,
@@ -936,6 +977,9 @@ private fun NativeShtemarm() {
                             }
                         }
                         if (savedLoading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                        else if (savedLoadError.isNotEmpty()) item {
+                            Text(savedLoadError, color = MaterialTheme.colorScheme.error)
+                        }
                         else if (savedQuestions.isEmpty()) item {
                             Text(
                                 if (reviewMistakes) "Դեռ կրկնելու սխալ հարցեր չկան։"
@@ -1072,6 +1116,26 @@ private fun NativeShtemarm() {
                                 glassIntensity = it
                                 progress.glassIntensity = it
                             },
+                            glassBackground = glassBackground,
+                            onGlassBackground = {
+                                glassBackground = it
+                                progress.glassBackground = it
+                            },
+                            glassBlur = glassBlur,
+                            onGlassBlur = {
+                                glassBlur = it
+                                progress.glassBlur = it
+                            },
+                            glassClarity = glassClarity,
+                            onGlassClarity = {
+                                glassClarity = it
+                                progress.glassClarity = it
+                            },
+                            glassReflection = glassReflection,
+                            onGlassReflection = {
+                                glassReflection = it
+                                progress.glassReflection = it
+                            },
                             largeText = largeText,
                             onLargeText = { largeText = it; progress.largeText = it },
                             immediateFeedback = immediateFeedback,
@@ -1098,16 +1162,23 @@ private fun NativeShtemarm() {
 }
 
 @Composable private fun ScreenHeading(title: String, subtitle: String) {
-    Text(title, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+    Text(
+        title,
+        fontFamily = StudyReadingFont,
+        fontSize = 27.sp,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 38.sp,
+        color = MaterialTheme.colorScheme.onSurface
+    )
     Spacer(Modifier.height(6.dp))
     Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(13.dp))
 }
 
 @Composable private fun SubjectCard(subject: String, onClick: () -> Unit) {
-    ElevatedCard(
+    AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(22.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {

@@ -10,8 +10,8 @@ android {
         applicationId = "am.shtemarm.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 5
-        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.2.0-beta.1"
+        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 8
+        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.2.6-beta.1"
     }
     // Release signing is configured ONLY when a secure CI keystore is supplied.
     // No keystore or password is ever committed to this repository.
@@ -45,5 +45,8 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    // Captured-content backdrop blur for Android's actual glass surfaces.
+    // Pinned to Haze v1 to avoid pulling Haze 2's Kotlin 2.4 / Compose 1.12 stack.
+    implementation("dev.chrisbanes.haze:haze:1.6.2")
     testImplementation("junit:junit:4.13.2")
 }
