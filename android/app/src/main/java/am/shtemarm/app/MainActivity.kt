@@ -243,8 +243,13 @@ private fun NativeShtemarm() {
     }
 
     LaunchedEffect(page, reviewMistakes) {
-        if (page == Page.SAVED) {
-            savedLoading = true
+        if (page != Page.SAVED) {
+            savedLoading = false
+            return@LaunchedEffect
+        }
+        savedLoading = true
+        savedQuestions = emptyList()
+        try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
             val matches = withContext(Dispatchers.Default) {
                 val collected = mutableListOf<StudyQuestion>()
@@ -273,6 +278,9 @@ private fun NativeShtemarm() {
                     collected.distinctBy { it.id }
             }
             savedQuestions = matches
+        } catch (e: CancellationException) {
+            throw e
+        } finally {
             savedLoading = false
         }
     }
