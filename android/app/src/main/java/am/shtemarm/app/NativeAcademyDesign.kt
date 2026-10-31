@@ -137,7 +137,8 @@ fun AcademyTopBar(
             Row(Modifier.weight(1f).clickable(onClick = onHome), verticalAlignment = Alignment.CenterVertically) {
                 AcademyLogo()
                 Spacer(Modifier.width(9.dp))
-                Text("Shtemarm", fontWeight = FontWeight.Black, fontSize = 19.sp,
+                Text("Shtemarm", fontFamily = StudyReadingFont,
+                    fontWeight = FontWeight.SemiBold, fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(6.dp))
                 Box(
@@ -272,84 +273,82 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 fun AcademyHero(onSubjects: () -> Unit, onExams: () -> Unit) {
-    Box(
-        Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(27.dp))
-            .background(Brush.linearGradient(listOf(
-                Color(0xFF103D44), Color(0xFF0E5A58), Color(0xFF147C70)
-            )))
+    val palette = MaterialTheme.colorScheme
+    AcademyGlassPanel(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(31.dp),
+        backdropBlur = true
     ) {
-        Column(Modifier.padding(23.dp), verticalArrangement = Arrangement.spacedBy(17.dp)) {
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = 23.dp, vertical = 26.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
             Row(
-                Modifier.clip(RoundedCornerShape(24.dp))
-                    .background(Color.White.copy(alpha = 0.11f))
-                    .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(24.dp))
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                Modifier.clip(RoundedCornerShape(50))
+                    .background(palette.primary.copy(alpha = .11f))
+                    .border(1.dp, palette.primary.copy(alpha = .25f), RoundedCornerShape(50))
+                    .padding(horizontal = 13.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.School, null, tint = Color(0xFFD9F9E9),
-                    modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("SHTEMARM · ACADEMY", fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp, letterSpacing = 1.1.sp, color = Color(0xFFD9F9E9))
+                Icon(Icons.Default.School, null, tint = palette.primary,
+                    modifier = Modifier.size(15.dp))
+                Spacer(Modifier.width(7.dp))
+                Text("SHTEMARM · ACADEMY", color = palette.primary,
+                    fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = .9.sp)
             }
             Text(
                 "Սովորիր վստահ։\nՊատրաստվիր խելացի։",
-                fontWeight = FontWeight.Black, fontSize = 29.sp,
-                lineHeight = 39.sp, color = Color.White
+                color = palette.onSurface,
+                fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 29.sp,
+                lineHeight = 40.sp
             )
             Text(
-                "Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։",
-                color = Color(0xFFDCEFEA), fontSize = 14.sp, lineHeight = 23.sp
+                "Քո շտեմարանները, վարժությունները և փորձնական քննությունները՝ միասնական ուսումնական տարածքում։",
+                color = palette.onSurfaceVariant, fontSize = 14.sp, lineHeight = 23.sp
             )
-            Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
-                    onClick = onSubjects, modifier = Modifier.fillMaxWidth().heightIn(min = 47.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF124E4B)
-                    ),
-                    shape = RoundedCornerShape(13.dp)
+                    onClick = onSubjects,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 51.dp),
+                    shape = RoundedCornerShape(19.dp)
                 ) {
                     Icon(Icons.Default.Book, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Ընտրել առարկան", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text("Բացել շտեմարանները", fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.weight(1f))
                     Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
                 }
                 OutlinedButton(
-                    onClick = onExams, modifier = Modifier.fillMaxWidth().heightIn(min = 47.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.27f)),
-                    shape = RoundedCornerShape(13.dp)
+                    onClick = onExams,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+                    shape = RoundedCornerShape(19.dp),
+                    border = BorderStroke(1.dp, palette.outline.copy(alpha = .68f))
                 ) {
-                    Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(17.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Անցնել թեստ", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.CheckCircle, null, tint = palette.primary,
+                        modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text("Փորձնական քննություն", color = palette.onSurface,
+                        fontWeight = FontWeight.SemiBold)
                 }
             }
-            Column(
-                Modifier.fillMaxWidth()
-                    .clip(RoundedCornerShape(19.dp))
-                    .background(Color.White.copy(alpha = 0.10f))
-                    .border(1.dp, Color.White.copy(alpha = 0.13f), RoundedCornerShape(19.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(13.dp)
-            ) {
-                Text("ՈՒՍՈՒՄՆԱԿԱՆ ՔԱՅԼԵՐ", color = Color(0xFFCAEBE3),
-                    fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
-                listOf(
-                    "01" to ("Ընտրիր առարկան" to "Գտիր քո շտեմարանը"),
-                    "02" to ("Սովորիր թեմաներով" to "Բացատրություններ ու վարժություններ"),
-                    "03" to ("Ստուգիր գիտելիքներդ" to "Փորձնական քննություններ")
-                ).forEach { (number, text) ->
-                    Row(verticalAlignment = Alignment.Top) {
-                        Text(number, color = Color(0xFFF1D08C), fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp, modifier = Modifier.width(36.dp))
-                        Column {
-                            Text(text.first, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text(text.second, color = Color(0xFFC9DFD9), fontSize = 12.sp)
-                        }
+            HorizontalDivider(color = palette.outline.copy(alpha = .48f))
+            Text("ՔՈ ՈՒՍՈՒՄՆԱԿԱՆ ՈՒՂԻՆ", color = palette.primary,
+                fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+            listOf(
+                "01" to ("Ընտրիր առարկան" to "Գտիր անհրաժեշտ շտեմարանը"),
+                "02" to ("Սովորիր թեմաներով" to "Վարժություններ և բացատրություններ"),
+                "03" to ("Ստուգիր գիտելիքներդ" to "Փորձնական քննություններ")
+            ).forEach { (number, line) ->
+                Row(verticalAlignment = Alignment.Top) {
+                    Text(number, color = palette.primary,
+                        fontFamily = StudyReadingFont, fontSize = 17.sp,
+                        modifier = Modifier.width(43.dp))
+                    Column {
+                        Text(line.first, color = palette.onSurface,
+                            fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text(line.second, color = palette.onSurfaceVariant, fontSize = 12.sp)
                     }
                 }
             }
@@ -394,8 +393,9 @@ fun AcademySectionTitle(title: String) {
         Box(Modifier.width(5.dp).height(27.dp).clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.primary))
         Spacer(Modifier.width(11.dp))
-        Text(title, fontWeight = FontWeight.Black, fontSize = 23.sp,
-            lineHeight = 31.sp, color = MaterialTheme.colorScheme.onSurface)
+        Text(title, fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp, lineHeight = 36.sp,
+            color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
@@ -415,7 +415,8 @@ fun AcademyStatCard(label: String, value: String, caption: String, icon: ImageVe
                 Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
             }
-            Text(value, fontWeight = FontWeight.Black, fontSize = 26.sp)
+            Text(value, fontFamily = StudyReadingFont,
+                fontWeight = FontWeight.SemiBold, fontSize = 27.sp)
             Text(caption, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
     }
