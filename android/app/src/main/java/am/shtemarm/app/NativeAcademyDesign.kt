@@ -124,7 +124,8 @@ fun AcademyTopBar(
     var menuOpen by remember { mutableStateOf(false) }
     AcademyGlassPanel(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
+        backdropBlur = true
     ) {
         Row(
             Modifier.fillMaxWidth()
@@ -206,7 +207,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     ) {
         AcademyGlassPanel(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(29.dp)
+            shape = RoundedCornerShape(29.dp),
+            backdropBlur = true
         ) {
             BoxWithConstraints(Modifier.fillMaxWidth().padding(6.dp)) {
                 val tabWidth = maxWidth / 5
