@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.Manifest
 import android.os.Build
 import android.content.pm.ApplicationInfo
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
@@ -68,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun RelaunchHoldingScreen() {
-    MaterialTheme {
+    MaterialTheme(typography = ShtemarmTypography) {
         Surface(color = Color(0xFF0B1825), modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(28.dp),
@@ -247,7 +248,9 @@ private fun NativeShtemarm() {
         loadError = ""
         loaded = null
         try {
-            loaded = withContext(Dispatchers.IO) { repository.load(chosenBook) }
+            loaded = repository.load(chosenBook)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -258,27 +261,33 @@ private fun NativeShtemarm() {
         if (page == Page.SAVED) {
             savedLoading = true
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
-            val collected = mutableListOf<StudyQuestion>()
-            if (ids.isNotEmpty()) {
-                val sourceAssets = SessionGuards.sourceAssets(ids)
-                for (entry in BookCatalog.books.filter {
-                    it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
-                }.distinctBy { it.asset }) {
-                    try {
-                        collected += withContext(Dispatchers.IO) { repository.load(entry).allQuestions.filter { it.id in ids } }
-                    } catch (_: Exception) { /* Keep questions from other readable books. */ }
-                }
-                // The scored math books have a dedicated verified source loader.
-                for (part in 1..2) {
-                    if (ids.any { it.startsWith("math:matem-$part:") }) {
+            val matches = withContext(Dispatchers.Default) {
+                val collected = mutableListOf<StudyQuestion>()
+                if (ids.isNotEmpty()) {
+                    val sourceAssets = SessionGuards.sourceAssets(ids)
+                    for (entry in BookCatalog.books.filter {
+                        it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
+                    }.distinctBy { it.asset }) {
                         try {
-                            collected += loadScoredMath(context, part)
-                                .allQuestions.filter { it.id in ids }
-                        } catch (_: Exception) { /* Other review questions still work. */ }
+                            collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) { /* Keep questions from other readable books. */ }
+                    }
+                    // The scored math books have a dedicated verified source loader.
+                    for (part in 1..2) {
+                        if (ids.any { it.startsWith("math:matem-$part:") }) {
+                            try {
+                                collected += loadScoredMath(context, part).allQuestions.filter { it.id in ids }
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (_: Exception) { /* Other review questions still work. */ }
+                        }
                     }
                 }
+                    collected.distinctBy { it.id }
             }
-            savedQuestions = collected.distinctBy { it.id }
+            savedQuestions = matches
             savedLoading = false
         }
     }
