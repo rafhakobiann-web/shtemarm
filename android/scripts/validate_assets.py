@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Check that the bundled offline content is readable before publishing an APK."""
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB_DATA = ROOT / "public" / "data"
 APP_ASSETS = ROOT / "android" / "app" / "src" / "main" / "assets"
+ANDROID = ROOT / "android"
 
 BOOKS = [
     "book1.json", "book2.json", "book3.json",
@@ -22,6 +24,28 @@ def read(path: Path):
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"Missing or empty asset: {path}")
     return json.loads(path.read_text(encoding="utf-8"))
+
+# Every catalog entry must be packaged with the APK, not only the older books
+# enumerated in BOOKS. This catches missing files before runtime navigation.
+catalog = (ANDROID / "app/src/main/java/am/shtemarm/app/QuestionRepository.kt").read_text(encoding="utf-8")
+catalog_assets = set(re.findall(
+    r'StudyBook\\(\\s*"[^"]+"\\s*,\\s*"[^"]+"\\s*,\\s*"([^"]+\\.json)"\\s*\\)', catalog
+))
+assert len(catalog_assets) >= 18, "BookCatalog extraction failed or lost books"
+for asset in sorted(catalog_assets):
+    data = read(WEB_DATA / asset)
+    assert isinstance(data, dict) and any(
+        key in data for key in ("sections", "tests", "questions", "items", "matem-1")
+    ), f"Unsupported or empty book root: {asset}"
+print(f"Verified all {len(catalog_assets)} unique BookCatalog data assets")
+
+for font in ("noto_sans_armenian.ttf", "noto_serif_armenian.ttf"):
+    path = ANDROID / "app/src/main/res/font" / font
+    assert path.is_file() and path.stat().st_size > 10_000, f"Missing bundled Armenian font: {font}"
+for license_name in ("OFL-NotoSansArmenian.txt", "OFL-NotoSerifArmenian.txt"):
+    path = ANDROID / "licenses" / license_name
+    assert path.is_file() and path.stat().st_size > 100, f"Missing font license: {license_name}"
+print("Verified bundled Armenian fonts and OFL licenses")
 
 all_questions = 0
 for name in BOOKS:
