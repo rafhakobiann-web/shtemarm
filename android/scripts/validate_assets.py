@@ -49,12 +49,22 @@ assert all_questions > 4000, f"Unexpectedly low question count: {all_questions}"
 recoverable_english_gaps = 0
 unverified_blank_stems = 0
 for filename in ("book1.json", "book2.json", "book3.json"):
-    for section in read(WEB_DATA / filename).get("sections", []):
+    book_gaps = 0
+    book_missing = []
+    book_total = 0
+    book_keyed = 0
+    for section_index, section in enumerate(read(WEB_DATA / filename).get("sections", []), 1):
         for unit in section.get("units", []):
             if unit.get("kind") != "mc":
                 continue
             passage = str(unit.get("passage") or "")
-            for question in unit.get("questions", []):
+            for question_index, question in enumerate(unit.get("questions", []), 1):
+                book_total += 1
+                options = question.get("options") or {}
+                if (isinstance(options, dict) and
+                    str(question.get("answer") or "").strip().lower() in
+                    {str(key).lower() for key, value in options.items() if str(value).strip()}):
+                    book_keyed += 1
                 if str(question.get("stem") or "").strip():
                     continue
                 number = str(question.get("n") or "").strip()
@@ -64,8 +74,18 @@ for filename in ("book1.json", "book2.json", "book3.json"):
                                if marker_at >= 0 else "")
                 if marker_at >= 0 and "__" in near_marker:
                     recoverable_english_gaps += 1
+                    book_gaps += 1
                 else:
                     unverified_blank_stems += 1
+                    if len(book_missing) < 20:
+                        book_missing.append(
+                            f"section-{section_index}/{unit.get('id', 'unknown')}/question-{number or question_index}"
+                        )
+    print(f"{filename}: {book_total} MCQ records, {book_keyed} keyed, "
+          f"{book_gaps} recoverable gap stems, "
+          f"{len(book_missing)} sampled unresolved blank stems")
+    if book_missing:
+        print("  First unresolved positions: " + ", ".join(book_missing))
 assert recoverable_english_gaps >= 1000, (
     f"English gap-fill coverage regressed: {recoverable_english_gaps}"
 )
