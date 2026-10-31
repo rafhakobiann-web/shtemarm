@@ -30,6 +30,9 @@ android {
         // certificate on every CI run when signing secrets are configured.
         buildTypes.getByName("debug").signingConfig = signingConfigs.getByName("production")
     }
+    // Preview APKs use a distinct package ID, so they can be installed without
+    // replacing or deleting an existing app signed with an unknown certificate.
+    buildTypes.getByName("debug").applicationIdSuffix = ".preview"
     buildFeatures { compose = true }
     sourceSets.getByName("main").assets.srcDir(file("../../public/data"))
     compileOptions {
