@@ -39,26 +39,31 @@ fun AcademyGlassPanel(
 ) {
     val liquid = LocalAcademySurface.current == "liquid"
     val intensity = LocalGlassIntensity.current
+    val ultra = liquid && intensity == "ultra"
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.red < 0.30f
     val strength = when (intensity) {
         "subtle" -> 0.52f
-        "vivid" -> 1.0f
+        "vivid" -> 0.88f
+        "ultra" -> 1.0f
         else -> 0.74f
     }
     val glow = if (dark) Color(0xFF96F5E5) else Color.White
     val low = if (dark) Color(0xFF19383F) else Color(0xFFE6F8F3)
     // Do not rebuild gradient objects on every Compose state update or scroll.
-    val fill = remember(liquid, dark, strength, scheme.surface) {
+    val fill = remember(liquid, ultra, dark, strength, scheme.surface) {
         if (liquid) Brush.linearGradient(
             listOf(
-                glow.copy(alpha = (if (dark) 0.17f else 0.94f) * strength),
-                scheme.surface.copy(alpha = if (dark) 0.67f else 0.89f),
-                low.copy(alpha = (if (dark) 0.76f else 0.59f) * strength)
+                glow.copy(alpha = (if (dark) 0.17f else if (ultra) 0.49f else 0.94f) * strength),
+                scheme.surface.copy(alpha = if (ultra) (if (dark) 0.48f else 0.64f)
+                    else (if (dark) 0.67f else 0.89f)),
+                low.copy(alpha = (if (ultra) (if (dark) 0.42f else 0.35f)
+                    else (if (dark) 0.76f else 0.59f)) * strength)
             )
         ) else Brush.verticalGradient(listOf(scheme.surface, scheme.surface))
     }
-    val outline = if (liquid) glow.copy(alpha = (if (dark) 0.26f else 0.86f) * strength)
+    val outline = if (liquid) glow.copy(alpha = (if (ultra) (if (dark) 0.62f else 0.93f)
+        else (if (dark) 0.26f else 0.86f)) * strength)
                   else scheme.outline.copy(alpha = 0.68f)
     Box(
         modifier
@@ -101,6 +106,21 @@ fun AcademyGlassPanel(
                             Color.Transparent
                         )
                     )
+                    // Ultra is an opt-in high-detail optical approximation, not
+                    // an expensive live backdrop capture or an actual refraction shader.
+                    val leftGlint = Brush.verticalGradient(
+                        listOf(Color.Transparent,
+                            Color.White.copy(alpha = if (dark) 0.19f else 0.60f),
+                            Color.Transparent),
+                        startY = 0f,
+                        endY = size.height.coerceAtLeast(1f)
+                    )
+                    val bottomGlint = Brush.horizontalGradient(
+                        listOf(Color.Transparent,
+                            scheme.primary.copy(alpha = if (dark) 0.21f else 0.10f),
+                            Color.White.copy(alpha = if (dark) 0.14f else 0.54f),
+                            Color.Transparent)
+                    )
                     onDrawBehind {
                         drawRect(brush = reflected)
                         drawRect(brush = edgeTint)
@@ -110,6 +130,20 @@ fun AcademyGlassPanel(
                             end = Offset(size.width * 0.93f, 1.4f),
                             strokeWidth = 1.6f
                         )
+                        if (ultra) {
+                            drawLine(
+                                brush = leftGlint,
+                                start = Offset(1.5f, size.height * 0.10f),
+                                end = Offset(1.5f, size.height * 0.89f),
+                                strokeWidth = 1.6f
+                            )
+                            drawLine(
+                                brush = bottomGlint,
+                                start = Offset(size.width * 0.12f, size.height - 1.5f),
+                                end = Offset(size.width * 0.88f, size.height - 1.5f),
+                                strokeWidth = 1.4f
+                            )
+                        }
                     }
                 }
             )
