@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'android/**'
+      - 'public/data/**'
       - '.github/workflows/android-debug-apk.yml'
 concurrency:
   # Supersede outdated push builds without cancelling an explicitly requested

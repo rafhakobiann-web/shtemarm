@@ -1,6 +1,7 @@
 package am.shtemarm.app
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -131,7 +132,8 @@ class QuestionRepository(private val context: Context) {
                         sections += loadScoredMath(context, part).sections.map {
                             it.copy(title = "Մաս $part · " + it.title)
                         }
-                    } catch (_: Exception) { /* Other verified parts remain available. */ }
+                    } catch (e: CancellationException) { throw e }
+                    catch (_: Exception) { /* Other verified parts remain available. */ }
                 }
             } else {
                 for (book in BookCatalog.books.filter {
@@ -141,7 +143,8 @@ class QuestionRepository(private val context: Context) {
                         sections += load(book).sections.map {
                             it.copy(title = book.title + " · " + it.title)
                         }
-                    } catch (_: Exception) { /* Do not hide other accessible books. */ }
+                    } catch (e: CancellationException) { throw e }
+                    catch (_: Exception) { /* Do not hide other accessible books. */ }
                 }
             }
             sections

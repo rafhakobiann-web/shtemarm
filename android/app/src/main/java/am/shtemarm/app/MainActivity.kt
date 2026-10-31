@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK, FOCUS }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -320,7 +320,7 @@ private fun NativeShtemarm() {
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
-                            Page.TOOLS -> 4
+                            Page.TOOLS, Page.FOCUS -> 4
                             Page.STUDY, Page.RESULT -> when (sessionOrigin) {
                                 Page.EXAMS -> 2
                                 Page.GAMES -> 3
@@ -411,6 +411,7 @@ private fun NativeShtemarm() {
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
+                    Page.FOCUS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeFocusMode() }
                     Page.TOOLS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeTools(repository) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
@@ -499,6 +500,9 @@ private fun NativeShtemarm() {
                                         NativeStudyGuide.label(studyLanguage,"Կանոններ և բացատրություններ","Rules and explanations","Правила и объяснения"),
                                         NativeStudyGuide.label(studyLanguage,"Անգլերեն և մաթեմատիկա · Offline","English and math · Offline","Английский и математика · Offline")) {
                                         page = Page.HANDBOOK
+                                    }
+                                    AcademyQuickAction(Icons.Default.Star, "Կենտրոնացման ռեժիմ", "15, 25 կամ 45 րոպեանոց ժամաչափ") {
+                                        page = Page.FOCUS
                                     }
                                     AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ", "Կենտրոնացում և կրկնություն") {
                                         page = Page.TOOLS
@@ -769,10 +773,13 @@ private fun NativeShtemarm() {
                                     Text(sessionTitle, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                                     Spacer(Modifier.height(6.dp))
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text("Հարց " + (sessionIndex + 1) + " / " + session.size,
-                                            color = MaterialTheme.colorScheme.primary)
+                                        Text(
+                                            NativeStudyGuide.label(studyLanguage, "Հարց", "Question", "Вопрос") +
+                                                " " + (sessionIndex + 1) + " / " + session.size,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
                                         Spacer(Modifier.weight(1f))
-                                        Text("Ճիշտ՝ " + score)
+                                        Text(NativeStudyGuide.label(studyLanguage, "Ճիշտ՝ ", "Correct: ", "Верно: ") + score)
                                     }
                                     val animatedProgress by animateFloatAsState(
                                         targetValue = (sessionIndex + 1).toFloat() / session.size,
@@ -807,8 +814,8 @@ private fun NativeShtemarm() {
                                     val correct = chosen >= 0 && immediateFeedback && n == q.correctIndex
                                     val wrong = chosen == n && n != q.correctIndex && immediateFeedback
                                     val bg = when {
-                                        correct -> Color(0xFFD1FAE5)
-                                        wrong -> Color(0xFFFEE2E2)
+                                        correct -> MaterialTheme.colorScheme.primaryContainer
+                                        wrong -> MaterialTheme.colorScheme.errorContainer
                                         else -> MaterialTheme.colorScheme.surfaceContainerHigh
                                     }
                                     val animatedBg by animateColorAsState(
@@ -824,6 +831,9 @@ private fun NativeShtemarm() {
                                                 )
                                                 if (evaluation.accepted) {
                                                     chosen = n
+                                                    // In interactive practice, show guidance after a missed answer.
+                                                    // Respect the user's immediate-feedback preference.
+                                                    showExplanation = immediateFeedback && !evaluation.correct
                                                     if (evaluation.correct) {
                                                         score++
                                                         correctIds = correctIds + q.id
@@ -837,14 +847,28 @@ private fun NativeShtemarm() {
                                             verticalAlignment = Alignment.CenterVertically) {
                                             Text(("ABCD".getOrNull(n) ?: '•').toString() + ".",
                                                 fontWeight = FontWeight.Bold, modifier = Modifier.width(30.dp))
-                                            Text(q.choices[n], fontSize = 16.sp)
+                                            Text(
+                                                q.choices[n],
+                                                fontSize = 16.sp,
+                                                color = when {
+                                                    correct -> MaterialTheme.colorScheme.onPrimaryContainer
+                                                    wrong -> MaterialTheme.colorScheme.onErrorContainer
+                                                    else -> MaterialTheme.colorScheme.onSurface
+                                                }
+                                            )
                                         }
                                     }
                                 }
                                 if (chosen >= 0) item {
                                     if (immediateFeedback) {
-                                        Text(if (chosen == q.correctIndex) "Ճիշտ է ✓" else "Սխալ պատասխան",
-                                            fontWeight = FontWeight.Bold)
+                                        Text(
+                                            if (chosen == q.correctIndex)
+                                                NativeStudyGuide.label(studyLanguage, "Ճիշտ է ✓", "Correct ✓", "Верно ✓")
+                                            else NativeStudyGuide.label(studyLanguage, "Սխալ պատասխան", "Incorrect answer", "Неверный ответ"),
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (chosen == q.correctIndex)
+                                                MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                        )
 
                                     }
                                     OutlinedButton(

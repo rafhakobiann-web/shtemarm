@@ -34,10 +34,13 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
             .use { JSONObject(it.readText()) }
         val textBank = context.assets.open("math-text-questions.json").bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
+        val extraBank = context.assets.open("math-text-questions-extra.json").bufferedReader(Charsets.UTF_8)
+            .use { JSONObject(it.readText()) }
         val bookId = "matem-$part"
         val book = index.optJSONObject("books")?.optJSONObject(bookId)
             ?: return@withContext LoadedBook(emptyList())
         val source = textBank.optJSONObject(bookId)
+        val extraSource = extraBank.optJSONObject(bookId)
         val sections = book.optJSONArray("sections") ?: return@withContext LoadedBook(emptyList())
         val result = mutableListOf<StudySection>()
 
@@ -46,6 +49,7 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
             val chapter = section.optInt("chapter")
             val sectionNum = section.optInt("section")
             val sourceSection = source?.optJSONObject("$chapter-$sectionNum")
+            val extraSection = extraSource?.optJSONObject("$chapter-$sectionNum")
             val tasks = section.optJSONArray("tasks") ?: continue
             val verified = mutableListOf<StudyQuestion>()
             for (t in 0 until tasks.length()) {
@@ -55,32 +59,41 @@ internal suspend fun loadScoredMath(context: Context, part: Int): LoadedBook =
                 val taskNum = task.optInt("task")
                 val answers = task.optJSONArray("answers") ?: continue
                 val transcription = sourceSection?.optJSONArray(taskNum.toString())
+                val extras = extraSection?.optJSONArray(taskNum.toString())
                 val previous = task.optJSONArray("questions")
                 val count = task.optInt("sub_count", answers.length()).coerceAtMost(answers.length())
                 for (qIndex in 0 until count) {
-                    // Match the website's overlay priority: text-bank first, then index data.
-                    val q = transcription?.optJSONObject(qIndex)
-                        ?: previous?.optJSONObject(qIndex) ?: continue
-                    val stem = q.optString("prompt").trim()
-                    if (stem.isBlank() ||
-                        stem.contains("still being processed", ignoreCase = true) ||
-                        stem.contains("<img", ignoreCase = true)) continue
-                    val choicesArray = q.optJSONArray("options") ?: continue
-                    if (choicesArray.length() !in 2..6) continue
-                    val choices = (0 until choicesArray.length()).map {
-                        choicesArray.optString(it).trim()
-                    }
-                    if (choices.any { it.isBlank() } || choices.distinct().size != choices.size) continue
                     val correct = answers.optString(qIndex).toIntOrNull()?.minus(1) ?: continue
-                    if (correct !in choices.indices) continue
-                    verified.add(
-                        StudyQuestion(
-                            id = "math:$bookId:$chapter:$sectionNum:$taskNum:${qIndex + 1}",
-                            stem = stem,
-                            choices = choices,
-                            correctIndex = correct
-                        )
+                    // Extra transcriptions fill gaps but the book's indexed answer
+                    // key is still mandatory. Incomplete candidates are skipped.
+                    val candidates = listOf(
+                        extras?.optJSONObject(qIndex),
+                        transcription?.optJSONObject(qIndex),
+                        previous?.optJSONObject(qIndex)
                     )
+                    for (q in candidates) {
+                        if (q == null) continue
+                        val stem = q.optString("prompt").trim()
+                        if (stem.isBlank() ||
+                            stem.contains("still being processed", ignoreCase = true) ||
+                            stem.contains("<img", ignoreCase = true)) continue
+                        val choicesArray = q.optJSONArray("options") ?: continue
+                        if (choicesArray.length() !in 2..6) continue
+                        val choices = (0 until choicesArray.length()).map {
+                            choicesArray.optString(it).trim()
+                        }
+                        if (choices.any { it.isBlank() } || choices.distinct().size != choices.size ||
+                            correct !in choices.indices) continue
+                        verified.add(
+                            StudyQuestion(
+                                id = "math:$bookId:$chapter:$sectionNum:$taskNum:" + (qIndex + 1),
+                                stem = stem,
+                                choices = choices,
+                                correctIndex = correct
+                            )
+                        )
+                        break
+                    }
                 }
             }
             if (verified.isNotEmpty()) {

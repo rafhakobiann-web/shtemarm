@@ -49,12 +49,22 @@ assert all_questions > 4000, f"Unexpectedly low question count: {all_questions}"
 recoverable_english_gaps = 0
 unverified_blank_stems = 0
 for filename in ("book1.json", "book2.json", "book3.json"):
-    for section in read(WEB_DATA / filename).get("sections", []):
+    book_gaps = 0
+    book_missing = []
+    book_total = 0
+    book_keyed = 0
+    for section_index, section in enumerate(read(WEB_DATA / filename).get("sections", []), 1):
         for unit in section.get("units", []):
             if unit.get("kind") != "mc":
                 continue
             passage = str(unit.get("passage") or "")
-            for question in unit.get("questions", []):
+            for question_index, question in enumerate(unit.get("questions", []), 1):
+                book_total += 1
+                options = question.get("options") or {}
+                if (isinstance(options, dict) and
+                    str(question.get("answer") or "").strip().lower() in
+                    {str(key).lower() for key, value in options.items() if str(value).strip()}):
+                    book_keyed += 1
                 if str(question.get("stem") or "").strip():
                     continue
                 number = str(question.get("n") or "").strip()
@@ -64,13 +74,68 @@ for filename in ("book1.json", "book2.json", "book3.json"):
                                if marker_at >= 0 else "")
                 if marker_at >= 0 and "__" in near_marker:
                     recoverable_english_gaps += 1
+                    book_gaps += 1
                 else:
                     unverified_blank_stems += 1
+                    if len(book_missing) < 20:
+                        book_missing.append(
+                            f"section-{section_index}/{unit.get('id', 'unknown')}/question-{number or question_index}"
+                        )
+    print(f"{filename}: {book_total} MCQ records, {book_keyed} keyed, "
+          f"{book_gaps} recoverable gap stems, "
+          f"{len(book_missing)} sampled unresolved blank stems")
+    assert book_keyed == book_total, (
+        f"{filename}: {book_total - book_keyed} multiple-choice records have no usable answer choice"
+    )
+    if book_missing:
+        print("  First unresolved positions: " + ", ".join(book_missing))
 assert recoverable_english_gaps >= 1000, (
     f"English gap-fill coverage regressed: {recoverable_english_gaps}"
 )
 print(f"Verified {recoverable_english_gaps} English gap-fill blanks; "
       f"{unverified_blank_stems} missing stems are not invented")
+
+# Regression guards for source-checked English transcription repairs.
+# Incorrectly merged OCR items must not silently shift answer options.
+def english_unit(filename, unit_id):
+    for section in read(WEB_DATA / filename).get("sections", []):
+        for unit in section.get("units", []):
+            if unit.get("id") == unit_id:
+                return unit
+    raise AssertionError(f"Missing English unit: {filename}:{unit_id}")
+
+
+french = english_unit("book2.json", "2-1-Text23")["questions"]
+assert len(french) == 10, "English II: Text 23 must contain ten distinct questions"
+assert french[7]["answer"] == "b" and french[8]["answer"] == "c"
+assert french[9]["answer"] == "c", "English II: pronoun question key changed"
+assert all(q.get("stem", "").strip() for q in french), "English II: Text 23 stem lost"
+assert french[8]["options"]["c"] == "constructed", "English II: shifted text options"
+assert french[9]["options"]["c"] == "houses", "English II: shifted pronoun options"
+
+express = english_unit("book2.json", "2-1-Text28")["questions"]
+assert "developed" in express[1]["stem"]
+assert express[1]["options"]["a"] == "came up with", "English II: merged option recurred"
+
+eclipse = english_unit("book2.json", "2-1-Text36")["questions"]
+assert len(eclipse) == 10 and eclipse[5]["answer"] == "a"
+assert eclipse[6]["answer"] == "c" and eclipse[8]["options"]["b"] == "speed"
+
+american_food = english_unit("book3.json", "3-1-Text30")["questions"]
+assert len(american_food) == 10
+assert american_food[4]["stem"].strip() and american_food[7]["stem"].strip()
+assert [american_food[i]["answer"] for i in range(4, 10)] == [
+    "c", "c", "a", "d", "a", "b"
+], "English III: incorrect or shifted answer keys"
+vocabulary = english_unit("book2.json", "2-1-Text5")["questions"][0]
+assert vocabulary["options"] == {
+    "a": "universal", "b": "ordinary", "c": "unusual", "d": "common"
+}
+grammar = english_unit("book3.json", "3-5-136")["questions"][0]
+assert grammar["options"]["a"].strip() and grammar["answer"] == "a"
+assert grammar["stem"].endswith("________________."), "English III: answer leaked into question"
+
+print("Verified source-aligned OCR correction anchors for English volumes II and III")
 
 dictionary = read(APP_ASSETS / "english-armenian-dictionary.json")
 assert isinstance(dictionary, dict) and len(dictionary) >= 8000, "Vocabulary asset incomplete"

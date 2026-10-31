@@ -1,13 +1,15 @@
-name: Verify Android 0.2.0 study update
+name: Verify Android study update
 on:
   pull_request:
     paths:
       - 'android/**'
+      - 'public/data/**'
       - '.github/workflows/android-020-verify.yml'
   push:
     branches: [main]
     paths:
       - 'android/**'
+      - 'public/data/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,12 +33,12 @@ jobs:
       - name: Build and run Android unit tests
         working-directory: android
         run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
-      - name: Verify 0.2.0 beta APK
+      - name: Verify Android beta APK
         run: |
           test -s android/app/build/outputs/apk/debug/app-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -F "versionName='0.2.0-beta.1'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -E "versionName='0\.[23]\.0-beta\.1'"
       - uses: actions/upload-artifact@v4
         with:
-          name: Shtemarm-Android-0.2.0-beta.1
+          name: Shtemarm-Android-verified-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
