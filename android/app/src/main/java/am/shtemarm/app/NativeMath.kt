@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import org.json.JSONObject
 
 private data class MathPrompt(val topic: String, val prompt: String, val options: List<String>)
@@ -32,16 +34,20 @@ fun NativeMath(bookPart: Int) {
         error = ""
         questions = try {
             withContext(Dispatchers.IO) {
+                ensureActive()
                 val text = context.assets.open("math-text-questions-extra.json")
                     .bufferedReader(Charsets.UTF_8).use { it.readText() }
                 val book = JSONObject(text).optJSONObject("matem-" + bookPart)
                     ?: return@withContext emptyList()
                 val entries = mutableListOf<MathPrompt>()
                 for (sectionKey in book.keys()) {
+                    ensureActive()
                     val section = book.optJSONObject(sectionKey) ?: continue
                     for (taskKey in section.keys()) {
+                        ensureActive()
                         val items = section.optJSONArray(taskKey) ?: continue
                         for (i in 0 until items.length()) {
+                            if (i % 32 == 0) ensureActive()
                             val item = items.optJSONObject(i) ?: continue
                             val textValue = item.optString("prompt").trim()
                             val optionsArray = item.optJSONArray("options") ?: continue
@@ -60,6 +66,8 @@ fun NativeMath(bookPart: Int) {
                 }
                 entries
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             error = e.localizedMessage ?: "Չհաջողվեց բացել մաթեմատիկայի հարցերը։"
             emptyList()
