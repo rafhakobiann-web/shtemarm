@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BookOpen, ClipboardCheck, Gamepad2, House, Wrench } from "lucide-react";
 import { useTx } from "@/lib/lang";
@@ -47,6 +47,37 @@ export function MobileNav() {
     ? homeVisible : getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
   const lastY = useRef(0);
+  const dockRef = useRef<HTMLElement>(null);
+  const drag = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
+  const [hoverTab, setHoverTab] = useState<number | null>(null);
+  const previewTab = hoverTab ?? selected;
+  const pointerTab = (x: number) => {
+    const rect = dockRef.current?.getBoundingClientRect();
+    return rect ? Math.max(0, Math.min(4, Math.floor((x - rect.left) / (rect.width / 5)))) : 0;
+  };
+  const dockDown = (e: PointerEvent<HTMLElement>) => {
+    if (e.pointerType === "mouse") return;
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+    setHoverTab(pointerTab(e.clientX));
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const dockMove = (e: PointerEvent<HTMLElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    if (Math.abs(e.clientX - d.x) > 10 && Math.abs(e.clientX - d.x) > Math.abs(e.clientY - d.y)) d.moved = true;
+    if (d.moved) setHoverTab(pointerTab(e.clientX));
+  };
+  const dockEnd = (e: PointerEvent<HTMLElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    setHoverTab(null);
+    if (!d.moved || e.type === "pointercancel") return;
+    const index = pointerTab(e.clientX);
+    const link = dockRef.current?.querySelectorAll<HTMLAnchorElement>("a")[index];
+    link?.click();
+    if ("vibrate" in navigator) navigator.vibrate?.(8);
+  };
 
   // Never detach or unmount the dock during scroll; its links remain tappable.
   // A single animation frame throttles direction sensing.
@@ -160,6 +191,11 @@ export function MobileNav() {
 
   return (
     <nav
+      ref={dockRef}
+      onPointerDown={dockDown}
+      onPointerMove={dockMove}
+      onPointerUp={dockEnd}
+      onPointerCancel={dockEnd}
       aria-label={tx("Արագ նավարկում")}
       data-compact={compact ? "true" : "false"}
       className="site-mobile-nav mobile-liquid-dock fixed inset-x-3 z-40 mx-auto max-w-[29rem] rounded-[1.7rem] p-[6px] md:hidden"
@@ -168,7 +204,7 @@ export function MobileNav() {
         <span
           aria-hidden="true"
           className="mobile-liquid-indicator pointer-events-none absolute inset-y-0 left-0 w-1/5 rounded-[1.3rem]"
-          style={{ transform: "translate3d(" + selected * 500 + "%, 0, 0)" }}
+          style={{ transform: "translate3d(" + previewTab * 500 + "%, 0, 0)" }}
         />
         {tabs.map(({ id, to, hash: tabHash, label, icon: Icon }, index) => (
           <Link
@@ -181,7 +217,7 @@ export function MobileNav() {
             title={label}
             className={
               "mobile-liquid-tab relative z-10 flex min-h-[3.6rem] min-w-0 flex-col items-center justify-center gap-1 rounded-[1.3rem] px-0.5 py-2 text-center text-[10px] font-extrabold leading-tight outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary " +
-              (selected === index ? "is-selected" : "")
+              (previewTab === index ? "is-selected" : "")
             }
           >
             <Icon aria-hidden="true" className="mobile-liquid-icon size-[1.3rem] shrink-0" strokeWidth={selected === index ? 2.3 : 1.85} />
