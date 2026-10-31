@@ -193,7 +193,8 @@ fun AcademyTopBar(
 @Composable
 fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
     val liquid = LocalAcademySurface.current == "liquid"
-    val ultraMotion = liquid && LocalGlassIntensity.current == "ultra"
+    // Fluid spring motion is part of Liquid Glass itself, not Ultra-only.
+    val fluidMotion = liquid
     val tabs = listOf(
         Triple("Գլխավոր", Icons.Default.Home, 0),
         Triple("Գրքեր", Icons.Default.Book, 1),
@@ -217,7 +218,7 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                 val animatedOffset by animateDpAsState(
                     targetValue = tabWidth * selectedTab,
                     animationSpec = spring(
-                        dampingRatio = if (ultraMotion) Spring.DampingRatioMediumBouncy
+                        dampingRatio = if (fluidMotion) Spring.DampingRatioMediumBouncy
                             else Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium
                     ),
@@ -231,8 +232,8 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         .background(
                             if (liquid) Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = if (ultraMotion) 0.62f else 0.47f),
-                                    highlight.copy(alpha = if (ultraMotion) 0.29f else 0.21f),
+                                    Color.White.copy(alpha = if (fluidMotion) 0.62f else 0.47f),
+                                    highlight.copy(alpha = if (fluidMotion) 0.29f else 0.21f),
                                     highlight.copy(alpha = 0.10f)
                                 )
                             ) else Brush.verticalGradient(
@@ -249,6 +250,14 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                 Row(Modifier.fillMaxWidth()) {
                     tabs.forEach { (label, icon, id) ->
                         val active = selectedTab == id
+                        val iconScale by animateFloatAsState(
+                            targetValue = if (active && fluidMotion) 1.10f else 1.0f,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            ),
+                            label = "Liquid dock icon response"
+                        )
                         Column(
                             modifier = Modifier.weight(1f).clip(activeShape)
                                 .selectable(selected = active, role = Role.Tab, onClick = { onSelect(id) })
@@ -259,7 +268,10 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         ) {
                             Icon(icon, contentDescription = null,
                                 tint = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(23.dp))
+                                modifier = Modifier.size(23.dp).graphicsLayer {
+                                    scaleX = iconScale
+                                    scaleY = iconScale
+                                })
                             Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp,
                                 fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
                                 color = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant)
