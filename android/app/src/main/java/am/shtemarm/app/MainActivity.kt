@@ -291,22 +291,22 @@ private fun NativeShtemarm() {
         savedQuestions = emptyList()
         try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
-            // Saved-question lookup reads bundled assets and synchronous scored-math files.
-            // Use IO rather than the CPU-only Default dispatcher for this aggregation.
-            val matches = withContext(Dispatchers.IO) {
-                val collected = mutableListOf<StudyQuestion>()
-                if (ids.isNotEmpty()) {
-                    val sourceAssets = SessionGuards.sourceAssets(ids)
-                    for (entry in BookCatalog.books.filter {
-                        it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
-                    }.distinctBy { it.asset }) {
-                        try {
-                            collected += repository.load(entry).allQuestions.filter { it.id in ids }
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (_: Exception) { /* Keep questions from other readable books. */ }
-                    }
-                    // The scored math books have a dedicated verified source loader.
+            // load() already dispatches asset reads and parsing to IO.
+            // Avoid a redundant outer IO dispatch around the aggregation.
+            val collected = mutableListOf<StudyQuestion>()
+            if (ids.isNotEmpty()) {
+                val sourceAssets = SessionGuards.sourceAssets(ids)
+                for (entry in BookCatalog.books.filter {
+                    it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
+                }.distinctBy { it.asset }) {
+                    try {
+                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) { /* Keep questions from other readable books. */ }
+                }
+                // Scored-math reads are synchronous; dispatch only those reads to IO.
+                withContext(Dispatchers.IO) {
                     for (part in 1..2) {
                         if (ids.any { it.startsWith("math:matem-$part:") }) {
                             try {
@@ -317,8 +317,8 @@ private fun NativeShtemarm() {
                         }
                     }
                 }
-                    collected.distinctBy { it.id }
             }
+            val matches = collected.distinctBy { it.id }
             savedQuestions = matches
         } catch (e: CancellationException) {
             throw e
