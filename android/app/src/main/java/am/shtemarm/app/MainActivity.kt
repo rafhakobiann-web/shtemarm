@@ -3,7 +3,6 @@ package am.shtemarm.app
 import android.os.Bundle
 import android.Manifest
 import android.os.Build
-import android.content.pm.ApplicationInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
@@ -61,8 +60,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isDebug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        setContent { if (isDebug) NativeShtemarm() else RelaunchHoldingScreen() }
+        setContent { NativeShtemarm() }
     }
 }
 
@@ -247,7 +245,7 @@ private fun NativeShtemarm() {
         loadError = ""
         loaded = null
         try {
-            loaded = withContext(Dispatchers.IO) { repository.load(chosenBook) }
+            loaded = repository.load(chosenBook)
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -265,15 +263,16 @@ private fun NativeShtemarm() {
                     it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
                 }.distinctBy { it.asset }) {
                     try {
-                        collected += withContext(Dispatchers.IO) { repository.load(entry).allQuestions.filter { it.id in ids } }
+                        collected += repository.load(entry).allQuestions.filter { it.id in ids }
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
                 // The scored math books have a dedicated verified source loader.
                 for (part in 1..2) {
                     if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
-                            collected += loadScoredMath(context, part)
-                                .allQuestions.filter { it.id in ids }
+                            collected += withContext(Dispatchers.IO) {
+                                loadScoredMath(context, part).allQuestions.filter { it.id in ids }
+                            }
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
