@@ -30,7 +30,7 @@ object BookCatalog {
         StudyBook("Անգլերեն", "Շտեմարան 1", "book1.json"),
         StudyBook("Անգլերեն", "Շտեմարան 2", "book2.json"),
         StudyBook("Անգլերեն", "Շտեմարան 3", "book3.json"),
-        StudyBook("Հայոց լեզու", "Շտեմարան 1", "armenian-book1.json"),
+        StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 1 · ընդհանուր", "armenian-book1.json"),
         // These are original topic exercises, NOT transcriptions of official volumes.
         StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 2 · ուղղագրություն", "armenian-book2.json"),
         StudyBook("Հայոց լեզու", "Հեղինակային վարժանքներ 3 · քերականություն", "armenian-book3.json"),
