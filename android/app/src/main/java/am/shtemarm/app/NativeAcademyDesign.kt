@@ -223,7 +223,7 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         .background(
                             if (liquid) Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.47f),
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.65f),
                                     highlight.copy(alpha = 0.21f),
                                     highlight.copy(alpha = 0.10f)
                                 )
