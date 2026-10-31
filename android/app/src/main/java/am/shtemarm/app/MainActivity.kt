@@ -773,10 +773,13 @@ private fun NativeShtemarm() {
                                     Text(sessionTitle, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                                     Spacer(Modifier.height(6.dp))
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text("Հարց " + (sessionIndex + 1) + " / " + session.size,
-                                            color = MaterialTheme.colorScheme.primary)
+                                        Text(
+                                            NativeStudyGuide.label(studyLanguage, "Հարց", "Question", "Вопрос") +
+                                                " " + (sessionIndex + 1) + " / " + session.size,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
                                         Spacer(Modifier.weight(1f))
-                                        Text("Ճիշտ՝ " + score)
+                                        Text(NativeStudyGuide.label(studyLanguage, "Ճիշտ՝ ", "Correct: ", "Верно: ") + score)
                                     }
                                     val animatedProgress by animateFloatAsState(
                                         targetValue = (sessionIndex + 1).toFloat() / session.size,
@@ -828,6 +831,9 @@ private fun NativeShtemarm() {
                                                 )
                                                 if (evaluation.accepted) {
                                                     chosen = n
+                                                    // In interactive practice, show guidance after a missed answer.
+                                                    // Respect the user's immediate-feedback preference.
+                                                    showExplanation = immediateFeedback && !evaluation.correct
                                                     if (evaluation.correct) {
                                                         score++
                                                         correctIds = correctIds + q.id
