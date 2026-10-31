@@ -210,7 +210,14 @@ private fun NativeShtemarm() {
     }
 
     LaunchedEffect(book) {
-        val chosenBook = book ?: return@LaunchedEffect
+        val chosenBook = book
+        if (chosenBook == null) {
+            // Leaving the book screen must not preserve a stale loading spinner.
+            loaded = null
+            loadError = ""
+            loading = false
+            return@LaunchedEffect
+        }
         chapterFilter = ""
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
@@ -229,8 +236,10 @@ private fun NativeShtemarm() {
             throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
+        } finally {
+            // Also clear the spinner when a book load is cancelled.
+            loading = false
         }
-        loading = false
     }
 
     LaunchedEffect(page, reviewMistakes) {
