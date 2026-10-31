@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.currentCoroutineContext
 import org.json.JSONObject
 
 /** Bundled data comes from the website repository's public/data directory at build time. */
@@ -160,7 +161,7 @@ class QuestionRepository(private val context: Context) {
             for (practice in BookCatalog.books.filter {
                 it.subject == subject && it.asset == "original-math.json"
             }) {
-                ensureActive()
+                currentCoroutineContext().ensureActive()
                 try {
                     sections += load(practice).sections.map {
                         it.copy(title = practice.title + " · " + it.title)
