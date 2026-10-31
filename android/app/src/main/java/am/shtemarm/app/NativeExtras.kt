@@ -135,9 +135,10 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
     var flipIndex by remember { mutableIntStateOf(0) }
     var revealed by remember { mutableStateOf(false) }
     LaunchedEffect(selected) {
+        val requestedSubject = selected
         loading = true
         questions = try {
-            withContext(Dispatchers.Default) { repository.practiceForSubject(selected).shuffled() }
+            withContext(Dispatchers.Default) { repository.practiceForSubject(requestedSubject).shuffled() }
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) { emptyList() }
