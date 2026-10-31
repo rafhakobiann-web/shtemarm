@@ -1,6 +1,10 @@
 package am.shtemarm.app
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.os.SystemClock
+import android.os.Trace
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -58,6 +62,9 @@ class QuestionRepository(private val context: Context) {
     }
 
     suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
+        val startedAt = SystemClock.elapsedRealtimeNanos()
+        Trace.beginSection("Shtemarm.parseBook")
+        try {
         synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
         val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
             .use { JSONObject(it.readText()) }
@@ -119,6 +126,13 @@ class QuestionRepository(private val context: Context) {
         val parsed = LoadedBook(result)
         synchronized(recentBooks) { recentBooks[book.asset] = parsed }
         parsed
+        } finally {
+            Trace.endSection()
+            if ((context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                val elapsedMs = (SystemClock.elapsedRealtimeNanos() - startedAt) / 1_000_000
+                Log.d("ShtemarmPerf", "book=${book.asset} loadMs=$elapsedMs")
+            }
+        }
     }
 
     /** Unified verified question source for exams, games, and study generators. */
