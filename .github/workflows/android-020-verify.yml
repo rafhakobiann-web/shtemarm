@@ -28,13 +28,16 @@ jobs:
         run: |
           python3 android/scripts/validate_assets.py
           python3 android/scripts/audit_math_text.py
-      - name: Build and run Android unit tests
+      - name: Build and run Android unit tests (debug and release variants)
         working-directory: android
-        run: gradle --no-daemon testDebugUnitTest assembleDebug --stacktrace
-      - name: Verify 0.2.0 beta APK
+        run: gradle --no-daemon testDebugUnitTest assembleDebug assembleRelease --stacktrace
+      - name: Verify 0.2.0 beta APKs (release unsigned for CI only)
         run: |
           test -s android/app/build/outputs/apk/debug/app-debug.apk
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -F "versionName='0.2.0-beta.1'"
+          release_apk=$(find android/app/build/outputs/apk/release -maxdepth 1 -name 'app-release*.apk' -type f -size +0c | head -n 1)
+          test -n "$release_apk"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$release_apk" | grep -F 'package: name='
       - uses: actions/upload-artifact@v4
         with:
           name: Shtemarm-Android-0.2.0-beta.1
