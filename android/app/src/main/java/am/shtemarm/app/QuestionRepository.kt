@@ -161,10 +161,13 @@ class QuestionRepository(private val context: Context) {
         return sections
     }
 
-    suspend fun practiceForSubject(subject: String): List<StudyQuestion> =
-        BookStudyHelpers.uniquePracticeQuestions(
-            sectionsForSubject(subject).flatMap { it.questions }
-        )
+    suspend fun practiceForSubject(subject: String): List<StudyQuestion> {
+        val sections = sectionsForSubject(subject)
+        // Deduplication can scan thousands of questions; keep it off the UI thread.
+        return withContext(Dispatchers.Default) {
+            BookStudyHelpers.uniquePracticeQuestions(sections.flatMap { it.questions })
+        }
+    }
 
     private fun parseUnit(
         source: String, section: Int, unitIndex: Int,
