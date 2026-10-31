@@ -230,7 +230,7 @@ class StudyProgress(context: Context) {
             val restoredGlass = settings.getString("glass")
             if (restoredAccent !in setOf("teal", "blue", "violet", "emerald", "rose", "amber") ||
                 restoredSurface !in setOf("classic", "soft", "liquid") ||
-                restoredGlass !in setOf("subtle", "balanced", "vivid", "ultra")) return false
+                !GlassVisualPolicy.isSupported(restoredGlass)) return false
             val restoredLanguage = settings.optString("language", studyLanguage).takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
             val restoredTarget = settings.optInt("dailyTarget", 10).takeIf(StudyGoals::validTarget) ?: 10
             val editor = prefs.edit().clear().putString("study_language", restoredLanguage)
@@ -294,7 +294,7 @@ class StudyProgress(context: Context) {
     var glassIntensity: String
         get() = prefs.getString("glass_intensity", "balanced") ?: "balanced"
         set(value) {
-            if (value in setOf("subtle", "balanced", "vivid", "ultra")) {
+            if (GlassVisualPolicy.isSupported(value)) {
                 prefs.edit().putString("glass_intensity", value).apply()
             }
         }
