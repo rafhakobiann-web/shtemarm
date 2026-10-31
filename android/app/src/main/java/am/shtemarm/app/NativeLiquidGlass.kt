@@ -1,5 +1,6 @@
 package am.shtemarm.app
 
+import android.os.Build
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 
 /**
  * Original, Android-native frosted/liquid-glass visual treatment.
@@ -27,27 +31,34 @@ import androidx.compose.ui.unit.dp
  * Opaque, lower-cost styling is retained for Soft and Classic presets.
  */
 val LocalGlassIntensity = compositionLocalOf { "balanced" }
+// Optional shared capture state. Only navigation glass uses real backdrop blur;
+// scrolling question cards keep a cheap and readable frosted fallback.
+val LocalGlassHazeState = compositionLocalOf<HazeState?> { null }
 
 @Composable
 fun AcademyGlassPanel(
     modifier: Modifier = Modifier,
     shape: RoundedCornerShape = RoundedCornerShape(23.dp),
+    backdropBlur: Boolean = false,
     content: @Composable BoxScope.() -> Unit
 ) {
     val liquid = LocalAcademySurface.current == "liquid"
     val intensity = LocalGlassIntensity.current
     val ultra = liquid && intensity == "ultra"
+    val hazeState = LocalGlassHazeState.current
+    val actualBlur = liquid && backdropBlur && hazeState != null && Build.VERSION.SDK_INT >= 32
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.red < 0.30f
     val strength = GlassVisualPolicy.strength(intensity)
     val glow = if (dark) Color(0xFF96F5E5) else Color.White
     val low = if (dark) Color(0xFF19383F) else Color(0xFFE6F8F3)
     // Do not rebuild gradient objects on every Compose state update or scroll.
-    val fill = remember(liquid, ultra, dark, strength, scheme.surface) {
+    val fill = remember(liquid, ultra, dark, strength, scheme.surface, actualBlur) {
         if (liquid) Brush.linearGradient(
             listOf(
                 glow.copy(alpha = (if (dark) 0.17f else if (ultra) 0.49f else 0.94f) * strength),
-                scheme.surface.copy(alpha = GlassVisualPolicy.surfaceAlpha(intensity, dark)),
+                scheme.surface.copy(alpha = if (actualBlur) (if (dark) 0.27f else 0.40f)
+                    else GlassVisualPolicy.surfaceAlpha(intensity, dark)),
                 low.copy(alpha = (if (ultra) (if (dark) 0.42f else 0.35f)
                     else (if (dark) 0.76f else 0.59f)) * strength)
             )
@@ -60,6 +71,7 @@ fun AcademyGlassPanel(
             .shadow(if (liquid) 12.dp else 2.dp, shape, ambientColor = scheme.primary.copy(alpha = 0.16f),
                 spotColor = scheme.primary.copy(alpha = 0.19f))
             .clip(shape)
+            .then(if (actualBlur) Modifier.hazeEffect(state = requireNotNull(hazeState)) else Modifier)
             .background(fill)
             .border(BorderStroke(1.dp, outline), shape)
     ) {
@@ -149,7 +161,8 @@ fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable B
     val liquid = LocalAcademySurface.current == "liquid"
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.red < 0.30f
-    Box(modifier.background(
+    val hazeState = LocalGlassHazeState.current
+    val backdropBrush = remember(liquid, dark, scheme.background) {
         if (liquid) Brush.verticalGradient(
             listOf(
                 if (dark) Color(0xFF14292F) else Color(0xFFF8FCF6),
@@ -157,33 +170,40 @@ fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable B
                 if (dark) Color(0xFF1B2932) else Color(0xFFFAFBF6)
             )
         ) else Brush.verticalGradient(listOf(scheme.background, scheme.background))
-    )) {
-        if (liquid) {
-            // Cached soft radial halos avoid abrupt circle edges and render in
-            // the static background only, never blurring interactive content.
-            Spacer(Modifier.matchParentSize().drawWithCache {
-                val teal = Brush.radialGradient(
-                    colors = listOf(
-                        scheme.primary.copy(alpha = if (dark) 0.20f else 0.14f),
-                        scheme.primary.copy(alpha = if (dark) 0.065f else 0.035f),
-                        Color.Transparent
-                    ),
-                    center = Offset(size.width * 0.96f, size.height * 0.08f),
-                    radius = (size.width * 0.92f).coerceAtLeast(1f)
-                )
-                val gold = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFFE3B95F).copy(alpha = if (dark) 0.08f else 0.10f),
-                        Color.Transparent
-                    ),
-                    center = Offset(size.width * 0.03f, size.height * 0.79f),
-                    radius = (size.width * 0.79f).coerceAtLeast(1f)
-                )
-                onDrawBehind {
-                    drawRect(brush = teal)
-                    drawRect(brush = gold)
-                }
-            })
+    }
+    Box(modifier) {
+        // Record ONLY the actual background layer so the Haze surface does not
+        // capture (and recursively blur) controls or the foreground text.
+        Box(
+            Modifier.matchParentSize()
+                .then(if (liquid && hazeState != null) Modifier.hazeSource(state = hazeState) else Modifier)
+                .background(backdropBrush)
+        ) {
+            if (liquid) {
+                Spacer(Modifier.matchParentSize().drawWithCache {
+                    val teal = Brush.radialGradient(
+                        colors = listOf(
+                            scheme.primary.copy(alpha = if (dark) 0.20f else 0.14f),
+                            scheme.primary.copy(alpha = if (dark) 0.065f else 0.035f),
+                            Color.Transparent
+                        ),
+                        center = Offset(size.width * 0.96f, size.height * 0.08f),
+                        radius = (size.width * 0.92f).coerceAtLeast(1f)
+                    )
+                    val gold = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFFE3B95F).copy(alpha = if (dark) 0.08f else 0.10f),
+                            Color.Transparent
+                        ),
+                        center = Offset(size.width * 0.03f, size.height * 0.79f),
+                        radius = (size.width * 0.79f).coerceAtLeast(1f)
+                    )
+                    onDrawBehind {
+                        drawRect(brush = teal)
+                        drawRect(brush = gold)
+                    }
+                })
+            }
         }
         content()
     }
