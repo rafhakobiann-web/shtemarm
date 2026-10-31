@@ -290,8 +290,9 @@ private fun NativeShtemarm() {
     LaunchedEffect(page, reviewMistakes) {
         if (page == Page.SAVED) {
             savedLoading = true
+            val mistakesOnly = reviewMistakes
             val matches = withContext(Dispatchers.Default) {
-                val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
+                val ids = if (mistakesOnly) progress.mistakeIds() else progress.bookmarkedIds()
                 val collected = mutableListOf<StudyQuestion>()
                 if (ids.isNotEmpty()) {
                     val sourceAssets = SessionGuards.sourceAssets(ids)
