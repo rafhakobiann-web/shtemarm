@@ -291,7 +291,9 @@ private fun NativeShtemarm() {
         savedQuestions = emptyList()
         try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
-            val matches = withContext(Dispatchers.Default) {
+            // Saved-question lookup reads bundled assets and synchronous scored-math files.
+            // Use IO rather than the CPU-only Default dispatcher for this aggregation.
+            val matches = withContext(Dispatchers.IO) {
                 val collected = mutableListOf<StudyQuestion>()
                 if (ids.isNotEmpty()) {
                     val sourceAssets = SessionGuards.sourceAssets(ids)
