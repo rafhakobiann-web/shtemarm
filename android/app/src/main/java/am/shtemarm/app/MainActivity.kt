@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.Manifest
 import android.os.Build
 import android.content.pm.ApplicationInfo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -68,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun RelaunchHoldingScreen() {
-    MaterialTheme {
+    MaterialTheme(typography = ShtemarmTypography) {
         Surface(color = Color(0xFF0B1825), modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(28.dp),
@@ -248,6 +247,8 @@ private fun NativeShtemarm() {
         loaded = null
         try {
             loaded = repository.load(chosenBook)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             loadError = "Հնարավոր չեղավ բացել շտեմարանը։ " + (e.localizedMessage ?: "")
         }
@@ -266,6 +267,8 @@ private fun NativeShtemarm() {
                 }.distinctBy { it.asset }) {
                     try {
                         collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
                 // The scored math books have a dedicated verified source loader.
@@ -273,6 +276,8 @@ private fun NativeShtemarm() {
                     if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
                             collected += loadScoredMath(context, part).allQuestions.filter { it.id in ids }
+                        } catch (e: CancellationException) {
+                            throw e
                         } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
