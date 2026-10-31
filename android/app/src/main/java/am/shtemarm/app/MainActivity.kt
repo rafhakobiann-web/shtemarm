@@ -233,7 +233,9 @@ private fun NativeShtemarm() {
         page = Page.STUDY
     }
 
-    LaunchedEffect(book) {
+    LaunchedEffect(book, page) {
+        // Stop parsing a previous book as soon as its sections screen is left.
+        if (page != Page.SECTIONS) return@LaunchedEffect
         val chosenBook = book ?: return@LaunchedEffect
         chapterFilter = ""
         progress.recordLastBook(chosenBook)
@@ -260,8 +262,8 @@ private fun NativeShtemarm() {
     LaunchedEffect(page, reviewMistakes) {
         if (page == Page.SAVED) {
             savedLoading = true
-            val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
             val matches = withContext(Dispatchers.Default) {
+                val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
                 val collected = mutableListOf<StudyQuestion>()
                 if (ids.isNotEmpty()) {
                     val sourceAssets = SessionGuards.sourceAssets(ids)
@@ -285,7 +287,7 @@ private fun NativeShtemarm() {
                         }
                     }
                 }
-                    collected.distinctBy { it.id }
+                collected.distinctBy { it.id }
             }
             savedQuestions = matches
             savedLoading = false
