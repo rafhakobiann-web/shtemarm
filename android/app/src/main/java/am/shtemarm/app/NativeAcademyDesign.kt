@@ -13,6 +13,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,6 +45,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -245,15 +248,16 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
                         val active = selectedTab == id
                         Column(
                             modifier = Modifier.weight(1f).clip(activeShape)
-                                .clickable { onSelect(id) }.height(60.dp)
+                                .selectable(selected = active, role = Role.Tab, onClick = { onSelect(id) })
+                                .height(60.dp)
                                 .padding(top = 7.dp, bottom = 5.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(icon, contentDescription = label,
+                            Icon(icon, contentDescription = null,
                                 tint = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(23.dp))
-                            Text(label, maxLines = 1, fontSize = 10.sp,
+                            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp,
                                 fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
                                 color = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant)
                         }
