@@ -26,6 +26,18 @@ describe("website textbook navigation regressions", () => {
     expect(study).toContain("Math.max(1, units.length)");
   });
 
+  it("shows a real updates route and gives book readers an explicit refresh", () => {
+    const home = read("src/routes/index.tsx");
+    const changelog = read("src/routes/changelog.tsx");
+    const bookPage = read("src/routes/book.$bookId.tsx");
+    expect(home).toContain('to="/changelog"');
+    expect(changelog).toContain("November 1, 2026");
+    expect(bookPage).toContain("invalidateBookCache(id)");
+    expect(bookPage).toContain("book.sections.length === 0");
+    expect(bookPage).toContain("useMemo");
+    expect(bookPage).toContain("sectionAnswerIds");
+  });
+
   it("rejects HTML fallback responses and incorrect book JSON schemas", () => {
     const loader = read("src/lib/books.ts");
     expect(loader).toContain('r.headers.get("content-type")');
