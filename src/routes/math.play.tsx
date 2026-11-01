@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
@@ -207,6 +207,9 @@ function PlayPage() {
   const [streak, setStreak] = useState(0);
   const [testAnswers, setTestAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [gameAnswers, setGameAnswers] = useState<Record<string, string>>({});
+  const [showSummary, setShowSummary] = useState(false);
+  const answering = useRef(new Set<string>());
 
   useEffect(() => {
     if (!section.items.length) return;
@@ -216,6 +219,9 @@ function PlayPage() {
     setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
+    setGameAnswers({});
+    setShowSummary(false);
+    answering.current.clear();
   }, [section.items, isTest]);
 
   if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
@@ -302,13 +308,19 @@ function PlayPage() {
 
   // Խաղային (game) mode, laid out like the English game screen
   const it = round[index];
-  const answeredCount = round.filter((x) => progress.answers[x.id] !== undefined).length;
-  const current = it ? progress.answers[it.id] : undefined;
-  const finished = !it || (index === round.length - 1 && current !== undefined);
+  const answeredCount = round.filter((x) => gameAnswers[x.id] !== undefined).length;
+  const current = it ? gameAnswers[it.id] : undefined;
+  // Keep the last answer and its explanation visible until the learner
+  // explicitly opens the summary. Stored mastery must not lock replay rounds.
+  const finished = !it || showSummary;
   const short = it ? it.open || it.answer === undefined || isShortAnswer(it.answer) : false;
 
   const onAnswer = (v: string) => {
-    if (!it || current !== undefined) return;
+    if (!it || current !== undefined || answering.current.has(it.id)) return;
+    answering.current.add(it.id);
+    setGameAnswers((prev) => ({ ...prev, [it.id]: v }));
+    // Preserve the first-ever answer for long-term mastery without using that
+    // saved result to lock or pre-answer a new game session.
     setAnswer(it.id, v);
     if (correctOf(it, v)) {
       setStreak((s) => s + 1);
@@ -342,10 +354,12 @@ function PlayPage() {
         <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
           <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">
-            {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
+            {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, gameAnswers[x.id])).length, t: answeredCount })}
           </p>
           <Button className="w-full" onClick={() => {
             setIndex(0); setLives(LIVES); setStreak(0);
+            setShowSummary(false); setGameAnswers({});
+            answering.current.clear();
             setRound(section.items);
           }}>{tx("Նորից")}</Button>
         </section>
@@ -383,7 +397,12 @@ function PlayPage() {
               />
             )}
             {current !== undefined && (
-              <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
+              <Button className="h-12 w-full rounded-2xl" onClick={() => {
+                if (index === round.length - 1 || lives <= 0) setShowSummary(true);
+                else setIndex((i) => i + 1);
+              }}>
+                {index === round.length - 1 || lives <= 0 ? tx("Ավարտել և տեսնել արդյունքը") : tx("Հաջորդը")}
+              </Button>
             )}
           </div>
 
