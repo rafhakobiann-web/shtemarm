@@ -70,6 +70,25 @@ describe("source-verified English and Mathematics book corrections", () => {
     expect(third.source_page).toBe(107);
   });
 
+  it("restores remaining English II section 3 questions 231 and 290", () => {
+    const q231 = englishQuestion(2, "2-3-231", "231");
+    expect(q231.stem).toContain("when Colin asked me");
+    expect(q231.options).toEqual({
+      a: "had sat hard down", b: "had sat down hardly",
+      c: "had hardly sat down", d: "had hard sat down",
+    });
+    expect(q231.answer).toBe("c"); // English II printed answer table p. 327
+    expect(q231.source_page).toBe(154);
+
+    const q290 = englishQuestion(2, "2-3-290", "290");
+    expect(q290.stem).toContain("post office");
+    expect(q290.options).toEqual({
+      a: "to ask", b: "asking", c: "to be asked", d: "being asked",
+    });
+    expect(q290.answer).toBe("a"); // English II printed answer table p. 327
+    expect(q290.source_page).toBe(166);
+  });
+
   it("fixes Math I task 7 subquestion 3: opposite, not reciprocal", () => {
     const q = math["matem-1"]["1-1"]["7"][2];
     const indexTask = mathIndex.books["matem-1"].sections
@@ -83,7 +102,7 @@ describe("source-verified English and Mathematics book corrections", () => {
 
   it("records the remaining numbering gaps in linear English sections", () => {
     const expected = {
-      "book2-3": [231, 290],
+      "book2-3": [],
       "book2-5": [59, 95],
       "book3-3": [126, 127, 128, 129, 130],
       "book3-5": [104, 105, 106, 107, 108, 109, 110, 116, 122],
@@ -156,7 +175,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const volumes = [1, 2, 3].map((id) => book(`book${id}.json`));
     const counts = volumes.map((v: any) => v.sections.flatMap((s: any) => s.units)
       .reduce((n: number, u: any) => n + (u.questions?.length ?? 1), 0));
-    expect(counts).toEqual([1601, 1511, 1283]);
+    expect(counts).toEqual([1601, 1513, 1283]);
     for (const volume of volumes) for (const section of volume.sections)
       for (const unit of section.units) if (unit.kind === "mc")
         for (const q of unit.questions) {
