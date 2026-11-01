@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.currentCoroutineContext
 import org.json.JSONObject
 
 /** Bundled data comes from the website repository's public/data directory at build time. */
@@ -59,11 +60,16 @@ class QuestionRepository(private val context: Context) {
             size > 4
     }
 
-    suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
-        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
+    suspend fun load(book: StudyBook): LoadedBook {
+        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return it }
+        // Asset reads are blocking IO; JSON construction and conversion are CPU
+        // intensive and must not occupy IO workers or the Compose main thread.
+        val raw = withContext(Dispatchers.IO) {
+            context.assets.open(book.asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        }
+        return withContext(Dispatchers.Default) {
         ensureActive()
-        val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
-            .use { JSONObject(it.readText()) }
+        val json = JSONObject(raw)
         val result = mutableListOf<StudySection>()
         val sections = json.optJSONArray("sections")
         if (sections != null) {
@@ -106,7 +112,9 @@ class QuestionRepository(private val context: Context) {
                 // chapter names and score only keyed, non-illustrated choices.
                 val flat = json.optJSONArray("questions") ?: json.optJSONArray("items")
                 if (flat != null) {
-                    val verifiedRoot = json.has("verified")
+                    // A present but false `verified` field is not proof of review.
+                    // Only explicitly true root metadata may bypass per-item status.
+                    val verifiedRoot = json.opt("verified") == true
                     val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
                     for (i in 0 until flat.length()) {
                         ensureActive()
@@ -127,10 +135,11 @@ class QuestionRepository(private val context: Context) {
         val parsed = LoadedBook(result)
         synchronized(recentBooks) { recentBooks[book.asset] = parsed }
         parsed
+        }
     }
 
     /** Unified verified question source for exams, games, and study generators.
-     * load() already dispatches its own asset reads and JSON parsing to IO.
+     * load() dispatches asset reads to IO and JSON parsing to Default.
      * Avoid wrapping the entire non-math aggregation in a second IO dispatch.
      */
     suspend fun sectionsForSubject(subject: String): List<StudySection> {
@@ -172,30 +181,33 @@ class QuestionRepository(private val context: Context) {
         }
     }
 
-    private fun parseUnit(
+    private suspend fun parseUnit(
         source: String, section: Int, unitIndex: Int,
         unit: JSONObject, output: MutableList<StudyQuestion>
     ) {
         if (unit.optString("kind") != "mc" || hasVisual(unit)) return
         val passage = unit.optString("passage").trim()
         val questions = unit.optJSONArray("questions") ?: return
-        // Do not map multiple imported option sets to the same numbered gap.
-        // Ambiguous source numbering must be checked against the original book.
+        // A numbered gap is safe to present only when every passage gap has
+        // exactly one imported option set. Do not guess absent source answers.
         if (passage.isNotBlank()) {
-            val numberedGaps = Regex("""\((\d+)\)\s*_{2,}""")
-                .findAll(passage).map { it.groupValues[1] }.toSet()
-            if (numberedGaps.isNotEmpty()) {
-                val numbers = (0 until questions.length()).mapNotNull {
+            val gapNumbers = Regex("""\((\d+)\)\s*_{2,}""")
+                .findAll(passage).map { it.groupValues[1] }.toList()
+            if (gapNumbers.isNotEmpty()) {
+                val questionNumbers = (0 until questions.length()).mapNotNull {
                     questions.optJSONObject(it)?.optString("n")?.trim()
                 }
-                // A unique number is not enough: every source blank must have
-                // exactly one corresponding option set. Never infer missing keys.
-                if (numbers.size != questions.length() ||
-                    numbers.size != numbers.toSet().size ||
-                    numbers.toSet() != numberedGaps) return
+                if (gapNumbers.size != gapNumbers.toSet().size ||
+                    questionNumbers.size != questions.length() ||
+                    gapNumbers.size != questionNumbers.size ||
+                    gapNumbers.toSet() != questionNumbers.toSet()
+                ) return
             }
         }
         for (qi in 0 until questions.length()) {
+            // Long imported units may contain hundreds of options; let rapid
+            // navigation cancel parsing rather than continuing stale work.
+            currentCoroutineContext().ensureActive()
             val q = questions.optJSONObject(qi) ?: continue
             if (hasVisual(q)) continue
             val originalStem = q.optString("stem").trim()
@@ -205,10 +217,11 @@ class QuestionRepository(private val context: Context) {
             // reading-comprehension questions or unknown answers.
             val number = q.optString("n").trim()
             val marker = "($number)"
-            // Match only the actual numbered blank, not another underscore
-            // appearing later in the passage. The source number is digits only.
+            // A gap must immediately follow its own marker (apart from
+            // whitespace). Searching the next 30 characters can incorrectly
+            // associate a later question's underscores with this number.
             val isGap = number.matches(Regex("""\d+""")) &&
-                Regex("""\($number\)\s*_{2,}""").containsMatchIn(passage)
+                Regex(Regex.escape(marker) + """\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
                 else continue
