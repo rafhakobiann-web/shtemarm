@@ -40,6 +40,9 @@ describe("website textbook navigation regressions", () => {
     expect(bookPage).toContain("sectionAnswerIds");
     expect(bookPage).toContain('role="status" aria-live="polite"');
     expect(bookPage).toContain("retrying={isFetching}");
+    expect(bookPage).toContain("sourceReviewPending");
+    expect(bookPage).toContain('to="/feedback"');
+    expect(bookPage).toContain("Գտե՞լ ես սխալ");
     const loadError = read("src/components/LoadError.tsx");
     expect(loadError).toContain('role="alert"');
     expect(loadError).toContain("disabled={retrying}");
