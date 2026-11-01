@@ -6,6 +6,42 @@ export type Unit =
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
   | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[] };
 export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
+
+/**
+ * Printed question numbers can repeat within a single imported unit (seen in
+ * English II and Armenian History I–III). Keep printed numbers unchanged, but
+ * use distinct internal response keys so answers and scoring never collide.
+ * Cache the mapping: Biology II may contain hundreds of questions per unit.
+ */
+type QuestionUnit = Extract<Unit, { kind: "mc" | "num" }>;
+const responseKeys = new WeakMap<QuestionUnit, string[]>();
+
+function keysFor(unit: QuestionUnit): string[] {
+  const cached = responseKeys.get(unit);
+  if (cached) return cached;
+  const counts = new Map<string, number>();
+  for (const question of unit.questions)
+    counts.set(question.n, (counts.get(question.n) ?? 0) + 1);
+  const reserved = new Set(unit.questions.map((question) => question.n));
+  const keys = unit.questions.map((question, index) => {
+    if ((counts.get(question.n) ?? 0) < 2) return question.n;
+    let key = `__duplicate_${index}:${question.n}`;
+    while (reserved.has(key)) key = `_${key}`;
+    reserved.add(key);
+    return key;
+  });
+  responseKeys.set(unit, keys);
+  return keys;
+}
+
+export function questionAnswerKey(unit: QuestionUnit, index: number): string {
+  return keysFor(unit)[index] ?? "";
+}
+
+export function questionForAnswerKey(unit: QuestionUnit, key: string) {
+  const index = keysFor(unit).indexOf(key);
+  return index < 0 ? undefined : unit.questions[index];
+}
 export const secNum = (n: number) => (n > 70 ? 7 : n);
 /** Translator shape of useTx(); the default only fills placeholders in the Armenian text. */
 export type Tx = (hy: string, vars?: Record<string, string | number>) => string;
