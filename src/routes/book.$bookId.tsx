@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
-import { ALL_BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
+import { useMemo } from "react";
+import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw, MessageCircle } from "lucide-react";
+import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
@@ -28,8 +29,13 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
-  const { data: book, isLoading, error, refetch } = useBook(id);
+  const sourceReviewPending = [1, 2, 3, 21, 22, 23, 31, 32, 63, 64].includes(id);
+  const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
+  const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
+  // A completed answer updates progress frequently, but source questions do not.
+  // Cache the full section response-key lists until the book itself changes.
+  const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
 
   return (
     <div className="space-y-8">
@@ -41,6 +47,19 @@ function BookPage() {
         <div className="space-y-4">
           <h1 className="text-3xl font-black sm:text-4xl">{meta.title}</h1>
           <p className="text-muted-foreground">{meta.sub}</p>
+          {sourceReviewPending && (
+            <div role="note" className="space-y-2 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-sm leading-relaxed">
+              <p>{tx("Այս գրքի առաջադրանքների ամբողջական համեմատությունը բնօրինակի հետ դեռ ընթացքի մեջ է։ Հնարավոր են բացթողումներ կամ թվայնացման սխալներ։")}</p>
+              <Link to="/feedback" className="inline-flex min-h-9 items-center gap-2 font-semibold text-primary hover:underline">
+                <MessageCircle className="size-4" aria-hidden="true" />
+                {tx("Գտե՞լ ես սխալ․ նշիր գիրքը, էջն ու առաջադրանքի համարը")}
+              </Link>
+            </div>
+          )}
+          <Button variant="outline" size="sm" onClick={reload} disabled={isFetching}>
+            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} />
+            {tx("Թարմացնել գրքի տվյալները")}
+          </Button>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
@@ -97,13 +116,22 @@ function BookPage() {
       </div>
 
       {error && !book ? (
-        <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
+        <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
-        <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
+        <div role="status" aria-live="polite" className="grid place-items-center gap-3 py-20">
+          <Loader2 className="animate-spin text-primary" aria-hidden="true" />
+          <span className="text-sm text-muted-foreground">{tx("Գրքի բաժինները բեռնվում են…")}</span>
+        </div>
+      ) : book.sections.length === 0 ? (
+        <div role="status" className="mx-auto max-w-lg space-y-4 rounded-2xl border bg-card p-8 text-center">
+          <p className="font-semibold">{tx("Այս գրքի բաժինները դեռ հասանելի չեն։")}</p>
+          <p className="text-sm text-muted-foreground">{tx("Գրքի տվյալները կարող են թերի լինել։ Փորձիր նորից կամ ընտրիր մեկ այլ գիրք։")}</p>
+          <Button variant="outline" onClick={reload} disabled={isFetching}>{tx("Կրկին բեռնել")}</Button>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {book.sections.map((s) => {
-            const ids = s.units.flatMap((u) => ("questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
+          {book.sections.map((s, sectionIndex) => {
+            const ids = sectionIds[sectionIndex] ?? [];
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (

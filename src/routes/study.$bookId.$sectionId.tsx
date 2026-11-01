@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Heart, Zap, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { questionAnswerKey, questionForAnswerKey, secTitle, type Unit } from "@/lib/books";
+import { ALL_BOOKS, questionAnswerKey, questionForAnswerKey, secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,12 @@ import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
+  beforeLoad: ({ params }) => {
+    // Reject malformed deep links before requesting a nonexistent /data/*.json.
+    if (!ALL_BOOKS.some(book => String(book.id) === params.bookId) ||
+        !/^[1-9][0-9]*$/.test(params.sectionId) ||
+        !Number.isSafeInteger(Number(params.sectionId))) throw notFound();
+  },
   validateSearch: z.object({ mode: z.enum(["game", "classic"]).catch("game") }),
   head: ({ params }) => ({
     meta: [
@@ -29,7 +35,7 @@ function StudyPage() {
   const lang = useLang();
   const { bookId, sectionId } = Route.useParams();
   const { mode } = Route.useSearch();
-  const { data: book, error, isPending, refetch } = useBook(Number(bookId));
+  const { data: book, error, isPending, isFetching, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
 
   useEffect(() => {
@@ -62,7 +68,7 @@ function StudyPage() {
         {lang==="en"?"Learn rules for this section":lang==="ru"?"Правила этого раздела":"Սովորել այս բաժնի կանոնները"}
       </Link>}
       {error && !book ? (
-        <LoadError onRetry={() => void refetch()} detail={error instanceof Error ? error.message : String(error)} />
+        <LoadError onRetry={() => void refetch()} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isPending && !book ? (
         <div role="status" className="grid place-items-center gap-3 py-20">
           <Loader2 className="animate-spin text-primary" />

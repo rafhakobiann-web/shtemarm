@@ -42,6 +42,19 @@ export function questionForAnswerKey(unit: QuestionUnit, key: string) {
   const index = keysFor(unit).indexOf(key);
   return index < 0 ? undefined : unit.questions[index];
 }
+
+/** Use the same answer identities as the study/score screens when counting
+ * completed section questions. Printed numbers can repeat within a source unit;
+ * a plain `unit.id:question.n` would collapse those distinct answers.
+ * Never change the original printed numbers or answer keys.
+ */
+export function sectionAnswerIds(section: Section): string[] {
+  return section.units.flatMap((unit) =>
+    unit.kind === "mc" || unit.kind === "num"
+      ? unit.questions.map((_, index) => `${unit.id}:${questionAnswerKey(unit, index)}`)
+      : [unit.id],
+  );
+}
 export const secNum = (n: number) => (n > 70 ? 7 : n);
 /** Translator shape of useTx(); the default only fills placeholders in the Armenian text. */
 export type Tx = (hy: string, vars?: Record<string, string | number>) => string;
@@ -117,6 +130,19 @@ export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; 
 ];
 
 const cache = new Map<number, Promise<Book>>();
+
+/** Explicit user-initiated reload bypasses the resolved promise cache.
+ * This is needed when an imported book contains zero sections: simply calling
+ * React Query's refetch() otherwise returns the same cached empty response.
+ */
+export function invalidateBookCache(id: number): void {
+  if (id === 0) {
+    for (const part of [1, 2, 3]) cache.delete(part);
+  } else {
+    cache.delete(id);
+  }
+}
+
 /** id 0 = all books merged section-by-section */
 export function loadAny(id: number): Promise<Book> {
   if (id !== 0) return loadBook(id);
@@ -134,9 +160,10 @@ export function loadAny(id: number): Promise<Book> {
 
 export function loadBook(id: number): Promise<Book> {
   if (!cache.has(id)) {
-    cache.set(
-      id,
-      fetchBookResponse(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`, async (r) => {
+    // Keep the request identity: an older failed request must not evict a
+    // successful newer request started by the user's manual refresh.
+    let request: Promise<Book>;
+    request = fetchBookResponse(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`, async (r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           const type = r.headers.get("content-type") ?? "";
           // Some hosting platforms return a successful HTML fallback for
@@ -146,17 +173,22 @@ export function loadBook(id: number): Promise<Book> {
           }
           const data: unknown = await r.json();
           if (!data || typeof data !== "object" || !("sections" in data) ||
-              !Array.isArray(data.sections)) {
+              !Array.isArray(data.sections) ||
+              data.sections.some((section: unknown) =>
+                !section || typeof section !== "object" ||
+                !("units" in section) || !Array.isArray(section.units))) {
+            // A 200 OK /data/*.json can still contain incomplete imported data.
+            // Reject it here rather than letting the section page crash on .units.
             throw new Error(`Book ${id} has an invalid question-bank format`);
           }
           return data as Book;
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
-          cache.delete(id);
+          if (cache.get(id) === request) cache.delete(id);
           throw error;
-        }),
-    );
+        });
+    cache.set(id, request);
   }
   const pending = cache.get(id);
   if (!pending) throw new Error("Չհաջողվեց բեռնել գիրքը");
