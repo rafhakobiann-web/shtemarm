@@ -34,15 +34,21 @@ jobs:
       - name: Verify unsigned release APK exists (no publication)
         run: |
           find android/app/build/outputs/apk/release -type f -name '*.apk' -size +0c | grep -q .
-      - name: Verify 0.2.6 APK identity and debug signature
+      - name: Verify APK identity, declared version and debug signature
         run: |
           set -euo pipefail
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
+          # Compare the packaged APK to the version declared by Gradle. A
+          # release-candidate PR may intentionally advance the app version;
+          # hardcoding an earlier release version produces a false CI failure.
+          EXPECTED_CODE=$(sed -nE 's/^[[:space:]]*versionCode = .*\?: ([0-9]+)[[:space:]]*$/\1/p' android/app/build.gradle.kts)
+          EXPECTED_NAME=$(sed -nE 's/^[[:space:]]*versionName = .*\?: "([^"]+)"[[:space:]]*$/\1/p' android/app/build.gradle.kts)
+          test -n "$EXPECTED_CODE" && test -n "$EXPECTED_NAME"
           BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
           grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
-          grep -Fq "versionCode='8'" <<< "$BADGING"
-          grep -Fq "versionName='0.2.6-beta.1'" <<< "$BADGING"
+          grep -Fq "versionCode='$EXPECTED_CODE'" <<< "$BADGING"
+          grep -Fq "versionName='$EXPECTED_NAME'" <<< "$BADGING"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
           sha256sum "$APK"
       - uses: actions/upload-artifact@v4

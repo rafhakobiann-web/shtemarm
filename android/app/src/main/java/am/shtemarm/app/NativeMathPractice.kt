@@ -113,6 +113,7 @@ fun NativeMathPractice(
     var loading by remember(bookPart) { mutableStateOf(true) }
     var error by remember(bookPart) { mutableStateOf("") }
     var showUnscoredReader by remember(bookPart) { mutableStateOf(false) }
+    var showOtherSourceTasks by remember(bookPart) { mutableStateOf(false) }
     var chapterQuery by remember(bookPart) { mutableStateOf("") }
 
     LaunchedEffect(bookPart) {
@@ -137,6 +138,11 @@ fun NativeMathPractice(
         return
     }
 
+    if (showOtherSourceTasks) {
+        NativeMathOtherTasks(bookPart) { showOtherSourceTasks = false }
+        return
+    }
+
     LazyColumn(
         Modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -155,6 +161,12 @@ fun NativeMathPractice(
                 onClick = { showUnscoredReader = true },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Բացել թվայնացված առաջադրանքների ընթերցիչը") }
+        }
+        item {
+            OutlinedButton(
+                onClick = { showOtherSourceTasks = true },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Բացել շտեմարանի թվային և ճիշտ/սխալ առաջադրանքները") }
         }
         if (loading) {
             item { LinearProgressIndicator(Modifier.fillMaxWidth()) }

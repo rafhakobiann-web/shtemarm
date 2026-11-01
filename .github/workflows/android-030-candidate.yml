@@ -1,0 +1,102 @@
+name: Verify and privately release Shtemarm Android 0.3.0 test candidate
+
+# No public website deployment, no Lovable interaction and no Play Store submission.
+# A debug-signed APK is NOT a stable in-place production update.
+on:
+  push:
+    branches:
+      - release/android-0-3-0-candidate
+    paths:
+      - '.github/workflows/android-030-candidate.yml'
+      - 'android/**'
+      - 'public/data/original-*.json'
+      - 'public/data/bio-book3.json'
+      - 'docs/ANDROID_030_RELEASE_CANDIDATE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shtemarm-030-private-candidate
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    if: github.repository == 'rafhakobiann-web/shtemarm' && github.ref == 'refs/heads/release/android-0-3-0-candidate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Private repository and source-security gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view --json isPrivate --jq .isPrivate)" = 'true'
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          echo "y" | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Verify all offline question sources, four original banks and scored math
+        run: |
+          set -euo pipefail
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Run Android unit tests and compile both APK variants
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug assembleRelease --stacktrace
+      - name: Verify package, version, debug signature and checksum
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          find android/app/build/outputs/apk/release -type f -name '*.apk' -size +0c | grep -q .
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionName='0.3.0'" <<< "$BADGING"
+          grep -Fq "versionCode='9'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Shtemarm-Android-0.3.0-Debug-Test.apk
+          sha256sum Shtemarm-Android-0.3.0-Debug-Test.apk > Shtemarm-Android-0.3.0-Debug-Test.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shtemarm-Android-0.3.0-Debug-Test
+          path: |
+            Shtemarm-Android-0.3.0-Debug-Test.apk
+            Shtemarm-Android-0.3.0-Debug-Test.apk.sha256
+          if-no-files-found: error
+      - name: Create private 0.3.0 prerelease only after all checks pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Do not publish a stale APK when a newer candidate commit exists.
+          REMOTE_HEAD=$(gh api repos/rafhakobiann-web/shtemarm/git/ref/heads/release/android-0-3-0-candidate --jq .object.sha)
+          test "$REMOTE_HEAD" = "$GITHUB_SHA" || {
+            echo "The candidate branch advanced; refusing to publish stale APK." >&2
+            exit 1
+          }
+          TAG=v0.3.0-beta.3
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release already exists; refusing to replace its APK or tag." >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Shtemarm-Android-0.3.0-Debug-Test.apk \
+            Shtemarm-Android-0.3.0-Debug-Test.apk.sha256 \
+            --target "$GITHUB_SHA" \
+            --title 'Shtemarm Android 0.3.0 — Website source books correction (beta 3)' \
+            --notes-file docs/ANDROID_030_RELEASE_CANDIDATE.md \
+            --prerelease

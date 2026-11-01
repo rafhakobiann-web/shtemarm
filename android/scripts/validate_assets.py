@@ -44,6 +44,43 @@ for name in BOOKS:
     print(f"{name}: {amount} individual questions")
 assert all_questions > 4000, f"Unexpectedly low question count: {all_questions}"
 
+# Verify that Android's mathematical source mirrors the website's original
+# two book datasets. There are no generated substitute/author-written 0.3.0 banks.
+math_index = read(WEB_DATA / "math-books-index.json")
+math_text = read(WEB_DATA / "math-text-questions.json")
+assert isinstance(math_index.get("books"), dict), "Missing website math books"
+assert isinstance(math_text, dict), "Missing website math text data"
+math_subquestions = 0
+for book_id, expected in (("matem-1", 2640), ("matem-2", 3036)):
+    sections = math_index["books"].get(book_id, {}).get("sections", [])
+    assert sections, f"Missing indexed math sections: {book_id}"
+    assert isinstance(math_text.get(book_id), dict), f"Missing transcribed math text: {book_id}"
+    part_count = 0
+    kinds = set()
+    for section in sections:
+        assert "chapter" in section and "section" in section
+        for task in section.get("tasks", []):
+            kind = task.get("answer_type", "choice")
+            assert kind in {"choice", "open", "tf"}, (book_id, kind)
+            count = task.get("sub_count")
+            assert isinstance(count, int) and count > 0, (book_id, task.get("task"))
+            answers = task.get("answers")
+            assert isinstance(answers, list) and len(answers) == count, (
+                book_id, task.get("task"), "answer count mismatch"
+            )
+            kinds.add(kind)
+            part_count += count
+    assert part_count == expected, (book_id, part_count, expected)
+    assert kinds == {"choice", "open", "tf"}, (book_id, kinds)
+    math_subquestions += part_count
+    print(f"{book_id}: {part_count} indexed website subquestions; types={sorted(kinds)}")
+assert math_subquestions == 5676
+
+# Reject the mistakenly introduced original-practice banks from beta.2.
+for name in ("original-math.json", "original-english.json",
+             "original-history.json", "original-biology-3.json"):
+    assert not (WEB_DATA / name).exists(), f"Unexpected authored bank: {name}"
+
 # The English books use empty stems for numbered gap-fill exercises.
 # Each recovered item must have the corresponding numbered blank in its passage.
 recoverable_english_gaps = 0
