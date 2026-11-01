@@ -11,6 +11,12 @@ on:
       - 'src/routes/study-tools.tsx'
       - 'src/components/BiologyWorkspace.tsx'
       - 'src/lib/books.ts'
+      - 'src/lib/math-answer-ui.ts'
+      - 'src/components/UnitCard.tsx'
+      - 'src/routes/study.$bookId.$sectionId.tsx'
+      - 'src/routes/math.play.tsx'
+      - 'src/test/question-answer-integrity.test.ts'
+      - 'src/test/math-answer-ui.test.ts'
       - 'src/lib/fetch-book-response.ts'
       - 'src/test/fetch-book-response.test.ts'
       - 'src/i18n/ru.ts'
@@ -39,7 +45,7 @@ jobs:
       - name: Compare Mathematics question text references to original book transcription
         run: node scripts/audit-math-requirements.mjs
       - name: Test study tools and existing question bank behavior
-        run: bunx vitest run src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
+        run: bunx vitest run src/test/question-answer-integrity.test.ts src/test/math-answer-ui.test.ts src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
       - name: Verify production build
         run: bun run build
       - name: Upload Math source-wording audit for manual PDF review
