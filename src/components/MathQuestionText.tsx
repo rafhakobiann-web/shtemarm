@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { MathQuestion, MathTranscriptionRef } from "@/lib/math-bank";
+import { fetchBookResponse } from "@/lib/fetch-book-response";
 import { useTx } from "@/lib/lang";
 import { MathSourceDiagram } from "@/components/MathSourceDiagram";
 import { MathContent } from "@/components/MathText";
@@ -35,11 +36,13 @@ function TranscribedQuestion({ reference, fallback }: { reference: MathTranscrip
   const q = useQuery({
     queryKey: ["math-transcription", reference.book, reference.section],
     queryFn: async (): Promise<NativeSection> => {
-      const r = await fetch(`/data/math-transcriptions/${reference.book}/${reference.section}.json`, { signal: AbortSignal.timeout(20000) });
-      if (!r.ok) throw new Error("Question text could not be loaded");
-      const data: NativeSection = await r.json();
-      if (data.format !== 1 || !data.tasks) throw new Error("Invalid transcription data");
-      return data;
+      const url = `/data/math-transcriptions/${reference.book}/${reference.section}.json`;
+      return fetchBookResponse(url, async (response) => {
+        if (!response.ok) throw new Error("Question text could not be loaded");
+        const data: NativeSection = await response.json();
+        if (data.format !== 1 || !data.tasks) throw new Error("Invalid transcription data");
+        return data;
+      });
     },
     staleTime: Infinity,
   });
