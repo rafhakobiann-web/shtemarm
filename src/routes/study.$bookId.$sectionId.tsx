@@ -35,7 +35,7 @@ function StudyPage() {
   const lang = useLang();
   const { bookId, sectionId } = Route.useParams();
   const { mode } = Route.useSearch();
-  const { data: book, error, isPending, refetch } = useBook(Number(bookId));
+  const { data: book, error, isPending, isFetching, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
 
   useEffect(() => {
@@ -68,7 +68,7 @@ function StudyPage() {
         {lang==="en"?"Learn rules for this section":lang==="ru"?"Правила этого раздела":"Սովորել այս բաժնի կանոնները"}
       </Link>}
       {error && !book ? (
-        <LoadError onRetry={() => void refetch()} detail={error instanceof Error ? error.message : String(error)} />
+        <LoadError onRetry={() => void refetch()} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isPending && !book ? (
         <div role="status" className="grid place-items-center gap-3 py-20">
           <Loader2 className="animate-spin text-primary" />
