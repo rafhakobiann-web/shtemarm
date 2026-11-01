@@ -42,6 +42,19 @@ export function questionForAnswerKey(unit: QuestionUnit, key: string) {
   const index = keysFor(unit).indexOf(key);
   return index < 0 ? undefined : unit.questions[index];
 }
+
+/** Use the same answer identities as the study/score screens when counting
+ * completed section questions. Printed numbers can repeat within a source unit;
+ * a plain `unit.id:question.n` would collapse those distinct answers.
+ * Never change the original printed numbers or answer keys.
+ */
+export function sectionAnswerIds(section: Section): string[] {
+  return section.units.flatMap((unit) =>
+    unit.kind === "mc" || unit.kind === "num"
+      ? unit.questions.map((_, index) => `${unit.id}:${questionAnswerKey(unit, index)}`)
+      : [unit.id],
+  );
+}
 export const secNum = (n: number) => (n > 70 ? 7 : n);
 /** Translator shape of useTx(); the default only fills placeholders in the Armenian text. */
 export type Tx = (hy: string, vars?: Record<string, string | number>) => string;
