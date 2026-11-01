@@ -181,13 +181,18 @@ class QuestionRepository(private val context: Context) {
         val questions = unit.optJSONArray("questions") ?: return
         // Do not map multiple imported option sets to the same numbered gap.
         // Ambiguous source numbering must be checked against the original book.
-        if (passage.isNotBlank() && questions.length() > 1) {
-            val hasNumberedGaps = Regex("""\(\d+\)\s*_{2,}""").containsMatchIn(passage)
-            if (hasNumberedGaps) {
+        if (passage.isNotBlank()) {
+            val numberedGaps = Regex("""\((\d+)\)\s*_{2,}""")
+                .findAll(passage).map { it.groupValues[1] }.toSet()
+            if (numberedGaps.isNotEmpty()) {
                 val numbers = (0 until questions.length()).mapNotNull {
                     questions.optJSONObject(it)?.optString("n")?.trim()
                 }
-                if (numbers.size != questions.length() || numbers.size != numbers.toSet().size) return
+                // A unique number is not enough: every source blank must have
+                // exactly one corresponding option set. Never infer missing keys.
+                if (numbers.size != questions.length() ||
+                    numbers.size != numbers.toSet().size ||
+                    numbers.toSet() != numberedGaps) return
             }
         }
         for (qi in 0 until questions.length()) {
@@ -200,12 +205,10 @@ class QuestionRepository(private val context: Context) {
             // reading-comprehension questions or unknown answers.
             val number = q.optString("n").trim()
             val marker = "($number)"
-            val markerIndex = if (number.isNotBlank()) passage.indexOf(marker) else -1
-            val afterMarker = if (markerIndex >= 0) passage.substring(
-                markerIndex + marker.length,
-                minOf(markerIndex + marker.length + 30, passage.length)
-            ) else ""
-            val isGap = markerIndex >= 0 && afterMarker.contains(Regex("_{2,}"))
+            // Match only the actual numbered blank, not another underscore
+            // appearing later in the passage. The source number is digits only.
+            val isGap = number.matches(Regex("""\d+""")) &&
+                Regex("""\($number\)\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
                 else continue
