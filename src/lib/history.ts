@@ -33,17 +33,17 @@ export async function loadHistoryBank(): Promise<HistoryEntry[]> {
       throw new Error(`Հայոց պատմության հարցաշարի անվավեր կամ կրկնվող առաջադրանք՝ ${id}`);
     }
     seen.add(id);
-    return ({
-    source: "bank",
-    section: `${q.source_run}: ${q.section}`,
-    unit: {
-      id,
-      label: `${q.section} · ${q.num}`,
-      kind: "mc",
-      passage: "",
-      questions: [{ n: String(q.num), stem: q.stem, options: q.options, answer: q.answer }],
-    },
-  });
+    return {
+      source: "bank",
+      section: `${q.source_run}: ${q.section}`,
+      unit: {
+        id,
+        label: `${q.section} · ${q.num}`,
+        kind: "mc",
+        passage: "",
+        questions: [{ n: String(q.num), stem: q.stem, options: q.options, answer: q.answer }],
+      },
+    };
   });
 }
 /** Keep each individually answerable multiple-choice/numeric question available.
