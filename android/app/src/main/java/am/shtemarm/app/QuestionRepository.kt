@@ -112,7 +112,9 @@ class QuestionRepository(private val context: Context) {
                 // chapter names and score only keyed, non-illustrated choices.
                 val flat = json.optJSONArray("questions") ?: json.optJSONArray("items")
                 if (flat != null) {
-                    val verifiedRoot = json.has("verified")
+                    // A present but false `verified` field is not proof of review.
+                    // Only explicitly true root metadata may bypass per-item status.
+                    val verifiedRoot = json.optBoolean("verified", false)
                     val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
                     for (i in 0 until flat.length()) {
                         ensureActive()
