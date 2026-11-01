@@ -25,6 +25,22 @@ for (const bookId of [1, 2, 3]) {
         if (unit.answer == null || (Array.isArray(unit.answer) && !unit.answer.length)) summary.missingAnswers++;
         continue;
       }
+      // A shared passage may contain numbered blanks while the importer has
+      // fewer question/option records. Report the discrepancy without guessing
+      // which missing answers belong to which original source blanks.
+      const passage = String(unit.passage ?? "");
+      const gaps = [...passage.matchAll(/\\((\\d+)\\)\\s*_{2,}/g)].map(m => Number(m[1]));
+      if (gaps.length > 0) {
+        const uniqueGaps = [...new Set(gaps)];
+        const provided = unit.questions.map(q => String(q.n ?? "").trim());
+        if (uniqueGaps.length !== unit.questions.length || uniqueGaps.some(n => !provided.includes(String(n)))) {
+          blockers.push({
+            book: bookId, section: section.n, unit: unit.id,
+            reason: "gap-question-mapping-needs-source-verification",
+            passageGapNumbers: uniqueGaps, importedQuestionNumbers: provided,
+          });
+        }
+      }
       const numbers = new Set();
       for (const question of unit.questions) {
         summary.entries++;
