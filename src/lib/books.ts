@@ -130,6 +130,19 @@ export const ALL_BOOKS: ReadonlyArray<{ id: number; title: string; sub: string; 
 ];
 
 const cache = new Map<number, Promise<Book>>();
+
+/** Explicit user-initiated reload bypasses the resolved promise cache.
+ * This is needed when an imported book contains zero sections: simply calling
+ * React Query's refetch() otherwise returns the same cached empty response.
+ */
+export function invalidateBookCache(id: number): void {
+  if (id === 0) {
+    for (const part of [1, 2, 3]) cache.delete(part);
+  } else {
+    cache.delete(id);
+  }
+}
+
 /** id 0 = all books merged section-by-section */
 export function loadAny(id: number): Promise<Book> {
   if (id !== 0) return loadBook(id);
