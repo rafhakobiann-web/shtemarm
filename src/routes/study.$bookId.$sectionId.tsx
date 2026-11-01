@@ -43,6 +43,7 @@ function StudyPage() {
         <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">{section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}</span>
         </Link>
+        <h1 className="sr-only">{section ? `Շտեմարան ${bookId} · ${secTitle(section)} · Ուսուցում` : `Շտեմարան ${bookId} · Բաժին ${sectionId} · Ուսուցում`}</h1>
         <div className="flex rounded-xl bg-muted p-1 text-sm font-semibold">
           {(["game", "classic"] as const).map((m) => (
             <Link
