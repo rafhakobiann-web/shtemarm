@@ -198,7 +198,7 @@ class QuestionRepository(private val context: Context) {
                     questions.optJSONObject(it)?.optString("n")?.trim()
                 }
                 if (gapNumbers.size != gapNumbers.toSet().size ||
-                    questionNumbers.size != questions.length ||
+                    questionNumbers.size != questions.length() ||
                     gapNumbers.size != questionNumbers.size ||
                     gapNumbers.toSet() != questionNumbers.toSet()
                 ) return
