@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normNum, scoreUnit, type UnitAnswer } from "@/components/UnitCard";
+import { normNum, scoreUnit, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import type { Unit } from "@/lib/books";
 
 describe("answer scoring", () => {
@@ -30,6 +30,19 @@ describe("answer scoring", () => {
     const unit: Unit = { id: "set-1", label: "Set", kind: "set", passage: "", answer: [2, 4], count: 5 };
     expect(scoreUnit(unit, { nums: [4, 2] }).got).toBe(1);
     expect(scoreUnit(unit, { nums: [2, 2, 4] }).got).toBe(0);
+  });
+
+
+  it("requires an explicit 'none' selection for sets whose answer key is empty", () => {
+    const unit: Unit = { id: "set-empty", label: "Six claims", kind: "set", passage: "Statements", answer: [], count: 6 };
+    expect(scoreUnit(unit, undefined).got).toBe(0);
+    expect(scoreUnit(unit, { nums: [] }).got).toBe(0);
+    expect(isAnswered(unit, undefined)).toBe(false);
+    expect(isAnswered(unit, { nums: [] })).toBe(false);
+    expect(isAnswered(unit, { nums: [], none: true })).toBe(true);
+    expect(scoreUnit(unit, { nums: [], none: true }).got).toBe(1);
+    expect(scoreUnit(unit, { nums: [1], none: false }).got).toBe(0);
+    expect(scoreUnit(unit, { nums: [1], none: true }).got).toBe(0);
   });
 
   it("requires sequence answers in the exact order", () => {
