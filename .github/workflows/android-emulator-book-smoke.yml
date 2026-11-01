@@ -1,0 +1,60 @@
+name: Verify Android native launch and source-book loading on emulator
+
+# Experimental test-only workflow on a Draft PR branch.
+# No release, signing-key access, deployment, website or Lovable changes.
+on:
+  push:
+    branches:
+      - test/android-emulator-book-smoke-20261101
+    paths:
+      - '.github/workflows/android-emulator-book-smoke.yml'
+      - 'android/**'
+  pull_request:
+    paths:
+      - '.github/workflows/android-emulator-book-smoke.yml'
+      - 'android/**'
+
+permissions:
+  contents: read
+
+jobs:
+  emulator-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Validate included source assets
+        run: |
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Compile the emulator tests and run JVM regressions
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebugAndroidTest --stacktrace
+      - name: Run emulator launch and English book-load smoke tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disk-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 900
+          disable-animations: true
+          script: cd android && gradle --no-daemon connectedDebugAndroidTest --stacktrace
+      - name: Upload instrumentation results even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shtemarm-android-emulator-smoke-report
+          path: |
+            android/app/build/outputs/androidTest-results/**
+            android/app/build/reports/androidTests/**
+          if-no-files-found: warn
