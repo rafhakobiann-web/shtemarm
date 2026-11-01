@@ -3,7 +3,7 @@
  "book": "patm-1",
  "title": "Հայոց պատմություն · Շտեմարան 1 · Միայն ստուգված միակողմանի հարցեր",
  "verified": {
-  "method": "matched against the uploaded Book 1 answer tables by section; source page checked, no duplicate question numbers per section",
+  "method": "Book 1, Section 1 / source run 0 checked against pp. 4–10 and its printed answer table; remaining sections still need PDF review",
   "single_choice_only": true
  },
  "questions": [
@@ -295,6 +295,21 @@
   {
    "book": "patm-1",
    "section": "ՏԱՐԵԹՎԵՐ",
+   "num": 20,
+   "page": 5,
+   "stem": "Ե՞րբ է Աքեմենյան տերությունը բաժանվել վարչական 20 մեծ շրջանների.",
+   "options": {
+    "1": "Ք. ա. 523 թ.",
+    "2": "Ք. ա. 521 թ.",
+    "3": "Ք. ա. 520 թ.",
+    "4": "Ք. ա. 529 թ."
+   },
+   "answer": "3",
+   "source_run": 0
+  },
+  {
+   "book": "patm-1",
+   "section": "ՏԱՐԵԹՎԵՐ",
    "num": 21,
    "page": 6,
    "stem": "Ե՞րբ է Դարեհ Կոդոմանոսը դարձել ող ջ Աքեմենյան տերության տիրակալ.",
@@ -460,6 +475,21 @@
   {
    "book": "patm-1",
    "section": "ՏԱՐԵԹՎԵՐ",
+   "num": 32,
+   "page": 6,
+   "stem": "Ե՞րբ է հրապարակվել Արտաշես I–ի հրամանագիրը հողային բարեփոխման վերաբերյալ.",
+   "options": {
+    "1": "Ք. ա. 165 թ.",
+    "2": "Ք. ա. 180 թ.",
+    "3": "Ք. ա. 160 թ.",
+    "4": "Ք. ա. 140 թ."
+   },
+   "answer": "2",
+   "source_run": 0
+  },
+  {
+   "book": "patm-1",
+   "section": "ՏԱՐԵԹՎԵՐ",
    "num": 33,
    "page": 7,
    "stem": "Ե՞րբ է գահակալել Արտավազդ I–ը.",
@@ -620,6 +650,21 @@
     "4": "Ք. ա. 65 թ."
    },
    "answer": "2",
+   "source_run": 0
+  },
+  {
+   "book": "patm-1",
+   "section": "ՏԱՐԵԹՎԵՐ",
+   "num": 44,
+   "page": 7,
+   "stem": "Պոմպեոսի և Տիգրան Մեծի միջև ե՞րբ սկսվեցին հաշտության բանակցությունները.",
+   "options": {
+    "1": "Ք. ա. 64 թ. օգոստոսին",
+    "2": "Ք. ա. 67 թ. հոկտեմբերին",
+    "3": "Ք. ա. 66 թ. սեպտեմբերին",
+    "4": "Ք. ա. 65 թ. սեպտեմբերին"
+   },
+   "answer": "3",
    "source_run": 0
   },
   {
