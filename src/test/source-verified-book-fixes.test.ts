@@ -108,6 +108,12 @@ describe("source-verified English and Mathematics book corrections", () => {
     expect(task3[3].options).toEqual(["102", "106", "135", "117"]);
   });
 
+  it("restores both mixed-fraction choices in Math II task 4, printed page 7", () => {
+    const task = math["matem-2"]["1-1"]["4"];
+    expect(task[0].options).toEqual(["6", "14", "12 2/3", "2"]);
+    expect(task[3].options).toEqual(["10 2/3", "6", "6 2/3", "1/15"]);
+  });
+
   it("retains all 5,676 indexed math questions and official answer columns", () => {
     const counts = Object.fromEntries(Object.entries(mathIndex.books).map(([id, data]: [string, any]) =>
       [id, data.sections.flatMap((s: any) => s.tasks).reduce((n: number, task: any) => n + task.sub_count, 0)]));
