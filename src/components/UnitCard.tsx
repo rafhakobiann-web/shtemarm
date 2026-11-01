@@ -15,6 +15,8 @@ export type UnitAnswer = {
   mc?: Record<string, string>;
   nums?: (number | null)[];
   match?: Record<string, number>;
+  /** Explicit "none of the numbered statements" answer for set tasks. */
+  none?: boolean;
 };
 
 /* ---------- passage ---------- */
@@ -195,7 +197,8 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   const given = (a?.nums ?? []).filter((x): x is number => x != null);
   const ok =
     u.kind === "set"
-      ? JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify([...u.answer].sort((x, y) => x - y))
+      ? (a?.none === true && given.length === 0 || given.length > 0 && a?.none !== true)
+        && JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify([...u.answer].sort((x, y) => x - y))
       : JSON.stringify(a?.nums ?? []) === JSON.stringify(u.answer);
   return { got: ok ? 1 : 0, total: 1, per: [ok] };
 }
@@ -205,7 +208,7 @@ export function isAnswered(u: Unit, a: UnitAnswer | undefined, qn?: string) {
   if (u.kind === "mc" || u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q, i) => !!a.mc?.[questionAnswerKey(u, i)]);
   if (u.kind === "match") return Object.keys(u.answer).every((k) => a.match?.[k]);
   if (u.kind === "seq") return (a.nums ?? []).filter((x) => x != null).length === u.answer.length;
-  return (a.nums ?? []).length > 0;
+  return (a.none === true && (a.nums ?? []).length === 0) || (a.nums ?? []).length > 0;
 }
 
 /* ---------- card ---------- */
@@ -275,7 +278,10 @@ export function UnitCard(props: {
                   "grid size-7 shrink-0 place-items-center rounded-lg border text-sm font-bold",
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
-                <span className="min-w-0 flex-1 leading-relaxed"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
+                <span className="min-w-0 flex-1 leading-relaxed">
+                  {v.trim() ? <EnglishText text={v} context={`${q.stem} ${v}`} />
+                    : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
+                </span>
                 {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}
                 {show && isSel && !isC && <X aria-hidden="true" className="size-4 shrink-0 text-destructive" />}
               </div>
@@ -407,7 +413,7 @@ export function UnitCard(props: {
     u.kind === "match"
       ? Object.entries(u.answer).map(([k, v]) => `${k}${v}`).join(" ")
       : u.kind === "set" || u.kind === "seq"
-        ? u.answer.join(", ")
+        ? u.answer.length ? u.answer.join(", ") : tx("Ոչ մեկը")
         : "";
   const chosenText =
     u.kind === "match"
@@ -452,11 +458,13 @@ export function UnitCard(props: {
           label={tx("Ընտրեք ճիշտ համարները")}
           count={u.count ?? 5}
           selected={(a?.nums ?? []).filter((x): x is number => x != null)}
+          noneSelected={a?.none === true}
+          onNone={() => onChange({ ...a, nums: [], none: true })}
           disabled={show}
           correct={show ? u.answer : undefined}
           onToggle={(n) => {
             const cur = (a?.nums ?? []).filter((x): x is number => x != null);
-            onChange({ ...a, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
+            onChange({ ...a, none: false, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
           }}
         />
       )}
@@ -521,7 +529,8 @@ function numCls(sel: boolean, show: boolean, correct: boolean) {
   );
 }
 
-function NumPicker(p: { label: string; count: number; selected: number[]; disabled: boolean; correct?: number[] | undefined; onToggle: (n: number) => void }) {
+function NumPicker(p: { label: string; count: number; selected: number[]; noneSelected: boolean; disabled: boolean; correct?: number[] | undefined; onToggle: (n: number) => void; onNone: () => void }) {
+  const tx = useTx();
   return (
     <div>
       <p className="mb-2 text-sm font-semibold">{p.label}</p>
@@ -531,6 +540,18 @@ function NumPicker(p: { label: string; count: number; selected: number[]; disabl
             {n}
           </button>
         ))}
+        <button
+          type="button"
+          disabled={p.disabled}
+          aria-pressed={p.noneSelected}
+          onClick={p.onNone}
+          className={cn(
+            "min-h-10 rounded-lg border-2 px-3 text-sm font-bold transition-colors",
+            p.noneSelected ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/50",
+          )}
+        >
+          {tx("Ոչ մեկը")}
+        </button>
       </div>
     </div>
   );
