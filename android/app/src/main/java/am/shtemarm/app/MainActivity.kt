@@ -19,6 +19,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -404,7 +407,18 @@ private fun NativeShtemarm() {
                 AnimatedContent(
                     targetState = page,
                     modifier = Modifier.fillMaxSize(),
-                    transitionSpec = { fadeIn(tween(120)) togetherWith fadeOut(tween(90)) },
+                    transitionSpec = {
+                        // Lightweight, GPU-friendly motion: avoid blur on large question lists.
+                        val forward = targetState.ordinal >= initialState.ordinal
+                        (slideInHorizontally(
+                            animationSpec = tween(260, easing = FastOutSlowInEasing),
+                            initialOffsetX = { width -> if (forward) width / 12 else -width / 12 }
+                        ) + fadeIn(tween(210))) togetherWith
+                            (slideOutHorizontally(
+                                animationSpec = tween(200, easing = FastOutSlowInEasing),
+                                targetOffsetX = { width -> if (forward) -width / 16 else width / 16 }
+                            ) + fadeOut(tween(160)))
+                    },
                     label = "native screen transition"
                 ) { screen ->
                 when (screen) {
