@@ -221,7 +221,7 @@ class QuestionRepository(private val context: Context) {
             // whitespace). Searching the next 30 characters can incorrectly
             // associate a later question's underscores with this number.
             val isGap = number.isNotBlank() &&
-                Regex(Regex.escape(marker) + """\\s*_{2,}""").containsMatchIn(passage)
+                Regex(Regex.escape(marker) + """\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
                 else continue
