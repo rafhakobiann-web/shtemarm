@@ -39,6 +39,10 @@ describe("website textbook navigation regressions", () => {
     expect(bookPage).toContain("useMemo");
     expect(bookPage).toContain("sectionAnswerIds");
     expect(bookPage).toContain('role="status" aria-live="polite"');
+    expect(bookPage).toContain("retrying={isFetching}");
+    const loadError = read("src/components/LoadError.tsx");
+    expect(loadError).toContain('role="alert"');
+    expect(loadError).toContain("disabled={retrying}");
   });
 
   it("rejects HTML fallback responses and incorrect book JSON schemas", () => {
