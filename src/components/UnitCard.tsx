@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
-import type { Unit, MCQuestion } from "@/lib/books";
+import { questionAnswerKey, type Unit, type MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
@@ -173,19 +173,19 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   if (u.kind === "mc" && isGtcClaimsBundle(u)) {
     // GTC rules: +1 correct true/false, -1 incorrect, 0 "don't know".
     // Deductions are clamped to zero *within the bundle*, not across the exam.
-    const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
-    const wrong = u.questions.filter((q) => {
-      const chosen = a?.mc?.[q.n];
+    const per = u.questions.map((q, i) => a?.mc?.[questionAnswerKey(u, i)] === q.answer);
+    const wrong = u.questions.filter((q, i) => {
+      const chosen = a?.mc?.[questionAnswerKey(u, i)];
       return (chosen === "1" || chosen === "2") && chosen !== q.answer;
     }).length;
     return { got: Math.max(0, per.filter(Boolean).length - wrong), total: 6, per };
   }
   if (u.kind === "mc") {
-    const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
+    const per = u.questions.map((q, i) => a?.mc?.[questionAnswerKey(u, i)] === q.answer);
     return { got: per.filter(Boolean).length, total: per.length, per };
   }
   if (u.kind === "num") {
-    const per = u.questions.map((q) => normNum(a?.mc?.[q.n]) === normNum(q.answer));
+    const per = u.questions.map((q, i) => normNum(a?.mc?.[questionAnswerKey(u, i)]) === normNum(q.answer));
     return { got: per.filter(Boolean).length, total: per.length, per };
   }
   if (u.kind === "match") {
@@ -202,8 +202,7 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
 
 export function isAnswered(u: Unit, a: UnitAnswer | undefined, qn?: string) {
   if (!a) return false;
-  if (u.kind === "mc") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
-  if (u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
+  if (u.kind === "mc" || u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q, i) => !!a.mc?.[questionAnswerKey(u, i)]);
   if (u.kind === "match") return Object.keys(u.answer).every((k) => a.match?.[k]);
   if (u.kind === "seq") return (a.nums ?? []).filter((x) => x != null).length === u.answer.length;
   return (a.nums ?? []).length > 0;
@@ -225,12 +224,13 @@ export function UnitCard(props: {
   const tx = useTx();
   const language = useLang();
 
-  const mcBlock = (q: MCQuestion) => {
-    const show = revealed(q.n);
-    const chosen = a?.mc?.[q.n];
+  const mcBlock = (q: MCQuestion, index: number) => {
+    const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
+    const show = revealed(answerKey);
+    const chosen = a?.mc?.[answerKey];
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <div key={q.n} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
+      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -249,7 +249,7 @@ export function UnitCard(props: {
                   // A word-translation button inside EnglishText must never pick
                   // an answer. The actual radio remains keyboard accessible.
                   if (show || (event.target as HTMLElement).closest("input,button,a")) return;
-                  onChange({ ...a, mc: { ...a?.mc, [q.n]: k } });
+                  onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } });
                 }}
                 className={cn(
                   "answer-option flex min-h-14 items-start gap-3 rounded-2xl border-2 px-3 py-3 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 motion-reduce:transition-none",
@@ -263,11 +263,11 @@ export function UnitCard(props: {
               >
                 <input
                   type="radio"
-                  name={`${u.id}:${q.n}`}
+                  name={`${u.id}:${answerKey}`}
                   value={k}
                   checked={isSel}
                   disabled={show}
-                  onChange={() => onChange({ ...a, mc: { ...a?.mc, [q.n]: k } })}
+                  onChange={() => onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } })}
                   aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })}
                   className="mt-1 size-4 shrink-0 accent-primary"
                 />
@@ -283,7 +283,7 @@ export function UnitCard(props: {
           })}
         </div>
         {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -313,12 +313,13 @@ export function UnitCard(props: {
     );
   };
 
-  const numBlock = (q: { n: string; stem: string; answer: string; explanation?: string }) => {
-    const show = revealed(q.n);
-    const val = a?.mc?.[q.n] ?? "";
+  const numBlock = (q: { n: string; stem: string; answer: string; explanation?: string }, index: number) => {
+    const answerKey = u.kind === "num" ? questionAnswerKey(u, index) : q.n;
+    const show = revealed(answerKey);
+    const val = a?.mc?.[answerKey] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <div key={q.n} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
+      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -332,7 +333,7 @@ export function UnitCard(props: {
             disabled={show}
             value={val}
             aria-label={tx("Պատասխան {n}", { n: q.n })}
-            onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [q.n]: e.target.value } })}
+            onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [answerKey]: e.target.value } })}
             className={cn(
               "h-11 w-40 rounded-lg border-2 bg-background px-3 font-display text-lg font-bold focus:outline-none",
               !show && "border-border focus:border-primary",
@@ -343,7 +344,7 @@ export function UnitCard(props: {
           {show && <span className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
         {props.onCheck && !show && val.trim() && (
-          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
         )}
