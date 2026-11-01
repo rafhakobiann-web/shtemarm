@@ -262,7 +262,20 @@ function PlayPage() {
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
         <MathTools />
-        <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
+        <section className="sticky top-2 z-20 space-y-2 rounded-2xl border border-primary/20 bg-card/95 p-4 shadow-lg backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+              {tx("Պատասխանած՝ {n} / {total}", { n: round.filter((item) => !!testAnswers[item.id]?.trim()).length, total: round.length })}
+            </span>
+          </div>
+          <progress
+            className="h-2 w-full overflow-hidden rounded-full accent-primary"
+            aria-label={tx("Առաջընթաց")}
+            max={Math.max(1, round.length)}
+            value={round.filter((item) => !!testAnswers[item.id]?.trim()).length}
+          />
+        </section>
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
