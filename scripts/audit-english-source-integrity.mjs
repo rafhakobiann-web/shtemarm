@@ -29,7 +29,7 @@ for (const bookId of [1, 2, 3]) {
       // fewer question/option records. Report the discrepancy without guessing
       // which missing answers belong to which original source blanks.
       const passage = String(unit.passage ?? "");
-      const gaps = [...passage.matchAll(/\\((\\d+)\\)\\s*_{2,}/g)].map(m => Number(m[1]));
+      const gaps = [...passage.matchAll(/\((\d+)\)\s*_{2,}/g)].map(m => Number(m[1]));
       if (gaps.length > 0) {
         const uniqueGaps = [...new Set(gaps)];
         const provided = unit.questions.map(q => String(q.n ?? "").trim());
