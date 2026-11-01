@@ -13,6 +13,7 @@ const allowedVerb=/Գտնել|Գտե՛ք|Հաշվել|Հաշվե՛ք|Լուծե�
 const report={
   counts:{sections:0,tasks:0,questions:0,native:0,withStems:0,missingStem:0,missingNativeFiles:0,
     missingNativeTasks:0,missingNativeQuestions:0,missingPlainText:0,
+    textOnlyQuestions:0, nativeSectionUnavailableQuestions:0,
     nativeSectionUnlinkedQuestions:0, supplementalTextDifferences:0},
   warnings:[],errors:[],
 };
@@ -43,6 +44,7 @@ for(const [book,meta] of Object.entries(index.books)){
         }
         const ref=row?.transcription;
         if(!ref){
+          report.counts.textOnlyQuestions++;
           // A native PDF-positioned section may start with task 6 or 9.
           // Its first tasks are still present as plain text, but their exact
           // original maths cannot yet be verified from native geometry.
@@ -53,6 +55,10 @@ for(const [book,meta] of Object.entries(index.books)){
               report.counts.nativeSectionUnlinkedQuestions++;
               report.warnings.push({kind:"native_section_missing_task",book,key,task:task.task,sub:i+1});
             }
+          } else {
+            // These questions have text in the legacy bank, but no separate
+            // PDF-positioned transcription for their section yet.
+            report.counts.nativeSectionUnavailableQuestions++;
           }
           if(!row?.prompt?.trim()) {report.counts.missingPlainText++;report.warnings.push({kind:"untranscribed",book,key,task:task.task,sub:i+1});}
           continue;
