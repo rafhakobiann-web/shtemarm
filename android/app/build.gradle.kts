@@ -10,6 +10,7 @@ android {
         applicationId = "am.shtemarm.app"
         minSdk = 24
         targetSdk = 35
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 9
         versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.3.0"
     }
@@ -49,4 +50,6 @@ dependencies {
     // Pinned to Haze v1 to avoid pulling Haze 2's Kotlin 2.4 / Compose 1.12 stack.
     implementation("dev.chrisbanes.haze:haze:1.6.2")
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:core:1.6.1")
 }
