@@ -27,6 +27,7 @@ import { Route as MathHandbookRouteImport } from './routes/math-handbook'
 import { Route as MathReviewRouteImport } from './routes/math-review'
 import { Route as MiniGamesRouteImport } from './routes/mini-games'
 import { Route as MistakesRouteImport } from './routes/mistakes'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
@@ -134,6 +135,11 @@ const MistakesRoute = MistakesRouteImport.update({
   path: '/mistakes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudyToolsRoute = StudyToolsRouteImport.update({
   id: '/study-tools',
   path: '/study-tools',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -307,6 +315,7 @@ export interface FileRoutesById {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/sitemap.xml'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/sitemap.xml'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/sitemap.xml'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -454,6 +466,7 @@ export interface RootRouteChildren {
   MathReviewRoute: typeof MathReviewRoute
   MiniGamesRoute: typeof MiniGamesRoute
   MistakesRoute: typeof MistakesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
   VocabularyRoute: typeof VocabularyRoute
@@ -600,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MistakesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/study-tools': {
       id: '/study-tools'
       path: '/study-tools'
@@ -734,6 +754,7 @@ const rootRouteChildren: RootRouteChildren = {
   MathReviewRoute: MathReviewRoute,
   MiniGamesRoute: MiniGamesRoute,
   MistakesRoute: MistakesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
   VocabularyRoute: VocabularyRoute,
