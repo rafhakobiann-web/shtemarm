@@ -12,6 +12,9 @@ on:
       - 'src/routes/index.tsx'
       - 'src/routes/book.$bookId.tsx'
       - 'src/test/history.test.tsx'
+      - 'src/test/history-volume1-recovery.test.ts'
+      - 'public/data/history-book1.json'
+      - 'public/data/history-bank-book1.json'
       - 'src/test/biology.test.tsx'
       - 'scripts/sync-official-exams*'
       - 'public/data/*-official-catalog.json'
@@ -32,5 +35,5 @@ jobs:
           bun-version: "1.3.14"
       - run: bun install --frozen-lockfile
       - run: node --test scripts/sync-official-exams.test.mjs
-      - run: bunx vitest run src/test/history.test.tsx src/test/biology.test.tsx src/test/scoring.test.ts
+      - run: bunx vitest run src/test/history-volume1-recovery.test.ts src/test/history.test.tsx src/test/biology.test.tsx src/test/scoring.test.ts
       - run: bun run build
