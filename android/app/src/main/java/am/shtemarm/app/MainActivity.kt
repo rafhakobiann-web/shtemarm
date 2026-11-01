@@ -308,16 +308,20 @@ private fun NativeShtemarm() {
                         throw e
                     } catch (_: Exception) { /* Keep questions from other readable books. */ }
                 }
-                // Scored-math reads are synchronous; dispatch only those reads to IO.
-                withContext(Dispatchers.IO) {
-                    for (part in 1..2) {
-                        if (ids.any { it.startsWith("math:matem-$part:") }) {
-                            try {
-                                collected += loadScoredMath(context, part).allQuestions.filter { it.id in ids }
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (_: Exception) { /* Other review questions still work. */ }
-                        }
+                // Scored-math reads are synchronous. Keep IO on the IO dispatcher,
+                // and filter the potentially large question bank on Default.
+                for (part in 1..2) {
+                    if (ids.any { it.startsWith("math:matem-$part:") }) {
+                        try {
+                            val mathQuestions = withContext(Dispatchers.IO) {
+                                loadScoredMath(context, part).allQuestions
+                            }
+                            collected += withContext(Dispatchers.Default) {
+                                mathQuestions.filter { it.id in ids }
+                            }
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
             }
