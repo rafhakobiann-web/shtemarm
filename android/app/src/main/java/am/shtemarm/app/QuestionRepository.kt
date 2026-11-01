@@ -191,7 +191,7 @@ class QuestionRepository(private val context: Context) {
         // A numbered gap is safe to present only when every passage gap has
         // exactly one imported option set. Do not guess absent source answers.
         if (passage.isNotBlank()) {
-            val gapNumbers = Regex("""\\((\\d+)\\)\\s*_{2,}""")
+            val gapNumbers = Regex("""\((\d+)\)\s*_{2,}""")
                 .findAll(passage).map { it.groupValues[1] }.toList()
             if (gapNumbers.isNotEmpty()) {
                 val questionNumbers = (0 until questions.length()).mapNotNull {
