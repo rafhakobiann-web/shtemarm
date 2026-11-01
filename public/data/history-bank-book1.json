@@ -3,7 +3,7 @@
  "book": "patm-1",
  "title": "Հայոց պատմություն · Շտեմարան 1 · Միայն ստուգված միակողմանի հարցեր",
  "verified": {
-  "method": "Book 1, Section 1 / source run 0 checked against pp. 4–10 and its printed answer table; remaining sections still need PDF review",
+  "method": "Book 1, Section 1 / source run 0: added missing questions from pp. 4–10 and checked them against the printed answer table; existing entries and other sections still need full PDF review",
   "single_choice_only": true
  },
  "questions": [
