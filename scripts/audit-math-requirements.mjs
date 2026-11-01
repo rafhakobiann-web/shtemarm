@@ -12,7 +12,8 @@ const extra=JSON.parse(fs.readFileSync(path.join(root,"math-text-questions-extra
 const allowedVerb=/Գտնել|Գտե՛ք|Հաշվել|Հաշվե՛ք|Լուծել|Լուծե՛ք|Որոշել|Որոշե՛ք|Ընտրել|Կազմել|Պարզեցնել|Գրել|Տրված|Գծել|Ապացուցել|Հայտնել|Քանի|Որքան|Ինչ|Ո՞ր|ո՞ր|Ի՞նչ|գրե|գտնել|հաշվել|համեմատել|Շարունակել|Նշել/i;
 const report={
   counts:{sections:0,tasks:0,questions:0,native:0,withStems:0,missingStem:0,missingNativeFiles:0,
-    missingNativeTasks:0,missingNativeQuestions:0,missingPlainText:0},
+    missingNativeTasks:0,missingNativeQuestions:0,missingPlainText:0,
+    nativeSectionUnlinkedQuestions:0, supplementalTextDifferences:0},
   warnings:[],errors:[],
 };
 const nativeCache=new Map();
@@ -32,8 +33,27 @@ for(const [book,meta] of Object.entries(index.books)){
       for(let i=0;i<task.sub_count;i++){
         report.counts.questions++;
         const row=rows[i]??task.questions?.[i];
+        const supplement=extra[book]?.[key]?.[String(task.task)]?.[i];
+        // Two separately maintained transcriptions can disagree about the
+        // source maths. Report the location; never pick wording automatically.
+        if (row?.prompt?.trim() && supplement?.prompt?.trim()
+            && row.prompt.trim()!==supplement.prompt.trim()) {
+          report.counts.supplementalTextDifferences++;
+          report.warnings.push({kind:"supplemental_text_difference",book,key,task:task.task,sub:i+1});
+        }
         const ref=row?.transcription;
         if(!ref){
+          // A native PDF-positioned section may start with task 6 or 9.
+          // Its first tasks are still present as plain text, but their exact
+          // original maths cannot yet be verified from native geometry.
+          const nativeFile=path.join(root,"math-transcriptions",book,key+".json");
+          if (fs.existsSync(nativeFile)) {
+            const native=sourceFor({book,section:key});
+            if (native && !native.tasks?.[String(task.task)]) {
+              report.counts.nativeSectionUnlinkedQuestions++;
+              report.warnings.push({kind:"native_section_missing_task",book,key,task:task.task,sub:i+1});
+            }
+          }
           if(!row?.prompt?.trim()) {report.counts.missingPlainText++;report.warnings.push({kind:"untranscribed",book,key,task:task.task,sub:i+1});}
           continue;
         }
