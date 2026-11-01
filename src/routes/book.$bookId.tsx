@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
@@ -31,6 +32,9 @@ function BookPage() {
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
+  // A completed answer updates progress frequently, but source questions do not.
+  // Cache the full section response-key lists until the book itself changes.
+  const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
 
   return (
     <div className="space-y-8">
@@ -113,8 +117,8 @@ function BookPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {book.sections.map((s) => {
-            const ids = sectionAnswerIds(s);
+          {book.sections.map((s, sectionIndex) => {
+            const ids = sectionIds[sectionIndex] ?? [];
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (
