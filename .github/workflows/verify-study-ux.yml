@@ -18,6 +18,13 @@ on:
       - 'src/routes/index.tsx'
       - 'src/components/MathQuestionText.tsx'
       - 'src/test/study-ux.test.tsx'
+      - 'src/test/source-verified-book-fixes.test.ts'
+      - 'public/data/book1.json'
+      - 'public/data/book2.json'
+      - 'public/data/book3.json'
+      - 'public/data/math-books-index.json'
+      - 'public/data/math-text-questions.json'
+      - 'public/data/math-text-questions-extra.json'
       - 'scripts/audit-math-requirements.mjs'
       - 'scripts/audit-biology-banks.mjs'
       - '.github/workflows/verify-study-ux.yml'
@@ -39,7 +46,7 @@ jobs:
       - name: Compare Mathematics question text references to original book transcription
         run: node scripts/audit-math-requirements.mjs
       - name: Test study tools and existing question bank behavior
-        run: bunx vitest run src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
+        run: bunx vitest run src/test/source-verified-book-fixes.test.ts src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
       - name: Verify production build
         run: bun run build
       - name: Upload Math source-wording audit for manual PDF review
