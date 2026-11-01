@@ -123,6 +123,7 @@ private fun NativeShtemarm() {
     var correctIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var sessionId by remember { mutableStateOf("") }
     var backupMessage by remember { mutableStateOf("") }
+    var finishingSession by remember { mutableStateOf(false) }
     // ActivityResult callbacks run on the main thread. File providers may be slow:
     // keep SAF reads/writes and JSON snapshot parsing off the UI dispatcher.
     val backupScope = rememberCoroutineScope()
@@ -238,6 +239,7 @@ private fun NativeShtemarm() {
         if (page != Page.RESULT) sessionOrigin = page
         session = (if (shuffle) pool.shuffled() else pool).take(count.coerceAtLeast(1))
         sessionTitle = name
+        finishingSession = false
         sessionIndex = 0
         chosen = -1
         showExplanation = false
@@ -921,12 +923,39 @@ private fun NativeShtemarm() {
                                     }
                                     Button(
                                         onClick = {
+                                            if (finishingSession) return@Button
                                             if (sessionIndex + 1 >= session.size) {
-                                                if (progress.saveSessionOnce(subject, score, session.size, sessionId)) {
-                                                    progress.recordMistakes(session, correctIds)
-                                                    progressVersion++
+                                                // SharedPreferences.commit() performs synchronous disk I/O.
+                                                // Keep it off the Compose click/UI thread and guard double taps.
+                                                finishingSession = true
+                                                val finishedSubject = subject
+                                                val finishedScore = score
+                                                val finishedSession = session
+                                                val finishedSessionId = sessionId
+                                                val finishedCorrectIds = correctIds
+                                                backupScope.launch {
+                                                    try {
+                                                        val saved = withContext(Dispatchers.IO) {
+                                                            val committed = progress.saveSessionOnce(
+                                                                finishedSubject, finishedScore,
+                                                                finishedSession.size, finishedSessionId
+                                                            )
+                                                            if (committed) {
+                                                                progress.recordMistakes(finishedSession, finishedCorrectIds)
+                                                            }
+                                                            committed
+                                                        }
+                                                        if (saved) progressVersion++
+                                                        page = Page.RESULT
+                                                    } catch (e: CancellationException) {
+                                                        throw e
+                                                    } catch (_: Exception) {
+                                                        // Do not silently report an unsaved result as saved.
+                                                        backupMessage = "Արդյունքը պահպանել չհաջողվեց։"
+                                                    } finally {
+                                                        finishingSession = false
+                                                    }
                                                 }
-                                                page = Page.RESULT
                                             } else {
                                                 sessionIndex++
                                                 chosen = -1
