@@ -1,12 +1,18 @@
 /**
- * Bound network waits when loading a question bank. A stalled connection must
- * never leave a study page spinning indefinitely.
+ * Bound the entire question-bank request, including JSON body consumption.
+ * fetch() resolves after headers; clearing the timeout there can leave
+ * response.json() pending forever on a stalled connection.
  */
-export async function fetchBookResponse(url: string, timeoutMs = 20_000): Promise<Response> {
+export async function fetchBookResponse<T>(
+  url: string,
+  read: (response: Response) => Promise<T>,
+  timeoutMs = 20_000,
+): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { signal: controller.signal });
+    return await read(response);
   } catch (error) {
     if (controller.signal.aborted) {
       throw new Error("Շտեմարանի բեռնումը չափազանց երկար տևեց։ Ստուգիր կապը և փորձիր կրկին։");
