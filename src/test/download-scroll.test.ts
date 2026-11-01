@@ -32,7 +32,12 @@ describe("Shtemarm app download", () => {
   });
   it("does not misrepresent the repository's private APK as a public file", () => {
     const download = source("src/routes/download.tsx");
-    expect(PRIVATE_BETA_URL).toContain("/releases/tag/v0.1.1-beta.1");
+    // The private beta may be linked through Actions instead of an old tag.
+    // Never treat a workflow URL as a publicly downloadable APK.
+    expect(PRIVATE_BETA_URL).toMatch(
+      /^https:\/\/github\.com\/rafhakobiann-web\/shtemarm\/(?:actions\/workflows\/[a-z0-9-]+\.yml|releases\/tag\/v[\w.-]+)$/,
+    );
+    expect(PRIVATE_BETA_URL).not.toMatch(/\.apk(?:[?#]|$)/);
     expect(download).toContain("privateNote");
     expect(download).toContain("invited");
     expect(download).not.toContain('const GITHUB_TOKEN');
