@@ -45,6 +45,41 @@ describe("source-verified English and Mathematics book corrections", () => {
     expect(q.answer).toBe("a");
   });
 
+  it("recovers two genuinely missing English exercises and matches the printed answer key", () => {
+    const second = englishQuestion(2, "2-3-162", "162");
+    expect(second.stem).toBe("Tommy told _________ lie. He was ashamed of himself.");
+    expect(second.options).toEqual({ a: "the", b: "a", c: "an", d: "-" });
+    expect(second.answer).toBe("b");
+    const third = englishQuestion(3, "3-3-124", "124");
+    expect(third.stem).toContain("I suggest that we _____ to the disco.");
+    expect(third.options).toEqual({ a: "gone", b: "will go", c: "go", d: "going" });
+    expect(third.answer).toBe("c");
+  });
+
+  it("records the remaining numbering gaps in linear English sections", () => {
+    const expected = {
+      "book2-3": [181, 231, 290],
+      "book2-5": [59, 95],
+      "book3-3": [125, 126, 127, 128, 129, 130],
+      "book3-5": [104, 105, 106, 107, 108, 109, 110, 116, 122],
+    };
+    const actual: Record<string, number[]> = {};
+    for (const volume of [2, 3]) {
+      const data = book(`book${volume}.json`);
+      for (const sectionNumber of [3, 5]) {
+        const section = data.sections.find((s: any) => s.n === sectionNumber);
+        const used = new Set<number>(section.units.flatMap((unit: any) =>
+          (unit.kind === "mc" || unit.kind === "num")
+            ? unit.questions.map((q: any) => Number(q.n)) : [],
+        ));
+        const max = sectionNumber === 3 ? 300 : 160;
+        actual[`book${volume}-${sectionNumber}`] =
+          Array.from({ length: max }, (_, i) => i + 1).filter((n) => !used.has(n));
+      }
+    }
+    expect(actual).toEqual(expected);
+  });
+
   it("restores all 4 printed choices where Math I section 1 task 1 was corrupted", () => {
     const rows = math["matem-1"]["1-1"]["1"];
     expect(rows).toHaveLength(4);
@@ -90,7 +125,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const volumes = [1, 2, 3].map((id) => book(`book${id}.json`));
     const counts = volumes.map((v: any) => v.sections.flatMap((s: any) => s.units)
       .reduce((n: number, u: any) => n + (u.questions?.length ?? 1), 0));
-    expect(counts).toEqual([1601, 1509, 1281]);
+    expect(counts).toEqual([1601, 1510, 1282]);
     for (const volume of volumes) for (const section of volume.sections)
       for (const unit of section.units) if (unit.kind === "mc")
         for (const q of unit.questions) {
