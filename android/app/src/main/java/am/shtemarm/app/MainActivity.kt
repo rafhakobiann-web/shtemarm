@@ -321,7 +321,10 @@ private fun NativeShtemarm() {
                     }
                 }
             }
-            val matches = collected.distinctBy { it.id }
+            // Deduplicating large saved-question lists is CPU work, not UI work.
+            val matches = withContext(Dispatchers.Default) {
+                collected.distinctBy { it.id }
+            }
             savedQuestions = matches
         } catch (e: CancellationException) {
             throw e
