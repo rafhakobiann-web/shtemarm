@@ -14,6 +14,20 @@ export const Route = createFileRoute("/changelog")({
 
 const updates = [
   {
+    date: "November 1, 2026",
+    label: "Android beta and book stability",
+    title: "Android Beta 4 and more reliable book progress",
+    titleHy: "Android Beta 4 և շտեմարանների առաջընթացի ճշգրտում",
+    icon: BookOpen,
+    tone: "bg-teal-500/10 text-teal-700 dark:text-teal-300",
+    items: [
+      { emoji: "📱", en: "Android 0.3.0 Beta 4 is available as a private debug-signed test release, not a Play Store or guaranteed in-place update.", hy: "Android 0.3.0 Beta 4-ը հասանելի է որպես GitHub-ի փակ փորձնական տարբերակ, ոչ թե Play Store-ի թողարկում կամ երաշխավորված տեղային թարմացում։" },
+      { emoji: "✅", en: "Merged improvements include Android loading/cancellation, English numbered-gap safeguards and mini-game controls. Full book verification is not complete.", hy: "Միավորվել են Android-ի բեռնման ու ընդհատման, անգլերենի համարակալված բացթողումների ստուգման և մինի խաղերի բարելավումները։ Գրքերի ամբողջական ստուգումը դեռ ավարտված չէ։" },
+      { emoji: "🔍", en: "The website's section progress counting fix for repeated printed question numbers is under review; it is not yet deployed.", hy: "Կայքի բաժիններում կրկնվող տպագիր հարցահամարների առաջընթացի հաշվարկի ուղղումը ստուգման փուլում է․ դեռ հրապարակված չէ։" },
+      { emoji: "📚", en: "Source-book transcription and edition checking are continuing; authored practice is not represented as an official original book.", hy: "Բնօրինակ գրքերի թվայնացումն ու հրատարակությունների համեմատությունը շարունակվում են․ հեղինակային վարժանքները չեն ներկայացվում որպես պաշտոնական բնօրինակ։" },
+    ],
+  },
+  {
     date: "October 29, 2026",
     label: "Latest update",
     title: "Smarter study guides and personalization",
