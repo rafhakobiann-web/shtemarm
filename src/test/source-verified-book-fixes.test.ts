@@ -89,8 +89,10 @@ describe("source-verified English and Mathematics book corrections", () => {
     expect(q290.source_page).toBe(166);
   });
 
-  it("recovers English III section 3 printed questions 128–130 from page 108", () => {
+  it("recovers English III section 3 printed questions 126–130 from page 108", () => {
     const expected: Record<string, { answer: string; options: Record<string, string> }> = {
+      "126": { answer: "d", options: {a:"I shall be able", b:"I will be able", c:"will be able I", d:"shall I be able"} },
+      "127": { answer: "b", options: {a:"to put", b:"putting", c:"being put", d:"to have put"} },
       "128": { answer: "a", options: {a:"Where else", b:"When else", c:"Where other", d:"What other place"} },
       "129": { answer: "c", options: {a:"little", b:"some little", c:"a little", d:"a few"} },
       "130": { answer: "d", options: {a:"on radio", b:"with the radio", c:"by the radio", d:"on the radio"} },
@@ -119,7 +121,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const expected = {
       "book2-3": [],
       "book2-5": [59, 95],
-      "book3-3": [126, 127],
+      "book3-3": [],
       "book3-5": [104, 105, 106, 107, 108, 109, 110, 116, 122],
     };
     const actual: Record<string, number[]> = {};
@@ -190,7 +192,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const volumes = [1, 2, 3].map((id) => book(`book${id}.json`));
     const counts = volumes.map((v: any) => v.sections.flatMap((s: any) => s.units)
       .reduce((n: number, u: any) => n + (u.questions?.length ?? 1), 0));
-    expect(counts).toEqual([1601, 1513, 1286]);
+    expect(counts).toEqual([1601, 1513, 1288]);
     for (const volume of volumes) for (const section of volume.sections)
       for (const unit of section.units) if (unit.kind === "mc")
         for (const q of unit.questions) {
