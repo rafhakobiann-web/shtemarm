@@ -3,7 +3,7 @@
  "book": "patm-1",
  "title": "Հայոց պատմություն · Շտեմարան 1 · Միայն ստուգված միակողմանի հարցեր",
  "verified": {
-  "method": "Book 1 PDF audit: added missing Section 1 / source run 0 questions and Section 2 questions 4, 5, 10, 17, checked against printed pages and answer keys; full review of other imported entries remains pending",
+  "method": "Incremental Book 1 PDF review. Added questions checked against their printed pages and answer table. Full review of other imported entries remains pending.",
   "single_choice_only": true
  },
  "questions": [
@@ -1560,9 +1560,9 @@
    "stem": "Վանի թագավորության ո՞ր արքան է արձանագրություններում իրեն կոչում «Նաիրի երկրի արքա, մեծ արքա, հզոր արքա, տիեզերքի արքա, արքաների արքա…».",
    "options": {
     "1": "Իշպուինի",
-    "2": "Ռուսա",
+    "2": "Ռուսա III",
     "3": "Արամու",
-    "4": "Սարդուրի"
+    "4": "Սարդուրի I"
    },
    "answer": "4",
    "source_run": 1
@@ -1572,7 +1572,7 @@
    "section": "ՓԱՍՏԵՐ ԵՎ ԵՐԵՎՈՒՅԹՆԵՐ",
    "num": 37,
    "page": 14,
-   "stem": "Ուրարտական ո՞ր արքայի օրոք է սկսվել դաշնային աշխարհազորի փոխա րինումը արհեստավարժ կանոնավոր բանակով.",
+   "stem": "Ուրարտական ո՞ր արքայի օրոք է սկսվել դաշնային աշխարհազորի փոխարինումը արհեստավարժ կանոնավոր բանակով.",
    "options": {
     "1": "Արգիշտի I–ի",
     "2": "Իշպուինիի",
@@ -1604,10 +1604,10 @@
    "page": 14,
    "stem": "Ք. ա. 735 թ. Ասորեստանի ո՞ր արքան արշավեց դեպի Տուշպա.",
    "options": {
-    "1": "Սալմանասար",
-    "2": "Թիգլաթպալասար",
+    "1": "Սալմանասար III",
+    "2": "Թիգլաթպալասար III",
     "3": "Սինաքերիբ",
-    "4": "Սարգոն"
+    "4": "Սարգոն II"
    },
    "answer": "2",
    "source_run": 1
@@ -1625,6 +1625,21 @@
     "4": "դրամական և բանակի"
    },
    "answer": "3",
+   "source_run": 1
+  },
+  {
+   "book": "patm-1",
+   "section": "ՓԱՍՏԵՐ ԵՎ ԵՐԵՎՈՒՅԹՆԵՐ",
+   "num": 41,
+   "page": 14,
+   "stem": "Ո՞վ է Վանի թագավորության հստակ թվագրվող վերջին արքան.",
+   "options": {
+    "1": "Էրիմենա",
+    "2": "Ռուսա II",
+    "3": "Ռուսա III",
+    "4": "Սարդուրի III"
+   },
+   "answer": "4",
    "source_run": 1
   },
   {
