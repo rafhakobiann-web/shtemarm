@@ -1,4 +1,5 @@
 import { loadBook, shuffle, type Book, type Unit } from "@/lib/books";
+import { fetchBookResponse } from "@/lib/fetch-book-response";
 
 export type HistoryTest = { id: number; tasks: Unit[] };
 export type HistoryData = { subject: string; title: string; tests: HistoryTest[] };
@@ -14,26 +15,36 @@ export type HistoryQuestion = {
 };
 
 async function get<T>(path: string): Promise<T> {
-  const response = await fetch(path, { signal: AbortSignal.timeout(20000) });
-  if (!response.ok) throw new Error("Չհաջողվեց բեռնել հարցերը։ Փորձիր կրկին։");
-  return response.json();
+  return fetchBookResponse(path, async (response) => {
+    if (!response.ok) throw new Error("Չհաջողվեց բեռնել հարցերը։ Փորձիր կրկին։");
+    return response.json() as Promise<T>;
+  });
 }
 export function loadHistoryTests() {
   return get<HistoryData>("/data/history-tests.json");
 }
 export async function loadHistoryBank(): Promise<HistoryEntry[]> {
   const data = await get<{ questions: HistoryQuestion[] }>("/data/history-bank-book1.json");
-  return data.questions.map((q) => ({
+  if (!Array.isArray(data.questions)) throw new Error("Հայոց պատմության հարցաշարի ձևաչափը սխալ է։");
+  const seen = new Set<string>();
+  return data.questions.map((q) => {
+    const id = `${q.book}:${q.source_run}:${q.num}`;
+    if (seen.has(id) || !q.stem?.trim() || !q.options?.[q.answer]?.trim()) {
+      throw new Error(`Հայոց պատմության հարցաշարի անվավեր կամ կրկնվող առաջադրանք՝ ${id}`);
+    }
+    seen.add(id);
+    return ({
     source: "bank",
     section: `${q.source_run}: ${q.section}`,
     unit: {
-      id: `${q.book}:${q.source_run}:${q.num}`,
+      id,
       label: `${q.section} · ${q.num}`,
       kind: "mc",
       passage: "",
       questions: [{ n: String(q.num), stem: q.stem, options: q.options, answer: q.answer }],
     },
-  }));
+  });
+  });
 }
 /** Keep each individually answerable multiple-choice/numeric question available.
  * Compound ordering, matching and selection tasks remain intact.
@@ -41,15 +52,23 @@ export async function loadHistoryBank(): Promise<HistoryEntry[]> {
  */
 export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry[] {
   const entries: HistoryEntry[] = [];
+  const seen = new Set<string>();
   for (const section of book.sections) {
     const name = `Գիրք ${bookNumber} · ${section.title ?? section.label ?? `Բաժին ${section.n}`}`;
     for (const unit of section.units) {
       const id = `book-${bookNumber}:${section.n}:${unit.id}`;
+      if (seen.has(id)) throw new Error(`Կրկնվող բնօրինակ առաջադրանք՝ ${id}`);
+      seen.add(id);
       if (unit.kind === "mc" || unit.kind === "num") {
         unit.questions.forEach((question, index) => {
-          if (!question.stem?.trim()) return;
-          if (unit.kind === "mc" && (!question.answer || !question.options?.[question.answer])) return;
-          if (unit.kind === "num" && !question.answer?.trim()) return;
+          // A source passage may contain the whole stem; do not silently drop
+          // a question just because its individual stem field is empty.
+          const number = question.n;
+          if ((!question.stem?.trim() && !unit.passage?.trim()) ||
+              !question.answer?.trim() ||
+              (unit.kind === "mc" && !question.options?.[question.answer]?.trim())) {
+            throw new Error(`Թերի առաջադրանք՝ ${id} · ${number}`);
+          }
           entries.push({
             source: `book-${bookNumber}`, section: name,
             unit: { ...unit, id: `${id}:q${index}`, label: `${unit.label} · ${question.n}`, questions: [question] } as Unit,
@@ -57,7 +76,9 @@ export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry
         });
       } else {
         if (!unit.answer || (Array.isArray(unit.answer)
-          ? unit.answer.length === 0 : Object.keys(unit.answer).length === 0)) continue;
+          ? unit.answer.length === 0 : Object.keys(unit.answer).length === 0)) {
+          throw new Error(`Թերի առաջադրանքի պատասխան՝ ${id}`);
+        }
         entries.push({ source: `book-${bookNumber}`, section: name, unit: { ...unit, id } });
       }
     }
