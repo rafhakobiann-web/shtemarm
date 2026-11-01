@@ -11,6 +11,7 @@ import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { useLang, useTx } from "@/lib/lang";
 import { recordMathMistake } from "@/lib/mathMistakes";
+import { canChangeMathAnswer, isMathAnswerRevealed } from "@/lib/math-answer-ui";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -97,33 +98,40 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
 }
 
 /** Answer control for one sub-question. Options are lettered like the English game (1) 2) 3) 4)). */
-function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
+function AnswerBlock({ item, value, locked, onAnswer, editableUntilLocked = false }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void; editableUntilLocked?: boolean }) {
   const tx = useTx();
   const [draft, setDraft] = useState("");
   const correct = item.answer;
   const short = item.open || correct === undefined || isShortAnswer(correct);
   const answered = value !== undefined;
+  const revealed = isMathAnswerRevealed(value, locked, editableUntilLocked);
   const ok = answered && correct !== undefined && isRight(correct, value);
 
   if (short) {
-    if (!answered && !locked) {
+    if (!revealed && !locked) {
       return (
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="text"
             inputMode="decimal"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && draft.trim() && onAnswer(draft.trim())}
+            aria-label={tx("Պատասխան")}
+            value={editableUntilLocked ? (value ?? "") : draft}
+            onChange={(e) => {
+              if (editableUntilLocked) onAnswer(e.target.value);
+              else setDraft(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (!editableUntilLocked && e.key === "Enter" && draft.trim()) onAnswer(draft.trim());
+            }}
             placeholder={tx("Պատասխան")}
-            className="h-12 flex-1 rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none"
+            className="h-12 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-4 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
-          <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>{tx("Ստուգել")}</Button>
+          {!editableUntilLocked && <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>{tx("Ստուգել")}</Button>}
         </div>
       );
     }
     return (
-      <p className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-red-500 bg-red-50 text-red-700"}`}>
+      <p role="status" className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-success bg-success/10 text-foreground" : "border-destructive bg-destructive/10 text-foreground"}`}>
         {value ?? "—"} {ok ? "✓" : tx("✗ · ճիշտ՝ {c}", { c: correct ?? "—" })}
       </p>
     );
@@ -148,18 +156,21 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
       )}
       <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
-        const isCorrectBtn = answered && correct === c;
-        const isWrongBtn = value === c && correct !== c;
+        const isCorrectBtn = revealed && correct === c;
+        const isWrongBtn = revealed && value === c && correct !== c;
+        const selectedDraft = !revealed && value === c;
         return (
           <button
             key={c}
             type="button"
-            disabled={locked || answered}
+            disabled={!canChangeMathAnswer(value, locked, editableUntilLocked)}
+            aria-pressed={value === c}
             onClick={() => onAnswer(c)}
-            className={`flex min-w-0 w-full items-start gap-2 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition sm:items-center sm:gap-3 sm:px-4 sm:py-4 sm:text-base ${
-              isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-              : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
-              : "border-stone-300 hover:bg-muted"}`}
+            className={`flex min-h-14 min-w-0 w-full items-start gap-3 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition-[background-color,border-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 motion-reduce:transition-none sm:items-center sm:px-4 sm:py-4 sm:text-base ${
+              isCorrectBtn ? "border-success bg-success/10 text-foreground"
+              : isWrongBtn ? "border-destructive bg-destructive/10 text-foreground"
+              : selectedDraft ? "border-primary bg-primary/10 text-foreground"
+              : "border-border hover:border-primary/50 hover:bg-muted/60"}`}
           >
             <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : `${c})`}</span>
             <span className="min-w-0 flex-1 break-words font-medium"><MathContent text={tx(label)}/></span>
@@ -256,9 +267,8 @@ function PlayPage() {
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
             <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
-            <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
         {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
-            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
+            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} editableUntilLocked onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
         {!submitted ? (
@@ -344,7 +354,7 @@ function PlayPage() {
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
             </div>
-            <AnswerBlock item={it} value={current} locked={false} onAnswer={onAnswer} />
+            <AnswerBlock key={it.id} item={it} value={current} locked={false} onAnswer={onAnswer} />
             {current !== undefined && (
               <MathExplain
                 item={it.id}
