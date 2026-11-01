@@ -293,31 +293,43 @@ private fun NativeShtemarm() {
         savedQuestions = emptyList()
         try {
             val ids = if (reviewMistakes) progress.mistakeIds() else progress.bookmarkedIds()
-            val matches = withContext(Dispatchers.Default) {
-                val collected = mutableListOf<StudyQuestion>()
-                if (ids.isNotEmpty()) {
-                    val sourceAssets = SessionGuards.sourceAssets(ids)
-                    for (entry in BookCatalog.books.filter {
-                        it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
-                    }.distinctBy { it.asset }) {
+            // load() already dispatches asset reads and parsing to IO.
+            // Avoid a redundant outer IO dispatch around the aggregation.
+            val collected = mutableListOf<StudyQuestion>()
+            if (ids.isNotEmpty()) {
+                val sourceAssets = SessionGuards.sourceAssets(ids)
+                for (entry in BookCatalog.books.filter {
+                    it.subject != "Մաթեմատիկա" && it.asset in sourceAssets
+                }.distinctBy { it.asset }) {
+                    try {
+                        val bookQuestions = repository.load(entry).allQuestions
+                        collected += withContext(Dispatchers.Default) {
+                            bookQuestions.filter { it.id in ids }
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) { /* Keep questions from other readable books. */ }
+                }
+                // Scored-math reads are synchronous. Keep IO on the IO dispatcher,
+                // and filter the potentially large question bank on Default.
+                for (part in 1..2) {
+                    if (ids.any { it.startsWith("math:matem-$part:") }) {
                         try {
-                            collected += repository.load(entry).allQuestions.filter { it.id in ids }
+                            val mathQuestions = withContext(Dispatchers.IO) {
+                                loadScoredMath(context, part).allQuestions
+                            }
+                            collected += withContext(Dispatchers.Default) {
+                                mathQuestions.filter { it.id in ids }
+                            }
                         } catch (e: CancellationException) {
                             throw e
-                        } catch (_: Exception) { /* Keep questions from other readable books. */ }
-                    }
-                    // The scored math books have a dedicated verified source loader.
-                    for (part in 1..2) {
-                        if (ids.any { it.startsWith("math:matem-$part:") }) {
-                            try {
-                                collected += loadScoredMath(context, part).allQuestions.filter { it.id in ids }
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (_: Exception) { /* Other review questions still work. */ }
-                        }
+                        } catch (_: Exception) { /* Other review questions still work. */ }
                     }
                 }
-                    collected.distinctBy { it.id }
+            }
+            // Deduplicating large saved-question lists is CPU work, not UI work.
+            val matches = withContext(Dispatchers.Default) {
+                collected.distinctBy { it.id }
             }
             savedQuestions = matches
         } catch (e: CancellationException) {
