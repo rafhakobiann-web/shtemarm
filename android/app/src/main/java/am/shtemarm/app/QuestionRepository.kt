@@ -114,7 +114,7 @@ class QuestionRepository(private val context: Context) {
                 if (flat != null) {
                     // A present but false `verified` field is not proof of review.
                     // Only explicitly true root metadata may bypass per-item status.
-                    val verifiedRoot = json.opt("verified") === true
+                    val verifiedRoot = json.opt("verified") == true
                     val grouped = linkedMapOf<String, MutableList<StudyQuestion>>()
                     for (i in 0 until flat.length()) {
                         ensureActive()
