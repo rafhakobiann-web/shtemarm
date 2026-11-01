@@ -1,6 +1,11 @@
 name: Verify learning UX, assessments, mini-games and source question integrity
 
 on:
+  push:
+    branches: [fix/english-book2-book3-source-options-20261101]
+    paths:
+      - 'src/test/english-printed-section5-keys.test.ts'
+      - '.github/workflows/verify-study-ux.yml'
   pull_request:
     paths:
       - 'src/lib/assessment-builder.ts'
