@@ -108,7 +108,10 @@ function BookPage() {
       {error && !book ? (
         <LoadError onRetry={reload} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
-        <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
+        <div role="status" aria-live="polite" className="grid place-items-center gap-3 py-20">
+          <Loader2 className="animate-spin text-primary" aria-hidden="true" />
+          <span className="text-sm text-muted-foreground">{tx("Գրքի բաժինները բեռնվում են…")}</span>
+        </div>
       ) : book.sections.length === 0 ? (
         <div role="status" className="mx-auto max-w-lg space-y-4 rounded-2xl border bg-card p-8 text-center">
           <p className="font-semibold">{tx("Այս գրքի բաժինները դեռ հասանելի չեն։")}</p>
