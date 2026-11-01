@@ -106,6 +106,42 @@ describe("source-verified English and Mathematics book corrections", () => {
     }
   });
 
+  it("restores all 11 printed English Section 5 questions using the supplied original PDFs", () => {
+    // Printed sources: angl-2.pdf pp. 195, 202; angl-3.pdf pp. 172–175.
+    // Printed answer tables: angl-2.pdf p. 329, angl-3.pdf p. 297.
+    const restored = [
+      { volume: 2, number: 59, page: 195, answer: "d", correct: "whose" },
+      { volume: 2, number: 95, page: 202, answer: "c", correct: "Despite" },
+      { volume: 3, number: 104, page: 172, answer: "d", correct: "What I want to know is" },
+      { volume: 3, number: 105, page: 172, answer: "a", correct: "No one else but me" },
+      { volume: 3, number: 106, page: 172, answer: "c", correct: "that is typed with only the left hand" },
+      { volume: 3, number: 107, page: 172, answer: "b", correct: "in order to reach it" },
+      { volume: 3, number: 108, page: 173, answer: "a", correct: "who lived in Utah" },
+      { volume: 3, number: 109, page: 173, answer: "d", correct: "in order to buy a couple of gallons of gasoline" },
+      { volume: 3, number: 110, page: 173, answer: "c", correct: "Although the Chumash were good fishers" },
+      { volume: 3, number: 116, page: 174, answer: "d", correct: "in order that everyone should know" },
+      { volume: 3, number: 122, page: 175, answer: "b", correct: "I didn’t get the job I had applied for" },
+    ];
+    expect(restored).toHaveLength(11);
+    for (const row of restored) {
+      const question = englishQuestion(row.volume, `${row.volume}-5-${row.number}`, String(row.number));
+      expect(question, `Book ${row.volume} / Section 5 / ${row.number}`).toBeDefined();
+      expect(question.n).toBe(String(row.number));
+      expect(question.source_page).toBe(row.page);
+      expect(question.answer).toBe(row.answer);
+      expect(Object.keys(question.options)).toEqual(["a", "b", "c", "d"]);
+      expect(question.options[question.answer]).toBe(row.correct);
+      expect(question.stem.trim()).not.toBe("");
+      expect(Object.values(question.options).every((choice: any) => typeof choice === "string" && choice.trim().length > 0)).toBe(true);
+    }
+    for (const volume of [2, 3]) {
+      const section = book(`book${volume}.json`).sections.find((s: any) => s.n === 5);
+      const ids = section.units.flatMap((u: any) => u.questions?.map((q: any) => Number(q.n)) ?? []);
+      expect(ids).toEqual(Array.from({ length: 160 }, (_, i) => i + 1));
+      expect(new Set(ids).size).toBe(160);
+    }
+  });
+
   it("fixes Math I task 7 subquestion 3: opposite, not reciprocal", () => {
     const q = math["matem-1"]["1-1"]["7"][2];
     const indexTask = mathIndex.books["matem-1"].sections
@@ -120,9 +156,9 @@ describe("source-verified English and Mathematics book corrections", () => {
   it("records the remaining numbering gaps in linear English sections", () => {
     const expected = {
       "book2-3": [],
-      "book2-5": [59, 95],
+      "book2-5": [],
       "book3-3": [],
-      "book3-5": [104, 105, 106, 107, 108, 109, 110, 116, 122],
+      "book3-5": [],
     };
     const actual: Record<string, number[]> = {};
     for (const volume of [2, 3]) {
@@ -192,7 +228,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const volumes = [1, 2, 3].map((id) => book(`book${id}.json`));
     const counts = volumes.map((v: any) => v.sections.flatMap((s: any) => s.units)
       .reduce((n: number, u: any) => n + (u.questions?.length ?? 1), 0));
-    expect(counts).toEqual([1601, 1513, 1288]);
+    expect(counts).toEqual([1601, 1515, 1297]);
     for (const volume of volumes) for (const section of volume.sections)
       for (const unit of section.units) if (unit.kind === "mc")
         for (const q of unit.questions) {
