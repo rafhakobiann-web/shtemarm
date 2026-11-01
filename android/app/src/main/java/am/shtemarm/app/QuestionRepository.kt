@@ -207,8 +207,8 @@ class QuestionRepository(private val context: Context) {
             val marker = "($number)"
             // Match only the actual numbered blank, not another underscore
             // appearing later in the passage. The source number is digits only.
-            val isGap = number.matches(Regex("""\\d+""")) &&
-                Regex("""\\($number\\)\\s*_{2,}""").containsMatchIn(passage)
+            val isGap = number.matches(Regex("""\d+""")) &&
+                Regex("""\($number\)\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
                 else continue
