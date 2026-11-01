@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.currentCoroutineContext
 import org.json.JSONObject
 
 /** Bundled data comes from the website repository's public/data directory at build time. */
@@ -178,7 +179,7 @@ class QuestionRepository(private val context: Context) {
         }
     }
 
-    private fun parseUnit(
+    private suspend fun parseUnit(
         source: String, section: Int, unitIndex: Int,
         unit: JSONObject, output: MutableList<StudyQuestion>
     ) {
@@ -197,6 +198,9 @@ class QuestionRepository(private val context: Context) {
             }
         }
         for (qi in 0 until questions.length()) {
+            // Long imported units may contain hundreds of options; let rapid
+            // navigation cancel parsing rather than continuing stale work.
+            currentCoroutineContext().ensureActive()
             val q = questions.optJSONObject(qi) ?: continue
             if (hasVisual(q)) continue
             val originalStem = q.optString("stem").trim()
