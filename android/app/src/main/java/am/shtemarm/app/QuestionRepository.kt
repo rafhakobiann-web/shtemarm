@@ -217,12 +217,11 @@ class QuestionRepository(private val context: Context) {
             // reading-comprehension questions or unknown answers.
             val number = q.optString("n").trim()
             val marker = "($number)"
-            val markerIndex = if (number.isNotBlank()) passage.indexOf(marker) else -1
-            val afterMarker = if (markerIndex >= 0) passage.substring(
-                markerIndex + marker.length,
-                minOf(markerIndex + marker.length + 30, passage.length)
-            ) else ""
-            val isGap = markerIndex >= 0 && afterMarker.contains(Regex("_{2,}"))
+            // A gap must immediately follow its own marker (apart from
+            // whitespace). Searching the next 30 characters can incorrectly
+            // associate a later question's underscores with this number.
+            val isGap = number.isNotBlank() &&
+                Regex(Regex.escape(marker) + """\\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
                 else continue
