@@ -23,8 +23,9 @@ const updates = [
     items: [
       { emoji: "📱", en: "Android 0.3.0 Beta 4 is available as a private debug-signed test release, not a Play Store or guaranteed in-place update.", hy: "Android 0.3.0 Beta 4-ը հասանելի է որպես GitHub-ի փակ փորձնական տարբերակ, ոչ թե Play Store-ի թողարկում կամ երաշխավորված տեղային թարմացում։" },
       { emoji: "✅", en: "Merged improvements include Android loading/cancellation, English numbered-gap safeguards and mini-game controls. Full book verification is not complete.", hy: "Միավորվել են Android-ի բեռնման ու ընդհատման, անգլերենի համարակալված բացթողումների ստուգման և մինի խաղերի բարելավումները։ Գրքերի ամբողջական ստուգումը դեռ ավարտված չէ։" },
-      { emoji: "🔍", en: "The website's section progress counting fix for repeated printed question numbers is under review; it is not yet deployed.", hy: "Կայքի բաժիններում կրկնվող տպագիր հարցահամարների առաջընթացի հաշվարկի ուղղումը ստուգման փուլում է․ դեռ հրապարակված չէ։" },
+      { emoji: "🔍", en: "Book progress now counts repeated printed question numbers independently; the website update depends on deployment.", hy: "Շտեմարանների առաջընթացի հաշվարկը տարբերակում է կրկնվող տպագիր հարցահամարները․ կայքում հասանելիությունը կախված է նոր տարբերակի տեղակայումից։" },
       { emoji: "📚", en: "Source-book transcription and edition checking are continuing; authored practice is not represented as an official original book.", hy: "Բնօրինակ գրքերի թվայնացումն ու հրատարակությունների համեմատությունը շարունակվում են․ հեղինակային վարժանքները չեն ներկայացվում որպես պաշտոնական բնօրինակ։" },
+      { emoji: "📝", en: "The next website update adds one-tap book refresh, clearer loading errors and a way to report a source mismatch with book/page/question details.", hy: "Կայքի նոր տարբերակը նախատեսում է գրքի ձեռքով վերաբեռնում, պարզ սխալների հաղորդագրություններ և գիրք/էջ/հարց համարով անհամապատասխանություն հայտնելու հղում։" },
     ],
   },
   {
