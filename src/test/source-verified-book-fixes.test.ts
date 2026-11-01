@@ -102,7 +102,7 @@ describe("source-verified English and Mathematics book corrections", () => {
       expect(q.source_page).toBe(108);
       expect(q.answer).toBe(check.answer);
       expect(q.options).toEqual(check.options);
-      expect(q.stem).toContain("_____");
+      expect(q.stem).toMatch(/_{4,}/);
     }
   });
 
