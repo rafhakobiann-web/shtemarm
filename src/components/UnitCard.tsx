@@ -230,7 +230,7 @@ export function UnitCard(props: {
     const chosen = a?.mc?.[q.n];
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
+      <div key={q.n} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -245,20 +245,39 @@ export function UnitCard(props: {
             return (
               <div
                 key={k}
-                onClick={() => { if (!show) onChange({ ...a, mc: { ...a?.mc, [q.n]: k } }); }}
+                onClick={(event) => {
+                  // A word-translation button inside EnglishText must never pick
+                  // an answer. The actual radio remains keyboard accessible.
+                  if (show || (event.target as HTMLElement).closest("input,button,a")) return;
+                  onChange({ ...a, mc: { ...a?.mc, [q.n]: k } });
+                }}
                 className={cn(
-                  "answer-option flex min-h-11 items-start gap-2 rounded-lg border-2 px-3 py-2 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200",
-                  !show && isSel && "border-primary bg-secondary",
-                  !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted",
+                  "answer-option flex min-h-14 items-start gap-3 rounded-2xl border-2 px-3 py-3 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 motion-reduce:transition-none",
+                  !show && "cursor-pointer active:scale-[0.995] motion-reduce:transform-none",
+                  !show && isSel && "border-primary bg-primary/10 shadow-sm",
+                  !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted/60",
                   show && isC && "border-success bg-success/10",
                   show && isSel && !isC && "border-destructive bg-destructive/10",
                   show && !isC && !isSel && "border-border opacity-60",
                 )}
               >
-                <Button variant="ghost" size="icon" className="size-7 shrink-0" disabled={show} aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })} aria-pressed={isSel}>{k})</Button>
-                <span className="min-w-0 flex-1"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
-                {show && isC && <Check className="size-4 shrink-0 text-success" />}
-                {show && isSel && !isC && <X className="size-4 shrink-0 text-destructive" />}
+                <input
+                  type="radio"
+                  name={`${u.id}:${q.n}`}
+                  value={k}
+                  checked={isSel}
+                  disabled={show}
+                  onChange={() => onChange({ ...a, mc: { ...a?.mc, [q.n]: k } })}
+                  aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })}
+                  className="mt-1 size-4 shrink-0 accent-primary"
+                />
+                <span aria-hidden="true" className={cn(
+                  "grid size-7 shrink-0 place-items-center rounded-lg border text-sm font-bold",
+                  isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
+                )}>{k}</span>
+                <span className="min-w-0 flex-1 leading-relaxed"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
+                {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}
+                {show && isSel && !isC && <X aria-hidden="true" className="size-4 shrink-0 text-destructive" />}
               </div>
             );
           })}
@@ -299,7 +318,7 @@ export function UnitCard(props: {
     const val = a?.mc?.[q.n] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && !ok && "animate-shake")}>
+      <div key={q.n} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
