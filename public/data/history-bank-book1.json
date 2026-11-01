@@ -3,7 +3,7 @@
  "book": "patm-1",
  "title": "Հայոց պատմություն · Շտեմարան 1 · Միայն ստուգված միակողմանի հարցեր",
  "verified": {
-  "method": "Book 1, Section 1 / source run 0: added missing questions from pp. 4–10 and checked them against the printed answer table; existing entries and other sections still need full PDF review",
+  "method": "Book 1 PDF audit: added missing Section 1 / source run 0 questions and Section 2 questions 4, 5, 10, 17, checked against printed pages and answer keys; full review of other imported entries remains pending",
   "single_choice_only": true
  },
  "questions": [
@@ -1308,6 +1308,21 @@
     "2": "Բյուրակնյան լեռներից",
     "3": "Ծաղկավետ լեռներից",
     "4": "Ծաղկանց լեռներից"
+   },
+   "answer": "3",
+   "source_run": 1
+  },
+  {
+   "book": "patm-1",
+   "section": "ՓԱՍՏԵՐ ԵՎ ԵՐԵՎՈՒՅԹՆԵՐ",
+   "num": 17,
+   "page": 12,
+   "stem": "Ո՞ր քաղաքի մոտ են միախառնվում Եփրատի արևելյան ու արևմտյան ճյուղերը.",
+   "options": {
+    "1": "Դվին",
+    "2": "Կարս",
+    "3": "Ակն",
+    "4": "Արտաշատ"
    },
    "answer": "3",
    "source_run": 1
