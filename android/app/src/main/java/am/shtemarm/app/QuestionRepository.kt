@@ -220,7 +220,7 @@ class QuestionRepository(private val context: Context) {
             // A gap must immediately follow its own marker (apart from
             // whitespace). Searching the next 30 characters can incorrectly
             // associate a later question's underscores with this number.
-            val isGap = number.isNotBlank() &&
+            val isGap = number.matches(Regex("""\d+""")) &&
                 Regex(Regex.escape(marker) + """\s*_{2,}""").containsMatchIn(passage)
             val stem = if (originalStem.isNotBlank()) originalStem
                 else if (isGap) "Ընտրիր ճիշտ տարբերակը՝ $marker բացթողման համար։"
