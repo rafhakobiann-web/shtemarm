@@ -24,6 +24,8 @@ describe("website textbook navigation regressions", () => {
     expect(study).toContain("!section ?");
     expect(study).toContain("section.units.length === 0");
     expect(study).toContain("Math.max(1, units.length)");
+    expect(study).toContain("Number.isSafeInteger(Number(params.sectionId))");
+    expect(study).toContain("throw notFound()");
   });
 
   it("shows a real updates route and gives book readers an explicit refresh", () => {
@@ -36,6 +38,7 @@ describe("website textbook navigation regressions", () => {
     expect(bookPage).toContain("book.sections.length === 0");
     expect(bookPage).toContain("useMemo");
     expect(bookPage).toContain("sectionAnswerIds");
+    expect(bookPage).toContain('role="status" aria-live="polite"');
   });
 
   it("rejects HTML fallback responses and incorrect book JSON schemas", () => {
