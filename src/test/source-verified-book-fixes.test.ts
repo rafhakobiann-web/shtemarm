@@ -56,11 +56,36 @@ describe("source-verified English and Mathematics book corrections", () => {
     expect(third.answer).toBe("c");
   });
 
+  it("restores printed English II section 3 item 181 and English III item 125", () => {
+    const second = englishQuestion(2, "2-3-181", "181");
+    expect(second.stem).toContain("very proud and happy when I graduated");
+    expect(second.options).toEqual({a: "being", b: "to be", c: "was I", d: "I was being"});
+    expect(second.answer).toBe("a"); // English II printed answer table p. 326
+    expect(second.source_page).toBe(144);
+
+    const third = englishQuestion(3, "3-3-125", "125");
+    expect(third.stem).toContain("the wrong paper");
+    expect(third.options).toEqual({a: "same", b: "the same", c: "such an", d: "that"});
+    expect(third.answer).toBe("b"); // English III printed answer table p. 295
+    expect(third.source_page).toBe(107);
+  });
+
+  it("fixes Math I task 7 subquestion 3: opposite, not reciprocal", () => {
+    const q = math["matem-1"]["1-1"]["7"][2];
+    const indexTask = mathIndex.books["matem-1"].sections
+      .find((s: any) => s.chapter === 1 && s.section === 1)
+      .tasks.find((t: any) => t.task === 7);
+    expect(q.prompt).toContain("առաջին թվի հակադիրի");
+    expect(q.prompt).not.toContain("առաջին թվի հակադարձի");
+    expect(q.options[3]).toBe("6"); // -12 + 18 = 6
+    expect(indexTask.answers[2]).toBe("4");
+  });
+
   it("records the remaining numbering gaps in linear English sections", () => {
     const expected = {
-      "book2-3": [181, 231, 290],
+      "book2-3": [231, 290],
       "book2-5": [59, 95],
-      "book3-3": [125, 126, 127, 128, 129, 130],
+      "book3-3": [126, 127, 128, 129, 130],
       "book3-5": [104, 105, 106, 107, 108, 109, 110, 116, 122],
     };
     const actual: Record<string, number[]> = {};
@@ -131,7 +156,7 @@ describe("source-verified English and Mathematics book corrections", () => {
     const volumes = [1, 2, 3].map((id) => book(`book${id}.json`));
     const counts = volumes.map((v: any) => v.sections.flatMap((s: any) => s.units)
       .reduce((n: number, u: any) => n + (u.questions?.length ?? 1), 0));
-    expect(counts).toEqual([1601, 1510, 1282]);
+    expect(counts).toEqual([1601, 1511, 1283]);
     for (const volume of volumes) for (const section of volume.sections)
       for (const unit of section.units) if (unit.kind === "mc")
         for (const q of unit.questions) {
