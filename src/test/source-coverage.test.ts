@@ -14,6 +14,7 @@ const getBook = (name: string) =>
 describe("English and Armenian History source-data retention", () => {
   it("preserves all 4,391 currently indexed English answerable records", () => {
     const expected = [1601, 1509, 1281];
+    const missingSourceChoiceText: string[] = [];
     for (let part = 1; part <= 3; part++) {
       const book = getBook(`book${part}`);
       const count = book.sections.flatMap((s) => s.units).reduce((n, unit) =>
@@ -26,11 +27,22 @@ describe("English and Armenian History source-data retention", () => {
           expect(Boolean(question.stem?.trim() || unit.passage?.trim()),
             `English ${part} / ${unit.id} / ${question.n}`).toBe(true);
           expect(Boolean(question.answer?.trim())).toBe(true);
-          if (unit.kind === "mc")
-            expect(Boolean(question.options?.[question.answer]?.trim())).toBe(true);
+          if (unit.kind === "mc") {
+            expect(Object.hasOwn(question.options ?? {}, question.answer),
+              `English ${part} / ${unit.id} / ${question.n}`).toBe(true);
+            if (!question.options[question.answer]?.trim()) {
+              missingSourceChoiceText.push(`${part}:${unit.id}:${question.n}`);
+            }
+          }
         }
       }
     }
+    // Exact unresolved data defects. Do not replace them with invented text;
+    // use original page images + answer-key verification to resolve these.
+    expect(missingSourceChoiceText.sort()).toEqual([
+      "2:2-1-Text5:1",
+      "3:3-5-136:136",
+    ]);
   });
 
   it("does not skip any of 3,404 currently indexed Armenian History tasks", () => {
