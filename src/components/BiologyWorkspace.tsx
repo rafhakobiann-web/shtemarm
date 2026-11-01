@@ -26,12 +26,12 @@ async function loadBiologyEntries(source: string): Promise<HistoryEntry[]> {
 /** Actual verified available book questions; test blueprint is independent from this pool. */
 export function BiologyWorkspace() {
   const tx = useTx();
+  const [source, setSource] = useState("all");
   const data = useQuery({
     queryKey: ["biology-configurable-pool-v2", source],
     queryFn: () => loadBiologyEntries(source),
     staleTime: Infinity,
   });
-  const [source, setSource] = useState("all");
   const [sections, setSections] = useState<string[]>([]);
   const [kinds, setKinds] = useState<Unit["kind"][]>(KINDS);
   const [count, setCount] = useState(70);

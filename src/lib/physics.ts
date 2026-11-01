@@ -73,10 +73,13 @@ export function checkPhysicsBook(book:Book) {
     claims:claims.length,maxPoints:40+slots+claims.length*6,answerSlots:40+slots+claims.length};
 }
 export function selectPhysicsSource(books:readonly Book[],source:string):Book[]{
+  return pickPhysics(books,source);
+}
+function pickPhysics(books:readonly Book[],source:string):Book[]{
   const selected=source==="all"?books:books.filter(b=>String(b.id)===source);
   if(!selected.length)throw new Error("Ընտրված ֆիզիկայի մասի հարցերը հասանելի չեն։");
   selected.forEach(checkPhysicsBook);
-  return selected;
+  return [...selected];
 }
 function chooseNumericalGroups(groups:Unit[],random:boolean):Unit[] {
   const order=random?shuffle(groups):[...groups];

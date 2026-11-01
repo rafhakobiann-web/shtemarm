@@ -244,6 +244,8 @@ export function CalculatorPanel() {
   );
 }
 
+type Stroke = { color: string; width: number; erase?: boolean; points: { x: number; y: number }[] };
+
 export function DrawingPad() {
   const tx = useTx();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

@@ -129,7 +129,7 @@ function startupAppearance() {
     const v = JSON.parse(localStorage.getItem("shtemarm-appearance-v2") || "null") || {};
     const legacy = localStorage.getItem("shtemarm-theme");
     const mode = ["light", "dark", "system"].includes(v.mode)
-      ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
+      ? v.mode : (["light", "dark"].includes(legacy ?? "") ? legacy!  : "system");
     const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "liquid";
     const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "balanced";
     const dark = mode === "dark" ||

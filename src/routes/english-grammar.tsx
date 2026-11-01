@@ -33,7 +33,7 @@ function GrammarCard({ item, lang, selected }: { item: GrammarTopic; lang: Gramm
   const info = item.content[lang];
   const deepDive = GRAMMAR_DEEP_DIVES[item.id]?.[lang];
   return (
-    <details id={`rule-${item.id}`} key={item.id + "-" + (selected ? "selected" : "normal")} defaultOpen={selected}
+    <details id={`rule-${item.id}`} key={item.id + "-" + (selected ? "selected" : "normal")} open={selected || undefined}
       className="group scroll-mt-32 overflow-hidden rounded-2xl border bg-card shadow-sm transition-colors open:border-primary/35">
       <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 p-4 focus-visible:outline-2 focus-visible:outline-primary sm:p-5">
         <span className="min-w-0">
