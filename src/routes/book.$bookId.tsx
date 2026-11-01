@@ -106,7 +106,7 @@ function BookPage() {
       </div>
 
       {error && !book ? (
-        <LoadError onRetry={reload} detail={error instanceof Error ? error.message : String(error)} />
+        <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
         <div role="status" aria-live="polite" className="grid place-items-center gap-3 py-20">
           <Loader2 className="animate-spin text-primary" aria-hidden="true" />
