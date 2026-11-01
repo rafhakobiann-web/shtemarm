@@ -159,7 +159,12 @@ export function loadBook(id: number): Promise<Book> {
           }
           const data: unknown = await r.json();
           if (!data || typeof data !== "object" || !("sections" in data) ||
-              !Array.isArray(data.sections)) {
+              !Array.isArray(data.sections) ||
+              data.sections.some((section: unknown) =>
+                !section || typeof section !== "object" ||
+                !("units" in section) || !Array.isArray(section.units))) {
+            // A 200 OK /data/*.json can still contain incomplete imported data.
+            // Reject it here rather than letting the section page crash on .units.
             throw new Error(`Book ${id} has an invalid question-bank format`);
           }
           return data as Book;
