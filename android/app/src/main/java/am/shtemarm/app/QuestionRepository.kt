@@ -59,11 +59,16 @@ class QuestionRepository(private val context: Context) {
             size > 4
     }
 
-    suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
-        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
+    suspend fun load(book: StudyBook): LoadedBook {
+        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return it }
+        // Asset reads are blocking IO; JSON construction and conversion are CPU
+        // intensive and must not occupy IO workers or the Compose main thread.
+        val raw = withContext(Dispatchers.IO) {
+            context.assets.open(book.asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        }
+        return withContext(Dispatchers.Default) {
         ensureActive()
-        val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
-            .use { JSONObject(it.readText()) }
+        val json = JSONObject(raw)
         val result = mutableListOf<StudySection>()
         val sections = json.optJSONArray("sections")
         if (sections != null) {
@@ -127,10 +132,11 @@ class QuestionRepository(private val context: Context) {
         val parsed = LoadedBook(result)
         synchronized(recentBooks) { recentBooks[book.asset] = parsed }
         parsed
+        }
     }
 
     /** Unified verified question source for exams, games, and study generators.
-     * load() already dispatches its own asset reads and JSON parsing to IO.
+     * load() dispatches asset reads to IO and JSON parsing to Default.
      * Avoid wrapping the entire non-math aggregation in a second IO dispatch.
      */
     suspend fun sectionsForSubject(subject: String): List<StudySection> {
