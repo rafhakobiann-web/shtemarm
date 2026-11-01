@@ -47,10 +47,21 @@ internal data class MathOtherTask(
     val kind: String
 )
 
+private object MathOtherTaskCache {
+    private val byPart = mutableMapOf<Int, List<MathOtherTask>>()
+
+    fun get(part: Int): List<MathOtherTask>? = synchronized(byPart) { byPart[part] }
+
+    fun put(part: Int, tasks: List<MathOtherTask>) {
+        synchronized(byPart) { byPart[part] = tasks }
+    }
+}
+
 internal suspend fun loadMathOtherTasks(context: Context, part: Int): List<MathOtherTask> =
     withContext(Dispatchers.IO) {
         require(part in 1..2)
         ensureActive()
+        MathOtherTaskCache.get(part)?.let { return@withContext it }
         val index = context.assets.open("math-books-index.json")
             .bufferedReader(Charsets.UTF_8).use { JSONObject(it.readText()) }
         val textBank = context.assets.open("math-text-questions.json")
@@ -101,7 +112,7 @@ internal suspend fun loadMathOtherTasks(context: Context, part: Int): List<MathO
                 }
             }
         }
-        items
+        items.toList().also { MathOtherTaskCache.put(part, it) }
     }
 
 private fun matchesMathAnswer(input: String, answer: String): Boolean {
