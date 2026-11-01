@@ -59,11 +59,18 @@ class QuestionRepository(private val context: Context) {
             size > 4
     }
 
-    suspend fun load(book: StudyBook): LoadedBook = withContext(Dispatchers.IO) {
+    suspend fun load(book: StudyBook): LoadedBook {
+        synchronized(recentBooks) { recentBooks[book.asset] }?.let { return it }
+        // Asset reading blocks on storage; parsing large JSON is CPU-bound.
+        // Keep both operations off the main thread on their appropriate dispatchers.
+        val raw = withContext(Dispatchers.IO) {
+            context.assets.open(book.asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        }
+        return withContext(Dispatchers.Default) {
+        // Another caller may have populated the cache during the asset read.
         synchronized(recentBooks) { recentBooks[book.asset] }?.let { return@withContext it }
         ensureActive()
-        val json = context.assets.open(book.asset).bufferedReader(Charsets.UTF_8)
-            .use { JSONObject(it.readText()) }
+        val json = JSONObject(raw)
         val result = mutableListOf<StudySection>()
         val sections = json.optJSONArray("sections")
         if (sections != null) {
@@ -127,6 +134,7 @@ class QuestionRepository(private val context: Context) {
         val parsed = LoadedBook(result)
         synchronized(recentBooks) { recentBooks[book.asset] = parsed }
         parsed
+        }
     }
 
     /** Unified verified question source for exams, games, and study generators.
