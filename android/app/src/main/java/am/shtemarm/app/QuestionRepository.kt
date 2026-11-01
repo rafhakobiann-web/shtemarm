@@ -181,13 +181,18 @@ class QuestionRepository(private val context: Context) {
         val questions = unit.optJSONArray("questions") ?: return
         // Do not map multiple imported option sets to the same numbered gap.
         // Ambiguous source numbering must be checked against the original book.
-        if (passage.isNotBlank() && questions.length() > 1) {
-            val hasNumberedGaps = Regex("""\(\d+\)\s*_{2,}""").containsMatchIn(passage)
-            if (hasNumberedGaps) {
+        if (passage.isNotBlank()) {
+            val numberedGaps = Regex("""\((\d+)\)\s*_{2,}""")
+                .findAll(passage).map { it.groupValues[1] }.toSet()
+            if (numberedGaps.isNotEmpty()) {
                 val numbers = (0 until questions.length()).mapNotNull {
                     questions.optJSONObject(it)?.optString("n")?.trim()
                 }
-                if (numbers.size != questions.length() || numbers.size != numbers.toSet().size) return
+                // A unique number is not enough: every source blank must have
+                // exactly one corresponding option set. Never infer missing keys.
+                if (numbers.size != questions.length() ||
+                    numbers.size != numbers.toSet().size ||
+                    numbers.toSet() != numberedGaps) return
             }
         }
         for (qi in 0 until questions.length()) {
