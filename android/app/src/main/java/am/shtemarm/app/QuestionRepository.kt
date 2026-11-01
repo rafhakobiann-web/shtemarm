@@ -188,15 +188,20 @@ class QuestionRepository(private val context: Context) {
         if (unit.optString("kind") != "mc" || hasVisual(unit)) return
         val passage = unit.optString("passage").trim()
         val questions = unit.optJSONArray("questions") ?: return
-        // Do not map multiple imported option sets to the same numbered gap.
-        // Ambiguous source numbering must be checked against the original book.
-        if (passage.isNotBlank() && questions.length() > 1) {
-            val hasNumberedGaps = Regex("""\(\d+\)\s*_{2,}""").containsMatchIn(passage)
-            if (hasNumberedGaps) {
-                val numbers = (0 until questions.length()).mapNotNull {
+        // A numbered gap is safe to present only when every passage gap has
+        // exactly one imported option set. Do not guess absent source answers.
+        if (passage.isNotBlank()) {
+            val gapNumbers = Regex("""\\((\\d+)\\)\\s*_{2,}""")
+                .findAll(passage).map { it.groupValues[1] }.toList()
+            if (gapNumbers.isNotEmpty()) {
+                val questionNumbers = (0 until questions.length()).mapNotNull {
                     questions.optJSONObject(it)?.optString("n")?.trim()
                 }
-                if (numbers.size != questions.length() || numbers.size != numbers.toSet().size) return
+                if (gapNumbers.size != gapNumbers.toSet().size ||
+                    questionNumbers.size != questions.length ||
+                    gapNumbers.size != questionNumbers.size ||
+                    gapNumbers.toSet() != questionNumbers.toSet()
+                ) return
             }
         }
         for (qi in 0 until questions.length()) {
