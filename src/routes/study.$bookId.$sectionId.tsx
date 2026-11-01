@@ -139,9 +139,19 @@ function PhysicsSourceJump({unit}:{unit:Unit}){
 function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; instrEn: string }) {
   const tx = useTx();
   const { answers, setAnswers, revealed, check } = useRevealer();
+  // A single History/Biology section can contain hundreds of units. Rendering
+  // the entire section on first paint blocks input and makes scrolling laggy.
+  // Expand in source order without dropping any tasks or current answers.
+  const PAGE_SIZE = 12;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const visibleUnits = units.slice(0, visibleCount);
   return (
     <div className="space-y-5">
-      {units.map((u) => (
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border bg-card px-4 py-3 text-sm shadow-sm">
+        <span className="font-semibold">{tx("Առաջադրանքներ")} · {Math.min(visibleCount, units.length)} / {units.length}</span>
+        <span className="text-muted-foreground">{tx("Գրքի հերթականությամբ")}</span>
+      </div>
+      {visibleUnits.map((u) => (
         <div key={u.id} className="space-y-2">
           <PhysicsSourceJump unit={u}/>
         <UnitCard
@@ -157,6 +167,17 @@ function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; inst
         />
         </div>
       ))}
+      {visibleCount < units.length && (
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          className="min-h-12 w-full rounded-2xl"
+          onClick={() => setVisibleCount((count) => Math.min(units.length, count + PAGE_SIZE))}
+        >
+          {tx("Ցույց տալ ևս {n} առաջադրանք", { n: Math.min(PAGE_SIZE, units.length - visibleCount) })}
+        </Button>
+      )}
     </div>
   );
 }
