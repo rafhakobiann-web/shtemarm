@@ -114,27 +114,26 @@ export const chatReply = createServerFn({ method: "POST" })
 
     if (providers.length === 0) {
       return {
-        text: "Չատբոտի սերվերում չի հայտնաբերվել GEMINI_API_KEY, GROQ_API_KEY կամ այլ ԱԲ ծառայության բանալի։ Lovable-ի գաղտնի բանալիները պետք է հասանելի լինեն գործող սերվերային ֆունկցիաներին։",
-        error: true,
+        text: offlineStudyReply(data.messages),
+        error: false,
         offline: true,
       };
     }
 
-    const failures: string[] = [];
     for (const provider of providers) {
       try {
         const text = await provider.run();
         if (text) return { text, error: false, provider: provider.name };
-      } catch (cause) {
-        // Never expose raw provider messages, tokens, or URLs to the browser.
-        const message = cause instanceof Error ? cause.message : "";
-        failures.push(/սահմանաչափ|rate|429/i.test(message) ? "rate" : /բանալ|401|403/i.test(message) ? "key" : "service");
+      } catch {
+        // Try the next configured provider without leaking server details.
       }
     }
 
+    // If all remote providers fail, offer a bounded, honest study fallback.
+    // Do not expose provider credentials or deployment configuration to visitors.
     return {
-      text: failures.includes("key") ? "Չատբոտի ԱԲ բանալին մերժվել է։ Ստուգիր սերվերի բանալիների հասանելիությունն ու թույլտվությունները։" : failures.includes("rate") ? "Չատբոտի ԱԲ ծառայության սահմանաչափը լրացել է։ Փորձիր ավելի ուշ։" : "Չատբոտի ԱԲ ծառայությունները չեն արձագանքել։ Փորձիր կրկին կամ ստուգիր սերվերի կարգավորումները։",
-      error: true,
+      text: offlineStudyReply(data.messages),
+      error: false,
       offline: true,
     };
   });
