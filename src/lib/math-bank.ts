@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { fetchBookResponse } from "@/lib/fetch-book-response";
 
 export type MathTranscriptionRef = { book: string; section: string; task: number; sub: number };
 export type MathQuestion = { prompt: string; options: string[]; transcription?: MathTranscriptionRef | undefined };
@@ -26,19 +27,35 @@ export function mergeMathQuestions(index: MathBookIndex, bank: TextBank) {
   return index;
 }
 
+/** The request deadline covers both response headers and the complete JSON body. */
+async function readMathJson<T>(url: string): Promise<T> {
+  return fetchBookResponse(url, async (response) => {
+    if (!response.ok) throw new Error(`Math question bank HTTP ${response.status}: ${url}`);
+    const mime = response.headers.get("content-type") ?? "";
+    if (mime && !/json|text\/plain|octet-stream/i.test(mime)) {
+      throw new Error(`Math question bank returned ${mime} instead of JSON: ${url}`);
+    }
+    return response.json() as Promise<T>;
+  });
+}
+
+export async function loadMathBookIndex(): Promise<MathBookIndex> {
+  const [index, bank] = await Promise.all([
+    readMathJson<MathBookIndex>("/data/math-books-index.json"),
+    readMathJson<TextBank>("/data/math-text-questions.json"),
+  ]);
+  if (!index || typeof index !== "object" || !index.books || typeof index.books !== "object" ||
+      !bank || typeof bank !== "object") {
+    throw new Error("Math question bank has an invalid data structure");
+  }
+  mergeMathQuestions(index, bank);
+  return index;
+}
+
 export function useMathBookIndex() {
   return useQuery({
-    queryKey: ["math-books-index", "complete-text-v1"],
-    queryFn: async (): Promise<MathBookIndex> => {
-      const [indexResponse, textResponse] = await Promise.all([
-        fetch("/data/math-books-index.json", { signal: AbortSignal.timeout(20000) }),
-        fetch("/data/math-text-questions.json", { signal: AbortSignal.timeout(20000) }),
-      ]);
-      if (!indexResponse.ok || !textResponse.ok) throw new Error("Math question bank could not be loaded");
-      const index: MathBookIndex = await indexResponse.json();
-      mergeMathQuestions(index, await textResponse.json());
-      return index;
-    },
+    queryKey: ["math-books-index", "complete-text-v2"],
+    queryFn: loadMathBookIndex,
     staleTime: Infinity,
   });
 }

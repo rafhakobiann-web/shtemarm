@@ -25,17 +25,6 @@ export const GRAMMAR_SUPPLEMENT: GrammarTopic[] = [
     }
   },
   {
-    id:"mixed-conditionals",title:"Mixed conditionals",level:"C1",sections:[3,5,6,13],category:"grammar",
-    formula:"if + had + V3, would + V (past condition → present result)",
-    correct:"If I had slept earlier, I would feel better now.",
-    incorrect:"If I had slept earlier, I will feel better now.",
-    content:{
-      hy:{summary:"Խառը պայմանականում պայմանն ու հետևանքը կարող են վերաբերել տարբեր ժամանակների։ Անցյալում չիրականացած պայմանը կարող է ունենալ ներկա հետևանք՝ if + Past Perfect, would + V։",why:"Անցյալում չիրականացած պայմանին համապատասխան ներկա երևակայական հետևանքի համար այստեղ օգտագործվում է would, ոչ թե will։"},
-      en:{summary:"Mixed conditionals connect different time frames, such as an unreal past condition with an unreal present result: if + past perfect, would + base verb.",why:"The present hypothetical result takes would rather than will here."},
-      ru:{summary:"Смешанные условные предложения связывают разные времена: нереальное условие в прошлом и результат в настоящем — if + Past Perfect, would + V.",why:"Для гипотетического результата здесь нужно would, а не will."}
-    }
-  },
-  {
     id:"past-perfect-continuous",title:"Past Perfect Continuous",level:"B2",sections:[2,3,5,6],category:"grammar",
     formula:"had been + V-ing",
     correct:"She had been waiting for an hour before the bus arrived.",

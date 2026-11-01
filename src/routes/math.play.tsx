@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMathBookIndex, type MathBookTask, type MathTranscriptionRef } from "@/lib/math-bank";
 import { MathQuestionText } from "@/components/MathQuestionText";
@@ -11,6 +11,7 @@ import { MathTools } from "@/components/MathTools";
 import { useMathProgress, isRight, isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { useLang, useTx } from "@/lib/lang";
 import { recordMathMistake } from "@/lib/mathMistakes";
+import { canChangeMathAnswer, isMathAnswerRevealed } from "@/lib/math-answer-ui";
 
 export const Route = createFileRoute("/math/play")({
   head: () => ({
@@ -97,33 +98,40 @@ function Crop({ bookId, segments }: { bookId: string; segments: Segment[] }) {
 }
 
 /** Answer control for one sub-question. Options are lettered like the English game (1) 2) 3) 4)). */
-function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void }) {
+function AnswerBlock({ item, value, locked, onAnswer, editableUntilLocked = false }: { item: Item; value?: string; locked: boolean; onAnswer: (v: string) => void; editableUntilLocked?: boolean }) {
   const tx = useTx();
   const [draft, setDraft] = useState("");
   const correct = item.answer;
   const short = item.open || correct === undefined || isShortAnswer(correct);
   const answered = value !== undefined;
+  const revealed = isMathAnswerRevealed(value, locked, editableUntilLocked);
   const ok = answered && correct !== undefined && isRight(correct, value);
 
   if (short) {
-    if (!answered && !locked) {
+    if (!revealed && !locked) {
       return (
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="text"
             inputMode="decimal"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && draft.trim() && onAnswer(draft.trim())}
+            aria-label={tx("Պատասխան")}
+            value={editableUntilLocked ? (value ?? "") : draft}
+            onChange={(e) => {
+              if (editableUntilLocked) onAnswer(e.target.value);
+              else setDraft(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (!editableUntilLocked && e.key === "Enter" && draft.trim()) onAnswer(draft.trim());
+            }}
             placeholder={tx("Պատասխան")}
-            className="h-12 flex-1 rounded-2xl border-2 border-border bg-card px-4 text-base focus:border-blue-700 focus:outline-none"
+            className="h-12 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-4 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
-          <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>{tx("Ստուգել")}</Button>
+          {!editableUntilLocked && <Button className="h-12 rounded-2xl px-6" disabled={!draft.trim()} onClick={() => onAnswer(draft.trim())}>{tx("Ստուգել")}</Button>}
         </div>
       );
     }
     return (
-      <p className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-red-500 bg-red-50 text-red-700"}`}>
+      <p role="status" className={`rounded-2xl border-2 p-4 text-base font-bold ${ok ? "border-success bg-success/10 text-foreground" : "border-destructive bg-destructive/10 text-foreground"}`}>
         {value ?? "—"} {ok ? "✓" : tx("✗ · ճիշտ՝ {c}", { c: correct ?? "—" })}
       </p>
     );
@@ -148,18 +156,21 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
       )}
       <div className="grid grid-cols-2 gap-2 sm:gap-3">
       {choices.map(([c, label]) => {
-        const isCorrectBtn = answered && correct === c;
-        const isWrongBtn = value === c && correct !== c;
+        const isCorrectBtn = revealed && correct === c;
+        const isWrongBtn = revealed && value === c && correct !== c;
+        const selectedDraft = !revealed && value === c;
         return (
           <button
             key={c}
             type="button"
-            disabled={locked || answered}
+            disabled={!canChangeMathAnswer(value, locked, editableUntilLocked)}
+            aria-pressed={value === c}
             onClick={() => onAnswer(c)}
-            className={`flex min-w-0 w-full items-start gap-2 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition sm:items-center sm:gap-3 sm:px-4 sm:py-4 sm:text-base ${
-              isCorrectBtn ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-              : isWrongBtn ? "border-red-500 bg-red-50 text-red-700"
-              : "border-stone-300 hover:bg-muted"}`}
+            className={`flex min-h-14 min-w-0 w-full items-start gap-3 rounded-2xl border-2 bg-card px-3 py-3 text-left text-sm transition-[background-color,border-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 motion-reduce:transition-none sm:items-center sm:px-4 sm:py-4 sm:text-base ${
+              isCorrectBtn ? "border-success bg-success/10 text-foreground"
+              : isWrongBtn ? "border-destructive bg-destructive/10 text-foreground"
+              : selectedDraft ? "border-primary bg-primary/10 text-foreground"
+              : "border-border hover:border-primary/50 hover:bg-muted/60"}`}
           >
             <span className="w-8 shrink-0 text-lg font-semibold text-stone-500">{c === "T" || c === "F" ? "" : `${c})`}</span>
             <span className="min-w-0 flex-1 break-words font-medium"><MathContent text={tx(label)}/></span>
@@ -173,7 +184,7 @@ function AnswerBlock({ item, value, locked, onAnswer }: { item: Item; value?: st
 
 function PlayPage() {
   const q = useIndex();
-  const { progress, setAnswer, addExam } = useMathProgress();
+  const { setAnswer, addExam } = useMathProgress();
   const tx = useTx();
   const lang = useLang();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
@@ -196,6 +207,9 @@ function PlayPage() {
   const [streak, setStreak] = useState(0);
   const [testAnswers, setTestAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [gameAnswers, setGameAnswers] = useState<Record<string, string>>({});
+  const [showSummary, setShowSummary] = useState(false);
+  const answering = useRef(new Set<string>());
 
   useEffect(() => {
     if (!section.items.length) return;
@@ -205,6 +219,9 @@ function PlayPage() {
     setStreak(0);
     setTestAnswers({});
     setSubmitted(false);
+    setGameAnswers({});
+    setShowSummary(false);
+    answering.current.clear();
   }, [section.items, isTest]);
 
   if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
@@ -251,14 +268,26 @@ function PlayPage() {
       <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
         {header}
         <MathTools />
-        <p className="text-sm font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
+        <section className="sticky top-2 z-20 space-y-2 rounded-2xl border border-primary/20 bg-card/95 p-4 shadow-lg backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-bold">{tx("Թեստ · {n} հարց", { n: round.length })} · {tx(section.title)}</p>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+              {tx("Պատասխանած՝ {n} / {total}", { n: round.filter((item) => !!testAnswers[item.id]?.trim()).length, total: round.length })}
+            </span>
+          </div>
+          <progress
+            className="h-2 w-full overflow-hidden rounded-full accent-primary"
+            aria-label={tx("Առաջընթաց")}
+            max={Math.max(1, round.length)}
+            value={round.filter((item) => !!testAnswers[item.id]?.trim()).length}
+          />
+        </section>
         {round.map((it, idx) => (
           <section key={it.id} className="space-y-3 rounded-2xl border bg-card p-3 shadow-sm sm:rounded-3xl sm:p-4">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Առաջադրանք {t} • Հարց {n} / {k} • {i} / {r}", { t: it.task, n: it.sub, k: it.subs, i: idx + 1, r: round.length })}</p>
             <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
-            <MathDemandReference bookId={it.bookId} segments={it.segments} compact />
         {it.prompt ? <MathQuestionText question={{ prompt: it.prompt, transcription: it.transcription }} /> : <p className="rounded-xl border border-dashed p-3 text-sm text-muted-foreground">{tx("Չհաջողվեց բեռնել հարցը։ Վերաբեռնել էջը։")}</p>}
-            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
+            <AnswerBlock item={it} value={testAnswers[it.id]} locked={submitted} editableUntilLocked onAnswer={(v) => setTestAnswers((a) => ({ ...a, [it.id]: v }))} />
           </section>
         ))}
         {!submitted ? (
@@ -279,13 +308,19 @@ function PlayPage() {
 
   // Խաղային (game) mode, laid out like the English game screen
   const it = round[index];
-  const answeredCount = round.filter((x) => progress.answers[x.id] !== undefined).length;
-  const current = it ? progress.answers[it.id] : undefined;
-  const finished = !it || (index === round.length - 1 && current !== undefined);
+  const answeredCount = round.filter((x) => gameAnswers[x.id] !== undefined).length;
+  const current = it ? gameAnswers[it.id] : undefined;
+  // Keep the last answer and its explanation visible until the learner
+  // explicitly opens the summary. Stored mastery must not lock replay rounds.
+  const finished = !it || showSummary;
   const short = it ? it.open || it.answer === undefined || isShortAnswer(it.answer) : false;
 
   const onAnswer = (v: string) => {
-    if (!it || current !== undefined) return;
+    if (!it || current !== undefined || answering.current.has(it.id)) return;
+    answering.current.add(it.id);
+    setGameAnswers((prev) => ({ ...prev, [it.id]: v }));
+    // Preserve the first-ever answer for long-term mastery without using that
+    // saved result to lock or pre-answer a new game session.
     setAnswer(it.id, v);
     if (correctOf(it, v)) {
       setStreak((s) => s + 1);
@@ -319,10 +354,12 @@ function PlayPage() {
         <section className="space-y-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
           <p className="text-xl font-black">{tx("Խաղն ավարտված է")}</p>
           <p className="text-sm text-muted-foreground">
-            {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, progress.answers[x.id])).length, t: answeredCount })}
+            {tx("Ճիշտ՝ {c} / {t}", { c: round.filter((x) => correctOf(x, gameAnswers[x.id])).length, t: answeredCount })}
           </p>
           <Button className="w-full" onClick={() => {
             setIndex(0); setLives(LIVES); setStreak(0);
+            setShowSummary(false); setGameAnswers({});
+            answering.current.clear();
             setRound(section.items);
           }}>{tx("Նորից")}</Button>
         </section>
@@ -344,7 +381,7 @@ function PlayPage() {
               <span className="grid size-9 place-items-center rounded-full bg-blue-700 text-sm font-bold text-white">{it.sub}</span>
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
             </div>
-            <AnswerBlock item={it} value={current} locked={false} onAnswer={onAnswer} />
+            <AnswerBlock key={it.id} item={it} value={current} locked={false} onAnswer={onAnswer} />
             {current !== undefined && (
               <MathExplain
                 item={it.id}
@@ -360,7 +397,12 @@ function PlayPage() {
               />
             )}
             {current !== undefined && (
-              <Button className="h-12 w-full rounded-2xl" onClick={() => setIndex((i) => i + 1)}>{tx("Հաջորդը")}</Button>
+              <Button className="h-12 w-full rounded-2xl" onClick={() => {
+                if (index === round.length - 1 || lives <= 0) setShowSummary(true);
+                else setIndex((i) => i + 1);
+              }}>
+                {index === round.length - 1 || lives <= 0 ? tx("Ավարտել և տեսնել արդյունքը") : tx("Հաջորդը")}
+              </Button>
             )}
           </div>
 

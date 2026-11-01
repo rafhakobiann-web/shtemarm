@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
-import type { Unit, MCQuestion } from "@/lib/books";
+import { questionAnswerKey, type Unit, type MCQuestion } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
@@ -15,6 +15,8 @@ export type UnitAnswer = {
   mc?: Record<string, string>;
   nums?: (number | null)[];
   match?: Record<string, number>;
+  /** Explicit "none of the numbered statements" answer for set tasks. */
+  none?: boolean;
 };
 
 /* ---------- passage ---------- */
@@ -173,19 +175,19 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   if (u.kind === "mc" && isGtcClaimsBundle(u)) {
     // GTC rules: +1 correct true/false, -1 incorrect, 0 "don't know".
     // Deductions are clamped to zero *within the bundle*, not across the exam.
-    const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
-    const wrong = u.questions.filter((q) => {
-      const chosen = a?.mc?.[q.n];
+    const per = u.questions.map((q, i) => a?.mc?.[questionAnswerKey(u, i)] === q.answer);
+    const wrong = u.questions.filter((q, i) => {
+      const chosen = a?.mc?.[questionAnswerKey(u, i)];
       return (chosen === "1" || chosen === "2") && chosen !== q.answer;
     }).length;
     return { got: Math.max(0, per.filter(Boolean).length - wrong), total: 6, per };
   }
   if (u.kind === "mc") {
-    const per = u.questions.map((q) => a?.mc?.[q.n] === q.answer);
+    const per = u.questions.map((q, i) => a?.mc?.[questionAnswerKey(u, i)] === q.answer);
     return { got: per.filter(Boolean).length, total: per.length, per };
   }
   if (u.kind === "num") {
-    const per = u.questions.map((q) => normNum(a?.mc?.[q.n]) === normNum(q.answer));
+    const per = u.questions.map((q, i) => normNum(a?.mc?.[questionAnswerKey(u, i)]) === normNum(q.answer));
     return { got: per.filter(Boolean).length, total: per.length, per };
   }
   if (u.kind === "match") {
@@ -195,18 +197,18 @@ export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   const given = (a?.nums ?? []).filter((x): x is number => x != null);
   const ok =
     u.kind === "set"
-      ? JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify([...u.answer].sort((x, y) => x - y))
+      ? (a?.none === true && given.length === 0 || given.length > 0 && a?.none !== true)
+        && JSON.stringify([...given].sort((x, y) => x - y)) === JSON.stringify([...u.answer].sort((x, y) => x - y))
       : JSON.stringify(a?.nums ?? []) === JSON.stringify(u.answer);
   return { got: ok ? 1 : 0, total: 1, per: [ok] };
 }
 
 export function isAnswered(u: Unit, a: UnitAnswer | undefined, qn?: string) {
   if (!a) return false;
-  if (u.kind === "mc") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
-  if (u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q) => a.mc?.[q.n]);
+  if (u.kind === "mc" || u.kind === "num") return qn ? !!a.mc?.[qn] : u.questions.every((q, i) => !!a.mc?.[questionAnswerKey(u, i)]);
   if (u.kind === "match") return Object.keys(u.answer).every((k) => a.match?.[k]);
   if (u.kind === "seq") return (a.nums ?? []).filter((x) => x != null).length === u.answer.length;
-  return (a.nums ?? []).length > 0;
+  return (a.none === true && (a.nums ?? []).length === 0) || (a.nums ?? []).length > 0;
 }
 
 /* ---------- card ---------- */
@@ -225,12 +227,13 @@ export function UnitCard(props: {
   const tx = useTx();
   const language = useLang();
 
-  const mcBlock = (q: MCQuestion) => {
-    const show = revealed(q.n);
-    const chosen = a?.mc?.[q.n];
+  const mcBlock = (q: MCQuestion, index: number) => {
+    const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
+    const show = revealed(answerKey);
+    const chosen = a?.mc?.[answerKey];
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && chosen !== q.answer && "animate-shake")}>
+      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -245,26 +248,48 @@ export function UnitCard(props: {
             return (
               <div
                 key={k}
-                onClick={() => { if (!show) onChange({ ...a, mc: { ...a?.mc, [q.n]: k } }); }}
+                onClick={(event) => {
+                  // A word-translation button inside EnglishText must never pick
+                  // an answer. The actual radio remains keyboard accessible.
+                  if (show || (event.target as HTMLElement).closest("input,button,a")) return;
+                  onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } });
+                }}
                 className={cn(
-                  "answer-option flex min-h-11 items-start gap-2 rounded-lg border-2 px-3 py-2 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200",
-                  !show && isSel && "border-primary bg-secondary",
-                  !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted",
+                  "answer-option flex min-h-14 items-start gap-3 rounded-2xl border-2 px-3 py-3 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 motion-reduce:transition-none",
+                  !show && "cursor-pointer active:scale-[0.995] motion-reduce:transform-none",
+                  !show && isSel && "border-primary bg-primary/10 shadow-sm",
+                  !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted/60",
                   show && isC && "border-success bg-success/10",
                   show && isSel && !isC && "border-destructive bg-destructive/10",
                   show && !isC && !isSel && "border-border opacity-60",
                 )}
               >
-                <Button variant="ghost" size="icon" className="size-7 shrink-0" disabled={show} aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })} aria-pressed={isSel}>{k})</Button>
-                <span className="min-w-0 flex-1"><EnglishText text={v} context={`${q.stem} ${v}`} /></span>
-                {show && isC && <Check className="size-4 shrink-0 text-success" />}
-                {show && isSel && !isC && <X className="size-4 shrink-0 text-destructive" />}
+                <input
+                  type="radio"
+                  name={`${u.id}:${answerKey}`}
+                  value={k}
+                  checked={isSel}
+                  disabled={show}
+                  onChange={() => onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } })}
+                  aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })}
+                  className="mt-1 size-4 shrink-0 accent-primary"
+                />
+                <span aria-hidden="true" className={cn(
+                  "grid size-7 shrink-0 place-items-center rounded-lg border text-sm font-bold",
+                  isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
+                )}>{k}</span>
+                <span className="min-w-0 flex-1 leading-relaxed">
+                  {v.trim() ? <EnglishText text={v} context={`${q.stem} ${v}`} />
+                    : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
+                </span>
+                {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}
+                {show && isSel && !isC && <X aria-hidden="true" className="size-4 shrink-0 text-destructive" />}
               </div>
             );
           })}
         </div>
         {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -294,12 +319,13 @@ export function UnitCard(props: {
     );
   };
 
-  const numBlock = (q: { n: string; stem: string; answer: string; explanation?: string }) => {
-    const show = revealed(q.n);
-    const val = a?.mc?.[q.n] ?? "";
+  const numBlock = (q: { n: string; stem: string; answer: string; explanation?: string }, index: number) => {
+    const answerKey = u.kind === "num" ? questionAnswerKey(u, index) : q.n;
+    const show = revealed(answerKey);
+    const val = a?.mc?.[answerKey] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <div key={q.n} className={cn("question-card rounded-xl border bg-card p-4", show && !ok && "animate-shake")}>
+      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -313,7 +339,7 @@ export function UnitCard(props: {
             disabled={show}
             value={val}
             aria-label={tx("Պատասխան {n}", { n: q.n })}
-            onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [q.n]: e.target.value } })}
+            onChange={(e) => onChange({ ...a, mc: { ...a?.mc, [answerKey]: e.target.value } })}
             className={cn(
               "h-11 w-40 rounded-lg border-2 bg-background px-3 font-display text-lg font-bold focus:outline-none",
               !show && "border-border focus:border-primary",
@@ -324,7 +350,7 @@ export function UnitCard(props: {
           {show && <span className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
         {props.onCheck && !show && val.trim() && (
-          <button type="button" onClick={() => props.onCheck?.(q.n)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -387,7 +413,7 @@ export function UnitCard(props: {
     u.kind === "match"
       ? Object.entries(u.answer).map(([k, v]) => `${k}${v}`).join(" ")
       : u.kind === "set" || u.kind === "seq"
-        ? u.answer.join(", ")
+        ? u.answer.length ? u.answer.join(", ") : tx("Ոչ մեկը")
         : "";
   const chosenText =
     u.kind === "match"
@@ -432,11 +458,13 @@ export function UnitCard(props: {
           label={tx("Ընտրեք ճիշտ համարները")}
           count={u.count ?? 5}
           selected={(a?.nums ?? []).filter((x): x is number => x != null)}
+          noneSelected={a?.none === true}
+          onNone={() => onChange({ ...a, nums: [], none: true })}
           disabled={show}
           correct={show ? u.answer : undefined}
           onToggle={(n) => {
             const cur = (a?.nums ?? []).filter((x): x is number => x != null);
-            onChange({ ...a, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
+            onChange({ ...a, none: false, nums: cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n].sort() });
           }}
         />
       )}
@@ -501,7 +529,8 @@ function numCls(sel: boolean, show: boolean, correct: boolean) {
   );
 }
 
-function NumPicker(p: { label: string; count: number; selected: number[]; disabled: boolean; correct?: number[] | undefined; onToggle: (n: number) => void }) {
+function NumPicker(p: { label: string; count: number; selected: number[]; noneSelected: boolean; disabled: boolean; correct?: number[] | undefined; onToggle: (n: number) => void; onNone: () => void }) {
+  const tx = useTx();
   return (
     <div>
       <p className="mb-2 text-sm font-semibold">{p.label}</p>
@@ -511,6 +540,18 @@ function NumPicker(p: { label: string; count: number; selected: number[]; disabl
             {n}
           </button>
         ))}
+        <button
+          type="button"
+          disabled={p.disabled}
+          aria-pressed={p.noneSelected}
+          onClick={p.onNone}
+          className={cn(
+            "min-h-10 rounded-lg border-2 px-3 text-sm font-bold transition-colors",
+            p.noneSelected ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/50",
+          )}
+        >
+          {tx("Ոչ մեկը")}
+        </button>
       </div>
     </div>
   );

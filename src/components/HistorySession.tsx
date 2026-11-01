@@ -66,11 +66,11 @@ export function HistorySession({
   if (!unit) return null;
   return (
     <div className="mx-auto max-w-4xl space-y-5 pb-12">
-      <div className="rounded-3xl border bg-card p-5 sm:p-7 space-y-3">
-        <p className="text-sm font-semibold text-primary">
+      <div className="space-y-3 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-5 shadow-sm sm:p-7">
+        <p className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
           {tx(practice ? "Ուսուցում" : "Քննություն")}
         </p>
-        <h1 className="text-2xl font-black">{title}</h1>
+        <h1 className="text-2xl font-black leading-tight sm:text-3xl">{title}</h1>
         <div className="flex flex-wrap justify-between gap-2 text-sm">
           <span>{tx("Պատասխանած՝ {n} / {total}", { n: answered, total: units.length })}</span>
           {deadline && (
@@ -83,7 +83,7 @@ export function HistorySession({
           )}
         </div>
         <progress
-          className="h-2 w-full accent-primary"
+          className="h-2 w-full overflow-hidden rounded-full accent-primary"
           max={units.length}
           value={answered}
           aria-label={tx("Առաջընթաց")}
@@ -112,20 +112,28 @@ export function HistorySession({
         <>
           <nav
             aria-label={tx("Առաջադրանքներ")}
-            className="flex max-h-40 flex-wrap gap-2 overflow-y-auto rounded-2xl border bg-card p-3"
+            className="flex gap-2 overflow-x-auto overscroll-x-contain rounded-2xl border bg-card p-3 pb-3 shadow-sm [scrollbar-width:thin]"
           >
-            {units.map((u, i) => (
-              <button
-                key={u.id}
-                type="button"
-                aria-label={tx("Առաջադրանք {n}", { n: i + 1 })}
-                aria-current={index === i ? "step" : undefined}
-                onClick={() => setIndex(i)}
-                className={`h-10 min-w-10 rounded-lg border px-2 text-sm font-bold ${index === i ? "bg-primary text-primary-foreground" : answers[u.id] ? "bg-secondary" : "bg-background"}`}
-              >
-                {i + 1}
-              </button>
-            ))}
+            {units.map((u, i) => {
+              const complete = isAnswered(u, answers[u.id]);
+              return (
+                <button
+                  key={u.id}
+                  type="button"
+                  aria-label={tx("Առաջադրանք {n}", { n: i + 1 })}
+                  aria-current={index === i ? "step" : undefined}
+                  title={tx(complete ? "Պատասխանած" : "Չպատասխանած")}
+                  onClick={() => setIndex(i)}
+                  className={`h-11 min-w-11 shrink-0 rounded-xl border-2 px-2 text-sm font-bold transition-[border-color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 motion-reduce:transition-none ${
+                    index === i ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : complete ? "border-success/40 bg-success/10 text-foreground"
+                    : "border-border bg-background text-muted-foreground hover:border-primary/40"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              );
+            })}
           </nav>
           <UnitCard
             key={unit.id}
