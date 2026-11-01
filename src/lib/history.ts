@@ -66,7 +66,7 @@ export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry
           const number = question.n;
           if ((!question.stem?.trim() && !unit.passage?.trim()) ||
               !question.answer?.trim() ||
-              (unit.kind === "mc" && !question.options?.[question.answer]?.trim())) {
+              (unit.kind === "mc" && !Object.hasOwn(question.options ?? {}, question.answer))) {
             throw new Error(`Թերի առաջադրանք՝ ${id} · ${number}`);
           }
           entries.push({
@@ -75,10 +75,13 @@ export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry
           });
         });
       } else {
-        if (!unit.answer || (Array.isArray(unit.answer)
-          ? unit.answer.length === 0 : Object.keys(unit.answer).length === 0)) {
-          throw new Error(`Թերի առաջադրանքի պատասխան՝ ${id}`);
-        }
+        // A selection task may legitimately have *zero* correct statements.
+        // Keep the source's [] key, but require an explicit "none" choice in
+        // the answer UI. Never treat an untouched question as correct.
+        const valid = unit.kind === "set" ? Array.isArray(unit.answer)
+          : unit.kind === "seq" ? Array.isArray(unit.answer) && unit.answer.length > 0
+          : unit.kind === "match" && unit.answer && Object.keys(unit.answer).length > 0;
+        if (!valid) throw new Error(`Թերի առաջադրանքի պատասխան՝ ${id}`);
         entries.push({ source: `book-${bookNumber}`, section: name, unit: { ...unit, id } });
       }
     }
