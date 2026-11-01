@@ -11,6 +11,7 @@ import { useMiniGameQuestionBank } from "@/lib/mini-game-book-bank";
 import { bestResult, recordResult, type MiniGameMode, type MiniGameResult } from "@/lib/mini-game-progress";
 
 export const Route = createFileRoute("/mini-games")({
+  staticData: { sitemap: true },
   head:()=>({meta:[{title:"Մինի խաղեր · Shtemarm"},
     {name:"description",content:"Արագ վիկտորինա, ճիշտ կամ սխալ, համապատասխանեցում և հիշողության քարտեր՝ ութ ուսումնական առարկաներով։"}]}),
   component:MiniGamesPage,

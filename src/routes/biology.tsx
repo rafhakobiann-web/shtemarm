@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BiologyWorkspace } from "@/components/BiologyWorkspace";
 
 export const Route = createFileRoute("/biology")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Կենսաբանություն · Անհատական քննություններ" },

@@ -10,6 +10,7 @@ import { useTx } from "@/lib/lang";
 import { submitFeedback, getMyFeedback } from "@/lib/feedback.functions";
 
 export const Route = createFileRoute("/feedback")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Գրել մշակողին · Shtemarm" },

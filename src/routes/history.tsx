@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { HistoryWorkspace } from "@/components/HistoryWorkspace";
 export const Route = createFileRoute("/history")({
+  staticData: { sitemap: true },
   validateSearch: z.object({
     test: z.coerce.number().int().min(1).max(4).optional().catch(undefined),
   }),

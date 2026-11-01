@@ -13,6 +13,7 @@ import { useLang, useTx } from "@/lib/lang";
 import { recordMathMistake } from "@/lib/mathMistakes";
 
 export const Route = createFileRoute("/math/play")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Մաթեմատիկա · Խաղ · Shtemarm" },

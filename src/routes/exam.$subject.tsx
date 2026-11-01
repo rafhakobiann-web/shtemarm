@@ -4,6 +4,7 @@ import { WorkbookExamWorkspace } from "@/components/WorkbookExamWorkspace";
 import type { WorkbookSubject } from "@/lib/workbook-exams";
 
 export const Route = createFileRoute("/exam/$subject")({
+  staticData: { sitemap: false },
   validateSearch: z.object({
     book: z.coerce.number().int().positive().optional().catch(undefined),
     section: z.coerce.number().int().positive().optional().catch(undefined),

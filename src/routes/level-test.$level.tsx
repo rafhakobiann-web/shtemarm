@@ -10,6 +10,7 @@ import { recordMistake } from "@/lib/mistakeNotebook";
 import { matchGrammarTopic } from "@/lib/grammarHandbook";
 
 export const Route = createFileRoute("/level-test/$level")({
+  staticData: { sitemap: false },
   head: ({ params }) => ({
     meta: [
       { title: `Անգլերենի ${params.level.toUpperCase()} թեստ · Shtemarm` },

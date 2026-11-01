@@ -9,6 +9,7 @@ import { ASSESSMENT_SOURCES, type AssessmentSubject } from "@/lib/assessment-bui
 import { useTx } from "@/lib/lang";
 
 export const Route=createFileRoute("/flashcards")({
+  staticData: { sitemap: true },
   head:()=>({meta:[{title:"Հիշողության քարտեր · Shtemarm"},
     {name:"description",content:"Սովորիր քարտերով՝ օգտագործելով շտեմարանների իրական հարցերը և ստուգված պատասխանները։"}]}),
   component: FlashcardsPage,

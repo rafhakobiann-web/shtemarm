@@ -48,7 +48,7 @@ export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry
       if (unit.kind === "mc" || unit.kind === "num") {
         unit.questions.forEach((question, index) => {
           if (!question.stem?.trim()) return;
-          if (unit.kind === "mc" && (!question.answer || !question.options?.[question.answer])) return;
+          if (unit.kind === "mc" && (!question.answer || !(question as any).options?.[question.answer])) return;
           if (unit.kind === "num" && !question.answer?.trim()) return;
           entries.push({
             source: `book-${bookNumber}`, section: name,

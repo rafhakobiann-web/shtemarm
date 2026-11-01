@@ -11,20 +11,37 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as ChangelogRouteImport } from './routes/changelog'
-import { Route as StudyToolsRouteImport } from './routes/study-tools'
+import { Route as AssessmentBuilderRouteImport } from './routes/assessment-builder'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BiologyRouteImport } from './routes/biology'
 import { Route as CalcRouteImport } from './routes/calc'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as DownloadRouteImport } from './routes/download'
+import { Route as EnglishGrammarRouteImport } from './routes/english-grammar'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as FlashcardsRouteImport } from './routes/flashcards'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HistoryBookRouteImport } from './routes/history-book'
+import { Route as MathHandbookRouteImport } from './routes/math-handbook'
+import { Route as MathReviewRouteImport } from './routes/math-review'
+import { Route as MiniGamesRouteImport } from './routes/mini-games'
+import { Route as MistakesRouteImport } from './routes/mistakes'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StudyToolsRouteImport } from './routes/study-tools'
+import { Route as SupportRouteImport } from './routes/support'
+import { Route as VocabularyRouteImport } from './routes/vocabulary'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
+import { Route as ExamSubjectRouteImport } from './routes/exam.$subject'
 import { Route as LevelTestLevelRouteImport } from './routes/level-test.$level'
 import { Route as MathIndexRouteImport } from './routes/math.index'
 import { Route as MathBooksRouteImport } from './routes/math.books'
 import { Route as MathPlayRouteImport } from './routes/math.play'
+import { Route as PhysicsBooksRouteImport } from './routes/physics.books'
+import { Route as PhysicsOriginalRouteImport } from './routes/physics.original'
+import { Route as PhysicsScanPracticeRouteImport } from './routes/physics.scan-practice'
+import { Route as SubjectSubjectRouteImport } from './routes/subject.$subject'
 import { Route as TestBookIdRouteImport } from './routes/test.$bookId'
 import { Route as StudyBookIdSectionIdRouteImport } from './routes/study.$bookId.$sectionId'
 
@@ -38,14 +55,9 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChangelogRoute = ChangelogRouteImport.update({
-  id: '/changelog',
-  path: '/changelog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StudyToolsRoute = StudyToolsRouteImport.update({
-  id: '/study-tools',
-  path: '/study-tools',
+const AssessmentBuilderRoute = AssessmentBuilderRouteImport.update({
+  id: '/assessment-builder',
+  path: '/assessment-builder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -53,9 +65,19 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BiologyRoute = BiologyRouteImport.update({
+  id: '/biology',
+  path: '/biology',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalcRoute = CalcRouteImport.update({
   id: '/calc',
   path: '/calc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatRoute = ChatRouteImport.update({
@@ -63,9 +85,24 @@ const ChatRoute = ChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DownloadRoute = DownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnglishGrammarRoute = EnglishGrammarRouteImport.update({
+  id: '/english-grammar',
+  path: '/english-grammar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeedbackRoute = FeedbackRouteImport.update({
   id: '/feedback',
   path: '/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlashcardsRoute = FlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -78,6 +115,46 @@ const HistoryBookRoute = HistoryBookRouteImport.update({
   path: '/history-book',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MathHandbookRoute = MathHandbookRouteImport.update({
+  id: '/math-handbook',
+  path: '/math-handbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MathReviewRoute = MathReviewRouteImport.update({
+  id: '/math-review',
+  path: '/math-review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MiniGamesRoute = MiniGamesRouteImport.update({
+  id: '/mini-games',
+  path: '/mini-games',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MistakesRoute = MistakesRouteImport.update({
+  id: '/mistakes',
+  path: '/mistakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudyToolsRoute = StudyToolsRouteImport.update({
+  id: '/study-tools',
+  path: '/study-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VocabularyRoute = VocabularyRouteImport.update({
+  id: '/vocabulary',
+  path: '/vocabulary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
   id: '/admin/feedback',
   path: '/admin/feedback',
@@ -86,6 +163,11 @@ const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
 const BookBookIdRoute = BookBookIdRouteImport.update({
   id: '/book/$bookId',
   path: '/book/$bookId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamSubjectRoute = ExamSubjectRouteImport.update({
+  id: '/exam/$subject',
+  path: '/exam/$subject',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LevelTestLevelRoute = LevelTestLevelRouteImport.update({
@@ -108,6 +190,26 @@ const MathPlayRoute = MathPlayRouteImport.update({
   path: '/math/play',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PhysicsBooksRoute = PhysicsBooksRouteImport.update({
+  id: '/physics/books',
+  path: '/physics/books',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhysicsOriginalRoute = PhysicsOriginalRouteImport.update({
+  id: '/physics/original',
+  path: '/physics/original',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhysicsScanPracticeRoute = PhysicsScanPracticeRouteImport.update({
+  id: '/physics/scan-practice',
+  path: '/physics/scan-practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubjectSubjectRoute = SubjectSubjectRouteImport.update({
+  id: '/subject/$subject',
+  path: '/subject/$subject',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestBookIdRoute = TestBookIdRouteImport.update({
   id: '/test/$bookId',
   path: '/test/$bookId',
@@ -122,19 +224,36 @@ const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/changelog': typeof ChangelogRoute
-  '/study-tools': typeof StudyToolsRoute
+  '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
+  '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
+  '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/download': typeof DownloadRoute
+  '/english-grammar': typeof EnglishGrammarRoute
   '/feedback': typeof FeedbackRoute
+  '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/math-handbook': typeof MathHandbookRoute
+  '/math-review': typeof MathReviewRoute
+  '/mini-games': typeof MiniGamesRoute
+  '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-tools': typeof StudyToolsRoute
+  '/support': typeof SupportRoute
+  '/vocabulary': typeof VocabularyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
   '/math/play': typeof MathPlayRoute
+  '/physics/books': typeof PhysicsBooksRoute
+  '/physics/original': typeof PhysicsOriginalRoute
+  '/physics/scan-practice': typeof PhysicsScanPracticeRoute
+  '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math/': typeof MathIndexRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
@@ -142,40 +261,74 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/changelog': typeof ChangelogRoute
-  '/study-tools': typeof StudyToolsRoute
+  '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
+  '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
+  '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/download': typeof DownloadRoute
+  '/english-grammar': typeof EnglishGrammarRoute
   '/feedback': typeof FeedbackRoute
+  '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/math-handbook': typeof MathHandbookRoute
+  '/math-review': typeof MathReviewRoute
+  '/mini-games': typeof MiniGamesRoute
+  '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-tools': typeof StudyToolsRoute
+  '/support': typeof SupportRoute
+  '/vocabulary': typeof VocabularyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
   '/math/play': typeof MathPlayRoute
+  '/physics/books': typeof PhysicsBooksRoute
+  '/physics/original': typeof PhysicsOriginalRoute
+  '/physics/scan-practice': typeof PhysicsScanPracticeRoute
+  '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math': typeof MathIndexRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/about': typeof AboutRoute
-  '/changelog': typeof ChangelogRoute
-  '/study-tools': typeof StudyToolsRoute
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
+  '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
+  '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/download': typeof DownloadRoute
+  '/english-grammar': typeof EnglishGrammarRoute
   '/feedback': typeof FeedbackRoute
+  '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/math-handbook': typeof MathHandbookRoute
+  '/math-review': typeof MathReviewRoute
+  '/mini-games': typeof MiniGamesRoute
+  '/mistakes': typeof MistakesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-tools': typeof StudyToolsRoute
+  '/support': typeof SupportRoute
+  '/vocabulary': typeof VocabularyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/book/$bookId': typeof BookBookIdRoute
+  '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
   '/math/books': typeof MathBooksRoute
   '/math/play': typeof MathPlayRoute
+  '/physics/books': typeof PhysicsBooksRoute
+  '/physics/original': typeof PhysicsOriginalRoute
+  '/physics/scan-practice': typeof PhysicsScanPracticeRoute
+  '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math/': typeof MathIndexRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
@@ -184,54 +337,111 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/assessment-builder'
     | '/auth'
-    | '/changelog'
+    | '/biology'
     | '/calc'
+    | '/changelog'
     | '/chat'
+    | '/download'
+    | '/english-grammar'
     | '/feedback'
+    | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/math-handbook'
+    | '/math-review'
+    | '/mini-games'
+    | '/mistakes'
+    | '/sitemap.xml'
+    | '/study-tools'
+    | '/support'
+    | '/vocabulary'
     | '/admin/feedback'
     | '/book/$bookId'
+    | '/exam/$subject'
     | '/level-test/$level'
     | '/math/books'
     | '/math/play'
+    | '/physics/books'
+    | '/physics/original'
+    | '/physics/scan-practice'
+    | '/subject/$subject'
     | '/test/$bookId'
     | '/math/'
     | '/study/$bookId/$sectionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/assessment-builder'
     | '/auth'
-    | '/changelog'
+    | '/biology'
     | '/calc'
+    | '/changelog'
     | '/chat'
+    | '/download'
+    | '/english-grammar'
     | '/feedback'
+    | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/math-handbook'
+    | '/math-review'
+    | '/mini-games'
+    | '/mistakes'
+    | '/sitemap.xml'
+    | '/study-tools'
+    | '/support'
+    | '/vocabulary'
     | '/admin/feedback'
     | '/book/$bookId'
+    | '/exam/$subject'
     | '/level-test/$level'
     | '/math/books'
     | '/math/play'
+    | '/physics/books'
+    | '/physics/original'
+    | '/physics/scan-practice'
+    | '/subject/$subject'
     | '/test/$bookId'
     | '/math'
     | '/study/$bookId/$sectionId'
   id:
     | '__root__'
     | '/'
-    | '/changelog'
+    | '/about'
+    | '/assessment-builder'
     | '/auth'
+    | '/biology'
     | '/calc'
+    | '/changelog'
     | '/chat'
+    | '/download'
+    | '/english-grammar'
     | '/feedback'
+    | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/math-handbook'
+    | '/math-review'
+    | '/mini-games'
+    | '/mistakes'
+    | '/sitemap.xml'
+    | '/study-tools'
+    | '/support'
+    | '/vocabulary'
     | '/admin/feedback'
     | '/book/$bookId'
+    | '/exam/$subject'
     | '/level-test/$level'
     | '/math/books'
     | '/math/play'
+    | '/physics/books'
+    | '/physics/original'
+    | '/physics/scan-practice'
+    | '/subject/$subject'
     | '/test/$bookId'
     | '/math/'
     | '/study/$bookId/$sectionId'
@@ -239,17 +449,37 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AssessmentBuilderRoute: typeof AssessmentBuilderRoute
   AuthRoute: typeof AuthRoute
+  BiologyRoute: typeof BiologyRoute
   CalcRoute: typeof CalcRoute
+  ChangelogRoute: typeof ChangelogRoute
   ChatRoute: typeof ChatRoute
+  DownloadRoute: typeof DownloadRoute
+  EnglishGrammarRoute: typeof EnglishGrammarRoute
   FeedbackRoute: typeof FeedbackRoute
+  FlashcardsRoute: typeof FlashcardsRoute
   HistoryRoute: typeof HistoryRoute
   HistoryBookRoute: typeof HistoryBookRoute
+  MathHandbookRoute: typeof MathHandbookRoute
+  MathReviewRoute: typeof MathReviewRoute
+  MiniGamesRoute: typeof MiniGamesRoute
+  MistakesRoute: typeof MistakesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudyToolsRoute: typeof StudyToolsRoute
+  SupportRoute: typeof SupportRoute
+  VocabularyRoute: typeof VocabularyRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
   BookBookIdRoute: typeof BookBookIdRoute
+  ExamSubjectRoute: typeof ExamSubjectRoute
   LevelTestLevelRoute: typeof LevelTestLevelRoute
   MathBooksRoute: typeof MathBooksRoute
   MathPlayRoute: typeof MathPlayRoute
+  PhysicsBooksRoute: typeof PhysicsBooksRoute
+  PhysicsOriginalRoute: typeof PhysicsOriginalRoute
+  PhysicsScanPracticeRoute: typeof PhysicsScanPracticeRoute
+  SubjectSubjectRoute: typeof SubjectSubjectRoute
   TestBookIdRoute: typeof TestBookIdRoute
   MathIndexRoute: typeof MathIndexRoute
   StudyBookIdSectionIdRoute: typeof StudyBookIdSectionIdRoute
@@ -264,13 +494,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/changelog': {
-      id: '/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof ChangelogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -278,11 +501,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/study-tools': {
-      id: '/study-tools'
-      path: '/study-tools'
-      fullPath: '/study-tools'
-      preLoaderRoute: typeof StudyToolsRouteImport
+    '/assessment-builder': {
+      id: '/assessment-builder'
+      path: '/assessment-builder'
+      fullPath: '/assessment-builder'
+      preLoaderRoute: typeof AssessmentBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -292,11 +515,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biology': {
+      id: '/biology'
+      path: '/biology'
+      fullPath: '/biology'
+      preLoaderRoute: typeof BiologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calc': {
       id: '/calc'
       path: '/calc'
       fullPath: '/calc'
       preLoaderRoute: typeof CalcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -306,11 +543,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/english-grammar': {
+      id: '/english-grammar'
+      path: '/english-grammar'
+      fullPath: '/english-grammar'
+      preLoaderRoute: typeof EnglishGrammarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/feedback': {
       id: '/feedback'
       path: '/feedback'
       fullPath: '/feedback'
       preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flashcards': {
+      id: '/flashcards'
+      path: '/flashcards'
+      fullPath: '/flashcards'
+      preLoaderRoute: typeof FlashcardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -327,6 +585,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryBookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/math-handbook': {
+      id: '/math-handbook'
+      path: '/math-handbook'
+      fullPath: '/math-handbook'
+      preLoaderRoute: typeof MathHandbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/math-review': {
+      id: '/math-review'
+      path: '/math-review'
+      fullPath: '/math-review'
+      preLoaderRoute: typeof MathReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mini-games': {
+      id: '/mini-games'
+      path: '/mini-games'
+      fullPath: '/mini-games'
+      preLoaderRoute: typeof MiniGamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mistakes': {
+      id: '/mistakes'
+      path: '/mistakes'
+      fullPath: '/mistakes'
+      preLoaderRoute: typeof MistakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/study-tools': {
+      id: '/study-tools'
+      path: '/study-tools'
+      fullPath: '/study-tools'
+      preLoaderRoute: typeof StudyToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vocabulary': {
+      id: '/vocabulary'
+      path: '/vocabulary'
+      fullPath: '/vocabulary'
+      preLoaderRoute: typeof VocabularyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/feedback': {
       id: '/admin/feedback'
       path: '/admin/feedback'
@@ -339,6 +653,13 @@ declare module '@tanstack/react-router' {
       path: '/book/$bookId'
       fullPath: '/book/$bookId'
       preLoaderRoute: typeof BookBookIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exam/$subject': {
+      id: '/exam/$subject'
+      path: '/exam/$subject'
+      fullPath: '/exam/$subject'
+      preLoaderRoute: typeof ExamSubjectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/level-test/$level': {
@@ -369,6 +690,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MathPlayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/physics/books': {
+      id: '/physics/books'
+      path: '/physics/books'
+      fullPath: '/physics/books'
+      preLoaderRoute: typeof PhysicsBooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/physics/original': {
+      id: '/physics/original'
+      path: '/physics/original'
+      fullPath: '/physics/original'
+      preLoaderRoute: typeof PhysicsOriginalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/physics/scan-practice': {
+      id: '/physics/scan-practice'
+      path: '/physics/scan-practice'
+      fullPath: '/physics/scan-practice'
+      preLoaderRoute: typeof PhysicsScanPracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subject/$subject': {
+      id: '/subject/$subject'
+      path: '/subject/$subject'
+      fullPath: '/subject/$subject'
+      preLoaderRoute: typeof SubjectSubjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/$bookId': {
       id: '/test/$bookId'
       path: '/test/$bookId'
@@ -389,19 +738,36 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  ChangelogRoute: ChangelogRoute,
-  StudyToolsRoute: StudyToolsRoute,
+  AssessmentBuilderRoute: AssessmentBuilderRoute,
   AuthRoute: AuthRoute,
+  BiologyRoute: BiologyRoute,
   CalcRoute: CalcRoute,
+  ChangelogRoute: ChangelogRoute,
   ChatRoute: ChatRoute,
+  DownloadRoute: DownloadRoute,
+  EnglishGrammarRoute: EnglishGrammarRoute,
   FeedbackRoute: FeedbackRoute,
+  FlashcardsRoute: FlashcardsRoute,
   HistoryRoute: HistoryRoute,
   HistoryBookRoute: HistoryBookRoute,
+  MathHandbookRoute: MathHandbookRoute,
+  MathReviewRoute: MathReviewRoute,
+  MiniGamesRoute: MiniGamesRoute,
+  MistakesRoute: MistakesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudyToolsRoute: StudyToolsRoute,
+  SupportRoute: SupportRoute,
+  VocabularyRoute: VocabularyRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
   BookBookIdRoute: BookBookIdRoute,
+  ExamSubjectRoute: ExamSubjectRoute,
   LevelTestLevelRoute: LevelTestLevelRoute,
   MathBooksRoute: MathBooksRoute,
   MathPlayRoute: MathPlayRoute,
+  PhysicsBooksRoute: PhysicsBooksRoute,
+  PhysicsOriginalRoute: PhysicsOriginalRoute,
+  PhysicsScanPracticeRoute: PhysicsScanPracticeRoute,
+  SubjectSubjectRoute: SubjectSubjectRoute,
   TestBookIdRoute: TestBookIdRoute,
   MathIndexRoute: MathIndexRoute,
   StudyBookIdSectionIdRoute: StudyBookIdSectionIdRoute,

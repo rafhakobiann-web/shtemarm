@@ -4,6 +4,7 @@ import { Vocabulary } from "@/components/Vocabulary";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/vocabulary")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Shtemarm · Իմ բառապաշարը" },
     { name: "description", content: "Պահպանիր անգլերեն բառերը, թարգմանությունները և համատեքստերը՝ կրկնելու համար։" },

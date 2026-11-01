@@ -5,6 +5,7 @@ import { PRIVATE_BETA_URL, LATEST_ANDROID_VERSION, PUBLIC_ANDROID_VERSION, safeP
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Shtemarm · Ներբեռնել հավելվածը" },

@@ -18,6 +18,7 @@ const SUBJECTS = { physics: 51, chemistry: 52, geography: 53, russian: 54 } as c
 type SubjectId = keyof typeof SUBJECTS;
 const field = "h-12 w-full rounded-xl border bg-background px-3 text-sm";
 export const Route = createFileRoute("/subject/$subject")({
+  staticData: { sitemap: false },
   beforeLoad: ({ params }) => { if (!(params.subject in SUBJECTS)) throw notFound(); },
   validateSearch: z.object({ section: z.coerce.number().int().positive().optional().catch(undefined) }),
   head: ({ params }) => ({ meta: [

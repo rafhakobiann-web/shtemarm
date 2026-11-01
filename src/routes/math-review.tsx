@@ -10,6 +10,7 @@ import {
 import { findMathSection, mathBookUrl } from "@/lib/mathHandbook";
 
 export const Route=createFileRoute("/math-review")({
+  staticData: { sitemap: true },
   head:()=>({meta:[{title:"Սխալների վերանայում · Մաթեմատիկա · Shtemarm"}]}),
   component:MathReviewPage,
 });

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminListFeedback, adminReplyFeedback } from "@/lib/feedback.functions";
 
 export const Route = createFileRoute("/admin/feedback")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Հետադարձ կապ · Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminFeedbackPage,
 });
