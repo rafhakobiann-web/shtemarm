@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
-import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds } from "@/lib/books";
+import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw } from "lucide-react";
+import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
@@ -28,7 +28,8 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
-  const { data: book, isLoading, error, refetch } = useBook(id);
+  const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
+  const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
 
   return (
@@ -41,6 +42,10 @@ function BookPage() {
         <div className="space-y-4">
           <h1 className="text-3xl font-black sm:text-4xl">{meta.title}</h1>
           <p className="text-muted-foreground">{meta.sub}</p>
+          <Button variant="outline" size="sm" onClick={reload} disabled={isFetching}>
+            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} />
+            {tx("Թարմացնել գրքի տվյալները")}
+          </Button>
           <div className="flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
@@ -97,14 +102,14 @@ function BookPage() {
       </div>
 
       {error && !book ? (
-        <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
+        <LoadError onRetry={reload} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
         <div className="grid place-items-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : book.sections.length === 0 ? (
         <div role="status" className="mx-auto max-w-lg space-y-4 rounded-2xl border bg-card p-8 text-center">
           <p className="font-semibold">{tx("Այս գրքի բաժինները դեռ հասանելի չեն։")}</p>
           <p className="text-sm text-muted-foreground">{tx("Գրքի տվյալները կարող են թերի լինել։ Փորձիր նորից կամ ընտրիր մեկ այլ գիրք։")}</p>
-          <Button variant="outline" onClick={() => void refetch()}>{tx("Կրկին բեռնել")}</Button>
+          <Button variant="outline" onClick={reload} disabled={isFetching}>{tx("Կրկին բեռնել")}</Button>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
