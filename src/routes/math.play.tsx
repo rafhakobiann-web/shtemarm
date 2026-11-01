@@ -184,7 +184,7 @@ function AnswerBlock({ item, value, locked, onAnswer, editableUntilLocked = fals
 
 function PlayPage() {
   const q = useIndex();
-  const { progress, setAnswer, addExam } = useMathProgress();
+  const { setAnswer, addExam } = useMathProgress();
   const tx = useTx();
   const lang = useLang();
   const [params, setParams] = useState<{ book: string; chapter: number; section: number; mode: string } | null>(null);
