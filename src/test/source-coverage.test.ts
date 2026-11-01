@@ -45,8 +45,9 @@ describe("English and Armenian History source-data retention", () => {
     ]);
   });
 
-  it("does not skip any of 3,404 currently indexed Armenian History tasks", () => {
-    const expected = [1612, 1187, 605];
+  it("does not skip any of 3,449 currently indexed Armenian History tasks", () => {
+    // Count the current checked-in records, not independently verified printed questions.
+    const expected = [1657, 1187, 605];
     for (let part = 1; part <= 3; part++) {
       const book = getBook(`history-book${part}`);
       const entries = historyBookEntries(book, part);
