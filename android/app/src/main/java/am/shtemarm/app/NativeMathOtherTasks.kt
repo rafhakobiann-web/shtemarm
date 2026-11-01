@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -135,6 +136,7 @@ internal fun NativeMathOtherTasks(part: Int, onBack: () -> Unit) {
     var typed by remember(part, kind, index) { mutableStateOf("") }
     var choice by remember(part, kind, index) { mutableStateOf("") }
     var checked by remember(part, kind, index) { mutableStateOf(false) }
+    val scoreById = remember(part, kind) { mutableStateMapOf<String, Boolean>() }
 
     LaunchedEffect(part) {
         loading = true
@@ -180,6 +182,11 @@ internal fun NativeMathOtherTasks(part: Int, onBack: () -> Unit) {
                 Text("Հարց ${index + 1} / ${filtered.size}", fontWeight = FontWeight.Bold)
                 LinearProgressIndicator(progress = { (index + 1).toFloat() / filtered.size },
                     modifier = Modifier.fillMaxWidth())
+                Text(
+                    "Ստուգված՝ ${scoreById.size} / ${filtered.size} · Ճիշտ՝ ${scoreById.values.count { it }}",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             item {
                 ElevatedCard {
@@ -215,7 +222,14 @@ internal fun NativeMathOtherTasks(part: Int, onBack: () -> Unit) {
             item {
                 if (!checked) {
                     Button(
-                        onClick = { checked = true },
+                        onClick = {
+                            scoreById[task.id] = if (kind == "tf") {
+                                choice == task.answer.uppercase()
+                            } else {
+                                matchesMathAnswer(typed, task.answer)
+                            }
+                            checked = true
+                        },
                         enabled = if (kind == "open") typed.isNotBlank() else choice.isNotBlank(),
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Ստուգել պատասխանը") }
