@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Heart, Zap, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { z } from "zod";
 import { useBook } from "@/lib/useBook";
-import { secTitle, type Unit } from "@/lib/books";
+import { questionAnswerKey, questionForAnswerKey, secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
@@ -111,8 +111,8 @@ function useRevealer(onResult?: (correct: boolean) => void) {
     updateRevealed((r) => ({ ...r, [id]: true }));
     const a = answers[u.id];
     let ok: boolean;
-    if (u.kind === "mc") ok = a?.mc?.[key] === u.questions.find((q) => q.n === key)?.answer;
-    else if (u.kind === "num") ok = normNum(a?.mc?.[key]) === normNum(u.questions.find((q) => q.n === key)?.answer);
+    if (u.kind === "mc") ok = a?.mc?.[key] === questionForAnswerKey(u, key)?.answer;
+    else if (u.kind === "num") ok = normNum(a?.mc?.[key]) === normNum(questionForAnswerKey(u, key)?.answer);
     else ok = scoreUnit(u, a).got === 1;
     recordAnswer(id, ok);
     onResult?.(ok);
@@ -170,7 +170,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
   const round = useMemo(() => {
     // unseen first, then mistakes, then the rest
     const score = (u: Unit) => {
-      const ids = perQuestion(u) && "questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id];
+      const ids = u.kind === "mc" || u.kind === "num" ? u.questions.map((_, i) => `${u.id}:${questionAnswerKey(u, i)}`) : [u.id];
       if (ids.some((i) => !(i in progress.answers))) return 0;
       if (ids.some((i) => progress.answers[i] === 0)) return 1;
       return 2;
@@ -231,7 +231,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
 
   const u = round[idx];
   if (!u) return null;
-  const keys = perQuestion(u) && "questions" in u ? u.questions.map((q) => q.n) : ["unit"];
+  const keys = u.kind === "mc" || u.kind === "num" ? u.questions.map((_, i) => questionAnswerKey(u, i)) : ["unit"];
   const allRevealed = keys.every((k) => revealed[qKey(u, k)]);
   return (
     <div className="space-y-4">
