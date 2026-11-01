@@ -10,12 +10,13 @@ import { useProgress, level } from "@/lib/progress";
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
   head: () => ({
     meta: [
       { title: "Shtemarm · Ընտրիր առարկան" },
       { name: "description", content: "Ընտրիր շտեմարանը սկսելու համար կամ անցիր քննություն՝ անգլերեն, մաթեմատիկա և այլ առարկաներ։" },
-      { property: "og:title", content: "Shtemarm" },
+      { property: "og:title", content: "Shtemarm · Անգլերենի, մաթեմատիկայի շտեմարաններ և քննություններ" },
       { property: "og:description", content: "Ուսուցում և քննություններ՝ ըստ առարկաների։" },
     ],
   }),

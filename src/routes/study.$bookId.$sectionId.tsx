@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ mode: z.enum(["game", "classic"]).catch("game") }),
   head: ({ params }) => ({
     meta: [

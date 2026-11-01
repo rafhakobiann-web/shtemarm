@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/book/$bookId")({
+  staticData: { sitemap: false },
   beforeLoad: ({ params }) => {
     if (!ALL_BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
   },

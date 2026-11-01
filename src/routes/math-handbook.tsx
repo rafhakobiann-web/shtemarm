@@ -19,6 +19,7 @@ const schema = z.object({
   topic: z.string().optional().catch(undefined),
 });
 export const Route = createFileRoute("/math-handbook")({
+  staticData: { sitemap: true },
   validateSearch: schema,
   head: () => ({ meta: [
     { title: "Մաթեմատիկայի կանոնների և բանաձևերի ձեռնարկ · Shtemarm" },

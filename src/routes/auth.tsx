@@ -10,6 +10,7 @@ import { useLang, useTx } from "@/lib/lang";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Մուտք · Shtemarm" },

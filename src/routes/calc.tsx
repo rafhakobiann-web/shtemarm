@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/calc")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Հաշվիչ · Shtemarm" },
