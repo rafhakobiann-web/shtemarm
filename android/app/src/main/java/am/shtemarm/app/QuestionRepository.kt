@@ -179,6 +179,17 @@ class QuestionRepository(private val context: Context) {
         if (unit.optString("kind") != "mc" || hasVisual(unit)) return
         val passage = unit.optString("passage").trim()
         val questions = unit.optJSONArray("questions") ?: return
+        // Do not map multiple imported option sets to the same numbered gap.
+        // Ambiguous source numbering must be checked against the original book.
+        if (passage.isNotBlank() && questions.length() > 1) {
+            val hasNumberedGaps = Regex("""\(\d+\)\s*_{2,}""").containsMatchIn(passage)
+            if (hasNumberedGaps) {
+                val numbers = (0 until questions.length()).mapNotNull {
+                    questions.optJSONObject(it)?.optString("n")?.trim()
+                }
+                if (numbers.size != questions.length() || numbers.size != numbers.toSet().size) return
+            }
+        }
         for (qi in 0 until questions.length()) {
             val q = questions.optJSONObject(qi) ?: continue
             if (hasVisual(q)) continue
