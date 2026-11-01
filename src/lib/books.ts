@@ -158,7 +158,7 @@ export function normalizeBiologyFirstBook(book: Book): Book {
         ...unit,
         passage: normalizeBiologyText(unit.passage),
         questions: unit.questions.map(q=>({...q, stem:normalizeBiologyText(q.stem),
-          options:Object.fromEntries(Object.entries((q as any).options ?? {}).map(([k,v])=>[k,normalizeBiologyText(v)]))})),
+          options:Object.fromEntries(Object.entries((q as any).options ?? {}).map(([k,v])=>[k,normalizeBiologyText(String(v))]))})),
       }:unit),
     })),
   };
@@ -184,7 +184,7 @@ export function normalizeBiologySecondBook(book: Book): Book {
           label: question.n,
           passage: normalizeBiologyText(unit.passage),
           questions: [unit.kind==="mc" ? {...question, stem:normalizeBiologyText(question.stem),
-            options:Object.fromEntries(Object.entries((question as any).options ?? {}).map(([k,v])=>[k,normalizeBiologyText(v)]))} : question],
+            options:Object.fromEntries(Object.entries((question as any).options ?? {}).map(([k,v])=>[k,normalizeBiologyText(String(v))]))} : question],
         }));
       }),
     })),
