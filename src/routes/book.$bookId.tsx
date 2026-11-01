@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw, MessageCircle } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
@@ -29,6 +29,7 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
+  const sourceReviewPending = [1, 2, 3, 21, 22, 23, 31, 32, 63, 64].includes(id);
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
@@ -46,6 +47,15 @@ function BookPage() {
         <div className="space-y-4">
           <h1 className="text-3xl font-black sm:text-4xl">{meta.title}</h1>
           <p className="text-muted-foreground">{meta.sub}</p>
+          {sourceReviewPending && (
+            <div role="note" className="space-y-2 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-sm leading-relaxed">
+              <p>{tx("Այս գրքի առաջադրանքների ամբողջական համեմատությունը բնօրինակի հետ դեռ ընթացքի մեջ է։ Հնարավոր են բացթողումներ կամ թվայնացման սխալներ։")}</p>
+              <Link to="/feedback" className="inline-flex min-h-9 items-center gap-2 font-semibold text-primary hover:underline">
+                <MessageCircle className="size-4" aria-hidden="true" />
+                {tx("Գտե՞լ ես սխալ․ նշիր գիրքը, էջն ու առաջադրանքի համարը")}
+              </Link>
+            </div>
+          )}
           <Button variant="outline" size="sm" onClick={reload} disabled={isFetching}>
             <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} />
             {tx("Թարմացնել գրքի տվյալները")}
