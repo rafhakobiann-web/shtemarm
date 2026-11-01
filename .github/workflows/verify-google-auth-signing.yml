@@ -1,0 +1,33 @@
+name: Verify Google sign-in and permanent Android signing
+
+on:
+  pull_request:
+    paths:
+      - 'src/routes/auth.tsx'
+      - 'src/lib/google-auth.ts'
+      - 'src/test/google-auth-options.test.ts'
+      - '.github/workflows/android-signed-release.yml'
+      - '.github/workflows/verify-google-auth-signing.yml'
+      - 'scripts/check-android-signing-workflow.mjs'
+      - 'docs/ANDROID_PERMANENT_SIGNING_AND_GOOGLE_AUTH.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Verify Google OAuth options and safe redirects
+        run: bunx vitest run src/test/google-auth-options.test.ts src/test/app-routing.test.tsx
+      - name: Verify persistent Android signing workflow
+        run: node scripts/check-android-signing-workflow.mjs
+      - name: Build website without requiring OAuth secrets
+        run: bun run build

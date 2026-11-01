@@ -1,24 +1,31 @@
-name: Build signed Shtemarm Android release
+name: Build permanently signed Shtemarm Android update
+
 on:
   workflow_dispatch:
     inputs:
       version_name:
-        description: 'Version name for signed candidate, e.g. 0.1.1-beta.1'
+        description: 'Signed version name (e.g. 0.3.0-beta.5)'
         required: true
-        default: '0.1.1-beta.1'
+        default: '0.3.0-beta.5'
         type: string
       version_code:
-        description: 'Increasing integer Android version code'
+        description: 'Integer strictly higher than previously distributed versionCode 10'
         required: true
-        default: '4'
+        default: '11'
         type: string
+
 permissions:
   contents: read
+
+concurrency:
+  group: shtemarm-permanent-signing
+  cancel-in-progress: false
+
 jobs:
-  release:
+  signed-update:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,38 +33,60 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Security and offline-data checks
+      - name: Validate security and version metadata
+        env:
+          VERSION_CODE: ${{ inputs.version_code }}
+          VERSION_NAME: ${{ inputs.version_name }}
         run: |
+          set -euo pipefail
           node scripts/check-repo-secrets.mjs
           python3 scripts/audit-git-history.py
           python3 android/scripts/validate_assets.py
-      - name: Require persistent signing secrets
+          node scripts/check-android-signing-workflow.mjs
+          [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] && (( VERSION_CODE > 10 )) || {
+            echo "::error::Use a versionCode higher than the previously released 10."
+            exit 1
+          }
+          [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]] || {
+            echo "::error::Invalid versionName."
+            exit 1
+          }
+      - name: Verify persistent signing key and pinned certificate
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          PINNED_CERT: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
         run: |
           set -euo pipefail
-          if [[ -z "$KEYSTORE_BASE64" || -z "$STORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
-            echo "Configure the four ANDROID_ signing secrets in GitHub repository Actions secrets."
+          if [[ -z "$KEYSTORE_BASE64" || -z "$STORE_PASSWORD" ||
+                -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" || -z "$PINNED_CERT" ]]; then
+            echo "::error::Configure all four ANDROID_ signing secrets and ANDROID_SIGNING_CERT_SHA256 repository variable."
             exit 1
           fi
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/shtemarm-release.jks"
-          chmod 600 "$RUNNER_TEMP/shtemarm-release.jks"
-          echo "ANDROID_SIGNING_STORE_FILE=$RUNNER_TEMP/shtemarm-release.jks" >> "$GITHUB_ENV"
+          KEYSTORE_PATH="$RUNNER_TEMP/shtemarm-release.p12"
+          umask 077
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+          normalize() { printf '%s' "$1" | tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]'; }
+          CERT=$(keytool -list -v -storetype PKCS12 -keystore "$KEYSTORE_PATH" \
+            -storepass "$STORE_PASSWORD" -alias "$KEY_ALIAS" |
+            sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1)
+          if [[ -z "$CERT" || "$(normalize "$CERT")" != "$(normalize "$PINNED_CERT")" ]]; then
+            echo "::error::Keystore certificate differs from the permanent Shtemarm signing certificate."
+            exit 1
+          fi
+          echo "Verified permanent signing certificate without exposing the key."
+          echo "ANDROID_SIGNING_STORE_FILE=$KEYSTORE_PATH" >> "$GITHUB_ENV"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Install Android SDK
-        run: |
-          echo "y" | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Build signed release APK and Android App Bundle
+      - name: Build and test full native release
         working-directory: android
         env:
           ANDROID_SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -66,18 +95,39 @@ jobs:
           VERSION_NAME: ${{ inputs.version_name }}
           VERSION_CODE: ${{ inputs.version_code }}
         run: |
-          set -euo pipefail
-          gradle --no-daemon assembleRelease bundleRelease \
+          gradle --no-daemon testDebugUnitTest assembleRelease bundleRelease \
             "-Pshtemarm.versionName=$VERSION_NAME" \
-            "-Pshtemarm.versionCode=$VERSION_CODE"
-      - name: Verify release APK signature
+            "-Pshtemarm.versionCode=$VERSION_CODE" --stacktrace
+      - name: Verify APK package and pinned signature
+        env:
+          PINNED_CERT: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
+          VERSION_CODE: ${{ inputs.version_code }}
         run: |
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose \
-            android/app/build/outputs/apk/release/app-release.apk
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          APKSIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          "$APKSIGNER" verify --verbose "$APK"
+          ACTUAL=$("$APKSIGNER" verify --print-certs "$APK" |
+            sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
+          normalize() { printf '%s' "$1" | tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]'; }
+          test -n "$ACTUAL" && test "$(normalize "$ACTUAL")" = "$(normalize "$PINNED_CERT")" || {
+            echo "::error::APK does not match pinned certificate."
+            exit 1
+          }
+          BADGING=$("$AAPT" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionCode='$VERSION_CODE'" <<< "$BADGING"
+          sha256sum "$APK" > android/app/build/outputs/apk/release/app-release.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: shtemarm-signed-android-release
+          name: shtemarm-permanently-signed-update
           path: |
             android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/release/app-release.apk.sha256
             android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+      - name: Remove ephemeral keystore copy
+        if: always()
+        run: rm -f "$RUNNER_TEMP/shtemarm-release.p12"
