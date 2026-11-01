@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadBook } from "@/lib/books";
+import { invalidateBookCache, loadBook } from "@/lib/books";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -22,6 +22,25 @@ describe("book JSON loading recovers from malformed sections", () => {
       id: bookId,
       sections: [{ n: 1, units: [] }],
     });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("can refresh previously cached empty content after the source is corrected", async () => {
+    const bookId = 99124;
+    const response = (sections: unknown[]) =>
+      new Response(JSON.stringify({ id: bookId, sections }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(response([]))
+      .mockResolvedValueOnce(response([{ n: 1, units: [] }]));
+    vi.stubGlobal("fetch", fetchMock);
+
+    expect((await loadBook(bookId)).sections).toHaveLength(0);
+    // Refetching without invalidation would reuse the first fulfilled promise.
+    invalidateBookCache(bookId);
+    expect((await loadBook(bookId)).sections).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
