@@ -375,6 +375,21 @@ function Index() {
         </span>
         <Download className="size-5 shrink-0 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
       </Link>
+      <Link
+        to="/changelog"
+        className="group flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/5 sm:px-5"
+      >
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+          <Sparkles className="size-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <strong className="block text-sm font-black">{tx("Նորություններ և թարմացումներ")}</strong>
+          <span className="block text-xs leading-5 text-muted-foreground">
+            {tx("Android Beta 4 · Գրքերի կայունության շտկումներ · Ավարտված և ընթացիկ աշխատանքներ")}
+          </span>
+        </span>
+        <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" />
+      </Link>
       <nav aria-label={tx("Արագ անցումներ")} className="grid gap-3 sm:grid-cols-3">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
