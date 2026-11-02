@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/chat")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Չատբոտ · Shtemarm" },

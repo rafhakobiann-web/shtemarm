@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, HeartHandshake, MessageCircle, Target } from "luci
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/about")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Shtemarm · Մեր մասին" },
     { name: "description", content: "Shtemarm-ի նպատակը, ուսումնական գործիքներն ու կապը նախագծի հետ։" },

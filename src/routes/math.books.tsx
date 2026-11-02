@@ -11,6 +11,7 @@ import { useLang, useTx } from "@/lib/lang";
 import { recordMathMistake } from "@/lib/mathMistakes";
 
 export const Route = createFileRoute("/math/books")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Մաթեմատիկայի գրքեր · Shtemarm" },

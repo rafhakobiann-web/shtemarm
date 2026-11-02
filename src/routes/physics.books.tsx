@@ -4,6 +4,7 @@ import { PhysicsSourceReader } from "@/components/PhysicsSourceReader";
 import type { PhysicsVolume } from "@/lib/physics-source";
 
 export const Route=createFileRoute("/physics/books")({
+  staticData: { sitemap: true },
   validateSearch:z.object({
     volume:z.coerce.number().int().refine(v=>v===61||v===62).catch(61),
     page:z.coerce.number().int().positive().catch(5),

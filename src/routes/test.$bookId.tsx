@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/test/$bookId")({
+  staticData: { sitemap: false },
   validateSearch: z.object({
     mode: z.enum(["exam", "custom"]).catch("custom"),
     section: z.number().int().optional().catch(undefined),

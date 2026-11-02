@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { TIKTOK_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/support")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Shtemarm · Աջակցել նախագծին" },
     { name: "description", content: "Աջակցիր Shtemarm-ի Android հավելվածի հրապարակմանը Google Play-ում։" },
