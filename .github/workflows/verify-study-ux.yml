@@ -14,6 +14,12 @@ on:
       - 'src/lib/math-bank.ts'
       - 'src/components/MathQuestionText.tsx'
       - 'src/test/source-coverage.test.ts'
+      - 'src/test/english-source-gap-restoration.test.ts'
+      - 'src/test/biology-volume-four-source-index.test.ts'
+      - 'public/data/book2.json'
+      - 'public/data/book3.json'
+      - 'public/data/biology-book4-source-index.json'
+      - 'public/data/biology-book3-source-index.json'
       - 'src/test/math-loading-integrity.test.ts'
       - 'src/lib/books.ts'
       - 'src/lib/math-answer-ui.ts'
@@ -54,7 +60,7 @@ jobs:
       - name: Compare Mathematics question text references to original book transcription
         run: node scripts/audit-math-requirements.mjs
       - name: Test study tools and existing question bank behavior
-        run: bunx vitest run src/test/source-coverage.test.ts src/test/math-loading-integrity.test.ts src/test/question-answer-integrity.test.ts src/test/book-section-progress.test.ts src/test/book-loading-shape.test.ts src/test/book-retry-policy.test.ts src/test/website-book-navigation.test.ts src/test/math-answer-ui.test.ts src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
+        run: bunx vitest run src/test/source-coverage.test.ts src/test/english-source-gap-restoration.test.ts src/test/biology-volume-four-source-index.test.ts src/test/math-loading-integrity.test.ts src/test/question-answer-integrity.test.ts src/test/book-section-progress.test.ts src/test/book-loading-shape.test.ts src/test/book-retry-policy.test.ts src/test/website-book-navigation.test.ts src/test/math-answer-ui.test.ts src/test/fetch-book-response.test.ts src/test/study-ux.test.tsx src/test/biology.test.tsx src/test/history.test.tsx src/test/math-transcriptions.test.tsx src/test/translation.test.ts
       - name: Verify production build
         run: bun run build
       - name: Upload Math source-wording audit for manual PDF review
