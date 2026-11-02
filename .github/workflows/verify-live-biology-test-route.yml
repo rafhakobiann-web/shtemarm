@@ -34,14 +34,20 @@ jobs:
           page.on("pageerror", (error) => pageErrors.push(error.message));
           try {
             for (const book of [33, 34]) {
-              const response = await page.goto(base + "/book/" + book, { waitUntil: "domcontentloaded", timeout: 35000 });
-              if (response?.status() !== 200) throw new Error("Book " + book + " HTTP " + response?.status());
-              await page.locator('a[href^="/study/' + book + '/1"]').first().waitFor({ timeout: 25000 });
-              const sectionTest = page.getByRole("link", { name: "Թեստ", exact: true }).first();
-              await sectionTest.waitFor({ timeout: 10000 });
-              const href = await sectionTest.getAttribute("href");
-              console.log("Book " + book + " section 1 test href:", href);
-              if (!href?.startsWith("/biology?")) throw new Error("Wrong subject link: " + href);
+              let href = "";
+              let sectionTest;
+              for (let attempt = 1; attempt <= 6; attempt++) {
+                const response = await page.goto(base + "/book/" + book, { waitUntil: "domcontentloaded", timeout: 35000 });
+                if (response?.status() !== 200) throw new Error("Book " + book + " HTTP " + response?.status());
+                await page.locator('a[href^="/study/' + book + '/1"]').first().waitFor({ timeout: 25000 });
+                sectionTest = page.getByRole("link", { name: "Թեստ", exact: true }).first();
+                await sectionTest.waitFor({ timeout: 10000 });
+                href = await sectionTest.getAttribute("href") ?? "";
+                console.log("Book", book, "attempt", attempt, "test href:", href);
+                if (href.startsWith("/biology?")) break;
+                if (attempt < 6) await page.waitForTimeout(12000);
+              }
+              if (!href.startsWith("/biology?")) throw new Error("Production still has wrong subject link: " + href);
               const query = new URL(href, base).searchParams;
               if (query.get("book") !== String(book) || query.get("section") !== "1") {
                 throw new Error("Book/section source lost: " + href);
