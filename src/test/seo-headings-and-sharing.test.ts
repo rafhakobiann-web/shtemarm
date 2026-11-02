@@ -21,7 +21,7 @@ describe("SEO and accessible page headings", () => {
     expect(math).toContain('role="status"');
     expect(math).toContain('role="alert"');
     expect(math).toContain('<div className="w-full">{pageHeading}</div>');
-    expect(math.match(/<h1\\b/g)?.length).toBe(1);
+    expect(math.match(/<h1\b/g)?.length).toBe(1);
   });
 
   it("uses an accessible H1 for a study section even before book data loads", () => {
@@ -29,7 +29,7 @@ describe("SEO and accessible page headings", () => {
     expect(study).toContain("<h1");
     expect(study).toContain('secTitle(section)');
     expect(study).toContain('tx("Շտեմարան {book} · Բաժին {n}"');
-    expect(study.match(/<h1\\b/g)?.length).toBe(1);
+    expect(study.match(/<h1\b/g)?.length).toBe(1);
   });
 
   it("reuses existing semantic H1 headings instead of introducing duplicates", () => {
