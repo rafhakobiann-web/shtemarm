@@ -50,16 +50,16 @@ function AuthPage() {
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (!active) return;
         authEventSeen = true;
-        setUser(session?.user?.email ?? (session?.user ? tx("Ձեր հաշիվը") : null));
+        setUser(session?.user?.email ?? (session?.user ? "Հաշիվ" : null));
         if (event === "PASSWORD_RECOVERY") {
           setMode("recovery");
-          setNotice(tx("Սահմանիր նոր գաղտնաբառը՝ վերականգնումն ավարտելու համար։"));
+          setNotice("Սահմանիր նոր գաղտնաբառը՝ վերականգնումն ավարտելու համար։");
           setProblem("");
         }
       });
       void supabase.auth.getUser().then(({ data: result, error }) => {
         if (active && !authEventSeen && !error) {
-          setUser(result.user?.email ?? (result.user ? tx("Ձեր հաշիվը") : null));
+          setUser(result.user?.email ?? (result.user ? "Հաշիվ" : null));
         }
       }).catch(() => {
         if (active && !authEventSeen) setUser(null);
@@ -71,7 +71,7 @@ function AuthPage() {
     } catch (error) {
       if (active) setProblem(authFeedback(error));
     }
-  }, [configured, tx]);
+  }, [configured]);
 
   const changeMode = (next: AuthMode) => {
     setMode(next);
