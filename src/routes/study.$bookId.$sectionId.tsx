@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
+  staticData: { sitemap: false },
   beforeLoad: ({ params }) => {
     // Reject malformed deep links before requesting a nonexistent /data/*.json.
     if (!ALL_BOOKS.some(book => String(book.id) === params.bookId) ||

@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, CheckCircle2, Clock3, Languages, Sparkles, Wrench 
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/changelog")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Shtemarm · Changelog" },

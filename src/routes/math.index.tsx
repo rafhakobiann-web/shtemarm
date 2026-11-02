@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/math/")({
+  staticData: { sitemap: true },
   validateSearch: z.object({ mode: z.enum(["exam", "custom"]).optional().catch(undefined) }),
   head: () => ({
     meta: [

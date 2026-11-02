@@ -14,6 +14,7 @@ import { recordMathMistake } from "@/lib/mathMistakes";
 import { canChangeMathAnswer, isMathAnswerRevealed } from "@/lib/math-answer-ui";
 
 export const Route = createFileRoute("/math/play")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Մաթեմատիկա · Խաղ · Shtemarm" },

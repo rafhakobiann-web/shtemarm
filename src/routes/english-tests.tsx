@@ -4,6 +4,7 @@ import { BOOKS } from "@/lib/books";
 import { ENGLISH_LEVELS } from "@/lib/levelTests";
 
 export const Route = createFileRoute("/english-tests")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Անգլերենի թեստեր · Shtemarm" },

@@ -10,6 +10,7 @@ import { useProgress, level } from "@/lib/progress";
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
   head: () => ({
     meta: [
@@ -182,6 +183,12 @@ function EnglishSubject() {
             title={tx("Թեստերի կազմիչ")}
             sub={tx("Ընտրիր բաժինները և հարցերի քանակը")}
             icon={<ClipboardCheck className="size-5" />}
+          />
+          <ExamTile
+            to="/english-tests"
+            title={tx("Բոլոր անգլերենի թեստերը")}
+            sub={tx("Շտեմարաններ, մակարդակի թեստեր և քննություն՝ մեկ էջում")}
+            icon={<Sparkles className="size-5" />}
           />
         </div>
       </section>

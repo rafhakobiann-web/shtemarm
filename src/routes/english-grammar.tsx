@@ -13,6 +13,7 @@ const searchSchema = z.object({
   topic: z.string().optional().catch(undefined),
 });
 export const Route = createFileRoute("/english-grammar")({
+  staticData: { sitemap: true },
   validateSearch: searchSchema,
   head: () => ({ meta: [
     { title: "English Grammar Handbook · Shtemarm" },

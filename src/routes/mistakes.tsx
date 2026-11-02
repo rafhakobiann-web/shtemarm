@@ -3,7 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { matchGrammarTopic } from "@/lib/grammarHandbook";
 import { useLang } from "@/lib/lang";
 import { getMistakes, markMistakeMastered, removeMistake, type Mistake } from "@/lib/mistakeNotebook";
-export const Route = createFileRoute("/mistakes")({ component: MistakesPage });
+export const Route = createFileRoute("/mistakes")({
+  staticData: { sitemap: false }, component: MistakesPage });
 function MistakesPage() {
   const lang = useLang();
   const [items, setItems] = useState<Mistake[]>([]);
