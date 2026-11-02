@@ -81,6 +81,13 @@ export function BiologyWorkspace() {
         available={data.data?.length}
         icon={<Dna className="size-5" />}
       />
+      <Link to="/biology/original" className="group flex flex-col gap-3 rounded-3xl border border-primary/25 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0 space-y-1">
+          <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Բնօրինակ կենսաբանություն · մաս 3 և 4")}</h2>
+          <p className="text-sm text-muted-foreground">{tx("3,525 հարցի բնօրինակ էջային որոնում · 1,757 հարցի ստուգում՝ քո PDF-ով")}</p>
+        </div>
+        <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{tx("Սկսել վարժանքը")} →</span>
+      </Link>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="min-w-0 space-y-5 rounded-3xl border bg-card p-5 sm:p-7">
           <ExamBuilderTitle />
@@ -196,7 +203,10 @@ export function BiologyWorkspace() {
                 {tx("Շտեմարան {n} · բոլոր բաժինները", { n })}
               </Link>
             ))}
-            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բնօրինակները նշված են պաշտոնական աղբյուրների արխիվում։ Դրանց հարցերը դեռ չեն ներմուծվել կայք։")}</p>
+            <Link to="/biology/original" className="block rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
+              {tx("3-րդ և 4-րդ մասեր · բնօրինակ PDF-ով վարժանք")}
+            </Link>
+            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բոլոր բաժինների հարցերը կապակցված են բնօրինակի էջերին։ 1–4 ընտրությամբ առաջադրանքները ստուգվում են տպագիր պատասխանների աղյուսակով։ Այլ տեսակները դեռ պահանջում են ձեռքով ստուգում։ PDF-ը բացվում է քո սարքից։")}</p>
             <a className="block text-xs font-semibold text-primary underline" href="https://test.am/pdf.php?page=111" target="_blank" rel="noopener noreferrer">
               {tx("ԳԹԿ-ի 4 մասերի արխիվ")}
             </a>

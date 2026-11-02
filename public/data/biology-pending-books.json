@@ -3,25 +3,31 @@
   "referenceYear": 2019,
   "sourceArchive": "https://test.am/pdf.php?page=111",
   "formatGuide2027": "https://escs.gov.am/api/assets/53efbc2e-cbb3-41ef-bd52-8d6ea8db1f21",
-  "note": "Կենսաբանության 3-րդ մասի PDF-ի վեց բաժինները քարտեզագրված են։ 36 հեղինակային վարժանքները թեմատիկորեն դասավորված են, բայց պաշտոնական հարցերի և պատասխանների բնօրինակային ստուգումն առայժմ ավարտված չէ։",
+  "note": "3-րդ և 4-րդ մասերի 2018 թ. բնօրինակ PDF-ների բոլոր հարցերի էջերը և պարզ պատասխանների բանալիները քարտեզագրված են՝ միայն սովորողի տեղային PDF-ով վարժանքի համար։ Բնօրինակ տեքստերը կայքում չեն արտագրվել, և բարդ տեսակների ավտոմատ գնահատումը դեռ չկա։ 36 հեղինակային հարցերը մնում են առանձին։",
   "books": [
     {
       "id": 33,
       "part": 3,
-      "status": "source-indexed-six-chapters-original-practice-available",
+      "status": "source-page-indexed-original-pdf-practice",
       "verifiedQuestions": 0,
       "targetFile": "public/data/bio-book3.json",
       "originalPracticeQuestions": 36,
       "sourceIndex": "public/data/biology-book3-source-index.json",
       "sourceYear": 2018,
-      "sourcePages": 384
+      "sourcePages": 384,
+      "sourcePageIndex": "public/data/biology-original-volume3-index.json",
+      "sourceIndexedQuestions": 1837,
+      "sourceChoiceAnswerKeys": 945
     },
     {
       "id": 34,
       "part": 4,
-      "status": "awaiting-verified-source",
+      "status": "source-page-indexed-original-pdf-practice",
       "verifiedQuestions": 0,
-      "targetFile": "public/data/bio-book4.json"
+      "targetFile": "public/data/bio-book4.json",
+      "sourcePageIndex": "public/data/biology-original-volume4-index.json",
+      "sourceIndexedQuestions": 1688,
+      "sourceChoiceAnswerKeys": 812
     }
   ]
 }
