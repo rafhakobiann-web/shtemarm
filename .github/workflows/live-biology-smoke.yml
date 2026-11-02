@@ -65,10 +65,10 @@ jobs:
             await page.locator('a[href*="/biology/original?volume=4"]').first().waitFor({ timeout: 15000 });
             console.log("Verified distinct links for original 3rd and 4th Biology books in visible subject catalog.");
             await page.locator('a[href*="/biology/original?volume=4"]').first().click();
-            await page.getByRole("button", { name: /Կենսաբանություն · Մաս IV/ }).waitFor({ timeout: 15000 });
-            const checked = await page.getByRole("button", { name: /Կենսաբանություն · Մաս IV/ }).getAttribute("aria-pressed");
+            await page.getByRole("button", { name: /^Մաս IV$/ }).waitFor({ timeout: 15000 });
+            const checked = await page.getByRole("button", { name: /^Մաս IV$/ }).getAttribute("aria-pressed");
             if (checked !== "true") throw new Error("Original part IV was not selected by its book card");
-            await page.getByText("1,688", { exact: true }).waitFor({ timeout: 15000 });
+            await page.getByText(/1,688 համարակալված առաջադրանք/).waitFor({ timeout: 15000 });
             if (errors.length) throw new Error("Production browser exceptions: " + errors.join("; "));
             console.log("Verified volume IV opens as IV, displays 1,688 source-indexed questions and no fatal error.");
           } finally { await browser.close(); }
