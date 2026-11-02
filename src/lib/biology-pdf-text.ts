@@ -26,7 +26,7 @@ export function normalizeArmenianPdfText(value: string): string {
   }).join("").replace(/\s+/g, " ").trim();
 }
 
-type PdfTextPiece = { str: string; transform: number[]; width: number };
+type PdfTextPiece = { str: string; transform: [number, number, number, number, number, number]; width: number };
 type PdfPage = {
   getViewport: (options: { scale: number }) => { width: number; height: number };
   getTextContent: () => Promise<{ items: unknown[] }>;
@@ -65,7 +65,7 @@ export function locatePdfQuestion(
   const selected = questionMarkers.filter(item => Number(item.str.trim()) === number);
   // Only the marker at the *actual* source page may identify a question.
   // Never display adjacent question text if the page index or segmentation differs.
-  const startMarker = selected.length === 1 ? selected[0] : null;
+  const startMarker = selected.length === 1 ? selected[0]! : null;
   const nextNumber = number + 1;
   const nextPage = nextNumber <= chapter.questionCount ? pageForBiologyQuestion(chapter, nextNumber) : null;
   const nextMarkers = nextPage === pageNumber
