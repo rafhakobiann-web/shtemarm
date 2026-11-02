@@ -15,9 +15,9 @@ describe("simplified study experience and truthful biology status",()=>{
  it("provides a same-device cooperative game with a 30-question target",()=>{
    expect(read("src/routes/mini-games.tsx")).toContain("<CooperativeQuiz");
    const coop=read("src/components/CooperativeQuiz.tsx");
-   expect(coop).toContain("const COUNT=30");
-   expect(coop).toContain("questionId");
-   expect(coop).toContain("player");
+   expect(coop).toContain("const [count,setCount]=useState(10)");
+   expect(coop).toContain("[10,20,30,50,100]");
+   expect(coop).toContain("const team=(index%2) as Team");
  });
  it("renders books as text, not scanned covers or embedded question pictures",()=>{
    const home=read("src/routes/index.tsx");
