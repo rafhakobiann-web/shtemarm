@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { BiologyQuestionFromPdf } from "@/components/BiologyQuestionFromPdf";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, FileUp, RefreshCcw, ShieldCheck } from "lucide-react";
 import {
@@ -13,8 +13,10 @@ import {
  * Read source questions in the user's own PDF; practice with source-page and
  * printed single-answer table indices. No copyrighted PDF/text stored on site.
  */
-export function BiologyOriginalPractice() {
-  const [volume, setVolume] = useState<BiologyVolume>(3);
+export function BiologyOriginalPractice({ initialVolume = 3 }: { initialVolume?: BiologyVolume }) {
+  const navigate = useNavigate();
+  const [volume, setVolume] = useState<BiologyVolume>(initialVolume);
+  useEffect(() => { setVolume(initialVolume); }, [initialVolume]);
   const [index, setIndex] = useState<BiologyOriginalIndex | null>(null);
   const [chapterId, setChapterId] = useState(1);
   const [question, setQuestion] = useState(1);
@@ -108,7 +110,10 @@ export function BiologyOriginalPractice() {
   }
 
   const switchVolume = (next: BiologyVolume) => {
-    if (next !== volume) setVolume(next);
+    if (next !== volume) {
+      setVolume(next);
+      void navigate({ to: "/biology/original", search: { volume: next }, replace: true });
+    }
   };
 
   return (
