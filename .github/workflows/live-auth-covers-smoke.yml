@@ -60,8 +60,8 @@ jobs:
               if (response?.status() !== 200) throw new Error("Book " + volume + " HTTP " + response?.status());
               await page.locator("h1").first().waitFor({ timeout: 20000 });
               await page.locator('img[src^="/covers/bio-"]').first().waitFor({ timeout: 15000 });
+              await page.getByRole("link", { name: "Դասական" }).first().waitFor({ timeout: 25000 });
               const body = await page.locator("body").innerText();
-              if (!body.includes("Դասական")) throw new Error("Book " + volume + " missing classic practice link");
               if (body.includes("Գրքի բաժինները բեռնվում են")) throw new Error("Book " + volume + " has not finished loading");
               console.log("Production book", volume, "has cover and native study links.");
             }
