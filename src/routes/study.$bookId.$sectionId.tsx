@@ -63,6 +63,9 @@ function StudyPage() {
           ))}
         </div>
       </div>
+      <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">
+        {section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}
+      </h1>
       {[1, 2, 3].includes(Number(bookId)) && <Link to="/english-grammar"
         search={{book:Number(bookId),section:Number(sectionId),topic:undefined}}
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">

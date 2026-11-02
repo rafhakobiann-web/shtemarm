@@ -1,0 +1,39 @@
+name: Verify SEO metadata and semantic headings
+
+on:
+  pull_request:
+    paths:
+      - 'src/routes/index.tsx'
+      - 'src/routes/math.play.tsx'
+      - 'src/routes/study.$bookId.$sectionId.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/components/ExamDesign.tsx'
+      - 'src/components/HistorySession.tsx'
+      - 'src/components/BiologyWorkspace.tsx'
+      - 'src/components/HistoryWorkspace.tsx'
+      - 'src/components/WorkbookExamWorkspace.tsx'
+      - 'src/components/PhysicsWorkspace.tsx'
+      - 'src/components/PhysicsSourceReader.tsx'
+      - 'src/components/PhysicsOriginalWorkspace.tsx'
+      - 'src/components/PhysicsScanPractice.tsx'
+      - 'src/test/seo-headings-and-sharing.test.ts'
+      - '.github/workflows/verify-seo-headings.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Run SEO heading and sharing regressions
+        run: bunx vitest run src/test/seo-headings-and-sharing.test.ts
+      - name: Verify the production build (no deploy)
+        run: bun run build
