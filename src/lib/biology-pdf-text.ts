@@ -4,7 +4,6 @@ import { pageForBiologyQuestion, type BiologyOriginalChapter } from "@/lib/biolo
  * This module reads a PDF explicitly selected by the student, in memory.
  * It never uploads the PDF or stores extracted text on Shtemarm's servers.
  */
-const arm8 = " _և։) (»«—.՝,-֊…՜՛՞ԱաԲբԳգԴդԵեԶզԷէԸըԹթԺժԻիԼլԽխԾծԿկՀհՁձՂղՃճՄմՅյՆնՇշՈոՉչՊպՋջՌռՍսՎվՏտՐրՑցՒւՓփՔքՕօՖֆ՚";
 // Explicit mapping avoids mistaking a PDF's legacy ArmSCII-8 font characters
 // for Unicode Armenian. Some extracted font glyphs use Greek substitutions.
 const arm8Codepoints: Record<number, string> = {
@@ -141,7 +140,7 @@ export async function openLocalBiologyDocument(file: Blob) {
   const worker = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const loadingTask = pdfjs.getDocument({ data: bytes, useSystemFonts: true });
+  const loadingTask = pdfjs.getDocument({ data: bytes, useSystemFonts: true, isEvalSupported: false });
   const document = await loadingTask.promise;
   return { document, loadingTask };
 }
