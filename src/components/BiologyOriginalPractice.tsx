@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Link } from "@tanstack/react-router";
+import { BiologyQuestionFromPdf } from "@/components/BiologyQuestionFromPdf";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, FileUp, RefreshCcw, ShieldCheck } from "lucide-react";
 import {
   answerForBiologyChoice, biologyAutoGradedCount, biologyIndexedCount,
@@ -121,7 +122,7 @@ export function BiologyOriginalPractice() {
         </span>
         <h1 className="text-balance text-2xl font-black sm:text-4xl">Կենսաբանություն · 3-րդ և 4-րդ մասեր</h1>
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Բոլոր վեց բաժինների հարցերի համարներն ու էջերը կապակցված են քո PDF-ին։ Պատասխանիր 1–4 տարբերակով առաջադրանքներին՝ ըստ գրքի պատասխանների աղյուսակի։
+          Բոլոր վեց բաժինների հարցերն ու նրանց տարբերակները կարդա հենց էջում՝ քո հաստատված PDF-ից։ Նկարներն ու բանաձևերը կտեսնես բնօրինակի հատվածում։ Պատասխանիր 1–4 տարբերակով առաջադրանքներին՝ ըստ գրքի պատասխանների աղյուսակի։
           Հաջորդականության, համապատասխանեցման, պնդումների և խնդիրների պատասխանները դեռ ավտոմատ չեն գնահատվում։
         </p>
         <p className="text-xs text-muted-foreground">
@@ -187,6 +188,13 @@ export function BiologyOriginalPractice() {
               Հաջորդը <ArrowRight className="size-4" />
             </button>
           </div>
+          <BiologyQuestionFromPdf
+            key={`${volume}:${chapter.id}`}
+            file={localFile}
+            chapter={chapter}
+            question={question}
+            volume={volume}
+          />
           {answer ? <section className="space-y-4 rounded-3xl border bg-card p-5">
             <h2 className="text-lg font-black">Ընտրիր գրքում տպված ճիշտ տարբերակի համարը</h2>
             <div className="grid grid-cols-4 gap-2">
