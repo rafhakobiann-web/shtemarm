@@ -97,7 +97,7 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
       <Link to="/book/$bookId" params={{ bookId: "33" }} className="group flex flex-col gap-3 rounded-3xl border border-primary/25 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 space-y-1">
           <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Բնօրինակ կենսաբանություն · մաս 3 և 4")}</h2>
-          <p className="text-sm text-muted-foreground">{tx("1,681 բնօրինակ տեքստային հարց՝ պատասխաններով · թվայնացումը շարունակվում է")}</p>
+          <p className="text-sm text-muted-foreground">{tx("1,688 բնօրինակ տեքստային հարց՝ պատասխաններով · թվայնացումը շարունակվում է")}</p>
         </div>
         <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{tx("Սկսել վարժանքը")} →</span>
       </Link>
