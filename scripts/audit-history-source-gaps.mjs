@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { pathToFileURL } from "node:url";
 
 /**
  * History Volume I source-reconciliation audit.
@@ -70,6 +70,7 @@ export function auditHistorySourceGaps(book, bank) {
 
     const existingNumbers = new Set(unit.questions.map(q => String(q.n)));
     const candidates = [], blocked = [];
+    const newNumbers = new Set();
     for (const question of sourceQuestions) {
       if (stemSet.has(norm(question.stem))) continue;
       const id = { sourceRun: top.sourceRun, number: question.num, page: question.page };
@@ -77,7 +78,10 @@ export function auditHistorySourceGaps(book, bank) {
         blocked.push({ ...id, reason: "printed_number_collision" });
       } else if (!safeChoice(question)) {
         blocked.push({ ...id, reason: "incomplete_source_question" });
+      } else if (newNumbers.has(String(question.num))) {
+        blocked.push({ ...id, reason: "duplicate_source_number" });
       } else {
+        newNumbers.add(String(question.num));
         candidates.push(id);
       }
     }
@@ -108,8 +112,7 @@ export function auditHistorySourceGaps(book, bank) {
   };
 }
 
-if (process.argv[1] && import.meta.url === new URL(`file://${fileURLToPath(import.meta.url)}`).href &&
-    fileURLToPath(import.meta.url) === process.argv[1]) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const book = JSON.parse(readFileSync("public/data/history-book1.json", "utf8"));
   const bank = JSON.parse(readFileSync("public/data/history-bank-book1.json", "utf8"));
   process.stdout.write(JSON.stringify(auditHistorySourceGaps(book, bank), null, 2) + "\n");
