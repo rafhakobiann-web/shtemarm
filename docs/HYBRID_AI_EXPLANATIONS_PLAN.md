@@ -40,3 +40,12 @@ Enhance these existing facilities rather than adding a second explanation endpoi
 - Which provider credentials are configured in the isolated review environment.
 - Monthly spending cap and service-outage behavior.
 - Approval workflow for marking explanations verified.
+
+## API-key-free implementation update (2026-11-02)
+- The existing explainAnswer server function now reads cached explanations and otherwise uses the deterministic multilingual fallback; it no longer calls Gemini/Groq.
+- Added unit tests in src/test/api-key-free-explanations.test.ts.
+- This is phase 1, not a completed on-device AI model. No model weights are bundled, and no browser inference is activated.
+- Future on-device AI should be opt-in, capability-tested, downloaded with consent, and validated against verified answers. Low-memory devices continue to use the fallback.
+- Existing cache entries are not guaranteed human-reviewed; before describing them as verified, introduce provenance metadata and a review process.
+- Current input still accepts client-supplied correct answers; server-side ID resolution is required before treating answers as authoritative.
+- CI tests/build have not yet been executed in this PR. Do not merge until verified.
