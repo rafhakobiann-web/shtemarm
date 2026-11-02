@@ -47,6 +47,12 @@ jobs:
               const src = await cover.getAttribute("src");
               if (src !== `/covers/bio-${n}.svg`)
                 throw Error(`Wrong live cover for Biology ${n}: ${src}`);
+              await cover.evaluate(img => new Promise((resolve, reject) => {
+                if (img.complete && img.naturalWidth > 0) return resolve(true);
+                img.addEventListener("load", () => resolve(true), { once: true });
+                img.addEventListener("error", () => reject(new Error("Image load failure")), { once: true });
+                setTimeout(() => reject(new Error("Image load timed out")), 12000);
+              }));
               const data = await cover.evaluate(img => ({
                 width: img.naturalWidth, height: img.naturalHeight, complete: img.complete,
               }));
