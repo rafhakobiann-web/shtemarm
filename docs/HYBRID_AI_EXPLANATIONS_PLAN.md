@@ -49,3 +49,12 @@ Enhance these existing facilities rather than adding a second explanation endpoi
 - Existing cache entries are not guaranteed human-reviewed; before describing them as verified, introduce provenance metadata and a review process.
 - Current input still accepts client-supplied correct answers; server-side ID resolution is required before treating answers as authoritative.
 - CI tests/build have not yet been executed in this PR. Do not merge until verified.
+
+## Android / Vercel compatibility and release gate
+- Vercel hosts the site but cannot grant Android browsers the experimental built-in LanguageModel API. A different hosting provider does not fix browser support.
+- Unsupported browsers now hide the native-AI action and display the standard fallback; no model download or provider key is needed for that fallback.
+- A cached legacy explanation can have been AI-generated. The UI explicitly marks it unverified; provenance must be audited before describing anything as human-verified.
+- Native-model output is opt-in and unverified. Native browser availability depends on device, browser version, browser flags, model download eligibility, and storage.
+- No WebLLM/Transformers.js model is bundled: adding one requires testing memory, battery, download size, Armenian-language quality, and browser compatibility on actual Android devices.
+- Run `npm install`, `npm test`, `npm run build`, and `npm run lint` in an isolated branch checkout or Preview CI before merging. These commands have not been run here.
+- Do not enable production deployments or modify Lovable. Keep this PR Draft until build, question-bank invariants and device tests pass.
