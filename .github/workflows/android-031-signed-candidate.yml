@@ -1,0 +1,109 @@
+name: Shtemarm Android 0.3.1 signed prerelease candidate
+on:
+  push:
+    branches:
+      - release/android-0-3-1-signed
+    paths:
+      - '.github/workflows/android-031-signed-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  signed_candidate:
+    if: github.repository == 'rafhakobiann-web/shtemarm' && github.ref == 'refs/heads/release/android-0-3-1-signed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check repository privacy and content integrity
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view --json isPrivate --jq .isPrivate)" = true
+          node scripts/check-repo-secrets.mjs
+          python3 scripts/audit-git-history.py
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Require existing persistent Android signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || {
+            echo 'Signing secrets missing. No APK will be published.' >&2
+            exit 1
+          }
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/shtemarm-release.jks"
+          chmod 600 "$RUNNER_TEMP/shtemarm-release.jks"
+          echo "ANDROID_SIGNING_STORE_FILE=$RUNNER_TEMP/shtemarm-release.jks" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          echo y | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Test and build signed release
+        working-directory: android
+        env:
+          ANDROID_SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle --no-daemon testDebugUnitTest assembleRelease bundleRelease --stacktrace
+      - name: Verify version, package, signature and integrity
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK" && test -s "$AAB"
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionCode='10'" <<< "$BADGING"
+          grep -Fq "versionName='0.3.1'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "$APK" | grep -E 'Signer #1 certificate SHA-256 digest'
+          cp "$APK" Shtemarm-Android-0.3.1-Signed-Candidate.apk
+          cp "$AAB" Shtemarm-Android-0.3.1-Signed-Candidate.aab
+          sha256sum Shtemarm-Android-0.3.1-Signed-Candidate.apk > Shtemarm-Android-0.3.1-Signed-Candidate.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shtemarm-Android-0.3.1-Signed-Candidate
+          path: |
+            Shtemarm-Android-0.3.1-Signed-Candidate.apk
+            Shtemarm-Android-0.3.1-Signed-Candidate.aab
+            Shtemarm-Android-0.3.1-Signed-Candidate.apk.sha256
+          if-no-files-found: error
+      - name: Create private signed prerelease without replacing prior builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view --json isPrivate --jq .isPrivate)" = true
+          TAG=v0.3.1-signed-rc.1
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo 'Existing prerelease tag detected. Refusing to overwrite.' >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Shtemarm-Android-0.3.1-Signed-Candidate.apk \
+            Shtemarm-Android-0.3.1-Signed-Candidate.aab \
+            Shtemarm-Android-0.3.1-Signed-Candidate.apk.sha256 \
+            --target "$GITHUB_SHA" \
+            --title 'Shtemarm Android 0.3.1 signed candidate' \
+            --notes 'Private test candidate only. An in-place update requires matching the installed APK signing certificate. Not published to the website or Play Store.' \
+            --prerelease
