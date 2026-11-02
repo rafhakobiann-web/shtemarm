@@ -1,0 +1,68 @@
+import { describe, expect, it } from "vitest";
+import { locatePdfQuestion, normalizeArmenianPdfText } from "@/lib/biology-pdf-text";
+import type { BiologyOriginalChapter } from "@/lib/biology-source";
+
+const chapter: BiologyOriginalChapter = {
+  id: 1, title: "Sample", startPage: 5, endPage: 7, answerPages: [11,12],
+  questionCount: 3, pageRuns: [[1,5],[3,7]], choiceKeys: "123", manualNumberingChecks: [],
+};
+const item = (str:string, x:number, baseline:number) => ({
+  str, width:10, transform:[1,0,0,1,x,baseline],
+});
+
+describe("read literal text from a student-supplied official Biology PDF", () => {
+  it("decodes ArmSCII-8 glyphs, not invented Armenian replacements", () => {
+    expect(normalizeArmenianPdfText("Âí³ñÏí³Í")).toBe("Թվարկված");
+    expect(normalizeArmenianPdfText("μÝáñáß")).toBe("բնորոշ");
+    expect(normalizeArmenianPdfText("ï»ñ¨Ý»ñ")).toBe("տերևներ");
+    expect(normalizeArmenianPdfText("Հայերեն")).toBe("Հայերեն");
+  });
+
+  it("extracts the correct source question and all four options without leaking adjacent questions", () => {
+    const pageHeight = 689;
+    const items = [
+      item("1",42.24,550), item(". Âí³ñÏí³Í μÝáñáß",47.8,550),
+      item("1) Ù»Ï",59.3,535), item("2) »ñÏáõ",59.3,523),
+      item("3) »ñ»ù",59.3,511), item("4) ãáñë",59.3,499),
+      item("2",42.24,476), item(". SECOND QUESTION",47.8,476),
+      item("1) wrong",59.3,461),
+    ];
+    const q = locatePdfQuestion(chapter,1,5,488,pageHeight,items);
+    expect(q.status).toBe("exact-page");
+    expect(q.hasFourChoices).toBe(true);
+    expect(q.stem).toContain("Թվարկված");
+    expect(q.options).toEqual(["մեկ","երկու","երեք","չորս"]);
+    expect(q.text).not.toContain("SECOND");
+    expect(q.crop.top).toBeGreaterThan(0);
+    expect(q.crop.bottom).toBeLessThan(pageHeight-40);
+  });
+
+  it("refuses to guess when printed ID is absent or repeated", () => {
+    const items = [item("1",42.24,550),item("1",42.24,550),item("1) option",59.3,535)];
+    const q = locatePdfQuestion(chapter,1,5,488,689,items);
+    expect(q.status).toBe("unlocated");
+    expect(q.sourceVerified).toBe(false);
+    expect(q.text).toBe("");
+  });
+
+  it("never auto-extracts made-up options from an unrecognized response format", () => {
+    const items = [
+      item("1",42.24,550),item(". Âí³ñÏí³Í μÝáñáß",47.8,550),
+      item("1) Ù»Ï",59.3,535),item("2) »ñÏáõ",59.3,523),
+      item("2",42.24,490),
+    ];
+    const q = locatePdfQuestion(chapter,1,5,488,689,items);
+    expect(q.hasFourChoices).toBe(false);
+  });
+
+  it("uses a verifiable local PDF and never embeds 3,525 copied texts in a published bank", () => {
+    const fs = require("node:fs") as typeof import("node:fs");
+    const reader=fs.readFileSync("src/components/BiologyQuestionFromPdf.tsx","utf8");
+    const source=fs.readFileSync("src/lib/biology-pdf-text.ts","utf8");
+    expect(reader).toContain("openLocalBiologyDocument");
+    expect(reader).toContain("renderBiologyQuestionCrop");
+    expect(source).toContain('await import("pdfjs-dist")');
+    expect(source).toContain('pdfjs.getDocument({ data: bytes');
+    expect(reader).not.toMatch(/fetch\(/);
+  });
+});
