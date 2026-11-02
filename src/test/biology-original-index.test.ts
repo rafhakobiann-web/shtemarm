@@ -75,7 +75,9 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
     expect(route).toContain('createFileRoute("/biology/original")');
     expect(component).toContain("<h1");
     expect(component).toContain("verifyBiologySourcePdf");
-    expect(component).toContain("iframe");
+    expect(component).not.toContain("<iframe");
+    expect(component).not.toContain("<canvas");
+    expect(component).toContain("recordAnswer(key, selected === answer)");
     expect(lib).toContain('crypto.subtle.digest("SHA-256"');
     expect(lib).toContain('indexedDB.open');
     expect(hub).toContain('to="/biology/original"');
