@@ -196,7 +196,10 @@ export function BiologyWorkspace() {
                 {tx("Շտեմարան {n} · բոլոր բաժինները", { n })}
               </Link>
             ))}
-            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բնօրինակները նշված են պաշտոնական աղբյուրների արխիվում։ Դրանց հարցերը դեռ չեն ներմուծվել կայք։")}</p>
+            <Link to="/biology/original" className="block rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
+              {tx("3-րդ և 4-րդ մասեր · բնօրինակ PDF-ով վարժանք")}
+            </Link>
+            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բոլոր բաժինների հարցերը կապակցված են բնօրինակի էջերին։ 1–4 ընտրությամբ առաջադրանքները ստուգվում են տպագիր պատասխանների աղյուսակով։ Այլ տեսակները դեռ պահանջում են ձեռքով ստուգում։ PDF-ը բացվում է քո սարքից։")}</p>
             <a className="block text-xs font-semibold text-primary underline" href="https://test.am/pdf.php?page=111" target="_blank" rel="noopener noreferrer">
               {tx("ԳԹԿ-ի 4 մասերի արխիվ")}
             </a>
