@@ -86,9 +86,8 @@ jobs:
           fi
           APK=android/app/build/outputs/apk/release/app-release.apk
           ACTUAL=$("$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
-          NORMALIZE='tr -d "[:space:]:" | tr "[:upper:]" "[:lower:]"'
-          ACTUAL=$(printf '%s' "$ACTUAL" | eval "$NORMALIZE")
-          EXPECTED=$(printf '%s' "$EXPECTED_SHA256" | eval "$NORMALIZE")
+          ACTUAL=$(printf '%s' "$ACTUAL" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')
+          EXPECTED=$(printf '%s' "$EXPECTED_SHA256" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')
           if [[ -z "$ACTUAL" || "$ACTUAL" != "$EXPECTED" ]]; then
             echo "Signing certificate mismatch. Release blocked to protect in-place updates." >&2
             exit 1
