@@ -41,3 +41,30 @@ jobs:
             console.log("Live Lovable Production contains original-question text reader and PDF upload prompt.");
           } finally { await browser.close(); }
           JS
+      - name: Verify visible Biology subject catalog shows original parts III and IV
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          const page = await browser.newPage({
+            viewport: { width: 393, height: 852 },
+            isMobile: true, hasTouch: true,
+            userAgent: "Mozilla/5.0 (Linux; Android 16; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36",
+          });
+          try {
+            const errors = [];
+            page.on("pageerror", e => errors.push(e.message));
+            await page.goto("https://shtemarm.lovable.app/?subject=biology", { waitUntil: "domcontentloaded", timeout: 35000 });
+            await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
+            await page.locator('a[href*="/biology/original?volume=3"]').first().waitFor({ timeout: 15000 });
+            await page.locator('a[href*="/biology/original?volume=4"]').first().waitFor({ timeout: 15000 });
+            console.log("Verified distinct links for original 3rd and 4th Biology books in visible subject catalog.");
+            await page.locator('a[href*="/biology/original?volume=4"]').first().click();
+            await page.getByRole("button", { name: /Կենսաբանություն · Մաս IV/ }).waitFor({ timeout: 15000 });
+            const checked = await page.getByRole("button", { name: /Կենսաբանություն · Մաս IV/ }).getAttribute("aria-pressed");
+            if (checked !== "true") throw new Error("Original part IV was not selected by its book card");
+            await page.getByText("1,688", { exact: true }).waitFor({ timeout: 15000 });
+            if (errors.length) throw new Error("Production browser exceptions: " + errors.join("; "));
+            console.log("Verified volume IV opens as IV, displays 1,688 source-indexed questions and no fatal error.");
+          } finally { await browser.close(); }
+          JS
