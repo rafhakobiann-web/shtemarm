@@ -56,6 +56,11 @@ jobs:
             page.on("pageerror", e => errors.push(e.message));
             await page.goto("https://shtemarm.lovable.app/?subject=biology", { waitUntil: "domcontentloaded", timeout: 35000 });
             await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
+            const biologyLinks = await page.locator("a").evaluateAll(anchors => anchors
+              .map(a => ({ href: a.getAttribute("href"), text: (a.textContent ?? "").trim().slice(0, 95) }))
+              .filter(item => /biology|կենսաբան/i.test((item.href ?? "") + item.text)));
+            console.log("Live subject links:", JSON.stringify(biologyLinks, null, 2));
+            console.log("Live body contains fourth book:", (await page.locator("body").innerText()).includes("Մաս չորրորդ"));
             await page.locator('a[href*="/biology/original?volume=3"]').first().waitFor({ timeout: 15000 });
             await page.locator('a[href*="/biology/original?volume=4"]').first().waitFor({ timeout: 15000 });
             console.log("Verified distinct links for original 3rd and 4th Biology books in visible subject catalog.");
