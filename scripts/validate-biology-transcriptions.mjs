@@ -46,7 +46,8 @@ for (const volume of [3, 4]) {
       }
       for (const text of [question.stem, ...Object.values(question.options)]) {
         assert(text.trim().length);
-        assert(!/\ufffd|www\.|atc\.am|[\u00b2-\u00ff]/i.test(text));
+        // U+00BB (») is a valid Armenian quotation mark, not legacy mojibake.
+        assert(!/\ufffd|www\.|atc\.am|[\u00b2-\u00ba\u00bc-\u00ff]/i.test(text));
       }
     }
     assert.equal(report.imported, section?.units.length ?? 0);
