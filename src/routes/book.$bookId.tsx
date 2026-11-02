@@ -4,6 +4,7 @@ import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, Refresh
 import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
+import { BookCover } from "@/components/BookCover";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
@@ -45,8 +46,13 @@ function BookPage() {
       </Link>
       <div className="rounded-3xl border bg-card p-5 sm:p-7">
         <div className="space-y-4">
-          <h1 className="text-3xl font-black sm:text-4xl">{meta.title}</h1>
-          <p className="text-muted-foreground">{meta.sub}</p>
+          <div className="flex items-start gap-4">
+            <BookCover src={meta.cover} title={meta.title} size="lg" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <h1 className="text-2xl font-black sm:text-4xl">{meta.title}</h1>
+              <p className="text-muted-foreground">{meta.sub}</p>
+            </div>
+          </div>
           {sourceReviewPending && (
             <div role="note" className="space-y-2 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-sm leading-relaxed">
               <p>{tx("Այս գրքի առաջադրանքների ամբողջական համեմատությունը բնօրինակի հետ դեռ ընթացքի մեջ է։ Հնարավոր են բացթողումներ կամ թվայնացման սխալներ։")}</p>

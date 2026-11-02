@@ -1,120 +1,308 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProgress } from "@/lib/progress";
 import { useLang, useTx } from "@/lib/lang";
-import { Link } from "@tanstack/react-router";
+import { authFeedback } from "@/lib/auth-feedback";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Մուտք · Shtemarm" },
-      { name: "description", content: "Մուտք գործեք՝ ձեր առաջընթացը բոլոր սարքերում պահելու համար։" },
-      { property: "og:title", content: "Մուտք · Shtemarm" },
-      { property: "og:description", content: "Պահպանեք առաջընթացը առցանց։" },
+      { title: "Մուտք և գրանցում · Shtemarm" },
+      { name: "description", content: "Մուտք գործիր, գրանցվիր կամ վերականգնիր Shtemarm հաշիվդ։" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: AuthPage,
 });
 
+type AuthMode = "in" | "up" | "forgot" | "recovery";
+
 function AuthPage() {
   const tx = useTx();
   const lang = useLang();
+  const nav = useNavigate();
+  const progress = useProgress();
+  const [configured, setConfigured] = useState<boolean | null>(null);
+  const [mode, setMode] = useState<AuthMode>("in");
   const [email, setEmail] = useState("");
-  const [pw, setPw] = useState("");
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [user, setUser] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const nav = useNavigate();
-  const p = useProgress();
+  const [notice, setNotice] = useState("");
+  const [problem, setProblem] = useState("");
+
+  // Only check configuration after hydration, to avoid mismatch between
+  // server-only environment variables and browser build-time public config.
+  useEffect(() => { setConfigured(hasSupabaseConfig()); }, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user?.email ?? null));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user.email ?? null));
-    return () => data.subscription.unsubscribe();
-  }, []);
-
-  if (user)
-    return (
-      <div className="shadow-card mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6">
-        <h1 className="text-2xl font-black">{tx("Ձեր հաշիվը")}</h1>
-        <p className="break-all text-sm text-muted-foreground">{user}</p>
-        <p className="text-sm">{tx("Առաջընթացը ({xp} միավոր, {answers} պատասխան) պահվում է և՛ այս սարքում, և՛ առցանց։", { xp: p.xp, answers: Object.keys(p.answers).length })}</p>
-        <section className="space-y-3 rounded-xl border bg-muted/30 p-4">
-          <h2 className="font-bold">{tx("Ուսումնական առաջընթաց")}</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg bg-background p-3"><p className="text-xs text-muted-foreground">{tx("Ճիշտ պատասխաններ")}</p><p className="text-xl font-black">{Object.values(p.answers).filter((v) => v === 1).length}</p></div>
-            <div className="rounded-lg bg-background p-3"><p className="text-xs text-muted-foreground">{tx("Կրկնելու հարցեր")}</p><p className="text-xl font-black">{Object.values(p.answers).filter((v) => v === 0).length}</p></div>
-          </div>
-          {Object.values(p.answers).some((v) => v === 0) ? <p className="text-sm text-muted-foreground">{tx("Առաջարկ․ կրկնիր սխալ պատասխանած հարցերը և նոր թեստ անցիր՝ առաջընթացը համեմատելու համար։")}</p> : <p className="text-sm text-muted-foreground">{tx("Լուծիր մի քանի թեստ՝ թույլ թեմաները բացահայտելու համար։")}</p>}
-          <Link to="/" search={{ subject: "english" }} className="inline-flex rounded-xl border bg-background px-3 py-2 text-sm font-semibold">{tx("Անցնել անգլերենի թեստերը")}</Link>
-        </section>
-        {p.exams.length > 0 && (
-          <div className="space-y-1 text-sm">
-            <p className="font-bold">{tx("Վերջին քննությունները")}</p>
-            {p.exams.slice(-5).reverse().map((e) => (
-              <p key={e.date} className="text-muted-foreground">
-                {new Date(e.date).toLocaleDateString(lang === "en" ? "en-GB" : "hy-AM")} · {tx("Շտեմարան {book} · {score}/{total}", { book: e.book, score: e.score, total: e.total })}
-              </p>
-            ))}
-          </div>
-        )}
-        <Button variant="outline" className="w-full" onClick={() => supabase.auth.signOut()}>{tx("Դուրս գալ")}</Button>
-      </div>
-    );
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    const { data, error } =
-      mode === "in"
-        ? await supabase.auth.signInWithPassword({ email, password: pw })
-        : await supabase.auth.signUp({ email, password: pw, options: { emailRedirectTo: window.location.origin, data: { username: username.trim().slice(0, 40) } } });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    if (!configured) return;
+    let active = true;
+    let authEventSeen = false;
+    try {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!active) return;
+        authEventSeen = true;
+        setUser(session?.user?.email ?? (session?.user ? "Հաշիվ" : null));
+        if (event === "PASSWORD_RECOVERY") {
+          setMode("recovery");
+          setNotice("Սահմանիր նոր գաղտնաբառը՝ վերականգնումն ավարտելու համար։");
+          setProblem("");
+        }
+      });
+      void supabase.auth.getUser().then(({ data: result, error }) => {
+        if (active && !authEventSeen && !error) {
+          setUser(result.user?.email ?? (result.user ? "Հաշիվ" : null));
+        }
+      }).catch(() => {
+        if (active && !authEventSeen) setUser(null);
+      });
+      return () => {
+        active = false;
+        data.subscription.unsubscribe();
+      };
+    } catch (error) {
+      if (active) setProblem(authFeedback(error));
     }
-    if (mode === "up" && !data.session) {
-      toast.success(tx("Ստուգեք ձեր էլ. փոստը՝ հաշիվը հաստատելու համար։"));
-      return;
-    }
-    nav({ to: "/" });
+  }, [configured]);
+
+  const changeMode = (next: AuthMode) => {
+    setMode(next);
+    setProblem("");
+    setNotice("");
+    setPassword("");
   };
 
-  return (
-    <div className="shadow-card mx-auto max-w-md space-y-5 rounded-2xl border bg-card p-6">
-      <div>
-        <h1 className="text-2xl font-black">{mode === "in" ? tx("Մուտք") : tx("Գրանցում")}</h1>
-        <p className="text-sm text-muted-foreground">{tx("Առանց մուտքի էլ կարող եք սովորել․ առաջընթացը կպահվի այս սարքում։ Մուտք գործեք՝ այն բոլոր սարքերում ունենալու համար։")}</p>
-      </div>
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={async () => {
-          const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-          if (r.error) toast.error(tx("Google-ով մուտքը չհաջողվեց"));
-        }}
-      >
-        {tx("Շարունակել Google-ով")}
+  const showError = (error: unknown) => {
+    const message = authFeedback(error);
+    setProblem(message);
+    toast.error(message);
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!configured || busy) return;
+    setBusy(true);
+    setProblem("");
+    setNotice("");
+    try {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: window.location.origin + "/auth",
+        });
+        if (error) throw error;
+        setNotice(tx("Եթե այս հասցեով հաշիվ կա, կստանաս գաղտնաբառը վերականգնելու նամակ։ Ստուգիր նաև Spam-ը։"));
+        return;
+      }
+      if (mode === "recovery") {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw error;
+        setPassword("");
+        setMode("in");
+        setNotice(tx("Գաղտնաբառը փոխված է։"));
+        toast.success(tx("Գաղտնաբառը հաջողությամբ փոխվել է։"));
+        return;
+      }
+      if (mode === "in") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(), password,
+        });
+        if (error) throw error;
+        setPassword("");
+        await nav({ to: "/" });
+        return;
+      }
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: window.location.origin + "/auth",
+          data: { username: username.trim().slice(0, 40) },
+        },
+      });
+      if (error) throw error;
+      setPassword("");
+      if (!data.session) {
+        setNotice(tx("Գրանցումը սկսվել է։ Ստուգիր էլ. փոստդ և հաստատիր հաշիվը՝ մուտք գործելու համար։"));
+        setMode("in");
+        return;
+      }
+      await nav({ to: "/" });
+    } catch (error) {
+      showError(error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const googleSignIn = async () => {
+    if (!configured || busy) return;
+    setBusy(true);
+    setProblem("");
+    setNotice("");
+    try {
+      // The Lovable broker exchanges OAuth tokens and saves the Supabase
+      // session; calling Supabase's separate Google flow here would conflict.
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) throw result.error;
+      if (!result.redirected) await nav({ to: "/" });
+    } catch (error) {
+      showError(error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const signOut = async () => {
+    if (!configured || busy) return;
+    setBusy(true);
+    setProblem("");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+      setPassword("");
+      setMode("in");
+      setNotice(tx("Դուրս եկար հաշվից։"));
+    } catch (error) {
+      showError(error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (configured === null) return (
+    <div role="status" className="mx-auto max-w-md rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
+      {tx("Բացվում է մուտքի էջը…")}
+    </div>
+  );
+
+  if (!configured) return (
+    <div className="mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6">
+      <h1 className="text-2xl font-black">{tx("Մուտքը ժամանակավորապես անհասանելի է")}</h1>
+      <p role="alert" className="text-sm text-muted-foreground">
+        {tx("Այս կայքի մուտքի ծառայությունը դեռ կարգավորված չէ։ Կարող ես շարունակել սովորել առանց մուտքի, և տվյալներդ կպահվեն սարքում։")}
+      </p>
+      <Link to="/" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-bold text-primary-foreground">
+        {tx("Շարունակել առանց մուտքի")}
+      </Link>
+    </div>
+  );
+
+  if (user && mode !== "recovery") return (
+    <div className="mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6 shadow-card">
+      <h1 className="text-2xl font-black">{tx("Ձեր հաշիվը")}</h1>
+      <p className="break-all text-sm text-muted-foreground">{user}</p>
+      <p className="text-sm">
+        {tx("Առաջընթաց՝ {xp} XP, {answers} պատասխան։ Այն պահվում է սարքում և կարող է համաժամացվել հաշվի հետ, երբ առցանց կապն աշխատում է։", {
+          xp: progress.xp, answers: Object.keys(progress.answers).length,
+        })}
+      </p>
+      <section className="space-y-3 rounded-xl border bg-muted/30 p-4">
+        <h2 className="font-bold">{tx("Ուսումնական առաջընթաց")}</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-lg bg-background p-3">
+            <p className="text-xs text-muted-foreground">{tx("Ճիշտ պատասխաններ")}</p>
+            <p className="text-xl font-black">{Object.values(progress.answers).filter(v => v === 1).length}</p>
+          </div>
+          <div className="rounded-lg bg-background p-3">
+            <p className="text-xs text-muted-foreground">{tx("Կրկնելու հարցեր")}</p>
+            <p className="text-xl font-black">{Object.values(progress.answers).filter(v => v === 0).length}</p>
+          </div>
+        </div>
+        <Link to="/" search={{ subject: "english" }} className="inline-flex min-h-11 items-center rounded-xl border bg-background px-3 py-2 text-sm font-semibold">
+          {tx("Շարունակել ուսուցումը")}
+        </Link>
+      </section>
+      {progress.exams.length > 0 && (
+        <div className="space-y-1 text-sm">
+          <h2 className="font-bold">{tx("Վերջին քննությունները")}</h2>
+          {progress.exams.slice(-5).reverse().map(e => (
+            <p key={e.date} className="text-muted-foreground">
+              {new Date(e.date).toLocaleDateString(lang === "en" ? "en-GB" : "hy-AM")} ·
+              {tx(" Շտեմարան {book} · {score}/{total}", { book: e.book, score: e.score, total: e.total })}
+            </p>
+          ))}
+        </div>
+      )}
+      {problem && <p role="alert" className="text-sm text-destructive">{problem}</p>}
+      {notice && <p role="status" className="text-sm text-primary">{notice}</p>}
+      <Button type="button" variant="outline" className="w-full" disabled={busy} onClick={() => { void signOut(); }}>
+        {busy ? tx("Կատարվում է…") : tx("Դուրս գալ")}
       </Button>
-      <form onSubmit={submit} className="space-y-3">
+    </div>
+  );
+
+  const isRecovery = mode === "recovery";
+  const isForgot = mode === "forgot";
+  return (
+    <div className="mx-auto max-w-md space-y-5 rounded-2xl border bg-card p-6 shadow-card">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-black">
+          {mode === "up" ? tx("Գրանցում") : isForgot ? tx("Վերականգնել գաղտնաբառը") :
+            isRecovery ? tx("Նոր գաղտնաբառ") : tx("Մուտք")}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {tx("Կարող ես սովորել նաև առանց հաշվի։ Մուտքը թույլ է տալիս համաժամացնել առաջընթացը, երբ առցանց ծառայությունը հասանելի է։")}
+        </p>
+      </div>
+
+      {!isRecovery && !isForgot && (
+        <Button type="button" variant="outline" className="min-h-12 w-full" disabled={busy}
+          onClick={() => { void googleSignIn(); }}>
+          {busy ? tx("Կատարվում է…") : tx("Շարունակել Google-ով")}
+        </Button>
+      )}
+
+      <form onSubmit={e => { void submit(e); }} className="space-y-3">
         {mode === "up" && (
-          <Input required minLength={2} maxLength={40} placeholder={tx("Օգտանուն")} value={username} onChange={(e) => setUsername(e.target.value)} />
+          <Input required minLength={2} maxLength={40} autoComplete="username" placeholder={tx("Օգտանուն")}
+            value={username} onChange={e => setUsername(e.target.value)} disabled={busy} />
         )}
-        <Input type="email" required placeholder={tx("Էլ. փոստ")} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input type="password" required minLength={6} placeholder={tx("Գաղտնաբառ")} value={pw} onChange={(e) => setPw(e.target.value)} />
-        <Button variant="game" className="w-full" disabled={busy}>{mode === "in" ? tx("Մուտք") : tx("Գրանցվել")}</Button>
+        {!isRecovery && (
+          <Input type="email" required autoComplete="email" placeholder={tx("Էլ. փոստ")}
+            value={email} onChange={e => setEmail(e.target.value)} disabled={busy} />
+        )}
+        {!isForgot && (
+          <Input type="password" required minLength={6}
+            autoComplete={mode === "in" ? "current-password" : "new-password"}
+            placeholder={tx("Գաղտնաբառ՝ առնվազն 6 նիշ")}
+            value={password} onChange={e => setPassword(e.target.value)} disabled={busy} />
+        )}
+        {problem && <p role="alert" className="text-sm text-destructive">{problem}</p>}
+        {notice && <p role="status" className="text-sm text-primary">{notice}</p>}
+        <Button type="submit" variant="game" className="min-h-12 w-full" disabled={busy}>
+          {busy ? tx("Կատարվում է…") :
+            mode === "up" ? tx("Գրանցվել") : isForgot ? tx("Ուղարկել վերականգնման հղումը") :
+              isRecovery ? tx("Փոխել գաղտնաբառը") : tx("Մուտք գործել")}
+        </Button>
       </form>
-      <button type="button" className="text-sm font-semibold text-primary" onClick={() => setMode(mode === "in" ? "up" : "in")}>
-        {mode === "in" ? tx("Չունե՞ք հաշիվ․ գրանցվեք") : tx("Արդեն ունե՞ք հաշիվ․ մուտք")}
-      </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {!isRecovery && (
+          <button type="button" className="min-h-11 text-sm font-semibold text-primary"
+            onClick={() => changeMode(mode === "up" || isForgot ? "in" : "up")}>
+            {mode === "in" ? tx("Գրանցվել") : tx("Վերադառնալ մուտք")}
+          </button>
+        )}
+        {mode === "in" && (
+          <button type="button" className="min-h-11 text-sm font-semibold text-primary"
+            onClick={() => changeMode("forgot")}>
+            {tx("Մոռացե՞լ ես գաղտնաբառը")}
+          </button>
+        )}
+      </div>
+      <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-muted-foreground hover:text-primary">
+        {tx("Շարունակել առանց մուտքի")}
+      </Link>
     </div>
   );
 }
