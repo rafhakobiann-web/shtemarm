@@ -14,12 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      feedback: {
-        Row: { id: string; username: string; message: string; created_at: string }
-        Insert: { id?: string; username: string; message: string; created_at?: string }
-        Update: { id?: string; username?: string; message?: string; created_at?: string }
-        Relationships: []
-      }
       explanation_cache: {
         Row: {
           cache_key: string
@@ -35,6 +29,36 @@ export type Database = {
           cache_key?: string
           created_at?: string
           explanation?: string
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          client_id: string
+          contact: string | null
+          created_at: string | null
+          id: string
+          message: string
+          replied_at: string | null
+          reply: string | null
+        }
+        Insert: {
+          client_id: string
+          contact?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          replied_at?: string | null
+          reply?: string | null
+        }
+        Update: {
+          client_id?: string
+          contact?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          replied_at?: string | null
+          reply?: string | null
         }
         Relationships: []
       }
