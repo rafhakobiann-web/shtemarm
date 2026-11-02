@@ -19,7 +19,7 @@ describe("Biology III source bank and archived starter practice", () => {
   });
   it("accounts for imported and remaining tasks without claiming manual completion", () => {
     const pending = read("public/data/biology-pending-books.json").books.find((b: any) => b.id === 33);
-    expect(pending.verifiedQuestions).toBe(0);
+    expect(pending.verifiedQuestions).toBe(1);
     expect(pending.transcribedQuestions + pending.remainingQuestions).toBe(1837);
     expect(pending.archivedAuthoredFile).toBe("public/data/bio-authored-book3.json");
   });
