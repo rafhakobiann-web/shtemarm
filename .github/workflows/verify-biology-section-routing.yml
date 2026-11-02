@@ -1,0 +1,29 @@
+name: Verify subject-correct Biology section test routing
+
+on:
+  pull_request:
+    paths:
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/routes/biology.tsx'
+      - 'src/components/BiologyWorkspace.tsx'
+      - 'src/test/biology-section-test-routing.test.ts'
+      - '.github/workflows/verify-biology-section-routing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  route-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Assert Biology section tests never open Physics
+        run: bunx vitest run src/test/biology-section-test-routing.test.ts src/test/website-book-navigation.test.ts src/test/biology-source-banks.test.ts
+      - name: Build production bundle with TanStack Router checks
+        run: bun run build
