@@ -134,9 +134,9 @@ private fun NativeShtemarm() {
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         if (uri == null) {
-            backupMessage = "Պահպանումը չեղարկված է։"
+            backupMessage = NativeStudyGuide.label(studyLanguage, "Պահպանումը չեղարկված է։", "Save cancelled.", "Сохранение отменено.")
         } else {
-            backupMessage = "Պահպանվում է…"
+            backupMessage = NativeStudyGuide.label(studyLanguage, "Պահպանվում է…", "Saving…", "Сохранение…")
             backupScope.launch {
                 backupMessage = try {
                     withContext(Dispatchers.IO) {
@@ -144,11 +144,11 @@ private fun NativeShtemarm() {
                             stream.write(progress.exportSnapshot().toByteArray(StandardCharsets.UTF_8))
                         } ?: error("Cannot open backup destination")
                     }
-                    "Առաջընթացի կրկնօրինակը պահպանվեց։"
+                    NativeStudyGuide.label(studyLanguage, "Առաջընթացի կրկնօրինակը պահպանվեց։", "Progress backup saved.", "Резервная копия прогресса сохранена.")
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
-                    "Կրկնօրինակը պահպանել չհաջողվեց։"
+                    NativeStudyGuide.label(studyLanguage, "Կրկնօրինակը պահպանել չհաջողվեց։", "Could not save the backup.", "Не удалось сохранить резервную копию.")
                 }
             }
         }
@@ -157,9 +157,9 @@ private fun NativeShtemarm() {
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri == null) {
-            backupMessage = "Վերականգնումը չեղարկված է։"
+            backupMessage = NativeStudyGuide.label(studyLanguage, "Վերականգնումը չեղարկված է։", "Restore cancelled.", "Восстановление отменено.")
         } else {
-            backupMessage = "Վերականգնվում է…"
+            backupMessage = NativeStudyGuide.label(studyLanguage, "Վերականգնվում է…", "Restoring…", "Восстановление…")
             backupScope.launch {
                 try {
                     val restored = withContext(Dispatchers.IO) {
@@ -193,14 +193,14 @@ private fun NativeShtemarm() {
                         glassReflection = progress.glassReflection
                         studyLanguage = progress.studyLanguage
                         dailyTarget = progress.dailyQuestionTarget
-                        backupMessage = "Առաջընթացը հաջողությամբ վերականգնվեց։"
+                        backupMessage = NativeStudyGuide.label(studyLanguage, "Առաջընթացը հաջողությամբ վերականգնվեց։", "Progress restored successfully.", "Прогресс успешно восстановлен.")
                     } else {
-                        backupMessage = "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։"
+                        backupMessage = NativeStudyGuide.label(studyLanguage, "Այս ֆայլը Shtemarm-ի վավեր կրկնօրինակ չէ։", "This file is not a valid Shtemarm backup.", "Этот файл не является допустимой копией Shtemarm.")
                     }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
-                    backupMessage = "Կրկնօրինակը բացել չհաջողվեց։"
+                    backupMessage = NativeStudyGuide.label(studyLanguage, "Կրկնօրինակը բացել չհաջողվեց։", "Could not open the backup.", "Не удалось открыть резервную копию.")
                 }
             }
         }
@@ -339,7 +339,7 @@ private fun NativeShtemarm() {
             throw e
         } catch (e: Exception) {
             // Do not crash the saved-questions screen or report an error as an empty list.
-            savedLoadError = "Պահպանված հարցերը բեռնել չհաջողվեց։ Կրկին փորձիր ավելի ուշ։"
+            savedLoadError = NativeStudyGuide.label(studyLanguage, "Պահպանված հարցերը բեռնել չհաջողվեց։ Կրկին փորձիր ավելի ուշ։", "Could not load saved questions. Please try again later.", "Не удалось загрузить сохранённые вопросы. Повторите попытку позже.")
         } finally {
             savedLoading = false
         }
