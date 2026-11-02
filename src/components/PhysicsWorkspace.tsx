@@ -111,8 +111,7 @@ export function PhysicsWorkspace(){
       {PHYSICS_SOURCE_BOOKS.map((b,i)=>(
         <Link key={b.id} to="/book/$bookId" params={{bookId:String(b.id)}}
           className="flex min-h-24 min-w-0 items-center gap-3 rounded-2xl border border-primary/25 bg-card p-4 transition-colors hover:bg-muted/40">
-          <img src={b.cover} alt="" width={54} height={74}
-            className="h-20 w-14 shrink-0 rounded-lg object-cover" loading="lazy"/>
+          <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><BookOpen className="size-5" /></span>
           <span className="min-w-0 space-y-1">
             <strong className="block text-base font-black">{tx(i===0?"Բնօրինակ գիրք · Մաս I":"Բնօրինակ գիրք · Մաս II")}</strong>
             <span className="block text-xs text-muted-foreground">{tx(b.sub)}</span>
@@ -128,9 +127,7 @@ export function PhysicsWorkspace(){
       {PHYSICS_BOOK_IDS.map((id,i)=><Link key={id} to="/book/$bookId"
         params={{bookId:String(id)}}
         className="group flex min-w-0 items-center gap-4 rounded-3xl border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-muted/20 focus-visible:outline-2 focus-visible:outline-primary">
-        <img src={"/covers/physics-"+(i+1)+".svg"} width={92} height={122} loading="lazy"
-          alt={tx("Ֆիզիկայի ուսումնական մաս {n}",{n:i+1})}
-          className="h-28 w-20 shrink-0 rounded-xl object-cover shadow-sm"/>
+        <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><BookOpen className="size-5" /></span>
         <span className="min-w-0 flex-1 space-y-2">
           <strong className="block text-lg font-black">{tx(i===0?"Մաս առաջին":"Մաս երկրորդ")}</strong>
           <span className="block text-sm text-muted-foreground">{tx(i===0?
