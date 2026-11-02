@@ -18,9 +18,9 @@
       "sourcePageIndex": "public/data/biology-original-volume3-index.json",
       "sourceIndexedQuestions": 1837,
       "sourceChoiceAnswerKeys": 945,
-      "transcribedQuestions": 910,
+      "transcribedQuestions": 911,
       "coverageFile": "public/data/biology-volume3-coverage.json",
-      "remainingQuestions": 927,
+      "remainingQuestions": 926,
       "archivedAuthoredFile": "public/data/bio-authored-book3.json"
     },
     {
@@ -32,9 +32,9 @@
       "sourcePageIndex": "public/data/biology-original-volume4-index.json",
       "sourceIndexedQuestions": 1688,
       "sourceChoiceAnswerKeys": 812,
-      "transcribedQuestions": 771,
+      "transcribedQuestions": 777,
       "coverageFile": "public/data/biology-volume4-coverage.json",
-      "remainingQuestions": 917,
+      "remainingQuestions": 911,
       "sourceYear": 2018
     }
   ]
