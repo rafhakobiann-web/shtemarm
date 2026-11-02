@@ -30,7 +30,7 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
-  const sourceReviewPending = [1, 2, 3, 21, 22, 23, 31, 32, 63, 64].includes(id);
+  const sourceReviewPending = [1, 2, 3, 21, 22, 23, 31, 32, 33, 34, 63, 64].includes(id);
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
@@ -64,7 +64,7 @@ function BookPage() {
             <Button variant="game" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
-              ) : id >= 31 && id <= 32 ? (
+              ) : id >= 31 && id <= 34 ? (
                 <Link to="/biology"><Trophy /> {tx("Քննություն")}</Link>
               ) : id === 61 || id === 62 ? (
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
@@ -81,7 +81,7 @@ function BookPage() {
             <Button variant="sun" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
-              ) : id >= 31 && id <= 32 ? (
+              ) : id >= 31 && id <= 34 ? (
                 <Link to="/biology"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 61 || id === 62 ? (
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
@@ -190,3 +190,4 @@ function BookPage() {
     </div>
   );
 }
+

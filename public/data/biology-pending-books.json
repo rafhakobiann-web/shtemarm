@@ -1,14 +1,14 @@
 {
   "subject": "Կենսաբանություն",
-  "referenceYear": 2019,
+  "referenceYear": 2018,
   "sourceArchive": "https://test.am/pdf.php?page=111",
   "formatGuide2027": "https://escs.gov.am/api/assets/53efbc2e-cbb3-41ef-bd52-8d6ea8db1f21",
-  "note": "3-րդ և 4-րդ մասերի 2018 թ. բնօրինակ PDF-ների բոլոր հարցերի էջերը և պարզ պատասխանների բանալիները քարտեզագրված են՝ միայն սովորողի տեղային PDF-ով վարժանքի համար։ Բնօրինակ տեքստերը կայքում չեն արտագրվել, և բարդ տեսակների ավտոմատ գնահատումը դեռ չկա։ 36 հեղինակային հարցերը մնում են առանձին։",
+  "note": "3-րդ և 4-րդ մասերի տեքստային հարցերը ներմուծվում են բնօրինակներից՝ պահպանելով համարներն ու տպագիր պատասխանները։ Մնացած առաջադրանքները գրանցված են ծածկույթի ֆայլերում։ Բոլոր հարցերի ձեռքով վերջնական ստուգումը դեռ չի ավարտվել։",
   "books": [
     {
       "id": 33,
       "part": 3,
-      "status": "source-page-indexed-original-pdf-practice",
+      "status": "partial-source-text-transcription",
       "verifiedQuestions": 0,
       "targetFile": "public/data/bio-book3.json",
       "originalPracticeQuestions": 36,
@@ -17,17 +17,25 @@
       "sourcePages": 384,
       "sourcePageIndex": "public/data/biology-original-volume3-index.json",
       "sourceIndexedQuestions": 1837,
-      "sourceChoiceAnswerKeys": 945
+      "sourceChoiceAnswerKeys": 945,
+      "transcribedQuestions": 910,
+      "coverageFile": "public/data/biology-volume3-coverage.json",
+      "remainingQuestions": 927,
+      "archivedAuthoredFile": "public/data/bio-authored-book3.json"
     },
     {
       "id": 34,
       "part": 4,
-      "status": "source-page-indexed-original-pdf-practice",
+      "status": "partial-source-text-transcription",
       "verifiedQuestions": 0,
       "targetFile": "public/data/bio-book4.json",
       "sourcePageIndex": "public/data/biology-original-volume4-index.json",
       "sourceIndexedQuestions": 1688,
-      "sourceChoiceAnswerKeys": 812
+      "sourceChoiceAnswerKeys": 812,
+      "transcribedQuestions": 771,
+      "coverageFile": "public/data/biology-volume4-coverage.json",
+      "remainingQuestions": 917,
+      "sourceYear": 2018
     }
   ]
 }
