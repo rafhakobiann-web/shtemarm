@@ -39,63 +39,17 @@ const MATH_BOOKS = [
   { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/covers/math-2.svg" },
 ] as const;
 
-function SubjectCover({ title, sub }: { title: string; sub: string }) {
-  const text = `${title} ${sub}`.toLowerCase();
-  const isMath = text.includes("մաթեմատիկ") || text.includes("matem");
-  const isBiology = text.includes("կենսաբան") || text.includes("bio");
-  const isHistory = text.includes("պատմ");
-  const isPhysics = text.includes("ֆիզիկ") || text.includes("physics");
-  const isArmenian = text.includes("հայոց լեզու") || text.includes("գրական") || text.includes("armenian");
-  const isEnglish = text.includes("անգլերեն") || text.includes("շտեմարան") || text.includes("english");
-  const subject = isMath ? "ՄԱԹԵՄԱՏԻԿԱ" : isBiology ? "ԿԵՆՍԱԲԱՆՈՒԹՅՈՒՆ" : isHistory ? "ՀԱՅՈՑ ՊԱՏՄՈՒԹՅՈՒՆ" : isArmenian ? "ՀԱՅՈՑ ԼԵԶՈՒ ԵՎ ԳՐԱԿԱՆՈՒԹՅՈՒՆ" : isEnglish ? "ԱՆԳԼԵՐԵՆ" : title.toLocaleUpperCase("hy-AM");
-  const Icon = isMath ? Calculator : isBiology ? Dna : isPhysics ? Atom : isHistory || isArmenian || isEnglish ? BookOpen : Brain;
-  const palette = isMath
-    ? "from-slate-900 via-teal-900 to-cyan-800"
-    : isBiology
-      ? "from-teal-950 via-emerald-900 to-emerald-600"
-      : isHistory
-        ? "from-stone-900 via-amber-950 to-amber-700"
-        : isArmenian
-          ? "from-slate-950 via-indigo-950 to-indigo-700"
-          : isPhysics
-            ? "from-slate-900 via-cyan-950 to-teal-700"
-            : "from-slate-900 via-teal-950 to-teal-700";
-  const badge = isMath ? "01" : isBiology ? "02" : isHistory ? "03" : isArmenian ? "04" : "05";
+function TileBody({ title, sub }: { cover?: string; title: string; sub: string }) {
   return (
-    <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-gradient-to-br ${palette} p-3 text-white sm:p-4`} aria-label={subject}>
-      <div aria-hidden="true" className="absolute -right-8 -top-8 size-36 rounded-full border border-white/20" />
-      <div aria-hidden="true" className="absolute -right-1 top-1 size-24 rounded-full border border-white/15" />
-      <div aria-hidden="true" className="absolute -bottom-10 -left-8 size-36 rounded-full border-[18px] border-white/10" />
-      <div aria-hidden="true" className="absolute inset-x-4 top-4 h-px bg-white/25" />
-      <div className="relative z-10 flex min-h-0 w-full flex-col justify-between gap-3 sm:gap-4">
-        <div className="flex items-start justify-between gap-2">
-          <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold tracking-[0.2em]">SHTEMARM</span>
-          <span className="text-xs font-bold tracking-[0.2em] text-white/65">{badge}</span>
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-2xl border border-white/25 bg-white/10 shadow-lg backdrop-blur-sm sm:size-12">
-            <Icon className="size-6 sm:size-7" strokeWidth={1.4} aria-hidden="true" />
-          </span>
-          <h4 className="line-clamp-3 max-w-full break-words text-pretty text-sm font-black leading-snug tracking-wide text-white sm:text-base">{subject}</h4>
-          <p className="line-clamp-2 break-words text-[9px] font-semibold tracking-[0.08em] text-white/75 sm:text-[10px]">{sub.toLocaleUpperCase("hy-AM")}</p>
-        </div>
-        <div className="h-1 w-full overflow-hidden rounded-full bg-white/20"><div className="h-full w-1/3 rounded-full bg-white/80" /></div>
-      </div>
-    </div>
-  );
-}
-
-function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
-  return (
-    <div className="flex h-full min-h-32 min-w-0 items-center gap-3 p-3 sm:gap-4 sm:p-3.5">
-      <div className="cover-frame academy-book-cover relative h-28 w-20 shrink-0 overflow-hidden rounded-[.9rem] shadow-sm sm:h-[7.5rem] sm:w-[5.5rem]">
-        {cover ? <img src={cover} alt="" loading="lazy" decoding="async" className="size-full object-cover object-center" /> : <SubjectCover title={title} sub={sub} />}
-      </div>
+    <div className="flex h-full min-h-28 min-w-0 items-start gap-3 p-4 sm:p-5">
+      <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
+        <BookOpen className="size-5" />
+      </span>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <h3 className="line-clamp-3 break-words text-sm font-extrabold leading-snug">{title}</h3>
-        <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
-        <span aria-hidden="true" className="mt-auto inline-flex items-center gap-1 text-xs font-bold text-primary">
-          <BookOpen className="size-3.5"/><ArrowRight className="ml-auto size-4 transition-transform group-hover:translate-x-0.5"/>
+        <h3 className="break-words text-sm font-black leading-snug sm:text-base">{title}</h3>
+        <p className="break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
+        <span aria-hidden="true" className="mt-auto flex items-center justify-end text-primary">
+          <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
         </span>
       </div>
     </div>
@@ -277,7 +231,7 @@ function BiologySubject() {
         </div>
       </section>
       <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
-        {tx("3-րդ և 4-րդ մասերի հարցերի տեքստը, տարբերակներն ու նկարները բացվում են քո բնօրինակ PDF-ից։ Ընտրիր մասը և PDF-ը՝ հարցերը հենց էջում տեսնելու համար։")}
+        {tx("3-րդ և 4-րդ մասերի հարցերը բացվում են տեքստով՝ առանց նկարների։ Բնօրինակ PDF-ը պետք է ընտրել մեկ անգամ, որպեսզի կայքը վստահելիորեն ընթերցի առաջադրանքները։")}
       </p>
       <section className="space-y-3">
         <h2 className="text-lg font-black">{tx("Լրացուցիչ հեղինակային վարժանք")}</h2>
@@ -433,7 +387,7 @@ function Index() {
         </Link>
         <Link to="/study-tools" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Brain className="size-5"/></span>
-          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական գործիքներ")}</strong><span className="block text-xs text-muted-foreground">{tx("Կենտրոնացում և կրկնություն")}</span></span>
+          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական գործիքներ")}</strong><span className="block text-xs text-muted-foreground">{tx("Քո առաջընթացն ու սխալները")}</span></span>
           <ArrowRight className="size-4 text-muted-foreground"/>
         </Link>
       </nav>
