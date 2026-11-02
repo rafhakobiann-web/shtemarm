@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Dna } from "lucide-react";
@@ -24,11 +24,12 @@ async function loadBiologyEntries(source: string): Promise<HistoryEntry[]> {
 }
 
 /** Actual verified available book questions; test blueprint is independent from this pool. */
-export function BiologyWorkspace() {
+export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?: number; initialSection?: number } = {}) {
   const tx = useTx();
   // Initialize the source BEFORE React Query accesses it. This avoids a
   // production-only ReferenceError (temporal dead zone) after minification.
-  const [source, setSource] = useState("all");
+  const [source, setSource] = useState(() => initialBook && initialBook >= 31 && initialBook <= 34
+    ? `book-${initialBook - 30}` : "all");
   const data = useQuery({
     queryKey: ["biology-configurable-pool-v3", source],
     queryFn: () => loadBiologyEntries(source),
@@ -46,6 +47,16 @@ export function BiologyWorkspace() {
     () => data.data ?? [],
     [data.data],
   );
+  // Preserve the printed section from the book card. The entry identity
+  // includes its book number + section number; never derive a section only
+  // from its display title, which can repeat across different books.
+  useEffect(() => {
+    if (!initialBook || !initialSection || source !== `book-${initialBook - 30}` || !data.data) return;
+    const idPrefix = `book-${initialBook - 30}:${initialSection}:`;
+    setSections([...new Set(data.data
+      .filter((entry) => entry.unit.id.startsWith(idPrefix))
+      .map((entry) => entry.section))]);
+  }, [initialBook, initialSection, source, data.data]);
   const names = [...new Set(entries.map((entry) => entry.section))];
   const allowedKinds = KINDS.filter((kind) => entries.some((entry) => entry.unit.kind === kind));
   const available = entries.filter(
