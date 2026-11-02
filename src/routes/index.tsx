@@ -6,6 +6,7 @@ import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
+import { BookCover } from "@/components/BookCover";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
 
@@ -39,12 +40,10 @@ const MATH_BOOKS = [
   { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/covers/math-2.svg" },
 ] as const;
 
-function TileBody({ title, sub }: { cover?: string; title: string; sub: string }) {
+function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: string }) {
   return (
-    <div className="flex h-full min-h-28 min-w-0 items-start gap-3 p-4 sm:p-5">
-      <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
-        <BookOpen className="size-5" />
-      </span>
+    <div className="flex h-full min-h-28 min-w-0 items-start gap-3 p-3 sm:p-4">
+      <BookCover src={cover} title={title} />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <h3 className="break-words text-sm font-black leading-snug sm:text-base">{title}</h3>
         <p className="break-words text-xs leading-relaxed text-muted-foreground">{sub}</p>
@@ -155,7 +154,7 @@ function MathSubject() {
       <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
               <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
