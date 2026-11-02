@@ -1,0 +1,60 @@
+name: Verify published Biology Test navigation on mobile
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/verify-live-biology-test-route.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Install Chromium for read-only browser check
+        run: |
+          bun add --no-save playwright@1.56.1
+          bunx playwright install --with-deps chromium
+      - name: Check Biology III and IV section Test links on actual Production site
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const base = "https://shtemarm.lovable.app";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          const page = await browser.newPage({ viewport: {width:393,height:852}, isMobile: true, hasTouch: true });
+          const pageErrors = [];
+          page.on("pageerror", (error) => pageErrors.push(error.message));
+          try {
+            for (const book of [33, 34]) {
+              const response = await page.goto(base + "/book/" + book, { waitUntil: "domcontentloaded", timeout: 35000 });
+              if (response?.status() !== 200) throw new Error("Book " + book + " HTTP " + response?.status());
+              await page.locator('a[href^="/study/' + book + '/1"]').first().waitFor({ timeout: 25000 });
+              const sectionTest = page.getByRole("link", { name: "Թեստ", exact: true }).first();
+              await sectionTest.waitFor({ timeout: 10000 });
+              const href = await sectionTest.getAttribute("href");
+              console.log("Book " + book + " section 1 test href:", href);
+              if (!href?.startsWith("/biology?")) throw new Error("Wrong subject link: " + href);
+              const query = new URL(href, base).searchParams;
+              if (query.get("book") !== String(book) || query.get("section") !== "1") {
+                throw new Error("Book/section source lost: " + href);
+              }
+              await sectionTest.click();
+              await page.waitForURL(url => url.pathname === "/biology", { timeout: 15000 });
+              const selected = await page.locator("select").first().inputValue();
+              if (selected !== "book-" + (book - 30)) throw new Error("Builder wrong source: " + selected);
+              await page.getByText("Կենսաբանություն · Քննությունների կազմիչ").waitFor({ timeout: 20000 });
+              console.log("Book " + book + " correctly opens Biology builder, source:", selected);
+            }
+            if (pageErrors.length) throw new Error("JavaScript errors: " + pageErrors.join("; "));
+          } finally {
+            await browser.close();
+          }
+          JS
