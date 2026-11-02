@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const read = path => JSON.parse(fs.readFileSync(path, 'utf8'));
+const reviewed = read('public/data/biology-reviewed-restorations.json').entries;
 let total = 0;
 for (const volume of [3, 4]) {
   const index = read(`public/data/biology-original-volume${volume}-index.json`);
@@ -28,7 +29,21 @@ for (const volume of [3, 4]) {
       assert.deepEqual(Object.keys(question.options), ['1', '2', '3', '4']);
       const expectedPage = chapter.pageRuns.filter(([n]) => n <= number).at(-1)[1];
       assert.equal(unit.sourcePage, expectedPage);
-      assert(question.stem.length > 10);
+      // Some original printed questions are grammatically complete but short
+      // (e.g., a one-word subject followed by a full stop). Do not invent
+      // padding text merely to satisfy an arbitrary length threshold.
+      // The exception is allowed only for a specifically page-and-key-checked
+      // question from this exact source PDF.
+      if (question.stem.trim().length <= 10) {
+        const proof = reviewed.find(r =>
+          r.volume === volume && r.chapter === chapter.id &&
+          r.number === number && r.page === expectedPage &&
+          r.answer === question.answer && r.sourceSha256 === index.sourceSha256 &&
+          r.wordingAndOptionsComparedToOriginal === true &&
+          r.printedAnswerComparedToOriginal === true,
+        );
+        assert(proof, `Short question without original-page proof: ${volume}:${chapter.id}:${number}`);
+      }
       for (const text of [question.stem, ...Object.values(question.options)]) {
         assert(text.trim().length);
         assert(!/\ufffd|www\.|atc\.am|[\u00b2-\u00ff]/i.test(text));
