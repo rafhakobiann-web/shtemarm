@@ -38,6 +38,19 @@ describe("read literal text from a student-supplied official Biology PDF", () =>
     expect(q.crop.bottom).toBeLessThan(pageHeight-40);
   });
 
+  it("locates 56.4-point gutter labels on alternate official book pages", () => {
+    const items = [
+      item("3", 56.42, 533), item(". Âí³ñÏí³Í μÝáñáß", 63.7, 533),
+      item("1) Ù»Ï", 70.2, 510), item("2) »ñÏáõ", 70.2, 498),
+      item("3) »ñ»ù", 70.2, 486), item("4) ãáñë", 70.2, 474),
+    ];
+    const found = locatePdfQuestion(chapter, 3, 7, 488, 689, items);
+    expect(found.status).toBe("exact-page");
+    expect(found.text.startsWith("Թվարկված")).toBe(true);
+    expect(found.text).not.toMatch(/^3\\s/);
+    expect(found.hasFourChoices).toBe(true);
+  });
+
   it("refuses to guess when printed ID is absent or repeated", () => {
     const items = [item("1",42.24,550),item("1",42.24,550),item("1) option",59.3,535)];
     const q = locatePdfQuestion(chapter,1,5,488,689,items);
