@@ -18,7 +18,7 @@ type Attempt = { units: Unit[]; title: string; minutes: number; practice: boolea
 
 async function loadBiologyEntries(source: string): Promise<HistoryEntry[]> {
   // Only download the selected book on mobile. The all-books option loads both.
-  const bookIds = source === "book-1" ? [31] : source === "book-2" ? [32] : [31,32];
+  const bookIds = /^book-[1-4]$/.test(source) ? [30 + Number(source.slice(-1))] : [31, 32, 33, 34];
   const books = await Promise.all(bookIds.map((id) => loadBook(id)));
   return books.flatMap((book,i) => historyBookEntries(book,bookIds[i]!-30));
 }
@@ -30,7 +30,7 @@ export function BiologyWorkspace() {
   // production-only ReferenceError (temporal dead zone) after minification.
   const [source, setSource] = useState("all");
   const data = useQuery({
-    queryKey: ["biology-configurable-pool-v2", source],
+    queryKey: ["biology-configurable-pool-v3", source],
     queryFn: () => loadBiologyEntries(source),
     staleTime: Infinity,
   });
@@ -64,7 +64,7 @@ export function BiologyWorkspace() {
             ...p,
             exams: [...p.exams, {
               date: new Date().toISOString(),
-              book: source === "book-2" ? 32 : 31,
+              book: /^book-[1-4]$/.test(source) ? 30 + Number(source.slice(-1)) : 31,
               score,
               total,
             }].slice(-50),
@@ -79,14 +79,14 @@ export function BiologyWorkspace() {
         subject={tx("Կենսաբանություն")}
         title={tx("Կենսաբանություն · Քննությունների կազմիչ")}
         description={tx("Ընտրիր շտեմարանները, բաժինները, հարցերի քանակն ու տեսակները, ժամանակն ու ռեժիմը։ Ավարտելուց հետո վերանայիր պատասխանները։")}
-        sources={tx("2 շտեմարան")}
+        sources={tx("4 շտեմարան")}
         available={data.data?.length}
         icon={<Dna className="size-5" />}
       />
-      <Link to="/biology/original" className="group flex flex-col gap-3 rounded-3xl border border-primary/25 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:flex-row sm:items-center sm:justify-between">
+      <Link to="/book/$bookId" params={{ bookId: "33" }} className="group flex flex-col gap-3 rounded-3xl border border-primary/25 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 space-y-1">
           <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Բնօրինակ կենսաբանություն · մաս 3 և 4")}</h2>
-          <p className="text-sm text-muted-foreground">{tx("3,525 հարցի բնօրինակ էջային որոնում · 1,757 հարցի ստուգում՝ քո PDF-ով")}</p>
+          <p className="text-sm text-muted-foreground">{tx("1,681 բնօրինակ տեքստային հարց՝ պատասխաններով · թվայնացումը շարունակվում է")}</p>
         </div>
         <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{tx("Սկսել վարժանքը")} →</span>
       </Link>
@@ -101,9 +101,11 @@ export function BiologyWorkspace() {
               setKinds(KINDS);
               setError("");
             }}>
-              <option value="all">{tx("Երկու շտեմարանները միասին")}</option>
+              <option value="all">{tx("Բոլոր չորս շտեմարանները միասին")}</option>
               <option value="book-1">{tx("Շտեմարան 1")}</option>
               <option value="book-2">{tx("Շտեմարան 2")}</option>
+              <option value="book-3">{tx("Շտեմարան 3 · լրացվում է")}</option>
+              <option value="book-4">{tx("Շտեմարան 4 · լրացվում է")}</option>
             </select>
           </label>
           {data.isPending ? <p role="status">{tx("Հարցերը բեռնվում են…")}</p> : data.isError ? (
@@ -199,16 +201,16 @@ export function BiologyWorkspace() {
           <HistoryOfficialPapers subject="biology" />
           <div className="space-y-3 rounded-3xl border bg-card p-5">
             <h2 className="flex items-center gap-2 font-black"><BookOpen className="size-4" />{tx("Կենսաբանության գրքեր")}</h2>
-            {[1, 2].map((n) => (
+            {[1, 2, 3, 4].map((n) => (
               <Link key={n} to="/book/$bookId" params={{ bookId: String(30 + n) }}
                 className="block rounded-xl border p-3 text-sm font-semibold hover:bg-muted">
                 {tx("Շտեմարան {n} · բոլոր բաժինները", { n })}
               </Link>
             ))}
             <Link to="/biology/original" className="block rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
-              {tx("3-րդ և 4-րդ մասեր · բնօրինակ PDF-ով վարժանք")}
+              {tx("3-րդ մաս · բնօրինակ տեքստային հարցեր")}
             </Link>
-            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի բոլոր բաժինների հարցերը կապակցված են բնօրինակի էջերին։ 1–4 ընտրությամբ առաջադրանքները ստուգվում են տպագիր պատասխանների աղյուսակով։ Այլ տեսակները դեռ պահանջում են ձեռքով ստուգում։ PDF-ը բացվում է քո սարքից։")}</p>
+            <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի տեքստային հարցերը ստուգվում են տպագիր պատասխանների բանալիներով։ Նկար պահանջող և դեռ չստուգված բարդ առաջադրանքները չեն ներառվում թեստերում։")}</p>
             <a className="block text-xs font-semibold text-primary underline" href="https://test.am/pdf.php?page=111" target="_blank" rel="noopener noreferrer">
               {tx("ԳԹԿ-ի 4 մասերի արխիվ")}
             </a>
@@ -218,3 +220,4 @@ export function BiologyWorkspace() {
     </div>
   );
 }
+

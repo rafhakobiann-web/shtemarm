@@ -30,8 +30,8 @@ const TILE =
 
 /** Original source volumes remain separate from the authored Biology III exercises. */
 const BIOLOGY_ORIGINAL_BOOKS = [
-  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս երրորդ · Բնօրինակ հարցեր (PDF-ով)", cover: "/covers/bio-3.webp" },
-  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս չորրորդ · Բնօրինակ հարցեր (PDF-ով)", cover: "/covers/bio-4.webp" },
+  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 910 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.webp" },
+  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 771 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.webp" },
 ];
 
 const MATH_BOOKS = [
@@ -214,22 +214,15 @@ function BiologySubject() {
             </Link>
           ))}
           {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
-            <Link key={b.volume} to="/biology/original" search={{ volume: b.volume }} className={TILE}>
+            <Link key={b.volume} to="/book/$bookId" params={{ bookId: String(30 + b.volume) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
             </Link>
           ))}
         </div>
       </section>
       <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
-        {tx("3-րդ և 4-րդ մասերի հարցերը բացվում են տեքստով՝ առանց նկարների։ Բնօրինակ PDF-ը պետք է ընտրել մեկ անգամ, որպեսզի կայքը վստահելիորեն ընթերցի առաջադրանքները։")}
+        {tx("3-րդ մասում հասանելի է 910, իսկ 4-րդում՝ 771 բնօրինակ տեքստային հարց՝ պատասխաններով։ Կարող ես սովորել և կազմել թեստ՝ առանց PDF ընտրելու։ Մնացած առաջադրանքների թվայնացումը շարունակվում է։")}
       </p>
-      <section className="space-y-3">
-        <h2 className="text-lg font-black">{tx("Լրացուցիչ հեղինակային վարժանք")}</h2>
-        <Link to="/book/$bookId" params={{ bookId: "33" }} className="block rounded-2xl border bg-card p-4 text-sm transition-colors hover:border-primary/50">
-          <span className="font-bold">{tx("Կենսաբանություն · 3-րդ մասի թեմաներով 24 հեղինակային վարժանք")}</span>
-          <span className="mt-1 block text-xs text-muted-foreground">{tx("Սրանք բնօրինակ շտեմարանի հարցերը չեն։")}</span>
-        </Link>
-      </section>
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -247,7 +240,7 @@ function BiologySubject() {
           <ExamTile href="https://www.olymp.am/hy/node/1465" title={tx("Կենսաբանության օլիմպիադա · 2026")} sub={tx("Լրացուցիչ բարդ առաջադրանքներ և պաշտոնական լուծումներ")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ 1-ին և 2-րդ մասերն ունեն կայքում ներմուծված հարցեր։ 3-րդ և 4-րդ մասերի բնօրինակ հարցերը կարդացվում են քո PDF-ից․ ամբողջական, առանձին ձեռքով ստուգված տեքստային բազա դեռ չկա։")}</p>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ 1-ին և 2-րդ մասերն ունեն կայքում ներմուծված հարցեր։ 3-րդ և 4-րդ մասերի բնօրինակ հարցերը հասանելի են տեքստով՝ առանց PDF ընտրելու․ ամբողջական, առանձին ձեռքով ստուգված տեքստային բազա դեռ չկա։")}</p>
     </div>
   );
 }
@@ -497,7 +490,7 @@ function Index() {
             </Link>
           ))}
           {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
-            <Link key={b.volume} to="/biology/original" search={{ volume: b.volume }} className={TILE}>
+            <Link key={b.volume} to="/book/$bookId" params={{ bookId: String(30 + b.volume) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
             </Link>
           ))}
@@ -576,4 +569,5 @@ function Index() {
     </div>
   );
 }
+
 

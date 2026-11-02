@@ -8,15 +8,17 @@ describe("Biology production crash regression", () => {
     const query = src.indexOf('const data = useQuery({');
     expect(sourceState).toBeGreaterThan(0);
     expect(query).toBeGreaterThan(sourceState);
-    expect(src).toContain('queryKey: ["biology-configurable-pool-v2", source]');
+    expect(src).toContain('queryKey: ["biology-configurable-pool-v3", source]');
   });
 
-  it("keeps the original PDF reader as a non-nested route beside Biology's exam builder", () => {
+  it("redirects saved original-book links to standard book pages", () => {
     expect(existsSync("src/routes/biology_.original.tsx")).toBe(true);
     expect(existsSync("src/routes/biology.original.tsx")).toBe(false);
     const standalone = readFileSync("src/routes/biology_.original.tsx", "utf8");
     expect(standalone).toContain('createFileRoute("/biology/original")');
-    expect(standalone).toContain('component: BiologyOriginalPractice');
+    expect(standalone).toContain('throw redirect({ to: "/book/$bookId"');
+    expect(standalone).toContain('search.volume === 4 ? "34" : "33"');
     expect(readFileSync("src/routes/biology.tsx", "utf8")).toContain('component: BiologyWorkspace');
   });
 });
+

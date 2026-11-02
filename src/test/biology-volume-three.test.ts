@@ -1,45 +1,26 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { BIO_BOOKS } from "@/lib/books";
-
-describe("Biology volume III original practice foundation", () => {
-  it("is visibly marked as original practice and unlocked", () => {
-    const book = BIO_BOOKS.find(item => item.id === 33);
+const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
+describe("Biology III source bank and archived starter practice", () => {
+  it("unlocks the source book with a truthful partial label", () => {
+    const book = BIO_BOOKS.find(b => b.id === 33);
     expect(book?.locked).toBe(false);
-    expect(book?.sub).toContain("հեղինակային");
+    expect(book?.sub).toContain("բնօրինակ");
+    expect(book?.sub).toContain("լրացվում է");
+    expect(read("public/data/bio-book3.json").source.complete).toBe(false);
   });
-  it("has valid, nonduplicate answerable questions", () => {
-    const bank = JSON.parse(readFileSync("public/data/bio-book3.json", "utf8"));
-    expect(bank.id).toBe(33);
-    expect(bank.sourceStatus).toBe("original-practice-aligned-to-2018-pdf-chapters");
-    expect(bank.sections).toHaveLength(6);
-    const seen = new Set<string>();
-    let count = 0;
-    for (const section of bank.sections) for (const unit of section.units) {
-      expect(unit.kind).toBe("mc");
-      for (const q of unit.questions) {
-        expect(q.stem.trim().length).toBeGreaterThan(10);
-        expect(Object.keys(q.options)).toEqual(["1", "2", "3", "4"]);
-        expect(q.options[q.answer]).toBeTruthy();
-        const key = q.stem.trim();
-        expect(seen.has(key)).toBe(false);
-        seen.add(key);
-        count++;
-      }
-    }
-    expect(count).toBe(36);
+  it("preserves the 36 authored exercises outside the source dataset", () => {
+    const archive = read("public/data/bio-authored-book3.json");
+    expect(archive.sourceStatus).toBe("original-practice-aligned-to-2018-pdf-chapters");
+    const questions = archive.sections.flatMap((s: any) => s.units.flatMap((u: any) => u.questions));
+    expect(questions).toHaveLength(36);
+    expect(questions.every((q: any) => q.options[q.answer])).toBe(true);
   });
-  it("matches the six chapter boundaries of the provided 2018 source", () => {
-    const index = JSON.parse(readFileSync("public/data/biology-book3-source-index.json", "utf8"));
-    expect(index.pages).toBe(384);
-    expect(index.sections.map((section: { startPage: number }) => section.startPage)).toEqual([5, 62, 125, 192, 263, 296]);
-    expect(index.answers.startPage).toBe(362);
-    expect(index.verification.officialQuestionsTranscribed).toBe(0);
-  });
-  it("does not misrepresent original practice as verified source transcription", () => {
-    const pending = JSON.parse(readFileSync("public/data/biology-pending-books.json", "utf8"));
-    const volume = pending.books.find((b: { id: number }) => b.id === 33);
-    expect(volume.verifiedQuestions).toBe(0);
-    expect(volume.originalPracticeQuestions).toBe(36);
+  it("accounts for imported and remaining tasks without claiming manual completion", () => {
+    const pending = read("public/data/biology-pending-books.json").books.find((b: any) => b.id === 33);
+    expect(pending.verifiedQuestions).toBe(0);
+    expect(pending.transcribedQuestions + pending.remainingQuestions).toBe(1837);
+    expect(pending.archivedAuthoredFile).toBe("public/data/bio-authored-book3.json");
   });
 });

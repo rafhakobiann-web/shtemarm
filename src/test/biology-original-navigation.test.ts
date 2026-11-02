@@ -16,16 +16,16 @@ describe("Biology original book navigation from screenshot", () => {
     expect(homepage).toContain('importedBooks.map');
     expect(homepage).toContain('BIOLOGY_ORIGINAL_BOOKS.map');
     expect(homepage).toContain('BIO_BOOKS.filter(b => b.id === 31 || b.id === 32)');
-    expect(homepage).toContain('to="/biology/original" search={{ volume: b.volume }}');
+    expect(homepage).toContain('to="/book/$bookId" params={{ bookId: String(30 + b.volume) }}');
   });
-  it("preserves the 24 authored exercises but labels them as separate, non-original practice", () => {
-    expect(homepage).toContain('params={{ bookId: "33" }}');
-    expect(homepage).toContain('24 հեղինակային վարժանք');
-    expect(homepage).toContain('Սրանք բնօրինակ շտեմարանի հարցերը չեն');
+  it("removes the authored starter block from the source-book catalog", () => {
+    expect(homepage).not.toContain('24 հեղինակային վարժանք');
+    expect(homepage).toContain('910 բնօրինակ հարց');
+    expect(homepage).toContain('771 բնօրինակ հարց');
   });
   it("uses URL volume 4 when student opens the fourth source book, with a safe default", () => {
     expect(route).toContain('volume: z.coerce.number().int().min(3).max(4).catch(3)');
-    expect(route).toContain('initialVolume={volume === 4 ? 4 : 3}');
+    expect(route).toContain('search.volume === 4 ? "34" : "33"');
     const schema=z.object({volume:z.coerce.number().int().min(3).max(4).catch(3)});
     expect(schema.parse({volume:"3"}).volume).toBe(3);
     expect(schema.parse({volume:"4"}).volume).toBe(4);
@@ -36,7 +36,8 @@ describe("Biology original book navigation from screenshot", () => {
     expect(reader).toContain('useEffect(() => { setVolume(initialVolume); }, [initialVolume])');
     expect(reader).toContain('navigate({ to: "/biology/original", search: { volume: next }, replace: true })');
   });
-  it("explains that original text is read from a local student-provided PDF", () => {
-    expect(homepage).toContain('հարցերը կարդացվում են քո PDF-ից');
+  it("explains that text is available without selecting a PDF", () => {
+    expect(homepage).toContain('հարցերը հասանելի են տեքստով՝ առանց PDF ընտրելու');
   });
 });
+
