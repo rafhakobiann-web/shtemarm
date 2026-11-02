@@ -30,7 +30,6 @@ type PdfTextPiece = { str: string; transform: [number, number, number, number, n
 type PdfPage = {
   getViewport: (options: { scale: number }) => { width: number; height: number };
   getTextContent: () => Promise<{ items: unknown[] }>;
-  render: (options: { canvasContext: CanvasRenderingContext2D; viewport: any; canvas?: HTMLCanvasElement }) => { promise: Promise<void> };
 };
 export type PdfQuestionExtract = {
   status: "exact-page" | "unlocated";
@@ -91,8 +90,8 @@ export function locatePdfQuestion(
   }
 
   // Build text lines from real PDF glyph locations, not guessed questions.
-  // Filter out the printed number in the left gutter, page furniture and
-  // diagonal watermark. A visible source crop remains the authority.
+  // Filter out the printed number, page furniture and watermark.
+  // If text cannot be recovered, show a clear unavailable state instead of a screenshot.
   const ordered = pieces.filter(item => {
     // Never leak the numeral from the left gutter into the question wording.
     if (isGutterNumber(item)) return false;
@@ -161,36 +160,4 @@ export async function readBiologyQuestionFromPdf(
   const view = page.getViewport({ scale: 1 });
   const content = await page.getTextContent();
   return { page, extract: locatePdfQuestion(chapter, question, pageNumber, view.width, view.height, content.items) };
-}
-
-/**
- * Render the *actual* user-provided question area on-device, preserving font,
- * formulas and figures even if copyable text is absent or damaged.
- */
-export async function renderBiologyQuestionCrop(
-  page: PdfPage,
-  extract: PdfQuestionExtract,
-  destination: HTMLCanvasElement,
-): Promise<void> {
-  const view = page.getViewport({ scale: 1 });
-  const crop = extract.crop;
-  const width = crop.right - crop.left;
-  const height = crop.bottom - crop.top;
-  const scale = Math.min(2.3, Math.max(1.3, 850 / Math.max(1, width)));
-  const bigViewport = page.getViewport({ scale });
-  const full = document.createElement("canvas");
-  full.width = Math.ceil(bigViewport.width);
-  full.height = Math.ceil(bigViewport.height);
-  const context = full.getContext("2d");
-  if (!context) throw new Error("Canvas is unavailable.");
-  await page.render({ canvasContext: context, viewport: bigViewport, canvas: full }).promise;
-  destination.width = Math.max(1, Math.ceil(width * scale));
-  destination.height = Math.max(1, Math.ceil(height * scale));
-  const dst = destination.getContext("2d");
-  if (!dst) throw new Error("Canvas is unavailable.");
-  dst.fillStyle = "#fff";
-  dst.fillRect(0,0,destination.width,destination.height);
-  dst.drawImage(full, crop.left*scale, crop.top*scale,
-    width*scale,height*scale, 0,0,destination.width,destination.height);
-  full.width = 0; full.height = 0;
 }
