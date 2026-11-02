@@ -43,6 +43,8 @@ jobs:
             await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
             const links = page.locator('a[href*="/book/"]');
             const count = await links.count();
+            console.log("Production catalog links:", await page.locator("a").evaluateAll(as => as.map(a => ({ href: a.getAttribute("href"), text: (a.textContent || "").trim().slice(0, 95) })).filter(a => /book|biology|կենսաբան/i.test(a.href + a.text)).slice(0, 30)));
+            console.log("Production catalog heading:", (await page.locator("body").innerText()).slice(0, 1450));
             if (count < 4) throw new Error("Expected 4 Biology book links; found " + count);
             let covers = 0;
             for (const link of await links.all()) {
