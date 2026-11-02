@@ -113,7 +113,7 @@ export function locatePdfQuestion(
     line.parts.sort((a,b)=>a.x-b.x).map(item=>item.str).join(" ").replace(/^\.\s+/, "").trim(),
   ).filter(Boolean);
   const text = cleanLines.join("\n");
-  const validArmenian = (text.match(/[\u0531-\058f]/g) ?? []).length >= 8 &&
+  const validArmenian = (text.match(/[\u0531-\u058f]/g) ?? []).length >= 8 &&
     !text.includes("\uFFFD") && text.length >= 18;
   if (!validArmenian) {
     return { status:"exact-page", page:pageNumber, question:number, text:"", stem:"", options:[], hasFourChoices:false, sourceVerified:false, crop };
