@@ -225,9 +225,10 @@ function PlayPage() {
     answering.current.clear();
   }, [section.items, isTest]);
 
-  if (q.isLoading || !params) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել բաժինը։")}</p>;
-  if (!section.items.length) return <p className="p-6 text-destructive">{tx("Բաժինը չի գտնվել։")}</p>;
+  const pageHeading = <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">{tx("Մաթեմատիկա · Խաղ և թեստ")}{section.title ? ` · ${tx(section.title)}` : ""}</h1>;
+  if (q.isLoading || !params) return <div className="space-y-4 p-6">{pageHeading}<p role="status" className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p></div>;
+  if (q.error || !q.data) return <div className="space-y-4 p-6">{pageHeading}<p role="alert" className="text-destructive">{tx("Չհաջողվեց բեռնել բաժինը։")}</p></div>;
+  if (!section.items.length) return <div className="space-y-4 p-6">{pageHeading}<p role="alert" className="text-destructive">{tx("Բաժինը չի գտնվել։")}</p></div>;
 
   const sectionHref = `/math/books?book=${params.book}&sec=${params.chapter}-${params.section}`;
   const bookTitle = q.data.books[params.book]?.title ?? "";
@@ -247,6 +248,7 @@ function PlayPage() {
 
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="w-full">{pageHeading}</div>
       <a href={sectionHref} className="inline-flex min-w-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 shrink-0" />
         <span className="truncate">{bookTitle} · {tx("Բաժին {n}", { n: params.section })}</span>
