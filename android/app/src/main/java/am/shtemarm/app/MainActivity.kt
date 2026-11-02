@@ -875,7 +875,9 @@ private fun NativeShtemarm() {
                                     Spacer(Modifier.height(8.dp))
                                     val saved = progressVersion.let { progress.isBookmarked(q.id) }
                                     TextButton(onClick = { progress.toggleBookmark(q.id); progressVersion++ }) {
-                                        Text(if (saved) "★ Հեռացնել պահպանվածներից" else "☆ Պահպանել հարցը")
+                                        Text(if (saved)
+                                            NativeStudyGuide.label(studyLanguage, "★ Հեռացնել պահպանվածներից", "★ Remove bookmark", "★ Удалить из сохранённого")
+                                        else NativeStudyGuide.label(studyLanguage, "☆ Պահպանել հարցը", "☆ Save question", "☆ Сохранить вопрос"))
                                     }
                                 }
                                 items(q.choices.size) { n ->
@@ -918,7 +920,9 @@ private fun NativeShtemarm() {
                                 }
                                 if (chosen >= 0) item {
                                     if (immediateFeedback) {
-                                        Text(if (chosen == q.correctIndex) "Ճիշտ է ✓" else "Սխալ պատասխան",
+                                        Text(if (chosen == q.correctIndex)
+                                            NativeStudyGuide.label(studyLanguage, "Ճիշտ է ✓", "Correct ✓", "Верно ✓")
+                                        else NativeStudyGuide.label(studyLanguage, "Սխալ պատասխան", "Incorrect answer", "Неверный ответ"),
                                             fontWeight = FontWeight.Bold)
 
                                     }
