@@ -56,12 +56,16 @@ export function locatePdfQuestion(
   allItems: unknown[],
 ): PdfQuestionExtract {
   const pieces = allItems.filter(isPiece);
-  const questionMarkers = pieces.filter(item =>
+  // Official 2018 volumes print question numerals in two gutter columns
+  // (~42.2 or ~56.4 PDF points). A single fixed x misses many chapters.
+  const isGutterNumber = (item: PdfTextPiece) => (
     /^\d{1,4}$/.test(item.str.trim()) &&
-    Math.abs(item.transform[4] - 42.24) <= 6 &&
+    (Math.abs(item.transform[4] - 42.24) <= 2 ||
+     Math.abs(item.transform[4] - 56.42) <= 2) &&
     Math.abs(item.transform[1]) < 0.2 &&
-    Math.abs(item.transform[2]) < 0.2,
+    Math.abs(item.transform[2]) < 0.2
   );
+  const questionMarkers = pieces.filter(isGutterNumber);
   const selected = questionMarkers.filter(item => Number(item.str.trim()) === number);
   // Only the marker at the *actual* source page may identify a question.
   // Never display adjacent question text if the page index or segmentation differs.
@@ -90,6 +94,8 @@ export function locatePdfQuestion(
   // Filter out the printed number in the left gutter, page furniture and
   // diagonal watermark. A visible source crop remains the authority.
   const ordered = pieces.filter(item => {
+    // Never leak the numeral from the left gutter into the question wording.
+    if (isGutterNumber(item)) return false;
     const x = item.transform[4];
     const y = pageHeight - item.transform[5];
     return x > 47.4 && x < crop.right + 8 && y >= top + 5 &&
