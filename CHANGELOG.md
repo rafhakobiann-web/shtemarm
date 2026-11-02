@@ -36,6 +36,11 @@
 - 🏗️ Expanded website CI triggers to cover Support page changes as well as mobile navigation; production-build verification is tracked in GitHub Actions.
 - 📱 This is a **website-only** patch, separate from Android version 0.1.1.
 
+## 🟣 November 2, 2026 — Stored explanation pipeline (in progress)
+- 🛠️ Added an admin page for generating stored explanations per question, using the server's AI keys.
+- 🗄️ Added the `question_explanations` table; students can read only explanations that a reviewer has marked as reviewed.
+- 🚧 Not yet shown on question screens. Generation has not been run on the question banks.
+
 ## 🟣 November 2, 2026 — Search and sharing metadata
 - 🔎 Homepage now shows a "Shtemarm · հայերեն քննությունների պատրաստում" line above its headline, so the page identifies the platform.
 - 📖 Book pages show a "Ուսուցման շտեմարան" label above the book title.
