@@ -10,9 +10,12 @@ type Props = {
   chapter: BiologyOriginalChapter;
   question: number;
   volume: 3 | 4;
+  selected: string;
+  disabled: boolean;
+  onChoose: (number: string) => void;
 };
 
-export function BiologyQuestionFromPdf({ file, chapter, question, volume }: Props) {
+export function BiologyQuestionFromPdf({ file, chapter, question, volume, selected, disabled, onChoose }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [pdf, setPdf] = useState<Awaited<ReturnType<typeof openLocalBiologyDocument>> | null>(null);
   const [questionData, setQuestionData] = useState<PdfQuestionExtract | null>(null);
@@ -87,9 +90,13 @@ export function BiologyQuestionFromPdf({ file, chapter, question, volume }: Prop
               {questionData.hasFourChoices && (
                 <ol className="space-y-3 text-sm leading-relaxed">
                   {questionData.options.map((option, i) => (
-                    <li className="flex items-start gap-3" key={i}>
-                      <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-lg bg-muted font-black">{i+1}</span>
-                      <span className="min-w-0 flex-1 whitespace-pre-wrap">{option}</span>
+                    <li key={i}>
+                      <button type="button" disabled={disabled} aria-pressed={selected === String(i+1)}
+                        onClick={() => onChoose(String(i+1))}
+                        className={`flex min-h-12 w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors disabled:opacity-65 ${selected === String(i+1) ? "border-primary bg-primary/10" : "hover:border-primary/50 hover:bg-muted"}`}>
+                        <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-lg bg-muted font-black">{i+1}</span>
+                        <span className="min-w-0 flex-1 whitespace-pre-wrap pt-0.5">{option}</span>
+                      </button>
                     </li>
                   ))}
                 </ol>
