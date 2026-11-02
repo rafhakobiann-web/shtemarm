@@ -5,7 +5,7 @@ import { reliableEnglishFallback } from "./reliableEnglishFallback";
 
 /**
  * API-key-free explanation entry point.
- * Existing verified explanations are read from the shared cache. If none exists,
+ * Existing legacy explanations are read from the shared cache. If none exists,
  * provide transparent deterministic study guidance, never invented AI reasoning.
  * The optional on-device model is a separate, future enhancement.
  */
@@ -28,11 +28,13 @@ export const explainAnswer = createServerFn({ method: "POST" })
       instruction: `${data.locale ?? "hy"}|${data.instruction}`,
     });
     const cached = await getSavedExplanation(cacheKey);
-    if (cached) return { text: cached, cached: true, error: false, offline: false };
+    // Legacy cache entries may have been AI-generated. Do not label them verified.
+    if (cached) return { text: cached, cached: true, error: false, offline: false, verified: false };
     return {
       text: reliableEnglishFallback(data, data.locale ?? "hy"),
       cached: false,
       error: false,
       offline: true,
+      verified: false,
     };
   });
