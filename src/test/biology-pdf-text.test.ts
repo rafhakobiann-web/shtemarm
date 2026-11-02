@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { locatePdfQuestion, normalizeArmenianPdfText } from "@/lib/biology-pdf-text";
 import type { BiologyOriginalChapter } from "@/lib/biology-source";
 
@@ -56,9 +57,8 @@ describe("read literal text from a student-supplied official Biology PDF", () =>
   });
 
   it("uses a verifiable local PDF and never embeds 3,525 copied texts in a published bank", () => {
-    const fs = require("node:fs") as typeof import("node:fs");
-    const reader=fs.readFileSync("src/components/BiologyQuestionFromPdf.tsx","utf8");
-    const source=fs.readFileSync("src/lib/biology-pdf-text.ts","utf8");
+    const reader=readFileSync("src/components/BiologyQuestionFromPdf.tsx","utf8");
+    const source=readFileSync("src/lib/biology-pdf-text.ts","utf8");
     expect(reader).toContain("openLocalBiologyDocument");
     expect(reader).toContain("renderBiologyQuestionCrop");
     expect(source).toContain('await import("pdfjs-dist")');
