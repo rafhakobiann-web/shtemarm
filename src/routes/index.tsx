@@ -14,10 +14,12 @@ export const Route = createFileRoute("/")({
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
   head: () => ({
     meta: [
-      { title: "Shtemarm · Ընտրիր առարկան" },
-      { name: "description", content: "Ընտրիր շտեմարանը սկսելու համար կամ անցիր քննություն՝ անգլերեն, մաթեմատիկա և այլ առարկաներ։" },
-      { property: "og:title", content: "Shtemarm" },
-      { property: "og:description", content: "Ուսուցում և քննություններ՝ ըստ առարկաների։" },
+      { title: "Shtemarm | Շտեմարաններ և միասնական քննությունների պատրաստում" },
+      { name: "description", content: "Shtemarm՝ շտեմարաններ, առարկայական վարժանքներ, փորձնական քննություններ և ուսումնական առաջընթացի հետևում՝ մեկ հարթակում։" },
+      { property: "og:title", content: "Shtemarm | Շտեմարաններ և քննությունների պատրաստում" },
+      { property: "og:description", content: "Ընտրիր առարկան, լուծիր առաջադրանքներ, ստուգիր առաջընթացդ և պատրաստվիր քննություններին Shtemarm-ի հետ։" },
+      { name: "twitter:title", content: "Shtemarm | Շտեմարաններ և քննությունների պատրաստում" },
+      { name: "twitter:description", content: "Շտեմարաններ, վարժանքներ և փորձնական քննություններ՝ Shtemarm-ում։" },
     ],
   }),
   component: Index,
