@@ -7,8 +7,8 @@ links redirect to books 33 and 34 respectively.
 
 | Part | Text MC questions | Remaining printed tasks |
 | --- | ---: | ---: |
-| III | 910 | 927 |
-| IV | 771 | 917 |
+| III | 911 | 926 |
+| IV | 777 | 911 |
 
 This is a partial transcription, not a completed book. Printed question numbers
 are preserved, including gaps where tasks await review. Every imported question
@@ -22,7 +22,7 @@ or excluded. Exclusions include complex answer types, figures, subscript/formula
 layout, unreadable encodings and incomplete option extraction. No guessed
 questions, missing choices, or fabricated answers enter the test pool. Neither
 the source PDFs nor screenshots are committed. Full manual proofreading remains
-unfinished; the existing `verifiedQuestions: 0` records that distinction.
+unfinished; the the 7 separately page-and-answer-verified restorations are recorded in `biology-reviewed-restorations.json` (1 in III, 6 in IV). All other transcriptions still need final manual review.
 
 Reproduce with PyMuPDF:
 
