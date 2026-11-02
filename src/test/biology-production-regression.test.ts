@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from "node:fs";
 describe("Biology production crash regression", () => {
   it("initializes the selected book source before passing it into React Query", () => {
     const src = readFileSync("src/components/BiologyWorkspace.tsx", "utf8");
-    const sourceState = src.indexOf('const [source, setSource] = useState("all");');
+    const sourceState = src.indexOf('const [source, setSource] = useState(');
     const query = src.indexOf('const data = useQuery({');
     expect(sourceState).toBeGreaterThan(0);
     expect(query).toBeGreaterThan(sourceState);
@@ -18,7 +18,10 @@ describe("Biology production crash regression", () => {
     expect(standalone).toContain('createFileRoute("/biology/original")');
     expect(standalone).toContain('throw redirect({ to: "/book/$bookId"');
     expect(standalone).toContain('search.volume === 4 ? "34" : "33"');
-    expect(readFileSync("src/routes/biology.tsx", "utf8")).toContain('component: BiologyWorkspace');
+    const biologyRoute = readFileSync("src/routes/biology.tsx", "utf8");
+    expect(biologyRoute).toContain('component: BiologyPage');
+    expect(biologyRoute).toContain('<BiologyWorkspace');
+    expect(biologyRoute).toContain('initialBook={book} initialSection={section}');
   });
 });
 
