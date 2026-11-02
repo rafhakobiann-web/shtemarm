@@ -31,8 +31,8 @@ const TILE =
 
 /** Original source volumes remain separate from the authored Biology III exercises. */
 const BIOLOGY_ORIGINAL_BOOKS = [
-  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 910 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg" },
-  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 771 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg" },
+  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg" },
+  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg" },
 ];
 
 const MATH_BOOKS = [
@@ -220,7 +220,7 @@ function BiologySubject() {
         </div>
       </section>
       <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
-        {tx("3-րդ մասում հասանելի է 910, իսկ 4-րդում՝ 771 բնօրինակ տեքստային հարց՝ պատասխաններով։ Կարող ես սովորել և կազմել թեստ՝ առանց PDF ընտրելու։ Մնացած առաջադրանքների թվայնացումը շարունակվում է։")}
+        {tx("3-րդ մասում հասանելի է 911, իսկ 4-րդում՝ 777 բնօրինակ տեքստային հարց՝ պատասխաններով։ Կարող ես սովորել և կազմել թեստ՝ առանց PDF ընտրելու։ Մնացած առաջադրանքների թվայնացումը շարունակվում է։")}
       </p>
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>

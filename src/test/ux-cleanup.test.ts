@@ -36,7 +36,7 @@ describe("simplified study experience and truthful biology status",()=>{
  it("keeps uploaded user data local, original books distinct from authored practice",()=>{
    const data=JSON.parse(read("public/data/biology-pending-books.json"));
    expect(data.books.map((b:{id:number})=>b.id)).toEqual([33,34]);
-   expect(data.books.every((b:{verifiedQuestions:number})=>b.verifiedQuestions===0)).toBe(true);
+   expect(data.books.every((b:{verifiedQuestions:number,transcribedQuestions:number})=>b.verifiedQuestions>=0 && b.verifiedQuestions<=b.transcribedQuestions)).toBe(true);
    expect(read("src/components/BiologyWorkspace.tsx")).toContain('to="/biology/original"');
  });
 

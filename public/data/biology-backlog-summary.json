@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "description": "Source-indexed Biology question coverage and review backlog (metadata only; no original question wording).",
+  "books": [
+    {
+      "volume": 3,
+      "sourceSha256": "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93",
+      "indexed": 1837,
+      "imported": 911,
+      "pending": 926,
+      "byReason": {
+        "figure-review": 17,
+        "answer-type-pending": 892,
+        "formula-review": 15,
+        "incomplete-text": 2
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "Կենդանի օրգանիզմների բազմազանությունը",
+          "indexed": 305,
+          "imported": 178,
+          "pending": 127,
+          "byReason": {
+            "figure-review": 4,
+            "answer-type-pending": 123
+          }
+        },
+        {
+          "chapter": 2,
+          "title": "Մարդ",
+          "indexed": 310,
+          "imported": 204,
+          "pending": 106,
+          "byReason": {
+            "formula-review": 5,
+            "incomplete-text": 1,
+            "answer-type-pending": 100
+          }
+        },
+        {
+          "chapter": 3,
+          "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
+          "indexed": 347,
+          "imported": 214,
+          "pending": 133,
+          "byReason": {
+            "figure-review": 10,
+            "formula-review": 3,
+            "answer-type-pending": 120
+          }
+        },
+        {
+          "chapter": 4,
+          "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
+          "indexed": 337,
+          "imported": 207,
+          "pending": 130,
+          "byReason": {
+            "figure-review": 3,
+            "formula-review": 7,
+            "incomplete-text": 1,
+            "answer-type-pending": 119
+          }
+        },
+        {
+          "chapter": 5,
+          "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+          "indexed": 166,
+          "imported": 108,
+          "pending": 58,
+          "byReason": {
+            "answer-type-pending": 58
+          }
+        },
+        {
+          "chapter": 6,
+          "title": "Խնդիրներ",
+          "indexed": 372,
+          "imported": 0,
+          "pending": 372,
+          "byReason": {
+            "answer-type-pending": 372
+          }
+        }
+      ]
+    },
+    {
+      "volume": 4,
+      "sourceSha256": "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e",
+      "indexed": 1688,
+      "imported": 777,
+      "pending": 911,
+      "byReason": {
+        "figure-review": 22,
+        "incomplete-text": 2,
+        "answer-type-pending": 876,
+        "formula-review": 11
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "Կենդանի օրգանիզմների բազմազանությունը",
+          "indexed": 232,
+          "imported": 176,
+          "pending": 56,
+          "byReason": {
+            "figure-review": 6,
+            "incomplete-text": 1,
+            "answer-type-pending": 49
+          }
+        },
+        {
+          "chapter": 2,
+          "title": "Մարդ",
+          "indexed": 300,
+          "imported": 133,
+          "pending": 167,
+          "byReason": {
+            "figure-review": 4,
+            "formula-review": 5,
+            "answer-type-pending": 158
+          }
+        },
+        {
+          "chapter": 3,
+          "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
+          "indexed": 301,
+          "imported": 182,
+          "pending": 119,
+          "byReason": {
+            "figure-review": 3,
+            "formula-review": 2,
+            "answer-type-pending": 114
+          }
+        },
+        {
+          "chapter": 4,
+          "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
+          "indexed": 338,
+          "imported": 158,
+          "pending": 180,
+          "byReason": {
+            "formula-review": 3,
+            "figure-review": 7,
+            "incomplete-text": 1,
+            "answer-type-pending": 169
+          }
+        },
+        {
+          "chapter": 5,
+          "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+          "indexed": 214,
+          "imported": 128,
+          "pending": 86,
+          "byReason": {
+            "figure-review": 2,
+            "formula-review": 1,
+            "answer-type-pending": 83
+          }
+        },
+        {
+          "chapter": 6,
+          "title": "Խնդիրներ",
+          "indexed": 303,
+          "imported": 0,
+          "pending": 303,
+          "byReason": {
+            "answer-type-pending": 303
+          }
+        }
+      ]
+    }
+  ]
+}

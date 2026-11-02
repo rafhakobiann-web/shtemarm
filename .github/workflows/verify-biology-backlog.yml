@@ -1,0 +1,38 @@
+name: Biology backlog integrity and stable student routes
+
+on:
+  pull_request:
+    paths:
+      - 'src/test/biology-backlog-audit.test.ts'
+      - 'src/test/biology-source-review-policy.test.ts'
+      - 'src/lib/biology-source-format-policy.ts'
+      - 'src/components/UnitCard.tsx'
+      - 'public/data/biology-reviewed-restorations.json'
+      - 'public/data/biology-pending-books.json'
+      - 'src/test/biology-volume-three.test.ts'
+      - 'src/test/ux-cleanup.test.ts'
+      - 'public/data/biology-backlog-summary.json'
+      - 'public/data/biology-volume3-coverage.json'
+      - 'public/data/biology-volume4-coverage.json'
+      - 'public/data/bio-book3.json'
+      - 'public/data/bio-book4.json'
+      - 'docs/biology-backlog-20261102.md'
+      - '.github/workflows/verify-biology-backlog.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Check all original question IDs, missing reasons, and stable routes
+        run: bunx vitest run src/test/biology-backlog-audit.test.ts src/test/biology-original-bank-integrity.test.ts src/test/biology-source-review-policy.test.ts src/test/biology-section-test-routing.test.ts src/test/biology-production-regression.test.ts src/test/biology-source-banks.test.ts src/test/biology-volume-three.test.ts src/test/ux-cleanup.test.ts
+      - name: Build without deploying
+        run: bun run build

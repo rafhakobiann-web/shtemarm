@@ -432,7 +432,19 @@ export function UnitCard(props: {
         const qs = (
           <div className="min-w-0 space-y-4">
             {u.kind === "mc" && <div className="space-y-3">{u.questions.map(mcBlock)}</div>}
-            {u.kind === "num" && <div className="space-y-3">{u.questions.map(numBlock)}</div>}
+            {u.kind === "num" && (
+              <div role={u.questions.length > 1 ? "group" : undefined}
+                aria-label={u.questions.length > 1 ? tx("Միևնույն խնդրի ենթահարցերը") : undefined}
+                className="space-y-3">
+                {u.questions.length > 1 && /(?:bio[34]-s6-|book-[34]:6:)/.test(u.id) && (
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm">
+                    <p className="font-bold">{tx("Խնդիր {n}", { n: u.label })}</p>
+                    <p className="mt-1 text-muted-foreground">{tx("Ենթահարցերը ներկայացված են առանձին քարտերով։ Յուրաքանչյուրի պատասխանը ստուգվում է առանձին։")}</p>
+                  </div>
+                )}
+                {u.questions.map(numBlock)}
+              </div>
+            )}
             {u.kind === "seq" && seqBlock}
           </div>
         );
