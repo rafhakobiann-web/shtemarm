@@ -11,8 +11,8 @@ android {
         minSdk = 24
         targetSdk = 35
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 9
-        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.3.0"
+        versionCode = providers.gradleProperty("shtemarm.versionCode").orNull?.toIntOrNull() ?: 10
+        versionName = providers.gradleProperty("shtemarm.versionName").orNull ?: "0.3.1"
     }
     // Release signing is configured ONLY when a secure CI keystore is supplied.
     // No keystore or password is ever committed to this repository.

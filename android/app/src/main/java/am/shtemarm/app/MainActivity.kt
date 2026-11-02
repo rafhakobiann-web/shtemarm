@@ -938,11 +938,14 @@ private fun NativeShtemarm() {
                                                 Spacer(Modifier.height(8.dp))
                                                 Text(NativeStudyGuide.explanation(q,subject,studyLanguage),lineHeight = 24.sp)
                                                 Spacer(Modifier.height(8.dp))
-                                                TextButton(onClick = {
-                                                    handbookSubject = if (subject == "Մաթեմատիկա") "Մաթեմատիկա" else "Անգլերեն"
-                                                    page = Page.HANDBOOK
-                                                }) {
-                                                    Text(NativeStudyGuide.label(studyLanguage,"Կարդալ կանոնները","Study the rules","Изучить правила"))
+                                                // Do not send Biology, History or Physics students to English grammar.
+                                                if (subject == "Մաթեմատիկա" || subject == "Անգլերեն") {
+                                                    TextButton(onClick = {
+                                                        handbookSubject = subject
+                                                        page = Page.HANDBOOK
+                                                    }) {
+                                                        Text(NativeStudyGuide.label(studyLanguage,"Կարդալ կանոնները","Study the rules","Изучить правила"))
+                                                    }
                                                 }
                                             }
                                         }
