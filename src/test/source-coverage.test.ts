@@ -12,8 +12,8 @@ const getBook = (name: string) =>
  * A source-proofreading task is required before claiming book completion.
  */
 describe("English and Armenian History source-data retention", () => {
-  it("preserves all 4,391 currently indexed English answerable records", () => {
-    const expected = [1601, 1509, 1281];
+  it("preserves all 4,413 indexed English answerable records after source fixes", () => {
+    const expected = [1601, 1515, 1297];
     const missingSourceChoiceText: string[] = [];
     for (let part = 1; part <= 3; part++) {
       const book = getBook(`book${part}`);
@@ -37,12 +37,9 @@ describe("English and Armenian History source-data retention", () => {
         }
       }
     }
-    // Exact unresolved data defects. Do not replace them with invented text;
-    // use original page images + answer-key verification to resolve these.
-    expect(missingSourceChoiceText.sort()).toEqual([
-      "2:2-1-Text5:1",
-      "3:3-5-136:136",
-    ]);
+    // The two previously empty source-choice fields were repaired from the
+    // original editions. Future regressions must never silently reintroduce them.
+    expect(missingSourceChoiceText.sort()).toEqual([]);
   });
 
   it("does not skip any of 3,449 currently indexed Armenian History tasks", () => {
