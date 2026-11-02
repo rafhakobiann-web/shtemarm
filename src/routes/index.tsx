@@ -74,16 +74,6 @@ function SubjectRow({ title, children, beta = false, defaultOpen = false }: { ti
   );
 }
 
-function ComingSoon({ title }: { title: string }) {
-  const tx = useTx();
-  return (
-    <div className="flex aspect-[3/4] flex-col justify-between rounded-3xl border border-dashed bg-card/60 p-4 opacity-80 sm:aspect-auto sm:min-h-44">
-      <div className="grid size-full place-items-center rounded-2xl bg-primary/5 text-primary/55"><GraduationCap className="size-10" strokeWidth={1.4} aria-hidden="true" /></div>
-      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted-foreground">{tx("Շուտով")}</p>
-    </div>
-  );
-}
-
 function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string; params?: Record<string, string>; search?: Record<string, string>; href?: string; title: string; sub: string; icon: React.ReactNode }) {
   const body = (
     <div className="flex h-full flex-col gap-4 p-4 sm:p-5">
