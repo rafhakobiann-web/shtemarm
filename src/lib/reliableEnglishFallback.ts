@@ -56,6 +56,37 @@ hy:"Բայից հետո -ing կամ to + infinitive ընտրությունը կ�
 en:"Whether a verb takes -ing or to + infinitive depends on the governing verb and meaning: enjoy doing, decide to do. There is no universal single form.",
 ru:"Выбор -ing или to + infinitive зависит от глагола и смысла: enjoy doing, decide to do. Единого правила для всех глаголов нет."}},
 ];
+
+// A useful subject-specific study method when no reviewed solution exists.
+// These are learning steps, never a claim that a specific answer is proven.
+const STUDY_STEPS: Record<Locale, Record<"math"|"biology"|"history"|"physics",string>> = {
+ hy: {
+  math:"Լուծման ուղեցույց․ 1. Առանձնացրու տրվածներն ու պահանջվողը։ 2. Ընտրիր համապատասխան բանաձևը կամ թեորեմը։ 3. Հաշվիր հերթականությամբ և ստուգիր արդյունքը՝ տեղադրելով սկզբնական պայմանում։",
+  biology:"Ուսումնասիրության քայլեր․ 1. Գտիր հարցի հիմնական կենսաբանական հասկացությունը։ 2. Համեմատիր տարբերակները դասագրքի սահմանումների հետ։ 3. Բացառիր հակասող պնդումները և ստուգիր պատասխանը սկզբնաղբյուրով։",
+  history:"Ուսումնասիրության քայլեր․ 1. Որոշիր ժամանակաշրջանն ու պատմական իրադարձությունը։ 2. Տարբերակիր պատճառները, ընթացքը և հետևանքները։ 3. Համեմատիր տարեթվերն ու անունները դասագրքի հետ։",
+  physics:"Լուծման ուղեցույց․ 1. Գրիր հայտնի մեծություններն ու միավորները։ 2. Ընտրիր համապատասխան ֆիզիկական օրենքը։ 3. Կատարիր հաշվարկը և ստուգիր չափման միավորներն ու արդյունքի իմաստը։"
+ },
+ en: {
+  math:"Study steps: 1. Identify the givens and the unknown. 2. Choose a relevant formula or theorem. 3. Work through the calculation and check it against the original conditions.",
+  biology:"Study steps: 1. Identify the biological concept. 2. Compare choices with textbook definitions. 3. Eliminate contradictions and verify against the source.",
+  history:"Study steps: 1. Identify the period and event. 2. Separate causes, events and consequences. 3. Check dates and names against the textbook.",
+  physics:"Study steps: 1. List quantities and units. 2. Select the relevant physical law. 3. Calculate and check dimensions and plausibility."
+ },
+ ru: {
+  math:"Шаги: 1. Выпишите данные и искомое. 2. Выберите формулу или теорему. 3. Выполните расчёт и проверьте ответ по условию.",
+  biology:"Шаги: 1. Определите биологическое понятие. 2. Сравните варианты с определениями учебника. 3. Исключите противоречия и проверьте источник.",
+  history:"Шаги: 1. Определите период и событие. 2. Разделите причины, ход и последствия. 3. Сверьте даты и имена с учебником.",
+  physics:"Шаги: 1. Запишите величины и единицы. 2. Выберите физический закон. 3. Рассчитайте и проверьте единицы и смысл результата."
+ }
+};
+function detectSubject(source:string): "math"|"biology"|"history"|"physics"|null {
+ if (/մաթեմատիկ|հանրահաշիվ|երկրաչափ|mathematics|algebra|geometry|математик|геометр/i.test(source)) return "math";
+ if (/կենսաբան|biology|биолог/i.test(source)) return "biology";
+ if (/պատմութ|history|истори/i.test(source)) return "history";
+ if (/ֆիզիկ|physics|физик/i.test(source)) return "physics";
+ return null;
+}
+
 const NOTES={
 hy:{answer:"Պատասխանների բանալու համաձայն՝",wrong:"Քո ընտրած տարբերակը՝",mismatch:"չի համընկնում բանալու հետ։",correct:"համընկնում է բանալու հետ։",unknown:"Այս հարցի համար դեռ չկա հաստատված անհատական հիմնավորում։ Միայն պատասխանների բանալուց չի կարելի վստահորեն վերականգնել լուծումը․ ուսումնասիրիր հարցի պայմանն ու համապատասխան բաժնի կանոնը։",rule:"Համապատասխան քերականական կանոն",note:"Կանոնը ընդհանուր ուղեցույց է. միայն դրանով տվյալ տարբերակի ճիշտ լինելը հաստատված չէ։"},
 en:{answer:"According to the answer key:",wrong:"Your selection:",mismatch:"does not match the key.",correct:"matches the key.",unknown:"A verified question-specific explanation is not yet available. The answer key alone does not establish the reasoning; review the source question and the related section.",rule:"Relevant grammar rule",note:"This is general guidance, not proof that a particular choice is correct."},
@@ -69,6 +100,10 @@ export function reliableEnglishFallback(input:ExplanationInput,locale:Locale="hy
  const source=`${input.instruction}\n${input.question}`;
  const rule=RULES.find(r=>r.test.test(source));
  if(rule)lines.push(`${t.rule}: ${rule.texts[locale]}\n${t.note}`);
- else lines.push(t.unknown);
+ else {
+  lines.push(t.unknown);
+  const subject=detectSubject(input.instruction);
+  if(subject) lines.push(STUDY_STEPS[locale][subject]);
+ }
  return lines.join("\n\n");
 }
