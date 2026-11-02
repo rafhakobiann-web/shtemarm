@@ -28,6 +28,12 @@ export const Route = createFileRoute("/")({
 const TILE =
   "academy-bento group flex h-full min-w-0 flex-col overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
+/** Original source volumes remain separate from the authored Biology III exercises. */
+const BIOLOGY_ORIGINAL_BOOKS = [
+  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս երրորդ · Բնօրինակ հարցեր (PDF-ով)", cover: "/covers/bio-3.webp" },
+  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս չորրորդ · Բնօրինակ հարցեր (PDF-ով)", cover: "/covers/bio-4.webp" },
+];
+
 const MATH_BOOKS = [
   { id: "matem-1", title: "Մաթեմատիկա • Մաս 1", sub: "Երևան 2019", cover: "/covers/math-1.svg" },
   { id: "matem-2", title: "Մաթեմատիկա • Մաս 2", sub: "Երևան 2020", cover: "/covers/math-2.svg" },
@@ -251,19 +257,34 @@ function HistorySubject() {
 
 function BiologySubject() {
   const tx = useTx();
-  const playable = BIO_BOOKS.filter((b) => !b.locked);
+  const importedBooks = BIO_BOOKS.filter((b) => b.id === 31 || b.id === 32);
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
       <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {playable.map((b) => (
+          {importedBooks.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
             </Link>
           ))}
+          {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
+            <Link key={b.volume} to="/biology/original" search={{ volume: b.volume }} className={TILE}>
+              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+            </Link>
+          ))}
         </div>
+      </section>
+      <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
+        {tx("3-րդ և 4-րդ մասերի հարցերի տեքստը, տարբերակներն ու նկարները բացվում են քո բնօրինակ PDF-ից։ Ընտրիր մասը և PDF-ը՝ հարցերը հենց էջում տեսնելու համար։")}
+      </p>
+      <section className="space-y-3">
+        <h2 className="text-lg font-black">{tx("Լրացուցիչ հեղինակային վարժանք")}</h2>
+        <Link to="/book/$bookId" params={{ bookId: "33" }} className="block rounded-2xl border bg-card p-4 text-sm transition-colors hover:border-primary/50">
+          <span className="font-bold">{tx("Կենսաբանություն · 3-րդ մասի թեմաներով 24 հեղինակային վարժանք")}</span>
+          <span className="mt-1 block text-xs text-muted-foreground">{tx("Սրանք բնօրինակ շտեմարանի հարցերը չեն։")}</span>
+        </Link>
       </section>
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
@@ -282,7 +303,7 @@ function BiologySubject() {
           <ExamTile href="https://www.olymp.am/hy/node/1465" title={tx("Կենսաբանության օլիմպիադա · 2026")} sub={tx("Լրացուցիչ բարդ առաջադրանքներ և պաշտոնական լուծումներ")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ այս պահին հասանելի են առաջին երկու մասերի տվյալները։ Մյուս մասերը կավելացվեն միայն հարցերն ու պատասխանները ստուգելուց հետո։")}</p>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ 1-ին և 2-րդ մասերն ունեն կայքում ներմուծված հարցեր։ 3-րդ և 4-րդ մասերի բնօրինակ հարցերը կարդացվում են քո PDF-ից․ ամբողջական, առանձին ձեռքով ստուգված տեքստային բազա դեռ չկա։")}</p>
     </div>
   );
 }
@@ -526,8 +547,13 @@ function Index() {
         </SubjectRow>
         <SubjectRow title={tx("Կենսաբանություն")} beta>
           <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary sm:aspect-[3/4]"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
-          {BIO_BOOKS.filter(b => !b.locked).map((b) => (
+          {BIO_BOOKS.filter(b => b.id === 31 || b.id === 32).map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
+              <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
+            </Link>
+          ))}
+          {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
+            <Link key={b.volume} to="/biology/original" search={{ volume: b.volume }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
             </Link>
           ))}
