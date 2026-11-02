@@ -256,6 +256,13 @@ export function UnitCard(props: {
   const { unit: u, value: a, onChange, revealed } = props;
   const tx = useTx();
   const language = useLang();
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (!focused) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setFocused(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focused]);
 
   const mcBlock = (q: MCQuestion, index: number) => {
     const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
@@ -451,7 +458,12 @@ export function UnitCard(props: {
       : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
 
   return (
-    <article className="question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
+    <article aria-label={focused ? (language === "hy" ? "Կենտրոնացված ուսուցում" : "Focused study") : undefined} className={cn("question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6", focused && "fixed inset-0 z-[100] overflow-y-auto overscroll-contain rounded-none border-0 bg-background px-4 pb-16 pt-4 shadow-none sm:px-8")}>
+      <div className="sticky top-0 z-10 flex justify-end bg-background/95 py-1 backdrop-blur-sm">
+        <button type="button" aria-pressed={focused} onClick={() => setFocused(v => !v)} className="min-h-10 rounded-xl border border-border bg-card px-4 text-sm font-semibold hover:bg-muted">
+          {focused ? (language === "hy" ? "Փակել կենտրոնացված տեսքը ✕" : language === "ru" ? "Закрыть режим фокуса ✕" : "Exit focus view ✕") : (language === "hy" ? "Կենտրոնացված տեսք" : language === "ru" ? "Режим фокуса" : "Focus view")}
+        </button>
+      </div>
       {props.header}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
