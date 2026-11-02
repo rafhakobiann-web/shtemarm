@@ -1,10 +1,7 @@
 import { chromium } from "playwright";
 
-const TARGETS = [
-  "https://shtemarm.lovable.app/",
-  "https://shtemarm.lovable.app/biology",
-  "https://shtemarm.lovable.app/biology/original",
-];
+const ORIGIN = (process.env.SHTEMARM_SMOKE_ORIGIN ?? "https://shtemarm.lovable.app").replace(/\/$/, "");
+const TARGETS = [ORIGIN + "/", ORIGIN + "/biology", ORIGIN + "/biology/original"];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 let errors = 0;
 try {
@@ -23,7 +20,7 @@ try {
     page.on("pageerror", e => exceptions.push("pageerror: " + e.message + "\n" + String(e.stack ?? "").slice(0, 1200)));
     page.on("console", e => { if (e.type() === "error") exceptions.push("console: " + e.text().slice(0, 1400)); });
     page.on("response", r => {
-      if (r.status() >= 400 && new URL(r.url()).origin === "https://shtemarm.lovable.app") {
+      if (r.status() >= 400 && new URL(r.url()).origin === ORIGIN) {
         exceptions.push("HTTP " + r.status() + ": " + r.url());
       }
     });
