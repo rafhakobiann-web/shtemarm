@@ -28,9 +28,9 @@ jobs:
         run: bunx vitest run src/test/biology-production-regression.test.ts src/test/biology-original-index.test.ts
       - name: Build production-mode assets without deployment
         run: bun run build
-      - name: Launch local preview (same built JS, not live hosting)
+      - name: Launch isolated development server for browser route smoke checks
         run: |
-          bun run preview --host 127.0.0.1 --port 4173 > /tmp/shtemarm-preview.log 2>&1 &
+          bun run dev --host 127.0.0.1 --port 4173 > /tmp/shtemarm-preview.log 2>&1 &
           for i in $(seq 1 35); do
             if curl -fsS -o /dev/null http://127.0.0.1:4173/; then break; fi
             sleep 1
@@ -40,7 +40,7 @@ jobs:
         run: |
           bun add --no-save playwright@1.56.1
           bunx playwright install --with-deps chromium
-      - name: Verify all three app pages in mobile Chromium
+      - name: Verify all three app pages in mobile Chromium against local app
         env:
           SHTEMARM_SMOKE_ORIGIN: http://127.0.0.1:4173
         run: node scripts/diagnose-production-runtime.mjs
