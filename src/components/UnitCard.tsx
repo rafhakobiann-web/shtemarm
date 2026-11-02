@@ -174,6 +174,7 @@ function Explain(props: { instruction: string; passage: string; question: string
           const r = await fn({ data: { ...props, locale: lang, passage: props.passage.slice(0, 5800) } });
           setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
+          setLocalNotice(r.cached ? (lang === "hy" ? "Պահված բացատրություն․ ճշտությունը դեռ հաստատված չէ։" : lang === "ru" ? "Сохранённое объяснение не проверено." : "Saved explanation; not independently verified.") : (lang === "hy" ? "Ընդհանուր ուսումնական ուղեցույց․ ոչ ամբողջական լուծում։" : lang === "ru" ? "Общая учебная подсказка, не полное решение." : "General study guidance, not a complete solution."));
         } catch {
           setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
           setFailed(true);
