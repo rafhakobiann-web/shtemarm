@@ -19,15 +19,15 @@ describe("simplified study experience and truthful biology status",()=>{
    expect(coop).toContain("[10,20,30,50,100]");
    expect(coop).toContain("const team=(index%2) as Team");
  });
- it("renders books as text, not scanned covers or embedded question pictures",()=>{
+ it("renders stable book covers, without embedding question-page pictures",()=>{
    const home=read("src/routes/index.tsx");
    const detail=read("src/routes/book.$bookId.tsx");
    const reader=read("src/components/BiologyQuestionFromPdf.tsx");
    const practice=read("src/components/BiologyOriginalPractice.tsx");
    expect(home).toContain("function TileBody");
    expect(home).not.toContain("cover-frame");
-   expect(home).not.toContain("<img src={cover}");
-   expect(detail).not.toContain("<img src={meta.cover}");
+   expect(home).toContain("<BookCover src={cover}");
+   expect(detail).toContain("<BookCover src={meta.cover}");
    expect(reader).not.toContain("<canvas");
    expect(reader).not.toContain("<img");
    expect(practice).not.toContain("<iframe");
