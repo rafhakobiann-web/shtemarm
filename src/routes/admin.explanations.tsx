@@ -57,16 +57,28 @@ function AdminExplanationsPage() {
   const todo = useMemo(() => questions.filter((q) => !stored.has(q.id)), [questions, stored]);
 
   const load = async () => {
+    let qs: Q[];
     try {
       const res = await fetch(`/data/${bank}`);
-      if (!res.ok) throw new Error("bank");
-      const qs = flatten(await res.json());
+      if (!res.ok) throw new Error("bank_file");
+      qs = flatten(await res.json());
+    } catch {
+      toast.error("Շտեմարանի ֆայլը չի բեռնվում (/data/" + bank + ")");
+      return;
+    }
+    try {
       const ids = await adminStoredExplanationIds({ data: { password, bank: bank as never } });
       setQuestions(qs);
       setStored(new Set(ids));
       toast.success(`Բեռնված է՝ ${qs.length} հարց, ${ids.length} բացատրություն արդեն կա`);
     } catch (e) {
-      toast.error(e instanceof Error && e.message === "unauthorized" ? "Սխալ գաղտնաբառ" : "Չհաջողվեց բեռնել");
+      const msg = e instanceof Error ? e.message : "";
+      toast.error(
+        msg === "unauthorized" ? "Սխալ գաղտնաբառ" :
+        msg === "admin not configured" ? "ADMIN_PASSWORD սեկրետը չի սահմանված Lovable-ում" :
+        msg === "service_unavailable" ? "Supabase աղյուսակը հասանելի չէ․ կիրառիր migration-ը" :
+        "Սերվերի սխալ՝ " + (msg || "անհայտ")
+      );
     }
   };
 
