@@ -194,6 +194,9 @@ export function BiologyOriginalPractice() {
             chapter={chapter}
             question={question}
             volume={volume}
+            selected={selected}
+            disabled={!localFile || !answer || revealed}
+            onChoose={(option) => setChosen(previous => ({ ...previous, [key]: option }))}
           />
           {answer ? <section className="space-y-4 rounded-3xl border bg-card p-5">
             <h2 className="text-lg font-black">Ընտրիր գրքում տպված ճիշտ տարբերակի համարը</h2>
