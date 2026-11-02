@@ -94,13 +94,22 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
         available={data.data?.length}
         icon={<Dna className="size-5" />}
       />
-      <Link to="/book/$bookId" params={{ bookId: "33" }} className="group flex flex-col gap-3 rounded-3xl border border-primary/25 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 space-y-1">
-          <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Բնօրինակ կենսաբանություն · մաս 3 և 4")}</h2>
-          <p className="text-sm text-muted-foreground">{tx("1,688 բնօրինակ տեքստային հարց՝ պատասխաններով · թվայնացումը շարունակվում է")}</p>
+      <section className="space-y-4 rounded-3xl border border-primary/25 bg-primary/5 p-5">
+        <div className="space-y-1">
+          <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Կենսաբանության բնօրինակ շտեմարաններ · III և IV")}</h2>
+          <p className="text-sm text-muted-foreground">{tx("1,688 տեքստային առաջադրանք՝ տպագիր պատասխանների բանալիներով · մնացածի ստուգումը շարունակվում է")}</p>
         </div>
-        <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">{tx("Սկսել վարժանքը")} →</span>
-      </Link>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link to="/book/$bookId" params={{ bookId: "33" }}
+            className="inline-flex min-h-12 items-center justify-between gap-3 rounded-xl border border-primary/25 bg-card px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
+            <span>{tx("Մաս III · 911 հարց")}</span><span aria-hidden="true">→</span>
+          </Link>
+          <Link to="/book/$bookId" params={{ bookId: "34" }}
+            className="inline-flex min-h-12 items-center justify-between gap-3 rounded-xl border border-primary/25 bg-card px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
+            <span>{tx("Մաս IV · 777 հարց")}</span><span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </section>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="min-w-0 space-y-5 rounded-3xl border bg-card p-5 sm:p-7">
           <ExamBuilderTitle />
