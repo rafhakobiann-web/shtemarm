@@ -70,7 +70,7 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
   it("publishes only indexes and an optional local-PDF reader, not source scans or copied book text", () => {
     const component = readFileSync("src/components/BiologyOriginalPractice.tsx", "utf8");
     const lib = readFileSync("src/lib/biology-source.ts", "utf8");
-    const route = readFileSync("src/routes/biology.original.tsx", "utf8");
+    const route = readFileSync("src/routes/biology_.original.tsx", "utf8");
     const hub = readFileSync("src/components/BiologyWorkspace.tsx", "utf8");
     expect(route).toContain('createFileRoute("/biology/original")');
     expect(component).toContain("<h1");

@@ -1,0 +1,46 @@
+name: Diagnose production runtime loading (mobile Chromium)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/diagnose-production-runtime.mjs'
+      - 'src/components/BiologyWorkspace.tsx'
+      - 'src/routes/biology_.original.tsx'
+      - 'src/routes/biology.original.tsx'
+      - 'src/test/biology-production-regression.test.ts'
+      - '.github/workflows/diagnose-production-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Run data/index and crash regression tests
+        run: bunx vitest run src/test/biology-production-regression.test.ts src/test/biology-original-index.test.ts
+      - name: Build production-mode assets without deployment
+        run: bun run build
+      - name: Launch isolated development server for browser route smoke checks
+        run: |
+          bun run dev --host 127.0.0.1 --port 4173 > /tmp/shtemarm-preview.log 2>&1 &
+          for i in $(seq 1 35); do
+            if curl -fsS -o /dev/null http://127.0.0.1:4173/; then break; fi
+            sleep 1
+          done
+          curl -fIsS http://127.0.0.1:4173/ || { cat /tmp/shtemarm-preview.log; exit 1; }
+      - name: Install smoke-test-only Chromium
+        run: |
+          bun add --no-save playwright@1.56.1
+          bunx playwright install --with-deps chromium
+      - name: Verify all three app pages in mobile Chromium against local app
+        env:
+          SHTEMARM_SMOKE_ORIGIN: http://127.0.0.1:4173
+        run: node scripts/diagnose-production-runtime.mjs
