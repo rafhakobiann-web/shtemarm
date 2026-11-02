@@ -5,12 +5,12 @@ on:
       version_name:
         description: 'Version name for signed candidate, e.g. 0.1.1-beta.1'
         required: true
-        default: '0.1.1-beta.1'
+        default: '0.3.2'
         type: string
       version_code:
         description: 'Increasing integer Android version code'
         required: true
-        default: '4'
+        default: '11'
         type: string
 permissions:
   contents: read
@@ -45,6 +45,7 @@ jobs:
           fi
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/shtemarm-release.jks"
           chmod 600 "$RUNNER_TEMP/shtemarm-release.jks"
+          test -s "$RUNNER_TEMP/shtemarm-release.jks"
           echo "ANDROID_SIGNING_STORE_FILE=$RUNNER_TEMP/shtemarm-release.jks" >> "$GITHUB_ENV"
       - uses: actions/setup-java@v4
         with:
@@ -74,6 +75,25 @@ jobs:
         run: |
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose \
             android/app/build/outputs/apk/release/app-release.apk
+      - name: Verify persistent release signing certificate
+        env:
+          EXPECTED_SHA256: ${{ vars.ANDROID_RELEASE_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$EXPECTED_SHA256" ]]; then
+            echo "Missing repository variable ANDROID_RELEASE_CERT_SHA256. Pin the SHA-256 fingerprint before releasing." >&2
+            exit 1
+          fi
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          ACTUAL=$("$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
+          NORMALIZE='tr -d "[:space:]:" | tr "[:upper:]" "[:lower:]"'
+          ACTUAL=$(printf '%s' "$ACTUAL" | eval "$NORMALIZE")
+          EXPECTED=$(printf '%s' "$EXPECTED_SHA256" | eval "$NORMALIZE")
+          if [[ -z "$ACTUAL" || "$ACTUAL" != "$EXPECTED" ]]; then
+            echo "Signing certificate mismatch. Release blocked to protect in-place updates." >&2
+            exit 1
+          fi
+          echo "Verified expected permanent signing certificate."
       - uses: actions/upload-artifact@v4
         with:
           name: shtemarm-signed-android-release
