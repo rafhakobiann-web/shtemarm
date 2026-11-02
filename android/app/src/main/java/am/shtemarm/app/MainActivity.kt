@@ -581,7 +581,7 @@ private fun NativeShtemarm() {
                                 }
                             }
                             item {
-                                Text("Քո ուսումնական առաջընթացը", fontSize = 23.sp, fontWeight = FontWeight.Black)
+                                Text(NativeStudyGuide.label(studyLanguage, "Քո ուսումնական առաջընթացը", "Your learning progress", "Ваш учебный прогресс"), fontSize = 23.sp, fontWeight = FontWeight.Black)
                             }
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -604,14 +604,14 @@ private fun NativeShtemarm() {
                                     modifier = Modifier.fillMaxWidth(),
                                     onClick = { page = Page.PROGRESS },
                                     shape = RoundedCornerShape(16.dp)
-                                ) { Text("Մանրամասն առաջընթաց") }
+                                ) { Text(NativeStudyGuide.label(studyLanguage, "Մանրամասն առաջընթաց", "Detailed progress", "Подробный прогресс")) }
                             }
                             item {
                                 AcademyEyebrow("Ուսումնական գրադարան")
                                 Spacer(Modifier.height(9.dp))
                                 AcademySectionTitle("Գտիր քո շտեմարանը")
                                 Spacer(Modifier.height(5.dp))
-                                Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
+                                Text(NativeStudyGuide.label(studyLanguage, "Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։", "Open a subject to see its books and question sets.", "Откройте предмет, чтобы увидеть книги и задания."),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                             }
                             items(BookCatalog.subjects, key = { it }) { s ->
@@ -632,7 +632,7 @@ private fun NativeShtemarm() {
                                 Spacer(Modifier.height(8.dp))
                                 AcademySectionTitle("Փորձնական քննություններ")
                                 Spacer(Modifier.height(7.dp))
-                                Text("Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։",
+                                Text(NativeStudyGuide.label(studyLanguage, "Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։", "Choose a subject and test your readiness.", "Выберите предмет и проверьте свою подготовку."),
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
@@ -669,15 +669,15 @@ private fun NativeShtemarm() {
                             Spacer(Modifier.height(10.dp))
                             AcademySectionTitle("Գտիր քո շտեմարանը")
                             Spacer(Modifier.height(7.dp))
-                            Text("Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։",
+                            Text(NativeStudyGuide.label(studyLanguage, "Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։", "Open a subject to see its books and question sets.", "Откройте предмет, чтобы увидеть книги и задания."),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         }
                         item {
                             OutlinedTextField(
                                 value = subjectFilter,
                                 onValueChange = { subjectFilter = it.take(80) },
-                                label = { Text("Փնտրել առարկա") },
-                                placeholder = { Text("Օրինակ՝ կենսաբանություն") },
+                                label = { Text(NativeStudyGuide.label(studyLanguage, "Փնտրել առարկա", "Search subjects", "Поиск предмета")) },
+                                placeholder = { Text(NativeStudyGuide.label(studyLanguage, "Օրինակ՝ կենսաբանություն", "For example: Biology", "Например: биология")) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp)
@@ -715,14 +715,14 @@ private fun NativeShtemarm() {
                             Spacer(Modifier.height(10.dp))
                             AcademySectionTitle(subject)
                             Spacer(Modifier.height(7.dp))
-                            Text("Ընտրիր շտեմարան կամ թեստերի հավաքածու։",
+                            Text(NativeStudyGuide.label(studyLanguage, "Ընտրիր շտեմարան կամ թեստերի հավաքածու։", "Choose a question book or test collection.", "Выберите сборник заданий или тестов."),
                                 fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         item {
                             OutlinedTextField(
                                 value = bookFilter,
                                 onValueChange = { bookFilter = it.take(80) },
-                                label = { Text("Փնտրել գիրք") },
+                                label = { Text(NativeStudyGuide.label(studyLanguage, "Փնտրել գիրք", "Search books", "Поиск книги")) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp)
@@ -760,8 +760,8 @@ private fun NativeShtemarm() {
                             OutlinedTextField(
                                 value = chapterFilter,
                                 onValueChange = { chapterFilter = it.take(100) },
-                                label = { Text("Փնտրել բաժին կամ թեմա") },
-                                placeholder = { Text("Մուտքագրիր թեմայի անվանումը") },
+                                label = { Text(NativeStudyGuide.label(studyLanguage, "Փնտրել բաժին կամ թեմա", "Search sections or topics", "Поиск раздела или темы")) },
+                                placeholder = { Text(NativeStudyGuide.label(studyLanguage, "Մուտքագրիր թեմայի անվանումը", "Enter a topic name", "Введите название темы")) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp)
@@ -775,40 +775,40 @@ private fun NativeShtemarm() {
                             OutlinedButton(
                                 onClick = { page = Page.ADVANCED },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("Բազմաքայլ առաջադրանքներ · համապատասխանեցում, թվային, հերթականություն") }
+                            ) { Text(NativeStudyGuide.label(studyLanguage, "Բազմաքայլ առաջադրանքներ · համապատասխանեցում, թվային, հերթականություն", "Multi-step tasks · matching, numeric, sequencing", "Многоэтапные задания · соответствие, числа, последовательности")) }
                         }
                         if (loading) item {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
-                            Text("Բացվում է…")
+                            Text(NativeStudyGuide.label(studyLanguage, "Բացվում է…", "Loading…", "Загрузка…"))
                         } else if (loadError.isNotBlank()) item {
                             Text(loadError, color = MaterialTheme.colorScheme.error)
                         } else {
                             val data = loaded
                             if (data == null || data.allQuestions.isEmpty()) item {
-                                Text("Այս գրքում առայժմ ստուգված բազմընտրանի հարցեր հասանելի չեն։")
+                                Text(NativeStudyGuide.label(studyLanguage, "Այս գրքում առայժմ ստուգված բազմընտրանի հարցեր հասանելի չեն։", "No verified multiple-choice questions are available for this book yet.", "В этом сборнике пока нет проверенных вопросов с выбором ответа."))
                             } else {
                                 val pool = data.allQuestions
                                 item {
                                     Text("Հասանելի հարցեր՝ " + pool.size, fontWeight = FontWeight.SemiBold)
                                     Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                                         Button(onClick = { begin(pool, 10, "Արագ վարժանք") },
-                                            modifier = Modifier.weight(1f)) { Text("10 հարց") }
+                                            modifier = Modifier.weight(1f)) { Text(NativeStudyGuide.label(studyLanguage, "10 հարց", "10 questions", "10 вопросов")) }
                                         OutlinedButton(onClick = { begin(pool, 30, "Պատահական թեստ") },
-                                            modifier = Modifier.weight(1f)) { Text("30 հարց") }
+                                            modifier = Modifier.weight(1f)) { Text(NativeStudyGuide.label(studyLanguage, "30 հարց", "30 questions", "30 вопросов")) }
                                     }
                                     OutlinedButton(
                                         onClick = { begin(pool, pool.size, "Ամբողջ շտեմարան") },
                                         modifier = Modifier.fillMaxWidth()
-                                    ) { Text("Բոլոր հասանելի հարցերը") }
-                                    Text("Սրանք ուսումնական թեստեր են․ դրանք չեն կրկնում ԳԹԿ պաշտոնական քննության ամբողջ կառուցվածքը։",
+                                    ) { Text(NativeStudyGuide.label(studyLanguage, "Բոլոր հասանելի հարցերը", "All available questions", "Все доступные вопросы")) }
+                                    Text(NativeStudyGuide.label(studyLanguage, "Սրանք ուսումնական թեստեր են․ դրանք չեն կրկնում ԳԹԿ պաշտոնական քննության ամբողջ կառուցվածքը։", "These are practice tests and do not reproduce the full official exam format.", "Это тренировочные тесты, а не полная копия официального экзамена."),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                 }
-                                item { Text("Բաժիններ", fontWeight = FontWeight.Bold, fontSize = 21.sp) }
+                                item { Text(NativeStudyGuide.label(studyLanguage, "Բաժիններ", "Sections", "Разделы"), fontWeight = FontWeight.Bold, fontSize = 21.sp) }
                                 val visibleSectionIndexes = data.sections.indices.filter { idx ->
                                     BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
                                 }
                                 if (visibleSectionIndexes.isEmpty()) item {
-                                    Text("Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։",
+                                    Text(NativeStudyGuide.label(studyLanguage, "Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։", "No section found. Try another search.", "Раздел не найден. Попробуйте другой запрос."),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 items(visibleSectionIndexes, key = { idx -> data.sections[idx].title + ":" + idx }) { sectionIndex ->
@@ -1007,13 +1007,13 @@ private fun NativeShtemarm() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text("Վարժանքն ավարտվեց", fontSize = 26.sp, fontWeight = FontWeight.Bold,
+                        Text(NativeStudyGuide.label(studyLanguage, "Վարժանքն ավարտվեց", "Practice complete", "Тренировка завершена"), fontSize = 26.sp, fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center)
                         Spacer(Modifier.height(24.dp))
                         Text(score.toString() + " / " + session.size,
                             fontSize = 40.sp, fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary)
-                        Text("Ճիշտ պատասխան", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(NativeStudyGuide.label(studyLanguage, "Ճիշտ պատասխան", "Correct answer", "Правильный ответ"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         if (sessionTitle == "Անգլերենի մակարդակի ստուգում") {
                             var estimate = "A1 կամ ցածր"
                             for (tier in listOf("a1", "a2", "b1", "b2", "c1")) {
@@ -1027,13 +1027,13 @@ private fun NativeShtemarm() {
                             Text("Մոտավոր CEFR մակարդակ՝ " + estimate,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.SemiBold)
-                            Text("Սա մոտավոր գնահատական է և չի համարվում լեզվի իմացության պաշտոնական հավաստագիր։",
+                            Text(NativeStudyGuide.label(studyLanguage, "Սա մոտավոր գնահատական է և չի համարվում լեզվի իմացության պաշտոնական հավաստագիր։", "This estimate is not an official language certificate.", "Эта оценка не является официальным языковым сертификатом."),
                                 fontSize = 12.sp, textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Spacer(Modifier.height(26.dp))
                         Button(onClick = { begin(session, session.size, sessionTitle) },
-                            modifier = Modifier.fillMaxWidth()) { Text("Կրկնել վարժանքը") }
+                            modifier = Modifier.fillMaxWidth()) { Text(NativeStudyGuide.label(studyLanguage, "Կրկնել վարժանքը", "Repeat practice", "Повторить тренировку")) }
                         val missed = session.filter { it.id !in correctIds }
                         if (missed.isNotEmpty()) {
                             OutlinedButton(
@@ -1042,8 +1042,8 @@ private fun NativeShtemarm() {
                             ) { Text("Կրկնել սխալ պատասխանները · " + missed.size) }
                         }
                         OutlinedButton(onClick = { page = Page.PROGRESS },
-                            modifier = Modifier.fillMaxWidth()) { Text("Իմ առաջընթացը") }
-                        TextButton(onClick = { page = sessionOrigin }) { Text("Վերադառնալ") }
+                            modifier = Modifier.fillMaxWidth()) { Text(NativeStudyGuide.label(studyLanguage, "Իմ առաջընթացը", "My progress", "Мой прогресс")) }
+                        TextButton(onClick = { page = sessionOrigin }) { Text(NativeStudyGuide.label(studyLanguage, "Վերադառնալ", "Go back", "Назад")) }
                     }
                     Page.SAVED -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(16.dp),
@@ -1061,7 +1061,7 @@ private fun NativeShtemarm() {
                                 FilterChip(
                                     selected = reviewMistakes,
                                     onClick = { reviewMistakes = true },
-                                    label = { Text("Սխալներ") }
+                                    label = { Text(NativeStudyGuide.label(studyLanguage, "Սխալներ", "Mistakes", "Ошибки")) }
                                 )
                             }
                         }
@@ -1089,7 +1089,7 @@ private fun NativeShtemarm() {
                                                 else "Պահպանված հարցերի արագ կրկնություն"
                                             )
                                         }
-                                    ) { Text("10 հարց") }
+                                    ) { Text(NativeStudyGuide.label(studyLanguage, "10 հարց", "10 questions", "10 вопросов")) }
                                     OutlinedButton(
                                         modifier = Modifier.weight(1f),
                                         onClick = {
@@ -1100,7 +1100,7 @@ private fun NativeShtemarm() {
                                                 else "Պահպանված հարցերի կրկնություն"
                                             )
                                         }
-                                    ) { Text("Բոլորը") }
+                                    ) { Text(NativeStudyGuide.label(studyLanguage, "Բոլորը", "All", "Все")) }
                                 }
                             }
                             items(savedQuestions, key = { it.id }) { q ->
@@ -1112,7 +1112,7 @@ private fun NativeShtemarm() {
                                             else progress.toggleBookmark(q.id)
                                             savedQuestions = savedQuestions.filterNot { it.id == q.id }
                                             progressVersion++
-                                        }) { Text("Հեռացնել ցանկից") }
+                                        }) { Text(NativeStudyGuide.label(studyLanguage, "Հեռացնել ցանկից", "Remove from list", "Удалить из списка")) }
                                     }
                                 }
                             }
