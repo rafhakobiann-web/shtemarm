@@ -1,0 +1,60 @@
+{
+  "id": 34,
+  "title": "Կենսաբանության թեստային առաջադրանքների շտեմարան, մաս 4",
+  "year": 2018,
+  "publisher": "Աստղիկ գրատուն",
+  "pages": 392,
+  "approvedBy": "Գնահատման և թեստավորման կենտրոն",
+  "sourceFile": "kensab-4.pdf (user-provided; source PDF not committed)",
+  "pageNumbering": "Printed pages coincide with PDF page numbers",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Կենդանի օրգանիզմների բազմազանությունը",
+      "startPage": 5,
+      "endPage": 43
+    },
+    {
+      "n": 2,
+      "title": "Մարդ",
+      "startPage": 44,
+      "endPage": 115
+    },
+    {
+      "n": 3,
+      "title": "Կենդանի նյութի քիմիական կազմավորվածությունը։ Բջջի կառուցվածքն ու ֆունկցիաները։ Նյութերի փոխանակությունը և էներգիայի փոխակերպումները բջջում",
+      "startPage": 116,
+      "endPage": 183
+    },
+    {
+      "n": 4,
+      "title": "Բջջի կենսական փուլերը։ Օրգանիզմների բազմացումը և անհատական զարգացումը։ Ժառանգականության և փոփոխականության օրինաչափությունները",
+      "startPage": 184,
+      "endPage": 268
+    },
+    {
+      "n": 5,
+      "title": "Էվոլյուցիոն տեսություն։ Օրգանական աշխարհի զարգացումը։ Էկոլոգիայի հիմունքները և կենսոլորտը",
+      "startPage": 269,
+      "endPage": 311
+    },
+    {
+      "n": 6,
+      "title": "Խնդիրներ",
+      "startPage": 312,
+      "endPage": 373
+    }
+  ],
+  "answers": {
+    "startPage": 374,
+    "endPage": 392
+  },
+  "verification": {
+    "toc": "checked against original uploaded PDF page 3 (contents) and page 2 (2018 edition)",
+    "officialQuestionsTranscribed": 0,
+    "officialAnswersCrossChecked": 0,
+    "originalPracticeQuestions": 0,
+    "playable": false,
+    "notes": "This is the verified six-section page map only. Biology Volume IV remains locked until source questions and original answer keys have been verified. Do not fill with generated substitutions."
+  }
+}
