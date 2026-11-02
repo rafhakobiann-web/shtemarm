@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import {
-  openLocalBiologyDocument, readBiologyQuestionFromPdf, renderBiologyQuestionCrop,
+  openLocalBiologyDocument, readBiologyQuestionFromPdf,
   type PdfQuestionExtract,
 } from "@/lib/biology-pdf-text";
 import type { BiologyOriginalChapter } from "@/lib/biology-source";
@@ -13,121 +13,118 @@ type Props = {
   selected: string;
   disabled: boolean;
   onChoose: (number: string) => void;
+  onTextReady: Dispatch<SetStateAction<boolean>>;
 };
 
-export function BiologyQuestionFromPdf({ file, chapter, question, volume, selected, disabled, onChoose }: Props) {
-  const canvas = useRef<HTMLCanvasElement>(null);
+/**
+ * One question, one answer list. Source text is extracted locally from the
+ * student's verified PDF; we never display book scans or guessed text.
+ */
+export function BiologyQuestionFromPdf({
+  file, chapter, question, volume, selected, disabled, onChoose, onTextReady,
+}: Props) {
   const [pdf, setPdf] = useState<Awaited<ReturnType<typeof openLocalBiologyDocument>> | null>(null);
   const [questionData, setQuestionData] = useState<PdfQuestionExtract | null>(null);
   const [loading, setLoading] = useState(false);
-  const [imageReady, setImageReady] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => {
-    let alive = true;
-    setPdf(null); setQuestionData(null); setImageReady(false); setError("");
-    if (!file) return;
-    setLoading(true);
-    void openLocalBiologyDocument(file).then(async result => {
-      if (!alive) { await result.loadingTask.destroy(); return; }
-      setPdf(result);
-    }).catch(() => {
-      if (alive) setError("PDF-ի տեքստի և գծագրի ընթերցումը չհաջողվեց․ կարող ես օգտվել ներքևի բնօրինակ PDF դիտարկիչից։");
-    }).finally(() => { if (alive) setLoading(false); });
-    return () => {
-      alive = false;
-      // Wait for page tasks before destroying; on file changes, data is dropped.
-      // Do not keep extracted copyrighted material beyond the session.
-    };
-  }, [file]);
 
   useEffect(() => {
-    return () => { if (pdf) void pdf.loadingTask.destroy().catch(() => {}); };
+    let active = true;
+    setPdf(null);
+    setQuestionData(null);
+    setError("");
+    onTextReady(false);
+    if (!file) return () => { active = false; };
+    setLoading(true);
+    void openLocalBiologyDocument(file).then(async result => {
+      if (!active) { await result.loadingTask.destroy(); return; }
+      setPdf(result);
+    }).catch(() => {
+      if (active) setError("Ընտրված PDF-ի տեքստը հնարավոր չեղավ կարդալ։ Ստուգիր ֆայլը և փորձիր կրկին։");
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [file, onTextReady]);
+
+  useEffect(() => () => {
+    if (pdf) void pdf.loadingTask.destroy().catch(() => {});
   }, [pdf]);
 
   useEffect(() => {
-    let alive = true;
-    setQuestionData(null); setImageReady(false);
-    if (!pdf) return;
-    setLoading(true);
+    let active = true;
+    setQuestionData(null);
     setError("");
-    void (async () => {
-      try {
-        const result = await readBiologyQuestionFromPdf(pdf.document, chapter, question);
-        if (!alive) return;
-        setQuestionData(result.extract);
-        if (canvas.current) {
-          await renderBiologyQuestionCrop(result.page, result.extract, canvas.current);
-          if (alive) setImageReady(true);
-        }
-      } catch {
-        if (alive) setError("Այս հարցի տեքստը հնարավոր չեղավ կարդալ։ Օգտվիր բնօրինակ էջից՝ առանց ենթադրական տեքստի։");
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
-  }, [pdf, chapter, question]);
+    onTextReady(false);
+    if (!pdf) return () => { active = false; };
+    setLoading(true);
+    void readBiologyQuestionFromPdf(pdf.document, chapter, question)
+      .then(({ extract }) => {
+        if (!active) return;
+        setQuestionData(extract);
+        onTextReady(extract.sourceVerified && extract.hasFourChoices && extract.options.length === 4);
+      }).catch(() => {
+        if (active) setError("Այս հարցի տեքստը վստահելիորեն առանձնացնել չհաջողվեց։ Այն չի գնահատվի։");
+      }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [pdf, chapter, question, onTextReady]);
 
   return (
-    <section aria-label="Հարցի բնօրինակ տեքստը" className="space-y-4 rounded-3xl border bg-card p-4 sm:p-6">
+    <section aria-label="Բնօրինակ հարցի տեքստը" className="space-y-4 rounded-3xl border bg-card p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-black">Հարց {question} · տեքստը բնօրինակից</h2>
+        <h2 className="text-lg font-black">Հարց {question}</h2>
         <span className="text-xs text-muted-foreground">Մաս {volume} · բաժին {chapter.id}</span>
       </div>
-      {!file ? (
-        <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-          Ընտրիր վերևում նշված ճիշտ բնօրինակ PDF-ը։ Հարցի տեքստը, տարբերակներն ու նկարները կբացվեն այստեղ՝ առանց ֆայլը սերվեր փոխանցելու։
+
+      {!file && (
+        <p role="status" className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+          Հաստատիր այս մասի PDF-ը մեկ անգամ։ Այն կպահպանվի քո սարքում, և հարցերի տեքստը կբացվի սովորական վարժանքի ձևով։
         </p>
-      ) : (
-        <>
-          {loading && <p role="status" className="text-sm text-muted-foreground">Կարդացվում է բնօրինակի հարցը…</p>}
-          {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-          {questionData?.text && !loading ? (
-            <div className="space-y-4 rounded-2xl border bg-background p-4 sm:p-5">
-              <p className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-foreground">
-                {questionData.stem || questionData.text}
-              </p>
-              {questionData.hasFourChoices && (
-                <ol className="space-y-3 text-sm leading-relaxed">
-                  {questionData.options.map((option, i) => (
-                    <li key={i}>
-                      <button type="button" disabled={disabled} aria-pressed={selected === String(i+1)}
-                        onClick={() => onChoose(String(i+1))}
-                        className={`flex min-h-12 w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors disabled:opacity-65 ${selected === String(i+1) ? "border-primary bg-primary/10" : "hover:border-primary/50 hover:bg-muted"}`}>
-                        <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-lg bg-muted font-black">{i+1}</span>
-                        <span className="min-w-0 flex-1 whitespace-pre-wrap pt-0.5">{option}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ol>
-              )}
-              {!questionData.hasFourChoices && (
-                <p className="text-xs text-muted-foreground">
-                  Այս տիպի հարցի տարբերակների ավտոմատ առանձնացումը հաստատված չէ․ համեմատիր անմիջապես ստորև ցուցադրված բնօրինակի հատվածի հետ։
-                </p>
-              )}
-            </div>
-          ) : null}
-          {questionData && !questionData.text && !loading && (
-            <p role="status" className="text-sm text-muted-foreground">
-              Այս էջի տեքստը վստահելի Unicode ձևով վերականգնել հնարավոր չէ։ Ցուցադրվում է բնօրինակ հարցի տպագիր պատկերը։
-            </p>
-          )}
-          <div className="space-y-2">
-            <p className="text-xs font-bold text-muted-foreground">
-              Հենց բնօրինակից ստացված հատվածը (ներառում է նաև նկարներ, բանաձևեր)
-            </p>
-            <div className="overflow-x-auto rounded-2xl border bg-white p-2">
-              <canvas ref={canvas} className="block h-auto max-w-full" role="img" aria-label={`Կենսաբանություն՝ մաս ${volume}, բաժին ${chapter.id}, բնօրինակ հարց ${question}`} />
-              {questionData && !imageReady && !error && <p className="p-4 text-xs text-gray-700">Պատրաստվում է էջի հատվածը…</p>}
-            </div>
-          </div>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Հաշվարկներն ու պատասխանները միշտ ստուգիր այս տպագիր հատվածով․ տեքստային արտածումը կարող է բաց թողնել գծագրեր կամ արտասովոր նշաններ։
-            Դրանք կայքի սերվերում չեն պահպանվում։
-          </p>
-        </>
       )}
+      {file && loading && (
+        <p role="status" className="text-sm text-muted-foreground">Բեռնվում է հարցի տեքստը…</p>
+      )}
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+
+      {file && questionData?.text && !loading && (
+        <div className="space-y-4">
+          <p className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-foreground">
+            {questionData.hasFourChoices ? questionData.stem : questionData.text}
+          </p>
+          {questionData.hasFourChoices && (
+            <div role="group" aria-label="Պատասխանների տարբերակներ" className="grid gap-2">
+              {questionData.options.map((option, i) => {
+                const answer = String(i + 1);
+                return (
+                  <button
+                    type="button" key={answer}
+                    disabled={disabled}
+                    aria-pressed={selected === answer}
+                    onClick={() => onChoose(answer)}
+                    className={`flex min-h-12 items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${selected === answer ? "border-primary bg-primary/10" : "bg-background hover:border-primary/60"}`}
+                  >
+                    <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-muted text-sm font-bold">{answer}</span>
+                    <span className="min-w-0 flex-1 whitespace-pre-wrap leading-relaxed">{option}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {file && !loading && questionData && !questionData.text && !error && (
+        <p role="status" className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+          Այս հարցի բնօրինակ տեքստը դեռ հնարավոր չէ վստահելիորեն արտածել։ Այն չի ցուցադրվի որպես կռահված հարց և չի գնահատվի։
+        </p>
+      )}
+      {file && !loading && questionData?.text && !questionData.hasFourChoices && (
+        <p className="text-sm text-muted-foreground">
+          Այս առաջադրանքի տեսակը դեռ ավտոմատ չի գնահատվում։ Ցուցադրվում է միայն կարդացվող տեքստը։
+        </p>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Աղբյուր՝ {volume}-րդ մաս, բաժին {chapter.id}, տպագիր էջ {questionData?.page ?? "—"}։
+        Անորոշ տեքստը և պատասխանները չեն լրացվում ինքնաբերաբար։
+      </p>
     </section>
   );
 }

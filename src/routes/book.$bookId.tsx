@@ -43,8 +43,7 @@ function BookPage() {
       <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> {tx("Բոլոր գրքերը")}
       </Link>
-      <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
-        <img src={meta.cover} alt={meta.title} className="shadow-card hidden aspect-[3/4] w-full rounded-xl object-cover md:block" />
+      <div className="rounded-3xl border bg-card p-5 sm:p-7">
         <div className="space-y-4">
           <h1 className="text-3xl font-black sm:text-4xl">{meta.title}</h1>
           <p className="text-muted-foreground">{meta.sub}</p>

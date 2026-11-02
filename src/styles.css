@@ -237,25 +237,6 @@ html.user-reduced-motion *::after {
   }
 }
 
-/* Focus mode removes navigation distractions without affecting the study panel. */
-html.study-focus-mode body:has(.study-tools) header,
-html.study-focus-mode body:has(.study-tools) [aria-label="Accessibility"],
-html.study-focus-mode body:has(.study-tools) [aria-label="Մատչելիություն"],
-html.study-focus-mode body:has(.study-tools) [aria-label="Settings"],
-html.study-focus-mode body:has(.study-tools) [aria-label="Կարգավորումներ"] {
-  opacity: 0.12;
-  pointer-events: none;
-  transition: opacity 220ms ease;
-}
-html.study-focus-mode body:has(.study-tools) main > div > section:not(:has(.study-tools)) {
-  opacity: 0.22;
-  transition: opacity 240ms ease;
-}
-html.study-focus-mode body:has(.study-tools) .study-tools {
-  position: relative;
-  z-index: 2;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 18%, transparent), var(--shadow-card);
-}
 
 
 /* Question-solving micro-interactions: quick, consistent, and transform-friendly. */

@@ -73,7 +73,11 @@ describe("read literal text from a student-supplied official Biology PDF", () =>
     const reader=readFileSync("src/components/BiologyQuestionFromPdf.tsx","utf8");
     const source=readFileSync("src/lib/biology-pdf-text.ts","utf8");
     expect(reader).toContain("openLocalBiologyDocument");
-    expect(reader).toContain("renderBiologyQuestionCrop");
+    expect(reader).not.toContain("renderBiologyQuestionCrop");
+    expect(reader).not.toContain("<canvas");
+    expect(reader).not.toContain("<img");
+    expect(reader).toContain("onTextReady");
+    expect(reader).toContain("Պատասխանների տարբերակներ");
     expect(source).toContain('await import("pdfjs-dist")');
     expect(source).toContain('pdfjs.getDocument({ data: bytes');
     expect(reader).not.toMatch(/fetch\(/);
