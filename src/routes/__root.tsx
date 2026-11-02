@@ -110,6 +110,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "application-name", content: "Shtemarm" },
       { name: "google-site-verification", content: "InvqhMBgY6g8r9G17BLWthQsPSKpetfpNqSguZ_km6E" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Shtemarm" },
+      { property: "og:locale", content: "hy_AM" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

@@ -12,7 +12,9 @@ import { bestResult, recordResult, type MiniGameMode, type MiniGameResult } from
 
 export const Route = createFileRoute("/mini-games")({
   staticData: { sitemap: true },
-  head:()=>({meta:[{title:"Մինի խաղեր · Shtemarm"},
+  head:()=>({meta:[
+      { property: "og:title", content: "Մինի խաղեր · Shtemarm" },
+      { property: "og:description", content: "Արագ վիկտորինա, ճիշտ կամ սխալ, համապատասխանեցում և հիշողության քարտեր՝ ութ ուսումնական առարկաներով։" },{title:"Մինի խաղեր · Shtemarm"},
     {name:"description",content:"Արագ վիկտորինա, ճիշտ կամ սխալ, համապատասխանեցում և հիշողության քարտեր՝ ութ ուսումնական առարկաներով։"}]}),
   component:MiniGamesPage,
 });

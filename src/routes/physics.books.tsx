@@ -10,6 +10,8 @@ export const Route=createFileRoute("/physics/books")({
     page:z.coerce.number().int().positive().catch(5),
   }),
   head:()=>({meta:[
+      { property: "og:title", content: "Ֆիզիկայի բնօրինակ շտեմարաններ · Մաս I և II · Shtemarm" },
+      { property: "og:description", content: "Կարդա ֆիզիկայի երկու շտեմարանների 2017 թ. բնօրինակ PDF-ները՝ առանց դրանք սերվեր ուղարկելու։ Գծագրերը, բանաձևերը և պատասխանների բաժինները պահպանվում են։" },
     {title:"Ֆիզիկայի բնօրինակ շտեմարաններ · Մաս I և II · Shtemarm"},
     {name:"description",content:"Կարդա ֆիզիկայի երկու շտեմարանների 2017 թ. բնօրինակ PDF-ները՝ առանց դրանք սերվեր ուղարկելու։ Գծագրերը, բանաձևերը և պատասխանների բաժինները պահպանվում են։"},
   ]}),

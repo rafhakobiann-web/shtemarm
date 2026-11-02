@@ -11,7 +11,7 @@ import { findMathSection, mathBookUrl } from "@/lib/mathHandbook";
 
 export const Route=createFileRoute("/math-review")({
   staticData: { sitemap: true },
-  head:()=>({meta:[{title:"Սխալների վերանայում · Մաթեմատիկա · Shtemarm"}]}),
+  head:()=>({meta:[{title:"Սխալների վերանայում · Մաթեմատիկա · Shtemarm"},{name:"description",content:"Վերանայիր մաթեմատիկայի սխալ պատասխանները և նշիր յուրացված առաջադրանքները՝ այս սարքում։"},{property:"og:title",content:"Սխալների վերանայում · Մաթեմատիկա · Shtemarm"},{property:"og:description",content:"Վերանայիր մաթեմատիկայի սխալ պատասխանները և նշիր յուրացված առաջադրանքները՝ այս սարքում։"}]}),
   component:MathReviewPage,
 });
 const TEXT={

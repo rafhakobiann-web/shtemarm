@@ -8,6 +8,8 @@ export const Route = createFileRoute("/download")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Shtemarm · Ներբեռնել հավելվածը" },
+      { property: "og:description", content: "Տեղադրիր Shtemarm-ը հեռախոսում։ Android-ի փորձնական տարբերակ և կայքի տեղադրման տարբերակներ։" },
       { title: "Shtemarm · Ներբեռնել հավելվածը" },
       { name: "description", content: "Տեղադրիր Shtemarm-ը հեռախոսում։ Android-ի փորձնական տարբերակ և կայքի տեղադրման տարբերակներ։" },
     ],

@@ -20,6 +20,8 @@ export const Route = createFileRoute("/math/")({
   validateSearch: z.object({ mode: z.enum(["exam", "custom"]).optional().catch(undefined) }),
   head: () => ({
     meta: [
+      { property: "og:title", content: "Մաթեմատիկա · Թեստ · Շտեմարան" },
+      { property: "og:description", content: "Մաթեմատիկայի թեստ՝ կազմված մաթեմատիկայի գրքերից" },
       { title: "Մաթեմատիկա · Թեստ · Շտեմարան" },
       { name: "description", content: "Մաթեմատիկայի թեստ՝ կազմված մաթեմատիկայի գրքերից" },
     ],

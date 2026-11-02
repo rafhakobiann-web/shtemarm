@@ -36,6 +36,14 @@
 - 🏗️ Expanded website CI triggers to cover Support page changes as well as mobile navigation; production-build verification is tracked in GitHub Actions.
 - 📱 This is a **website-only** patch, separate from Android version 0.1.1.
 
+## 🟣 November 2, 2026 — Search and sharing metadata
+- 🔎 Homepage now shows a "Shtemarm · հայերեն քննությունների պատրաստում" line above its headline, so the page identifies the platform.
+- 📖 Book pages show a "Ուսուցման շտեմարան" label above the book title.
+- 🔗 Open Graph title and description added to routes that had only a page title, so shared links show page-specific summaries. Site name and locale are set for all pages.
+- 🧭 Meta descriptions added for the history book test, the mathematics mistakes notebook, and the mathematics book/test/game pages.
+- 🧪 Build and tests are pending CI on the `seo-metadata` branch.
+- ⏳ Search Console verification is still a manual step in Google's dashboard.
+
 ## 🟣 October 28, 2026 — Android smoothness and saved-question fix
 - 📱 Android: screen changes now fade instead of snapping.
 - 🎨 Android: answer choices animate their correct/wrong colours, and the session progress bar animates between questions.

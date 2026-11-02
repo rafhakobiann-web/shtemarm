@@ -6,6 +6,8 @@ import { useTx } from "@/lib/lang";
 export const Route = createFileRoute("/study-tools")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
+      { property: "og:title", content: "Shtemarm · Ուսումնական գործիքներ" },
+      { property: "og:description", content: "Ուսումնական առաջընթացի տվյալներ և անհատական ուսումնական գործիքներ։" },
     { title: "Shtemarm · Ուսումնական գործիքներ" },
     { name: "description", content: "Ուսումնական առաջընթացի տվյալներ և անհատական ուսումնական գործիքներ։" },
   ] }),

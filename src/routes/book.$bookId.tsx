@@ -49,6 +49,7 @@ function BookPage() {
           <div className="flex items-start gap-4">
             <BookCover src={meta.cover} title={meta.title} size="lg" />
             <div className="min-w-0 flex-1 space-y-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary">{tx("Ուսուցման շտեմարան · Shtemarm")}</p>
               <h1 className="text-2xl font-black sm:text-4xl">{meta.title}</h1>
               <p className="text-muted-foreground">{meta.sub}</p>
             </div>

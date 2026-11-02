@@ -24,6 +24,8 @@ export const Route = createFileRoute("/subject/$subject")({
   head: ({ params }) => ({ meta: [
     { title: (GTC_BLUEPRINTS[params.subject as SubjectId]?.name ?? "Առարկա") + " · Shtemarm" },
     { name: "description", content: "ԳԹԿ 2027 ուղեցույց և հեղինակային ուսումնական առաջադրանքներ" },
+    { property: "og:title", content: (GTC_BLUEPRINTS[params.subject as SubjectId]?.name ?? "Առարկա") + " · Shtemarm" },
+    { property: "og:description", content: "ԳԹԿ 2027 ուղեցույց և հեղինակային ուսումնական առաջադրանքներ" },
   ] }),
   component: SubjectPage,
 });

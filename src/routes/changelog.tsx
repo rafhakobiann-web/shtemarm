@@ -6,6 +6,8 @@ export const Route = createFileRoute("/changelog")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Shtemarm · Changelog" },
+      { property: "og:description", content: "Shtemarm updates, fixes, and learning-platform progress." },
       { title: "Shtemarm · Changelog" },
       { name: "description", content: "Shtemarm updates, fixes, and learning-platform progress." },
     ],

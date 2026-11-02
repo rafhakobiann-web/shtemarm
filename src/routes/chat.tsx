@@ -10,6 +10,8 @@ export const Route = createFileRoute("/chat")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Չատբոտ · Shtemarm" },
+      { property: "og:description", content: "Հարցրեք Shtemarm-ի օգնականին ուսման և քննության հարցերի մասին։" },
       { title: "Չատբոտ · Shtemarm" },
       { name: "description", content: "Հարցրեք Shtemarm-ի օգնականին ուսման և քննության հարցերի մասին։" },
     ],

@@ -13,6 +13,8 @@ export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Մուտք և գրանցում · Shtemarm" },
+      { property: "og:description", content: "Մուտք գործիր, գրանցվիր կամ վերականգնիր Shtemarm հաշիվդ։" },
       { title: "Մուտք և գրանցում · Shtemarm" },
       { name: "description", content: "Մուտք գործիր, գրանցվիր կամ վերականգնիր Shtemarm հաշիվդ։" },
       { name: "robots", content: "noindex, nofollow" },

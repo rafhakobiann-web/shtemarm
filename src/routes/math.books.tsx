@@ -14,6 +14,8 @@ export const Route = createFileRoute("/math/books")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Մաթեմատիկայի գրքեր · Shtemarm" },
+      { property: "og:description", content: "Մաթեմատիկայի հարցաշարեր՝ 2 մաս" },
       { title: "Մաթեմատիկայի գրքեր · Shtemarm" },
       { name: "description", content: "Մաթեմատիկայի հարցաշարեր՝ 2 մաս" },
     ],

@@ -5,6 +5,8 @@ import { useTx } from "@/lib/lang";
 export const Route = createFileRoute("/about")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
+      { property: "og:title", content: "Shtemarm · Մեր մասին" },
+      { property: "og:description", content: "Shtemarm-ի նպատակը, ուսումնական գործիքներն ու կապը նախագծի հետ։" },
     { title: "Shtemarm · Մեր մասին" },
     { name: "description", content: "Shtemarm-ի նպատակը, ուսումնական գործիքներն ու կապը նախագծի հետ։" },
   ] }),

@@ -299,6 +299,7 @@ function Index() {
             <GraduationCap className="size-4" aria-hidden="true"/> SHTEMARM · ACADEMY
           </p>
           <div className="space-y-3">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-100/80">{tx("Shtemarm · հայերեն քննությունների պատրաստում")}</p>
             <h1 className="max-w-xl text-balance text-3xl font-black leading-[1.23] sm:text-[2.75rem] lg:text-5xl">{tx("Սովորիր վստահ։ Պատրաստվիր խելացի։")}</h1>
             <p className="max-w-lg text-sm leading-7 text-emerald-50/85 sm:text-base">{tx("Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։")}</p>
           </div>

@@ -16,6 +16,8 @@ export const Route = createFileRoute("/english-grammar")({
   staticData: { sitemap: true },
   validateSearch: searchSchema,
   head: () => ({ meta: [
+      { property: "og:title", content: "English Grammar Handbook · Shtemarm" },
+      { property: "og:description", content: "Հայերեն, անգլերեն և ռուսերեն կանոններ ու բացատրություններ՝ անգլերենի երեք շտեմարանների 13 բաժինների համար։" },
     { title: "English Grammar Handbook · Shtemarm" },
     { name: "description", content: "Հայերեն, անգլերեն և ռուսերեն կանոններ ու բացատրություններ՝ անգլերենի երեք շտեմարանների 13 բաժինների համար։" },
   ] }),

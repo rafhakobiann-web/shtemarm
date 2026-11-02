@@ -8,6 +8,8 @@ import { TIKTOK_URL } from "@/lib/site";
 export const Route = createFileRoute("/support")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
+      { property: "og:title", content: "Shtemarm · Աջակցել նախագծին" },
+      { property: "og:description", content: "Աջակցիր Shtemarm-ի Android հավելվածի հրապարակմանը Google Play-ում։" },
     { title: "Shtemarm · Աջակցել նախագծին" },
     { name: "description", content: "Աջակցիր Shtemarm-ի Android հավելվածի հրապարակմանը Google Play-ում։" },
   ] }),

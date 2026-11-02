@@ -16,6 +16,8 @@ export const Route = createFileRoute("/exam/$subject")({
     meta: [
       { title: (params.subject === "english" ? "Անգլերեն" : "Հայոց լեզու և գրականություն") + " · Քննության կազմիչ" },
       { name: "description", content: "Անհատական քննություններ՝ հարցերի, բաժինների, ժամանակի և ռեժիմի ընտրությամբ։" },
+      { property: "og:title", content: (params.subject === "english" ? "Անգլերեն" : "Հայոց լեզու և գրականություն") + " · Քննության կազմիչ" },
+      { property: "og:description", content: "Անհատական քննություններ՝ հարցերի, բաժինների, ժամանակի և ռեժիմի ընտրությամբ։" },
     ],
   }),
   component: ExamPage,

@@ -8,6 +8,8 @@ export const Route = createFileRoute("/history")({
   }),
   head: () => ({
     meta: [
+      { property: "og:title", content: "Հայոց պատմություն · Քննության կազմիչ" },
+      { property: "og:description", content: "Կազմիր հայոց պատմության անհատական թեստ՝ ընտրելով բաժինները, առաջադրանքների քանակը, ժամանակը և ռեժիմը։" },
       { title: "Հայոց պատմություն · Քննության կազմիչ" },
       {
         name: "description",

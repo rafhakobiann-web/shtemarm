@@ -22,6 +22,8 @@ export const Route = createFileRoute("/math-handbook")({
   staticData: { sitemap: true },
   validateSearch: schema,
   head: () => ({ meta: [
+      { property: "og:title", content: "Մաթեմատիկայի կանոնների և բանաձևերի ձեռնարկ · Shtemarm" },
+      { property: "og:description", content: "Մաթեմատիկայի երկու շտեմարանի բաժինների կանոնները՝ հայերեն, անգլերեն և ռուսերեն։ Քայլ առ քայլ լուծումներ՝ առանց AI-ի։" },
     { title: "Մաթեմատիկայի կանոնների և բանաձևերի ձեռնարկ · Shtemarm" },
     { name: "description", content: "Մաթեմատիկայի երկու շտեմարանի բաժինների կանոնները՝ հայերեն, անգլերեն և ռուսերեն։ Քայլ առ քայլ լուծումներ՝ առանց AI-ի։" }
   ] }),

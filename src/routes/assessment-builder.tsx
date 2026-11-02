@@ -15,6 +15,8 @@ import { useTx } from "@/lib/lang";
 export const Route = createFileRoute("/assessment-builder")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
+      { property: "og:title", content: "Թեմատիկ և ամփոփիչ աշխատանքներ · Shtemarm" },
+      { property: "og:description", content: "Ստեղծիր թեմատիկ և ամփոփիչ առաջադրանքներ ըստ առարկաների և շտեմարանի իրական հարցերի։" },
     { title: "Թեմատիկ և ամփոփիչ աշխատանքներ · Shtemarm" },
     { name:"description",content:"Ստեղծիր թեմատիկ և ամփոփիչ առաջադրանքներ ըստ առարկաների և շտեմարանի իրական հարցերի։" },
   ]}),

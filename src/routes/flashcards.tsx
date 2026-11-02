@@ -10,7 +10,9 @@ import { useTx } from "@/lib/lang";
 
 export const Route=createFileRoute("/flashcards")({
   staticData: { sitemap: true },
-  head:()=>({meta:[{title:"Հիշողության քարտեր · Shtemarm"},
+  head:()=>({meta:[
+      { property: "og:title", content: "Հիշողության քարտեր · Shtemarm" },
+      { property: "og:description", content: "Սովորիր քարտերով՝ օգտագործելով շտեմարանների իրական հարցերը և ստուգված պատասխանները։" },{title:"Հիշողության քարտեր · Shtemarm"},
     {name:"description",content:"Սովորիր քարտերով՝ օգտագործելով շտեմարանների իրական հարցերը և ստուգված պատասխանները։"}]}),
   component: FlashcardsPage,
 });

@@ -17,6 +17,8 @@ export const Route = createFileRoute("/math/play")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { property: "og:title", content: "Մաթեմատիկա · Խաղ · Shtemarm" },
+      { property: "og:description", content: "Մաթեմատիկայի բաժնի խաղ և թեստ" },
       { title: "Մաթեմատիկա · Խաղ · Shtemarm" },
       { name: "description", content: "Մաթեմատիկայի բաժնի խաղ և թեստ" },
     ],
