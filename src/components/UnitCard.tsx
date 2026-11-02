@@ -10,6 +10,7 @@ import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 import { useLang, useTx } from "@/lib/lang";
 import { RichExplanation } from "@/components/RichExplanation";
 import { getOfflineEnglishExplanation } from "@/lib/englishSectionOneMultilingual";
+import { localAvailability, localExplain } from "@/lib/local-explanation.client";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -132,9 +133,30 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [localBusy, setLocalBusy] = useState(false);
+  const [localNotice, setLocalNotice] = useState<string | null>(null);
   return (
     <div>
     {text && <RichExplanation text={text} error={failed}/>}
+    {localNotice && <p role="status" className="mt-2 text-sm text-muted-foreground">{localNotice}</p>}
+    <Button type="button" variant="outline" disabled={localBusy} className="mt-3" onClick={async () => {
+      setLocalBusy(true);
+      setLocalNotice(null);
+      try {
+        const available = await localAvailability();
+        if (!["available", "downloadable", "downloading"].includes(available)) {
+          setLocalNotice(lang === "hy" ? "Տեղային ԱԲ-ն այս դիտարկիչում հասանելի չէ։" : lang === "ru" ? "Локальный ИИ недоступен в этом браузере." : "On-device AI is not available in this browser.");
+          return;
+        }
+        if (available !== "available" && !window.confirm(lang === "hy" ? "Տեղային ԱԲ մոդելը կարող է ներբեռնվել։ Շարունակե՞լ։" : "The browser may download an AI model. Continue?")) return;
+        const generated = await localExplain({ question: props.question, correct: props.correct, chosen: props.chosen, locale: lang });
+        setText(generated);
+        setFailed(false);
+        setLocalNotice(lang === "hy" ? "Ստեղծվել է սարքում՝ չստուգված ԱԲ բացատրություն։" : lang === "ru" ? "Создано на устройстве; объяснение ИИ не проверено." : "Generated on your device; AI explanation is not verified.");
+      } catch {
+        setLocalNotice(lang === "hy" ? "Տեղային ԱԲ-ն չաշխատեց։ Կարող եք օգտագործել սովորական բացատրությունը։" : "Local AI failed; use the standard explanation instead.");
+      } finally { setLocalBusy(false); }
+    }}>{localBusy ? <Loader2 className="animate-spin" /> : <Sparkles />} {lang === "hy" ? "Բացատրել սարքի ԱԲ-ով" : lang === "ru" ? "Объяснить локальным ИИ" : "Explain with on-device AI"}</Button>
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
