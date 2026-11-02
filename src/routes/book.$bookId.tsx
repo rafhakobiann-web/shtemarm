@@ -71,34 +71,38 @@ function BookPage() {
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 31 && id <= 34 ? (
-                <Link to="/biology"><Trophy /> {tx("Քննություն")}</Link>
+                <Link to="/biology" search={{ book: id }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id === 61 || id === 62 ? (
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><Trophy /> {tx("Ինքնաստուգում")}</Link>
-              ) : id === 41 || (id >= 1 && id <= 3) ? (
-                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
+              ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id === 63 || id === 64 ? (
                 <Link to="/physics/original"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
-                <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
+                <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(book?.sections[0]?.n ?? 1) }} search={{ mode: "classic" }}>
+                  <Trophy /> {tx("Սովորել")}
+                </Link>
               )}
             </Button>
             <Button variant="sun" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 31 && id <= 34 ? (
-                <Link to="/biology"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+                <Link to="/biology" search={{ book: id }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 61 || id === 62 ? (
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
-              ) : id === 41 || (id >= 1 && id <= 3) ? (
-                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 63 || id === 64 ? (
                 <Link to="/physics/original"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : (
-                <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+                <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(book?.sections[0]?.n ?? 1) }} search={{ mode: "classic" }}>
+                  <ClipboardCheck /> {tx("Սովորել")}
+                </Link>
               )}
             </Button>
             {id >= 1 && id <= 3 && <Button variant="outline" size="lg" asChild>
@@ -175,15 +179,31 @@ function BookPage() {
                       <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }} search={{ section: s.n }}>
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
-                    ) : id === 41 || (id >= 1 && id <= 3) ? (
+                    ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
                       <Link to="/exam/$subject"
-                        params={{ subject: id === 41 ? "armenian" : "english" }}
+                        params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}
                         search={{ book: id, section: s.n }}>
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
-                    ) : (
-                      <Link to="/subject/$subject" params={{ subject: "physics" }}>
+                    ) : id >= 31 && id <= 34 ? (
+                      <Link to="/biology" search={{ book: id, section: s.n }}>
                         <ClipboardCheck /> {tx("Թեստ")}
+                      </Link>
+                    ) : id >= 21 && id <= 23 ? (
+                      <Link to="/history">
+                        <ClipboardCheck /> {tx("Թեստ")}
+                      </Link>
+                    ) : id === 63 || id === 64 ? (
+                      <Link to="/physics/original">
+                        <ClipboardCheck /> {tx("Թեստ")}
+                      </Link>
+                    ) : id === 61 || id === 62 ? (
+                      <Link to="/subject/$subject" params={{ subject: "physics" }} search={{ section: s.n }}>
+                        <ClipboardCheck /> {tx("Թեստ")}
+                      </Link>
+                    ) : (
+                      <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "classic" }}>
+                        <ClipboardCheck /> {tx("Ուսուցում")}
                       </Link>
                     )}
                   </Button>
