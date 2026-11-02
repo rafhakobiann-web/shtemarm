@@ -185,7 +185,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       className="mt-3 h-auto min-h-10 whitespace-normal text-left"
     >
       {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Ստանալ բացատրություն")}
+      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : lang === "en" ? "Show study guidance" : lang === "ru" ? "Показать учебную подсказку" : "Ցույց տալ ուսումնական հուշումը"}
     </Button>}
     </div>
   );
