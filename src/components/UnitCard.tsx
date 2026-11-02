@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -134,12 +134,18 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [localBusy, setLocalBusy] = useState(false);
+  const [localSupport, setLocalSupport] = useState<string>("checking");
+  useEffect(() => {
+    let active = true;
+    void localAvailability().then(status => { if (active) setLocalSupport(status); });
+    return () => { active = false; };
+  }, []);
   const [localNotice, setLocalNotice] = useState<string | null>(null);
   return (
     <div>
     {text && <RichExplanation text={text} error={failed}/>}
     {localNotice && <p role="status" className="mt-2 text-sm text-muted-foreground">{localNotice}</p>}
-    <Button type="button" variant="outline" disabled={localBusy} className="mt-3" onClick={async () => {
+    {["available", "downloadable", "downloading"].includes(localSupport) && <Button type="button" variant="outline" disabled={localBusy} className="mt-3" onClick={async () => {
       setLocalBusy(true);
       setLocalNotice(null);
       try {
@@ -156,7 +162,8 @@ function Explain(props: { instruction: string; passage: string; question: string
       } catch {
         setLocalNotice(lang === "hy" ? "Տեղային ԱԲ-ն չաշխատեց։ Կարող եք օգտագործել սովորական բացատրությունը։" : "Local AI failed; use the standard explanation instead.");
       } finally { setLocalBusy(false); }
-    }}>{localBusy ? <Loader2 className="animate-spin" /> : <Sparkles />} {lang === "hy" ? "Բացատրել սարքի ԱԲ-ով" : lang === "ru" ? "Объяснить локальным ИИ" : "Explain with on-device AI"}</Button>
+    }}>{localBusy ? <Loader2 className="animate-spin" /> : <Sparkles />} {lang === "hy" ? "Բացատրել սարքի ԱԲ-ով" : lang === "ru" ? "Объяснить локальным ИИ" : "Explain with on-device AI"}</Button>}
+    {["unsupported", "unavailable"].includes(localSupport) && <p role="note" className="mt-2 text-xs text-muted-foreground">{lang === "hy" ? "Սարքի ԱԲ-ն հասանելի չէ այս դիտարկիչում։ Օգտագործիր ներքևի սովորական բացատրությունը։" : lang === "ru" ? "Локальный ИИ не поддерживается. Используйте обычное объяснение ниже." : "On-device AI is unsupported here. Use the standard explanation below."}</p>
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
