@@ -1,0 +1,78 @@
+name: Verify live Shtemarm login and book-cover deployment
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-auth-covers-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Install mobile Chromium
+        run: |
+          bun add --no-save playwright@1.56.1
+          bunx playwright install --with-deps chromium
+      - name: Check real published auth, covers and Biology books (no account credentials)
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const base = "https://shtemarm.lovable.app";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          const page = await browser.newPage({
+            viewport: { width: 393, height: 852 },
+            isMobile: true,
+            hasTouch: true,
+          });
+          const fatal = [];
+          page.on("pageerror", error => fatal.push(error.message));
+
+          try {
+            const res = await page.goto(base + "/?subject=biology", { waitUntil: "domcontentloaded", timeout: 35000 });
+            if (res?.status() !== 200) throw new Error("Biology catalog HTTP " + res?.status());
+            await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
+            const links = page.locator('a[href*="/book/"]');
+            const count = await links.count();
+            if (count < 4) throw new Error("Expected 4 Biology book links; found " + count);
+            let covers = 0;
+            for (const link of await links.all()) {
+              const imgs = link.locator('img[src^="/covers/"]');
+              covers += await imgs.count();
+            }
+            if (covers < 4) throw new Error("Expected real book covers; found " + covers);
+            console.log("Production Biology catalog has", count, "book links and", covers, "cover images.");
+
+            for (const volume of [3,4]) {
+              const bookUrl = base + "/book/" + (30 + volume);
+              const response = await page.goto(bookUrl, { waitUntil: "domcontentloaded", timeout: 35000 });
+              if (response?.status() !== 200) throw new Error("Book " + volume + " HTTP " + response?.status());
+              await page.locator("h1").first().waitFor({ timeout: 20000 });
+              await page.locator('img[src^="/covers/bio-"]').first().waitFor({ timeout: 15000 });
+              const body = await page.locator("body").innerText();
+              if (!body.includes("Դասական")) throw new Error("Book " + volume + " missing classic practice link");
+              if (body.includes("Գրքի բաժինները բեռնվում են")) throw new Error("Book " + volume + " has not finished loading");
+              console.log("Production book", volume, "has cover and native study links.");
+            }
+
+            const auth = await page.goto(base + "/auth", { waitUntil: "domcontentloaded", timeout: 35000 });
+            if (auth?.status() !== 200) throw new Error("Auth HTTP " + auth?.status());
+            await page.locator("h1").first().waitFor({ timeout: 20000 });
+            await page.getByText("Շարունակել Google-ով", { exact: true }).waitFor({ timeout: 10000 });
+            await page.getByText("Մոռացե՞լ ես գաղտնաբառը", { exact: true }).click();
+            await page.getByText("Ուղարկել վերականգնման հղումը", { exact: true }).waitFor({ timeout: 10000 });
+            if (fatal.length) throw new Error("Production JS exceptions: " + fatal.join("; "));
+            console.log("Production /auth loaded and password recovery UI responds. OAuth credentials not exercised.");
+          } finally {
+            await browser.close();
+          }
+          JS
