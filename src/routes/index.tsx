@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, ShieldCheck, Sparkles, Target, Trophy } from "lucide-react";
+import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
+import { setAppearance } from "@/lib/theme";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -177,11 +178,20 @@ function LandingPage() {
           <a href="#faq">{t.faq}</a>
         </nav>
         <div className="sht-nav-actions">
+          <details className="sht-mobile-links">
+            <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
+            <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
+              {[["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
+                <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
+              ))}
+            </nav>
+          </details>
           <div className="sht-lang-switch" role="group" aria-label={lang === "hy" ? "Լեզու" : lang === "ru" ? "Язык" : "Language"}>
             {(["hy", "en", "ru"] as const).map(code => (
               <button key={code} type="button" onClick={() => setLang(code)} aria-pressed={lang === code} title={{ hy: "Հայերեն", en: "English", ru: "Русский" }[code]}>{code.toUpperCase()}</button>
             ))}
           </div>
+          <button type="button" className="sht-landing-theme" aria-label={lang === "hy" ? "Փոխել գունային ռեժիմը" : lang === "ru" ? "Изменить тему" : "Toggle color theme"} onClick={() => setAppearance({ mode: document.documentElement.classList.contains("dark") ? "light" : "dark" })}><Moon className="sht-theme-moon size-4" aria-hidden="true" /><Sun className="sht-theme-sun size-4" aria-hidden="true" /></button>
           <Link to="/auth" className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>
