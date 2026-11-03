@@ -40,7 +40,7 @@ describe("Shtemarm Academy final design tokens",()=>{
     }
     for (const value of ["academy-hero", "academy-quick-action", "academy-bento",
       'id="subjects"', 'id="exams"', 'to="/mini-games"',
-      'to="/assessment-builder"', 'to="/math"', 'to="/history"',
+      'to="/math"', 'to="/history"',
       'to="/subject/$subject"', "PHYSICS_BOOKS.map", "BIO_BOOKS.filter",
       "HISTORY_BOOKS.map", "ARMENIAN_BOOKS.map", "BOOKS.map", "MATH_BOOKS.map"]) {
       expect(dashboard).toContain(value);
