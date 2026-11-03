@@ -132,6 +132,7 @@ describe("2018 Armenian language and literature source-aligned coverage", () => 
     expect(repeated).toBe(42);
     expect(summary.authorPracticeTotal).toBe(189);
     expect(summary.crossVolumeRepeatedPracticeQuestions).toBe(repeated);
+    expect(summary.uniqueAuthorPracticeQuestionsAcrossVolumes).toBe(189 - repeated);
     expect(summary.officialDigitizedBooks).toBe(0);
     expect(summary.sourceVerifiedOfficialQuestions).toBe(0);
   });
