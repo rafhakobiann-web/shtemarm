@@ -56,8 +56,15 @@ for (const volume of [3, 4]) {
   }
   assert.equal(ids.size, coverage.importedQuestions);
   const pending = read('public/data/biology-pending-books.json').books.find(b => b.part === volume);
-  assert.equal(pending.transcribedQuestions, ids.size);
+  assert.equal(pending.transcribedQuestions + (pending.sourceAlignedAdaptedQuestions ?? 0), ids.size);
   assert.equal(pending.remainingQuestions + ids.size, coverage.indexedQuestions);
+  if (volume === 3) {
+    assert.equal(pending.transcribedQuestions, 911);
+    assert.equal(pending.sourceAlignedAdaptedQuestions, 34);
+    const adapted = book.sections.flatMap(s => s.units).filter(u => u.sourceAlignedAdapted);
+    assert.equal(adapted.length, 34);
+    assert(adapted.every(u => u.passage.includes('Բնագրի բառացի վերարտադրություն չէ')));
+  }
   // Source-reviewed anchors: don't shift the first item or renumber later units.
   const first = book.sections[0].units[0].questions[0];
   assert.equal(first.n, '1');

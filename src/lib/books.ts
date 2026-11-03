@@ -81,7 +81,7 @@ export const HISTORY_BOOKS = [
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
   { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց + 34 վերաշարադրված · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
   { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 

@@ -6,23 +6,19 @@
       "volume": 3,
       "sourceSha256": "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93",
       "indexed": 1837,
-      "imported": 911,
-      "pending": 926,
+      "imported": 945,
+      "pending": 892,
       "byReason": {
-        "figure-review": 17,
-        "answer-type-pending": 892,
-        "formula-review": 15,
-        "incomplete-text": 2
+        "answer-type-pending": 892
       },
       "chapters": [
         {
           "chapter": 1,
           "title": "Կենդանի օրգանիզմների բազմազանությունը",
           "indexed": 305,
-          "imported": 178,
-          "pending": 127,
+          "imported": 182,
+          "pending": 123,
           "byReason": {
-            "figure-review": 4,
             "answer-type-pending": 123
           }
         },
@@ -30,11 +26,9 @@
           "chapter": 2,
           "title": "Մարդ",
           "indexed": 310,
-          "imported": 204,
-          "pending": 106,
+          "imported": 210,
+          "pending": 100,
           "byReason": {
-            "formula-review": 5,
-            "incomplete-text": 1,
             "answer-type-pending": 100
           }
         },
@@ -42,11 +36,9 @@
           "chapter": 3,
           "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
           "indexed": 347,
-          "imported": 214,
-          "pending": 133,
+          "imported": 227,
+          "pending": 120,
           "byReason": {
-            "figure-review": 10,
-            "formula-review": 3,
             "answer-type-pending": 120
           }
         },
@@ -54,12 +46,9 @@
           "chapter": 4,
           "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
           "indexed": 337,
-          "imported": 207,
-          "pending": 130,
+          "imported": 218,
+          "pending": 119,
           "byReason": {
-            "figure-review": 3,
-            "formula-review": 7,
-            "incomplete-text": 1,
             "answer-type-pending": 119
           }
         },

@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import React from "react";
 import { z } from "zod";
 
-const homepage = readFileSync("src/routes/index.tsx","utf8");
+const homepage = readFileSync("src/routes/dashboard.tsx","utf8");
 const route = readFileSync("src/routes/biology_.original.tsx","utf8");
 const reader = readFileSync("src/components/BiologyOriginalPractice.tsx","utf8");
 

@@ -84,6 +84,6 @@ describe("Approved 1C,2C,3B,4B Biology review rules", () => {
     expect(route).toContain('createFileRoute("/biology")');
     expect(route).toContain('initialBook={book} initialSection={section}');
     expect(workspace).toContain('to="/book/$bookId"');
-    expect(readFileSync("src/routes/biology_.original.tsx","utf8")).toContain('createFileRoute("/biology/original")');
+    expect(readFileSync("src/routes/biology_.original.tsx","utf8")).toContain('createFileRoute("/biology_/original")');
   });
 });

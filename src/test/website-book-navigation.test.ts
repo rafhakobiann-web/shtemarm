@@ -29,7 +29,7 @@ describe("website textbook navigation regressions", () => {
   });
 
   it("shows a real updates route and gives book readers an explicit refresh", () => {
-    const home = read("src/routes/index.tsx");
+    const home = read("src/routes/dashboard.tsx");
     const changelog = read("src/routes/changelog.tsx");
     const bookPage = read("src/routes/book.$bookId.tsx");
     expect(home).toContain('to="/changelog"');

@@ -36,7 +36,7 @@ describe("Biology III/IV backlog: every original printed question is accounted f
       expect(book.source.sha256).toBe(index.sourceSha256);
       expect(coverage.sourceSha256).toBe(index.sourceSha256);
       expect(pendingBook.sourceIndexedQuestions).toBe(coverage.indexedQuestions);
-      expect(pendingBook.transcribedQuestions).toBe(coverage.importedQuestions);
+      expect(pendingBook.transcribedQuestions + (pendingBook.sourceAlignedAdaptedQuestions ?? 0)).toBe(coverage.importedQuestions);
       expect(pendingBook.remainingQuestions).toBe(coverage.indexedQuestions - coverage.importedQuestions);
       expect(board.sourceSha256).toBe(index.sourceSha256);
       const totalReasons: Record<string, number> = {};
@@ -104,7 +104,7 @@ describe("Biology III/IV backlog: every original printed question is accounted f
     expect(route).toContain("initialBook={book} initialSection={section}");
     expect(bookPage).toContain('to="/biology" search={{ book: id, section: s.n }}');
     expect(bookPage).toContain('to="/biology" search={{ book: id }}');
-    expect(original).toContain('createFileRoute("/biology/original")');
+    expect(original).toContain('createFileRoute("/biology_/original")');
     expect(original).toContain('search.volume === 4 ? "34" : "33"');
   });
 
