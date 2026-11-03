@@ -126,6 +126,42 @@ function BookPage() {
         </div>
       </div>
 
+      {id === 34 && book?.sections.some(section => section.units.length > 0) && (
+        <section className="space-y-4 rounded-2xl border border-primary/25 bg-primary/5 p-4 sm:p-5"
+          aria-label={lang === "en" ? "Practice directly on Shtemarm" :
+            lang === "ru" ? "Практика прямо в Shtemarm" : "Վարժվել անմիջապես Shtemarm-ում"}>
+          <div className="space-y-1">
+            <h2 className="text-lg font-black">{lang === "en" ? "Start learning — no PDF needed" :
+              lang === "ru" ? "Начать обучение — без PDF" :
+              "Սկսիր սովորել՝ առանց PDF-ի"}</h2>
+            <p className="text-sm text-muted-foreground">
+              {lang === "en" ?
+                "Available digitized questions open directly here with answer controls and feedback. Other original tasks are still being checked and will appear only when ready." :
+               lang === "ru" ?
+                "Доступные оцифрованные задания открываются здесь с ответами и проверкой. Остальные появятся после дополнительной проверки." :
+                "Հասանելի թվայնացված հարցերը բացվում են հենց կայքում՝ պատասխանելու և ստուգելու հնարավորությամբ։ Մնացած առաջադրանքները կավելանան միայն լրացուցիչ ստուգվելուց հետո։"}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {book.sections.filter(section => section.units.length > 0).map(section => (
+              <Button key={section.n} variant="outline" size="sm" asChild>
+                <Link to="/study/$bookId/$sectionId"
+                  params={{ bookId, sectionId: String(section.n) }}
+                  search={{ mode: "classic" }}>
+                  {tx("Բաժին {n}", { n: section.n })}
+                </Link>
+              </Button>
+            ))}
+          </div>
+          <Button variant="game" size="lg" asChild>
+            <Link to="/biology" search={{ book: id }}>
+              <ClipboardCheck className="size-5" />
+              {lang === "en" ? "Create a practice test" : lang === "ru" ? "Создать тренировочный тест" : "Կազմել փորձնական թեստ"}
+            </Link>
+          </Button>
+        </section>
+      )}
+
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
