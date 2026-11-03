@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Layers, Gamepad2, Languages, ListChecks } from "lucide-react";
+import { ArrowLeft, BookOpen, Layers, Gamepad2, Languages, ListChecks, CalendarCheck } from "lucide-react";
 import { StudyTools } from "@/components/StudyTools";
 import { useLang, useTx } from "@/lib/lang";
 
@@ -29,6 +29,7 @@ function StudyToolsPage() {
       </header>
       <div className="grid gap-3 sm:grid-cols-2">
         {[
+          {to:"/study-plan",title:lang === "en" ? "My study plan" : lang === "ru" ? "Мой учебный план" : "Իմ ուսումնական պլանը",desc:lang === "en" ? "A daily plan based on your mistakes and progress" : lang === "ru" ? "Ежедневный план по ошибкам и прогрессу" : "Օրվա առաջադրանքներ՝ ըստ սխալների ու առաջընթացի",Icon:CalendarCheck},
           {to:"/mistakes",title:lang === "en" ? "My mistakes" : lang === "ru" ? "Мои ошибки" : "Իմ սխալները",desc:lang === "en" ? "All mistakes and step-by-step review" : lang === "ru" ? "Все ошибки и последовательное повторение" : "Բոլոր սխալներն ու հերթական կրկնությունը",Icon:ListChecks},
           {to:"/flashcards",title:"Հիշողության քարտեր",desc:"Կրկնել տերմինները և թեմաները",Icon:Layers},
           {to:"/mini-games",title:"Մինի խաղեր",desc:"Արագ հարցեր, ճիշտ/սխալ, համապատասխանեցում",Icon:Gamepad2},
