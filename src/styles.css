@@ -1256,3 +1256,34 @@ html.user-reduced-motion .mobile-liquid-icon { transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .sht-landing :is(*,*::before,*::after) { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 html.user-reduced-motion .sht-landing :is(*,*::before,*::after) { animation: none !important; transition: none !important; }
 html.user-high-contrast .sht-landing :is(.sht-landing-nav,.sht-feature,.sht-subject-card,.sht-faq-item,.sht-preview) { border-color: var(--border); background: var(--card); }
+
+
+/* Signed-in dashboard polish: no route, state, or data changes. */
+.academy-home .academy-hero {
+  border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
+  border-radius: 1.85rem;
+  background: linear-gradient(130deg, #103b3f 0%, #105954 52%, #14786e 100%);
+  box-shadow: 0 26px 50px -38px rgb(9 55 48 / 55%);
+}
+.academy-home .academy-hero::before {
+  background-image:
+    radial-gradient(circle at 91% 9%, rgb(209 255 238 / 16%), transparent 32%),
+    radial-gradient(circle at 5% 100%, rgb(248 216 142 / 10%), transparent 40%);
+}
+.academy-home .academy-bento {
+  border-color: color-mix(in srgb, var(--primary) 13%, var(--border));
+  border-radius: 1.4rem;
+}
+.academy-home .academy-quick-action {
+  min-height: 4.75rem;
+  border-radius: 1.2rem;
+  border-color: color-mix(in srgb, var(--primary) 13%, var(--border));
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .academy-home .academy-bento:hover { transform: translateY(-2px); }
+  .academy-home .academy-quick-action:hover { box-shadow: 0 12px 28px -23px rgb(5 66 54 / 25%); }
+}
+@media (max-width: 767px) {
+  .academy-home .academy-hero { border-radius: 1.45rem; }
+  .academy-home .academy-bento:hover { transform: none; }
+}
