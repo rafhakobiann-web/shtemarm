@@ -28,9 +28,10 @@ describe("English and Armenian History source-data retention", () => {
             `English ${part} / ${unit.id} / ${question.n}`).toBe(true);
           expect(Boolean(question.answer?.trim())).toBe(true);
           if (unit.kind === "mc") {
-            expect(Object.hasOwn(question.options ?? {}, question.answer),
+            const options = (question as { options?: Record<string, string> }).options ?? {};
+            expect(Object.hasOwn(options, question.answer),
               `English ${part} / ${unit.id} / ${question.n}`).toBe(true);
-            if (!question.options[question.answer]?.trim()) {
+            if (!options[question.answer]?.trim()) {
               missingSourceChoiceText.push(`${part}:${unit.id}:${question.n}`);
             }
           }

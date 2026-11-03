@@ -19,7 +19,7 @@ export function GtcGuidePanel({ subject }: { subject: GuideSubject }) {
         ].map(([value, label]) => (
           <div key={label} className="rounded-xl bg-muted/60 p-2 text-center">
             <p className="text-xl font-black">{value}</p>
-            <p className="text-[11px] text-muted-foreground">{tx(label)}</p>
+            <p className="text-[11px] text-muted-foreground">{tx(String(label))}</p>
           </div>
         ))}
       </div>

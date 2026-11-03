@@ -66,7 +66,7 @@ export function historyBookEntries(book: Book, bookNumber: number): HistoryEntry
           const number = question.n;
           if ((!question.stem?.trim() && !unit.passage?.trim()) ||
               !question.answer?.trim() ||
-              (unit.kind === "mc" && !Object.hasOwn(question.options ?? {}, question.answer))) {
+              (unit.kind === "mc" && !Object.hasOwn((question as { options?: Record<string, string> }).options ?? {}, question.answer))) {
             throw new Error(`Թերի առաջադրանք՝ ${id} · ${number}`);
           }
           entries.push({

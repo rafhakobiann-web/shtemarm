@@ -239,7 +239,7 @@ export function normalizeBiologySecondBook(book: Book): Book {
       ...section,
       label: BIOLOGY_SECTION_NAMES[section.n] ?? section.label,
       instr_hy: section.instr_hy || "Ընտրե՛ք ճիշտ պատասխանը։",
-      units: section.units.flatMap((unit) => {
+      units: section.units.flatMap((unit): Unit[] => {
         if ((unit.kind !== "mc" && unit.kind !== "num") || unit.questions.length <= 1) {
           if(unit.kind !== "mc") return [unit];
           return [{...unit, passage:normalizeBiologyText(unit.passage),
@@ -252,7 +252,7 @@ export function normalizeBiologySecondBook(book: Book): Book {
           label: question.n,
           passage: normalizeBiologyText(unit.passage),
           questions: [unit.kind==="mc" ? {...question, stem:normalizeBiologyText(question.stem),
-            options:Object.fromEntries(Object.entries(question.options).map(([k,v])=>[k,normalizeBiologyText(v)]))} : question],
+            options:Object.fromEntries(Object.entries((question as MCQuestion).options).map(([k,v])=>[k,normalizeBiologyText(v)]))} : question],
         }));
       }),
     })),
