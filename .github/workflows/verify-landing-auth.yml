@@ -19,6 +19,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Regression tests
-        run: bunx vitest run src/test/onboarding.test.ts src/test/google-oauth-routing.test.ts src/test/progress.test.ts
+        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts
       - name: Website production build
         run: bun run build
