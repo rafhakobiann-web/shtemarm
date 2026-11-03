@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useProgress } from "@/lib/progress";
 import { useLang, useTx } from "@/lib/lang";
 import { authFeedback } from "@/lib/auth-feedback";
+import { googleOAuthMethod, googleOAuthRedirect, hasAuthenticatedSession } from "@/lib/google-oauth-routing";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
@@ -113,10 +114,14 @@ function AuthPage() {
         return;
       }
       if (mode === "in") {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: email.trim(), password,
         });
         if (error) throw error;
+        // Do not navigate as a success when the auth service returns no session.
+        if (!hasAuthenticatedSession(data.session)) {
+          throw new Error("No active session after sign-in");
+        }
         setPassword("");
         await nav({ to: "/" });
         return;
@@ -150,13 +155,35 @@ function AuthPage() {
     setProblem("");
     setNotice("");
     try {
-      // The Lovable broker exchanges OAuth tokens and saves the Supabase
-      // session; calling Supabase's separate Google flow here would conflict.
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const redirect = googleOAuthRedirect(window.location.origin);
+      if (googleOAuthMethod(window.location.hostname) === "lovable") {
+        // Lovable-hosted pages use their broker; do not initiate a competing
+        // Supabase OAuth redirect while that broker is handling the callback.
+        const result = await lovable.auth.signInWithOAuth("google", {
+          redirect_uri: redirect,
+        });
+        if (result.error) throw result.error;
+        if (result.redirected) return;
+
+        // The broker can return without throwing even if setSession failed.
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!hasAuthenticatedSession(data.session)) {
+          throw new Error("No active session after Google sign-in");
+        }
+        await nav({ to: "/" });
+        return;
+      }
+
+      // Vercel/custom-domain deployments do not have Lovable's OAuth broker.
+      // Supabase starts Google OAuth using its configured provider/redirects.
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: redirect, skipBrowserRedirect: true },
       });
-      if (result.error) throw result.error;
-      if (!result.redirected) await nav({ to: "/" });
+      if (error) throw error;
+      if (!data?.url) throw new Error("Google sign-in returned no redirect URL");
+      window.location.assign(data.url);
     } catch (error) {
       showError(error);
     } finally {
