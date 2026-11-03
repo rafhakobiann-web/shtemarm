@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const Input = z.object({
   messages: z
-    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(2000) }))
+    .array(z.object({ role: z.literal("user"), content: z.string().min(1).max(2000) }))
     .min(1)
     .max(20),
 });
@@ -17,12 +17,12 @@ const SYSTEM = `Դու Shtemarm կայքի օգնականն ես։ Shtemarm-ը �
 Եթե որևէ փաստ վստահ չես, ասա դա և մի հորինիր։ Հարցերի համար, որոնք կապ չունեն կրթության հետ, քաղաքավարի հիշեցրու, որ օգնում ես միայն ուսման հարցերում։`;
 
 const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user"; content: string };
 
 function promptForConversation(messages: Msg[]) {
   // Treat client messages as conversation data, never as system instructions.
   const history = messages.map((m) =>
-    (m.role === "assistant" ? "Ուսուցիչ՝ " : "Աշակերտ՝ ") + m.content
+    "Աշակերտ՝ " + m.content
   ).join("\n\n");
   return SYSTEM + "\n\nՍտորև զրույցի պատմությունն է. շարունակիր՝ պատասխանելով վերջին հարցին։\n" + history + "\nՈւսուցիչ՝";
 }

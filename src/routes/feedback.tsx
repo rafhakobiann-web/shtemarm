@@ -103,7 +103,7 @@ function FeedbackPage() {
           <MessageSquare className="size-7 text-primary" /> {tx("Գրել մշակողին")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {tx("Գրեք ձեր հարցը կամ առաջարկը։ Հաղորդագրությունները տեսնում է միայն լիազորված մշակողը, իսկ պատասխանը կհայտնվի այստեղ՝ նույն սարքում։")}
+          {tx("Գրեք ձեր հարցը կամ առաջարկը։ Հաղորդագրությունները ուղարկվում են մշակողին։ Անձնական պատասխանների դիտումը ժամանակավորապես անջատված է՝ գաղտնիությունը պաշտպանելու համար։")}
         </p>
       </header>
 
@@ -118,7 +118,7 @@ function FeedbackPage() {
       ) : (
         <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
           <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">
-            {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Ձեր պատասխանները հասանելի են այս դիտարկչում պահվող մասնավոր նույնացուցիչով։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
+            {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Անձնական պատասխանների ցուցադրումը ժամանակավորապես անջատված է անվտանգության պատճառով։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
           </p>
           {sendError && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{sendError}</p>}
           <Textarea
@@ -146,7 +146,7 @@ function FeedbackPage() {
         <h2 className="font-bold">{tx("Ձեր հաղորդագրությունները և պատասխանները")}</h2>
         {loadFailed && clientId && <Button variant="outline" onClick={() => void loadMine(clientId)}>{tx("Կրկին փորձել")}</Button>}
         {mine === null && <p className="text-sm text-muted-foreground">{tx("Բեռնվում է…")}</p>}
-        {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Դեռ հաղորդագրություններ չկան։")}</p>}
+        {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Անձնական հաղորդագրությունների պատմությունը ժամանակավորապես թաքցված է՝ գաղտնիությունը պաշտպանելու համար։ Նախկին հաղորդագրությունները չեն ջնջվել։")}</p>}
         {mine?.map((m) => (
           <div key={m.id} className="space-y-2 rounded-2xl border bg-white/60 p-4">
             <p className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString()}</p>
