@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ARMENIAN_BOOKS } from "@/lib/books";
-import { WORKBOOK_SOURCES, workbookEntries, makeWorkbookExam } from "@/lib/workbook-exams";
+import { WORKBOOK_SOURCES, workbookEntries, makeWorkbookExam, uniqueArmenianPracticeEntries } from "@/lib/workbook-exams";
 
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 const index = read("public/data/armenian-source-index.json");
@@ -160,6 +160,31 @@ describe("2018 Armenian language and literature source-aligned coverage", () => 
       workbookEntries([banks[2]]), 10, false);
     expect(custom.bookId).toBe(43);
     expect(custom.units).toHaveLength(10);
+  });
+
+  it("keeps 147 distinct exercises and never repeats questions in combined exams", () => {
+    const entries = workbookEntries(banks);
+    const distinct = uniqueArmenianPracticeEntries(entries);
+    expect(entries).toHaveLength(189);
+    expect(distinct).toHaveLength(147);
+    // Preserve original per-book progress IDs; do not modify or delete the banks.
+    expect(distinct.every(entry => entries.some(original => original.unit.id === entry.unit.id))).toBe(true);
+    const fingerprint = (unit: (typeof distinct)[number]["unit"]) => {
+      if (unit.kind !== "mc") return unit.id;
+      const question = unit.questions[0];
+      return [question.stem, ...["1", "2", "3", "4"].map(key => question.options[key] ?? "")]
+        .map(value => value.trim().toLocaleLowerCase("hy")).join("|");
+    };
+    const custom = makeWorkbookExam(banks, "armenian", "all", "custom", entries, 147, false);
+    expect(custom.units).toHaveLength(147);
+    expect(new Set(custom.units.map(fingerprint)).size).toBe(147);
+    expect(() => makeWorkbookExam(banks, "armenian", "all", "custom", entries, 148, false))
+      .toThrow();
+    const full = makeWorkbookExam(banks, "armenian", "all", "full", entries, 70, false);
+    expect(new Set(full.units.map(fingerprint)).size).toBe(70);
+    const ui = readFileSync("src/components/WorkbookExamWorkspace.tsx", "utf8");
+    expect(ui).toContain("distinctEntries.length");
+    expect(ui).toContain("uniqueArmenianPracticeEntries(pool)");
   });
 
   it("does not send Books II–IV to the Physics exam or enable empty section controls", () => {
