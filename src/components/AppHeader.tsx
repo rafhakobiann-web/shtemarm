@@ -170,9 +170,6 @@ export function AppHeader() {
                 <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} onClick={close} className={item}>
                   <BookOpen className="size-4" />{lang === "en" ? "English grammar handbook" : lang === "ru" ? "Справочник грамматики" : "Անգլերենի կանոնների ձեռնարկ"}
                 </Link>
-                <Link to="/assessment-builder" onClick={close} className={item}>
-                  <BookOpen className="size-4"/>{lang === "en" ? "Thematic assignments" : lang === "ru" ? "Тематические работы" : "Թեմատիկ և ամփոփիչ աշխատանքներ"}
-                </Link>
                 <Link to="/flashcards" onClick={close} className={item}>
                   <Bookmark className="size-4"/>{lang === "en" ? "Flashcards" : lang === "ru" ? "Карточки" : "Հիշողության քարտեր"}
                 </Link>
