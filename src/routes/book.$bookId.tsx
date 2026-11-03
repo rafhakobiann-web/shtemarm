@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw, MessageCircle } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
@@ -8,6 +8,8 @@ import { BookCover } from "@/components/BookCover";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
+
+const BiologySourcePractice568 = lazy(() => import("@/components/BiologySourcePractice568").then(m => ({ default: m.BiologySourcePractice568 })));
 
 export const Route = createFileRoute("/book/$bookId")({
   staticData: { sitemap: true },
@@ -35,6 +37,7 @@ function BookPage() {
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
+  const [sourcePracticeOpen, setSourcePracticeOpen] = useState(false);
   // A completed answer updates progress frequently, but source questions do not.
   // Cache the full section response-key lists until the book itself changes.
   const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
@@ -125,6 +128,26 @@ function BookPage() {
           </div>
         </div>
       </div>
+
+      {id === 34 && (
+        <section className="space-y-4" aria-label="Կենսաբանության IV մասի նոր ինքնուրույն վարժանք">
+          <button type="button" onClick={() => setSourcePracticeOpen(open => !open)}
+            aria-expanded={sourcePracticeOpen} aria-controls="biology-source-review"
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-primary/40 bg-primary/10 px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15">
+            <BookText className="size-5" />
+            {lang === "en" ? "Practice 568 more original tasks (self-check)" :
+              lang === "ru" ? "Ещё 568 оригинальных заданий (самопроверка)" :
+              "Լուծել ևս 568 բնօրինակ առաջադրանք (ինքնաստուգում)"}
+          </button>
+          {sourcePracticeOpen && (
+            <Suspense fallback={<p role="status" className="rounded-xl border bg-card p-4">{
+              lang === "en" ? "Loading practice…" : lang === "ru" ? "Загрузка заданий…" : "Վարժանքը բեռնվում է…"
+            }</p>}>
+              <BiologySourcePractice568 />
+            </Suspense>
+          )}
+        </section>
+      )}
 
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
