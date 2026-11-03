@@ -4,6 +4,8 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
+  useNavigate,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -18,7 +20,10 @@ import { MobileNav } from "@/components/MobileNav";
 import { TouchGlassEffects } from "@/components/TouchGlassEffects";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
+import { readOnboarding, ONBOARDING_CHANGED } from "@/lib/onboarding";
+import type { Session } from "@supabase/supabase-js";
+import { useState } from "react";
 import { pullAndMerge } from "@/lib/progress";
 import { TranslationProvider } from "@/components/EnglishText";
 import { THEME_INIT_SCRIPT, initAppearance } from "@/lib/theme";
@@ -158,8 +163,69 @@ function RootComponent() {
   return <ActiveApp />;
 }
 
+const PUBLIC_PATHS = new Set(["/", "/auth", "/about", "/privacy", "/terms", "/download"]);
+function AuthBoundary({children}:{children:ReactNode}) {
+  const location=useLocation();
+  const navigate=useNavigate();
+  const [status,setStatus]=useState<"loading"|"signed-in"|"signed-out"|"unavailable">("loading");
+  const [userId,setUserId]=useState("");
+  const [onboardingVersion,setOnboardingVersion]=useState(0);
+  const pathname=location.pathname;
+  const isPublic=PUBLIC_PATHS.has(pathname);
+  useEffect(()=>{
+    let active=true;
+    const check=async()=>{
+      try {
+        const ready=await ensureBrowserSupabaseConfig();
+        if(!ready){if(active)setStatus("unavailable");return;}
+        const {data,error}=await supabase.auth.getSession();
+        if(!active)return;
+        if(error){setStatus("unavailable");return;}
+        setUserId(data.session?.user.id??"");
+        setStatus(data.session?"signed-in":"signed-out");
+      }catch{if(active)setStatus("unavailable");}
+    };
+    void check();
+    let subscription: {unsubscribe:()=>void}|undefined;
+    try{
+      const {data}=supabase.auth.onAuthStateChange((_event,session:Session|null)=>{
+        if(!active)return;
+        setUserId(session?.user.id??"");
+        setStatus(session?"signed-in":"signed-out");
+      });
+      subscription=data.subscription;
+    }catch{/* configuration may be unavailable */}
+    return()=>{active=false;subscription?.unsubscribe()};
+  },[]);
+  useEffect(()=>{
+    const update=()=>setOnboardingVersion(v=>v+1);
+    window.addEventListener(ONBOARDING_CHANGED,update);
+    return()=>window.removeEventListener(ONBOARDING_CHANGED,update);
+  },[]);
+  useEffect(()=>{
+    if(status==="loading"||status==="unavailable")return;
+    if(status==="signed-out"&&!isPublic){void navigate({to:"/auth",replace:true});return;}
+    if(status==="signed-in"&&userId){
+      const onboarded=!!readOnboarding(userId);
+      if(!onboarded&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
+      if(onboarded&&pathname==="/onboarding"){void navigate({to:"/dashboard",replace:true});return;}
+    }
+  },[status,userId,isPublic,pathname,navigate,onboardingVersion]);
+  // The landing page and auth are public. All study pages fail closed while
+  // the auth service is loading or unavailable. Never render protected content first.
+  if(isPublic)return <>{children}</>;
+  if(status==="loading"||status==="unavailable")return <div role="status" className="mx-auto max-w-lg rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
+    {status==="loading"?"Ստուգվում է մուտքը…":"Մուտքի ծառայությունը ժամանակավորապես անհասանելի է։ Փորձիր կրկին ավելի ուշ։"}
+  </div>;
+  if(status!=="signed-in"||!userId)return <div role="status" className="p-6 text-sm text-muted-foreground">Անցում մուտքի էջ…</div>;
+  if(!readOnboarding(userId)&&pathname!=="/onboarding")return <div role="status" className="p-6 text-sm text-muted-foreground">Անցում ծանոթացման էջ…</div>;
+  if(readOnboarding(userId)&&pathname==="/onboarding")return <div role="status" className="p-6 text-sm text-muted-foreground">Բացվում է Dashboard-ը…</div>;
+  return <>{children}</>;
+}
 function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
+  const location=useLocation();
+  const publicView=location.pathname==="/";
   useEffect(() => {
     return initAppearance();
   }, []);
@@ -184,12 +250,12 @@ function ActiveApp() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <a className="skip-link" href="#main-content">Skip to content</a>
       <TouchGlassEffects />
-      <AppHeader />
-      <PersonalizationControls />
+      {!publicView && <AppHeader />}
+      {!publicView && <PersonalizationControls />}
       <main id="main-content" tabIndex={-1} className="mx-auto box-border w-full min-w-0 max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <TranslationProvider><Outlet /></TranslationProvider>
+        <TranslationProvider><AuthBoundary><Outlet /></AuthBoundary></TranslationProvider>
       </main>
-      <MobileNav />
+      {!publicView && <MobileNav />}
       <Toaster />
     </QueryClientProvider>
   );
