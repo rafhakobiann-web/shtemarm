@@ -1,5 +1,5 @@
 {
-  "description": "Verified PDF section navigation metadata for four source volumes, not a reproduction of copyrighted question text. PDF pages are 1-based; answer-key pages are separate.",
+  "description": "Validated TOC navigation metadata from user-provided 2018-exam books. PDF pages are 1-based. The statement bundle and printed answer tables are separate from the 8 main sections; not an official-question transcription.",
   "source": "User-provided hayoc-1.pdf through hayoc-4.pdf",
   "volumes": [
     {
@@ -61,12 +61,21 @@
           "title": "Գրականություն",
           "pdfPage": 194,
           "verifiedTitle": true,
-          "lastPdfPage": 248
+          "lastPdfPage": 239
         }
       ],
       "answerKeyStartPdfPage": 249,
       "answerKeyEndPdfPage": 256,
-      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
+      "sourceVerification": "Four original PDFs inspected: 8 titles, section start pages, separate statement bundle, and answer-key boundaries verified against TOC and start-page headings; individual questions and printed answers still require review",
+      "sourceSha256": "5894d996c336a5837c7ce4e7b77eca59bb0cec0ae6c5ab55d468e05cd9356e35",
+      "sourceType": "2018 պետական ավարտական և միասնական քննությունների շտեմարան",
+      "publicationYear": 2017,
+      "tocPage": 3,
+      "statementBundle": {
+        "title": "Պնդումների փունջ",
+        "pdfPage": 240,
+        "lastPdfPage": 248
+      }
     },
     {
       "volume": 2,
@@ -127,12 +136,21 @@
           "title": "Գրականություն",
           "pdfPage": 202,
           "verifiedTitle": true,
-          "lastPdfPage": 249
+          "lastPdfPage": 242
         }
       ],
       "answerKeyStartPdfPage": 250,
       "answerKeyEndPdfPage": 256,
-      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
+      "sourceVerification": "Four original PDFs inspected: 8 titles, section start pages, separate statement bundle, and answer-key boundaries verified against TOC and start-page headings; individual questions and printed answers still require review",
+      "sourceSha256": "e8b9f7e59326ad3938f9c27f4ff618ed7058bf7bd92844072cdcb1961210034d",
+      "sourceType": "2018 պետական ավարտական և միասնական քննությունների շտեմարան",
+      "publicationYear": 2017,
+      "tocPage": 3,
+      "statementBundle": {
+        "title": "Պնդումների փունջ",
+        "pdfPage": 243,
+        "lastPdfPage": 249
+      }
     },
     {
       "volume": 3,
@@ -179,12 +197,12 @@
           "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 176,
           "verifiedTitle": true,
-          "lastPdfPage": 180
+          "lastPdfPage": 181
         },
         {
           "number": 7,
           "title": "Ոճագիտություն",
-          "pdfPage": 181,
+          "pdfPage": 182,
           "verifiedTitle": true,
           "lastPdfPage": 189
         },
@@ -193,12 +211,21 @@
           "title": "Գրականություն",
           "pdfPage": 190,
           "verifiedTitle": true,
-          "lastPdfPage": 248
+          "lastPdfPage": 240
         }
       ],
       "answerKeyStartPdfPage": 249,
       "answerKeyEndPdfPage": 256,
-      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
+      "sourceVerification": "Four original PDFs inspected: 8 titles, section start pages, separate statement bundle, and answer-key boundaries verified against TOC and start-page headings; individual questions and printed answers still require review",
+      "sourceSha256": "c237c82c6ab4bfb93f786e777e013d9bccc697d51701b8895da30c899f02e3c8",
+      "sourceType": "2018 պետական ավարտական և միասնական քննությունների շտեմարան",
+      "publicationYear": 2017,
+      "tocPage": 3,
+      "statementBundle": {
+        "title": "Պնդումների փունջ",
+        "pdfPage": 241,
+        "lastPdfPage": 248
+      }
     },
     {
       "volume": 4,
@@ -259,12 +286,21 @@
           "title": "Գրականություն",
           "pdfPage": 210,
           "verifiedTitle": true,
-          "lastPdfPage": 250
+          "lastPdfPage": 241
         }
       ],
       "answerKeyStartPdfPage": 251,
       "answerKeyEndPdfPage": 256,
-      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
+      "sourceVerification": "Four original PDFs inspected: 8 titles, section start pages, separate statement bundle, and answer-key boundaries verified against TOC and start-page headings; individual questions and printed answers still require review",
+      "sourceSha256": "910266f221729f7b310c8656e1a65caaecca26536f9cfee78419c76286ad38bd",
+      "sourceType": "2018 պետական ավարտական և միասնական քննությունների շտեմարան",
+      "publicationYear": 2018,
+      "tocPage": 3,
+      "statementBundle": {
+        "title": "Պնդումների փունջ",
+        "pdfPage": 242,
+        "lastPdfPage": 250
+      }
     }
   ]
 }
