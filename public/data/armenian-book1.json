@@ -4,8 +4,8 @@
     {
       "n": 1,
       "title": "Հնչյունաբանություն և բառագիտություն",
-      "instr_en": "Phonetics and vocabulary",
-      "instr_hy": "Հնչյունաբանություն և բառագիտություն․ ընտրիր ճիշտ պատասխանը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Phonetics and vocabulary",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Հնչյունաբանություն և բառագիտություն․ ընտրիր ճիշտ պատասխանը։",
       "units": [
         {
           "id": "41-1",
@@ -196,8 +196,8 @@
     {
       "n": 2,
       "title": "Ձևաբանություն",
-      "instr_en": "Morphology",
-      "instr_hy": "Ձևաբանություն․ որոշիր խոսքի մասը և քերականական ձևը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Morphology",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Ձևաբանություն․ որոշիր խոսքի մասը և քերականական ձևը։",
       "units": [
         {
           "id": "41-2",
@@ -388,8 +388,8 @@
     {
       "n": 3,
       "title": "Շարահյուսություն և կետադրություն",
-      "instr_en": "Syntax and punctuation",
-      "instr_hy": "Շարահյուսություն և կետադրություն․ ընտրիր ճիշտ պատասխանը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Syntax and punctuation",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Շարահյուսություն և կետադրություն․ ընտրիր ճիշտ պատասխանը։",
       "units": [
         {
           "id": "41-3",
@@ -580,8 +580,8 @@
     {
       "n": 4,
       "title": "Հայ գրականություն",
-      "instr_en": "Armenian literature",
-      "instr_hy": "Հայ գրականություն․ ճանաչիր հեղինակներին և ստեղծագործությունները։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Armenian literature",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Հայ գրականություն․ ճանաչիր հեղինակներին և ստեղծագործությունները։",
       "units": [
         {
           "id": "41-4",
@@ -772,8 +772,8 @@
     {
       "n": 5,
       "title": "Կապակցված խոսք",
-      "instr_en": "Connected speech",
-      "instr_hy": "Կապակցված խոսք․ ընտրիր ճիշտ պատասխանը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Connected speech",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Կապակցված խոսք․ ընտրիր ճիշտ պատասխանը։",
       "units": [
         {
           "id": "41-5",
@@ -876,8 +876,8 @@
     {
       "n": 6,
       "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
-      "instr_en": "General knowledge about Armenian",
-      "instr_hy": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին․ ընտրիր ճիշտ պատասխանը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. General knowledge about Armenian",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Ընդհանուր գիտելիքներ հայոց լեզվի մասին․ ընտրիր ճիշտ պատասխանը։",
       "units": [
         {
           "id": "41-6",
@@ -980,8 +980,8 @@
     {
       "n": 7,
       "title": "Ոճագիտություն",
-      "instr_en": "Stylistics",
-      "instr_hy": "Ոճագիտություն․ որոշիր խոսքի ոճն ու արտահայտչամիջոցը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Stylistics",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Ոճագիտություն․ որոշիր խոսքի ոճն ու արտահայտչամիջոցը։",
       "units": [
         {
           "id": "41-7",
@@ -1084,8 +1084,8 @@
     {
       "n": 8,
       "title": "Գրականություն",
-      "instr_en": "Literature",
-      "instr_hy": "Գրականություն․ ճանաչիր հեղինակին, ժանրը և ստեղծագործությունը։",
+      "instr_en": "Original practice questions; not verified against the official source PDF. Literature",
+      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական PDF-ի հարցերը չեն։ Գրականություն․ ճանաչիր հեղինակին, ժանրը և ստեղծագործությունը։",
       "units": [
         {
           "id": "41-8",
@@ -1185,5 +1185,6 @@
         }
       ]
     }
-  ]
+  ],
+  "sourceStatus": "Հեղինակային փորձնական առաջադրանքներ։ Բնօրինակ պաշտոնական շտեմարանի հարցերի կամ պատասխանների թվայնացում չեն։"
 }

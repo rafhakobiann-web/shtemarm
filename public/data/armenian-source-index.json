@@ -1,5 +1,5 @@
 {
-  "description": "Source PDF navigation metadata, not copyrighted question transcription. Page numbers are 1-based PDF pages; headings 5–8 require manual verification.",
+  "description": "Verified PDF section navigation metadata for four source volumes, not a reproduction of copyrighted question text. PDF pages are 1-based; answer-key pages are separate.",
   "source": "User-provided hayoc-1.pdf through hayoc-4.pdf",
   "volumes": [
     {
@@ -11,51 +11,62 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 26
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 27,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 48
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 49,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 97
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 98,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 172
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 173,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 186
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 187,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 188
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 189,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 193
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 194,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 248
         }
-      ]
+      ],
+      "answerKeyStartPdfPage": 249,
+      "answerKeyEndPdfPage": 256,
+      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
     },
     {
       "volume": 2,
@@ -66,51 +77,62 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 29
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 30,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 51
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 52,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 73
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 74,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 169
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 170,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 183
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 184,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 187
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 188,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 201
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 202,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 249
         }
-      ]
+      ],
+      "answerKeyStartPdfPage": 250,
+      "answerKeyEndPdfPage": 256,
+      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
     },
     {
       "volume": 3,
@@ -121,51 +143,62 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 34
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 35,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 60
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 61,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 96
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 97,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 168
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 169,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 175
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 176,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 180
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 181,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 189
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 190,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 248
         }
-      ]
+      ],
+      "answerKeyStartPdfPage": 249,
+      "answerKeyEndPdfPage": 256,
+      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
     },
     {
       "volume": 4,
@@ -176,51 +209,62 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 6,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 37
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 38,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 68
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 69,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 110
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 111,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "lastPdfPage": 185
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 186,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 197
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 198,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 202
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 203,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 209
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 210,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "lastPdfPage": 250
         }
-      ]
+      ],
+      "answerKeyStartPdfPage": 251,
+      "answerKeyEndPdfPage": 256,
+      "sourceVerification": "PDF section headers and answer-key start inspected; individual questions and answers not yet verified"
     }
   ]
 }
