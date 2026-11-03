@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
+import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
+import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -156,13 +157,25 @@ const LANDING_UI = {
   ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс." },
 } as const;
 
+const ACCENT_LABELS: Record<"hy" | "en" | "ru", Record<Accent, string>> = {
+  hy: { blue:"Կապույտ", violet:"Մանուշակագույն", emerald:"Զմրուխտե", rose:"Վարդագույն", amber:"Սաթագույն", teal:"Փիրուզագույն" },
+  en: { blue:"Blue", violet:"Violet", emerald:"Emerald", rose:"Rose", amber:"Amber", teal:"Teal" },
+  ru: { blue:"Синий", violet:"Фиолетовый", emerald:"Изумрудный", rose:"Розовый", amber:"Янтарный", teal:"Бирюзовый" },
+};
+
 function LandingPage() {
   const lang = useLang();
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
+  const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
 
+  useEffect(() => {
+    const saved = readSavedAccent();
+    setAccent(saved);
+    applyAccent(saved);
+  }, []);
   useEffect(() => {
     initLang();
     let mounted = true;
@@ -210,7 +223,26 @@ function LandingPage() {
               <button key={code} type="button" onClick={() => setLang(code)} aria-pressed={lang === code} title={{ hy: "Հայերեն", en: "English", ru: "Русский" }[code]}>{code.toUpperCase()}</button>
             ))}
           </div>
-          <button type="button" className="sht-landing-theme" aria-label={lang === "hy" ? "Փոխել գունային ռեժիմը" : lang === "ru" ? "Изменить тему" : "Toggle color theme"} onClick={() => setAppearance({ mode: document.documentElement.classList.contains("dark") ? "light" : "dark" })}><Moon className="sht-theme-moon size-4" aria-hidden="true" /><Sun className="sht-theme-sun size-4" aria-hidden="true" /></button>
+          <details className="sht-palette-picker">
+            <summary aria-label={lang === "hy" ? "Արտաքին տեսք և շեշտադրման գույն" : lang === "ru" ? "Внешний вид и акцентный цвет" : "Appearance and accent color"} title={lang === "hy" ? "Արտաքին տեսք" : lang === "ru" ? "Внешний вид" : "Appearance"}>
+              <Palette className="size-4" aria-hidden="true" />
+              <span className="sht-palette-dot" style={{ backgroundColor: ACCENT_SWATCHES.find(option => option.id === accent)?.color }} aria-hidden="true" />
+            </summary>
+            <div className="sht-palette-panel">
+              <p>{lang === "hy" ? "Շեշտադրման գույն" : lang === "ru" ? "Акцентный цвет" : "Accent color"}</p>
+              <div className="sht-palette-colors" role="group" aria-label={lang === "hy" ? "Ընտրել գույնը" : lang === "ru" ? "Выбрать цвет" : "Choose an accent"}>
+                {ACCENT_SWATCHES.map(option => (
+                  <button key={option.id} type="button" aria-label={ACCENT_LABELS[lang][option.id]} title={ACCENT_LABELS[lang][option.id]} aria-pressed={accent === option.id}
+                    style={{ backgroundColor: option.color }}
+                    onClick={() => { chooseAccent(option.id); setAccent(option.id); }} />
+                ))}
+              </div>
+              <button type="button" className="sht-landing-theme sht-palette-mode" aria-label={lang === "hy" ? "Փոխել գունային ռեժիմը" : lang === "ru" ? "Изменить тему" : "Toggle color theme"} onClick={() => setAppearance({ mode: document.documentElement.classList.contains("dark") ? "light" : "dark" })}>
+                <Moon className="sht-theme-moon size-4" aria-hidden="true" /><Sun className="sht-theme-sun size-4" aria-hidden="true" />
+                {lang === "hy" ? "Բաց / մութ" : lang === "ru" ? "Светлая / тёмная" : "Light / dark"}
+              </button>
+            </div>
+          </details>
           <Link to="/auth" className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>

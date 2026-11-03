@@ -5,6 +5,7 @@ import { translate } from "@/lib/lang";
 
 const css = readFileSync("src/styles.css","utf8");
 const home = readFileSync("src/routes/index.tsx","utf8");
+const dashboard = readFileSync("src/routes/dashboard.tsx", "utf8");
 const header = readFileSync("src/components/AppHeader.tsx","utf8");
 const mobile = readFileSync("src/components/MobileNav.tsx","utf8");
 const preferences = readFileSync("src/components/PersonalizationControls.tsx","utf8");
@@ -24,24 +25,26 @@ describe("Shtemarm Academy final design tokens",()=>{
   });
   it("defaults to visible Liquid Glass while retaining a lighter Academy option",()=>{
     expect(DEFAULT_APPEARANCE.surface).toBe("liquid");
-    expect(DEFAULT_APPEARANCE.glass).toBe("balanced");
+    expect(DEFAULT_APPEARANCE.glass).toBe("adaptive");
     expect(DEFAULT_APPEARANCE.blur).toBe(true);
     expect(normalizeAppearance({surface:"liquid",glass:"vivid",blur:true}).surface).toBe("liquid");
-    expect(preferences).toContain('accent: "teal"');
+    expect(preferences).toContain("DEFAULT_ACCENT");
     expect(preferences).toContain('soft: "Ակադեմիական"');
     expect(css).toContain("prefers-reduced-motion");
     expect(css).toContain("user-high-contrast");
   });
   it("provides navigable content rather than hiding existing questions or features",()=>{
-    for(const value of ["academy-hero","academy-quick-action","academy-bento","id=\"subjects\"","id=\"exams\"","to=\"/mini-games\"","to=\"/assessment-builder\"","to=\"/math\"","to=\"/history\"","to=\"/subject/$subject\""]){
+    // / is the public landing, while existing subject/exam destinations remain on /dashboard.
+    for (const value of ["sht-hero", "sht-bento-grid", "sht-subject-grid", 'to="/auth"']) {
       expect(home).toContain(value);
     }
-    expect(home).toContain("PHYSICS_BOOKS.map");
-    expect(home).toContain("BIO_BOOKS.filter");
-    expect(home).toContain("HISTORY_BOOKS.map");
-    expect(home).toContain("ARMENIAN_BOOKS.map");
-    expect(home).toContain("BOOKS.map");
-    expect(home).toContain("MATH_BOOKS.map");
+    for (const value of ["academy-hero", "academy-quick-action", "academy-bento",
+      'id="subjects"', 'id="exams"', 'to="/mini-games"',
+      'to="/math"', 'to="/history"',
+      'to="/subject/$subject"', "PHYSICS_BOOKS.map", "BIO_BOOKS.filter",
+      "HISTORY_BOOKS.map", "ARMENIAN_BOOKS.map", "BOOKS.map", "MATH_BOOKS.map"]) {
+      expect(dashboard).toContain(value);
+    }
     expect(header).toContain('to="/physics/original"');
     expect(header).toContain('to="/study-tools"');
   });

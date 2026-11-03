@@ -14,6 +14,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import liquidGlassCss from "../liquid-glass-2026.css?url";
+import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -128,6 +129,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: liquidGlassCss,
+      },
+      {
+        rel: "stylesheet",
+        href: adaptiveDesignCss,
       },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
