@@ -26,18 +26,14 @@ export const submitFeedback = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// SECURITY: A clientId is browser-controlled and is not proof of ownership.
+// Do not return private messages/replies until records are bound to verified
+// Supabase auth.user IDs and the database has per-user RLS policies.
+// Preserve existing feedback rows and admin access during migration.
 export const getMyFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/) }).parse(input))
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows, error } = await supabaseAdmin
-      .from("feedback")
-      .select("id, message, reply, created_at, replied_at")
-      .eq("client_id", data.clientId)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) { console.error("[feedback] read failed", error.code); throw new Error("service_unavailable"); }
-    return rows ?? [];
+  .handler(async () => {
+    return [] as { id: string; message: string; reply: string | null; created_at: string; replied_at: string | null }[];
   });
 
 function checkAdmin(password: string) {
