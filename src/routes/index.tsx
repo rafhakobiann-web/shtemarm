@@ -9,8 +9,12 @@ import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/c
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
-    { title: "Shtemarm · Պատրաստվիր քննություններին քո ձևով" },
-    { name: "description", content: "Shtemarm՝ շտեմարաններ, սխալների կրկնություն, ուսումնական պլան և առաջընթացի հետևում։" },
+    { title: "Shtemarm | Շտեմարաններ և միասնական քննությունների պատրաստում" },
+    { name: "description", content: "Shtemarm՝ շտեմարաններ, միասնական քննությունների պատրաստում, սխալների կրկնություն և անհատական առաջընթացի հետևում մեկ հարթակում։" },
+    { property: "og:title", content: "Shtemarm | Քննությունների պատրաստում և շտեմարաններ" },
+    { property: "og:description", content: "Սովորիր շտեմարաններով, կրկնիր սխալներդ և հետևիր քո առաջընթացին Shtemarm-ում։" },
+    { name: "twitter:title", content: "Shtemarm | Քննությունների պատրաստում" },
+    { name: "twitter:description", content: "Հայերեն, անգլերեն և ռուսերեն ուսումնական միջերես, շտեմարաններ և ինտերակտիվ առաջադրանքներ։" },
   ] }),
   component: LandingPage,
 });
@@ -243,7 +247,7 @@ function LandingPage() {
               </button>
             </div>
           </details>
-          <Link to="/auth" className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
+          <Link to="/auth" aria-label={ui.signIn} className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>
 

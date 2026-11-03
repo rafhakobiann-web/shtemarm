@@ -301,3 +301,193 @@ html.user-reduced-motion[data-surface="liquid"] :is(.mobile-liquid-indicator,.sh
   transition: none !important;
   animation: none !important;
 }
+
+
+/* Responsive polish pass: public HTML shell, dashboard, exam UI and dock. */
+/* The color picker is part of the HTML shell, not exclusive to Liquid Glass.
+   Make it usable in Classic and Academy themes too. */
+.sht-palette-picker {
+  position: relative;
+  z-index: 55;
+  flex: 0 0 auto;
+}
+.sht-palette-picker > summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  min-height: 2.75rem;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .85rem;
+  cursor: pointer;
+  list-style: none;
+}
+.sht-palette-picker > summary::-webkit-details-marker { display: none; }
+.sht-palette-dot {
+  position: absolute;
+  right: .22rem;
+  bottom: .2rem;
+  width: .6rem;
+  height: .6rem;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+.sht-palette-panel {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + .65rem);
+  right: 0;
+  display: grid;
+  gap: .85rem;
+  width: min(16rem, calc(100vw - 2rem));
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1.15rem;
+  color: var(--foreground);
+  box-shadow: 0 18px 40px -20px rgb(0 0 0 / 28%);
+}
+.sht-palette-panel p { font-size: .81rem; font-weight: 800; }
+.sht-palette-colors {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: .45rem;
+}
+.sht-palette-colors button {
+  min-width: 0;
+  width: 100%;
+  min-height: 2rem;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.sht-palette-colors button[aria-pressed="true"] {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+.sht-palette-mode {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background: var(--muted);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: .85rem;
+  font-weight: 750;
+}
+.sht-palette-picker :is(summary,button):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+/* Liquid override inherits the active accent while accessibility modes
+   always return to an opaque, readable surface. */
+html[data-surface="liquid"] .sht-palette-panel { background: var(--lg-surface-strong); }
+html[data-surface="liquid"][data-glass-quality="lite"] .sht-palette-panel,
+html[data-glass-blur="off"][data-surface="liquid"] .sht-palette-panel,
+html.user-high-contrast[data-surface="liquid"] .sht-palette-panel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--card);
+  border-color: var(--border);
+}
+@media (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] .sht-palette-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--card);
+  }
+}
+/* Dedicated desktop layout: protect from crowded navigation and huge line lengths. */
+@media (min-width: 1024px) {
+  .sht-landing { gap: clamp(4.5rem, 6vw, 7rem); }
+  .sht-landing-nav { gap: clamp(.7rem, 1.2vw, 1.4rem); }
+  .sht-hero { gap: clamp(2rem, 4vw, 4.6rem); }
+  .sht-hero-description { max-width: 36rem; }
+  .sht-feature p { max-width: 28rem; }
+  .sht-subject-card { min-width: 0; }
+  .sht-subject-card strong { overflow-wrap: anywhere; }
+  .academy-home .sht-dashboard-shortcuts { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .sht-exam-metrics { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1180px) {
+  .sht-hero { grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); }
+  .sht-hero h1 { font-size: clamp(2rem, 4.3vw, 3.3rem); }
+  .sht-hero-visual { padding-inline: 0; }
+  .sht-preview { transform: none !important; }
+  .sht-demo-options { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-demo-option:first-child { grid-column: span 2; min-height: 4.6rem; }
+  .sht-bento-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-feature-featured { grid-row: span 2; }
+  .sht-landing-nav { gap: .5rem; }
+}
+/* Phone layouts: keep menus usable from 320px and avoid cramped study tiles. */
+@media (max-width: 767px) {
+  .sht-landing-nav { min-width: 0; width: 100%; gap: .4rem; }
+  .sht-landing-nav .sht-brand { min-width: 0; flex: 0 1 auto; }
+  .sht-nav-actions { min-width: 0; flex: 0 0 auto; }
+  .sht-palette-panel { right: -.5rem; }
+  .sht-hero { min-height: 0; }
+  .sht-hero-description { line-height: 1.7; }
+  .sht-hero-actions { width: 100%; }
+  .sht-hero-actions > * { flex: 1 1 11rem; min-height: 3rem; }
+  .sht-preview { width: 100%; max-width: 100%; transform: none !important; }
+  .sht-preview-body { min-width: 0; }
+  .sht-demo-options { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-demo-option:first-child { grid-column: span 2; min-height: 4.5rem; }
+  .sht-floating-label { position: relative; justify-self: end; right: auto; bottom: auto; margin-top: -.8rem; }
+  .sht-info-band { margin-top: 0 !important; gap: .5rem; }
+  .sht-info-band span { min-width: 0; padding: .6rem; overflow-wrap: anywhere; }
+  .sht-dashboard-bento { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-dashboard-bento > :first-child { grid-column: span 2; }
+  .sht-exam-metrics { grid-template-columns: 1fr; }
+  .sht-exam-hero { border-radius: 1.25rem; }
+  .site-header > div { min-width: 0; }
+  .site-header nav a { white-space: nowrap; }
+}
+/* 320px viewports: use accessible, icon-sized sign in without truncating buttons. */
+@media (max-width: 360px) {
+  .sht-landing-nav { padding-inline: .48rem !important; }
+  .sht-landing-nav .sht-brand-icon { width: 2.2rem; height: 2.2rem; }
+  .sht-nav-actions { gap: .18rem !important; }
+  .sht-palette-picker > summary,
+  html[data-surface="liquid"] .sht-palette-picker > summary,
+  .sht-mobile-links > summary { width: 2.1rem; min-height: 2.4rem; }
+  .sht-nav-login { width: 2.25rem; min-height: 2.4rem; font-size: 0 !important; padding: 0 !important; }
+  .sht-nav-login svg { display: block !important; width: 1rem; height: 1rem; }
+  .sht-lang-switch button { min-width: 1.4rem; min-height: 2.3rem; }
+  .sht-demo-option { min-height: 7rem; padding: .7rem; }
+  .sht-subject-card { padding: .75rem; }
+  .sht-subject-card strong { font-size: .79rem; }
+}
+/* A finger that starts on the dock may still scroll the document vertically.
+   Touch drag to change tabs is captured only after horizontal intent. */
+.mobile-liquid-dock, .mobile-liquid-tab { touch-action: pan-y; }
+.mobile-liquid-dock { bottom: max(.8rem, env(safe-area-inset-bottom)); }
+.mobile-liquid-tab:focus-visible { outline-offset: -2px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sht-dashboard-bento .academy-bento:hover { transform: translateY(-2px); }
+  .sht-palette-picker > summary:hover { border-color: var(--ring); }
+}
+
+/* Touch-sized accent choices: arrange the six swatches as 3 × 2 on phones. */
+@media (max-width: 480px) {
+  .sht-palette-colors,
+  html[data-surface="liquid"] .sht-palette-colors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
+    gap: .65rem;
+  }
+  .sht-palette-colors button,
+  html[data-surface="liquid"] .sht-palette-colors button {
+    width: 2.75rem;
+    min-height: 2.75rem;
+    aspect-ratio: 1;
+  }
+}

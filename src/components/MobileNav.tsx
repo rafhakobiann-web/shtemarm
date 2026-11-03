@@ -57,14 +57,25 @@ export function MobileNav() {
   };
   const dockDown = (e: PointerEvent<HTMLElement>) => {
     if (e.pointerType === "mouse") return;
+    // Do not capture simple taps: native Link clicks must remain intact.
+    // Only a proven horizontal drag takes pointer ownership.
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
-    setHoverTab(pointerTab(e.clientX));
-    e.currentTarget.setPointerCapture(e.pointerId);
   };
   const dockMove = (e: PointerEvent<HTMLElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
-    if (Math.abs(e.clientX - d.x) > 10 && Math.abs(e.clientX - d.x) > Math.abs(e.clientY - d.y)) d.moved = true;
+    const dx = Math.abs(e.clientX - d.x);
+    const dy = Math.abs(e.clientY - d.y);
+    if (!d.moved && dy > 9 && dy > dx) {
+      // Yield normal vertical scrolling to the browser.
+      drag.current = null;
+      setHoverTab(null);
+      return;
+    }
+    if (!d.moved && dx > 12 && dx > dy * 1.2) {
+      d.moved = true;
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    }
     if (d.moved) setHoverTab(pointerTab(e.clientX));
   };
   const dockEnd = (e: PointerEvent<HTMLElement>) => {
@@ -76,7 +87,7 @@ export function MobileNav() {
     const index = pointerTab(e.clientX);
     const link = dockRef.current?.querySelectorAll<HTMLAnchorElement>("a")[index];
     link?.click();
-    if ("vibrate" in navigator) navigator.vibrate?.(8);
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate?.(8);
   };
 
   // Never detach or unmount the dock during scroll; its links remain tappable.
