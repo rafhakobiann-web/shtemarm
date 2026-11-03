@@ -296,10 +296,10 @@ function Index() {
       <section className="academy-hero relative isolate grid overflow-hidden rounded-[1.65rem] px-5 py-8 text-white sm:px-9 sm:py-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(240px,.7fr)] lg:items-center lg:gap-10 lg:px-11">
         <div className="relative z-10 max-w-2xl space-y-5">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-widest text-emerald-50">
-            <GraduationCap className="size-4" aria-hidden="true"/> SHTEMARM · ACADEMY
+            <GraduationCap className="size-4" aria-hidden="true"/> SHTEMARM
           </p>
           <div className="space-y-3">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-100/80">{tx("Shtemarm · հայերեն քննությունների պատրաստում")}</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-100/80">{tx("Shtemarm · քննությունների պատրաստում")}</p>
             <h1 className="max-w-xl text-balance text-3xl font-black leading-[1.23] sm:text-[2.75rem] lg:text-5xl">{tx("Սովորիր վստահ։ Պատրաստվիր խելացի։")}</h1>
             <p className="max-w-lg text-sm leading-7 text-emerald-50/85 sm:text-base">{tx("Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։")}</p>
           </div>
