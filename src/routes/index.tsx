@@ -108,7 +108,7 @@ function EnglishSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ, պաշտոնական քննություններ և թեստերի կազմիչ")} />
+      <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ և քննություններ")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -130,12 +130,6 @@ function EnglishSubject() {
             icon={<Trophy className="size-5" />}
           />
           <ExamTile
-            to="/exam/$subject" params={{ subject: "english" }}
-            title={tx("Թեստերի կազմիչ")}
-            sub={tx("Ընտրիր բաժինները և հարցերի քանակը")}
-            icon={<ClipboardCheck className="size-5" />}
-          />
-          <ExamTile
             to="/english-tests"
             title={tx("Բոլոր անգլերենի թեստերը")}
             sub={tx("Շտեմարաններ, մակարդակի թեստեր և քննություն՝ մեկ էջում")}
@@ -151,7 +145,7 @@ function MathSubject() {
   const tx = useTx();
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-6">
-      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ, պաշտոնական քննություն և թեստերի կազմիչ")} />
+      <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ և քննություն")} />
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -166,7 +160,6 @@ function MathSubject() {
         <h2 className="text-xl font-black sm:text-2xl">{tx("Քննություն")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("65 հարց՝ երկու շտեմարաններից")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/math" search={{ mode: "custom" }} title={tx("Թեստերի կազմիչ")} sub={tx("Ընտրիր բաժինները և հարցերի քանակը")} icon={<ClipboardCheck className="size-5" />} />
         </div>
       </section>
     </div>
@@ -363,11 +356,6 @@ function Index() {
           <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
           <ArrowRight className="size-4 text-muted-foreground"/>
         </a>
-        <Link to="/assessment-builder" className="academy-quick-action">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300"><ClipboardCheck className="size-5"/></span>
-          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Թեմատիկ աշխատանք")}</strong><span className="block text-xs text-muted-foreground">{tx("Ստեղծիր առաջադրանքներ")}</span></span>
-          <ArrowRight className="size-4 text-muted-foreground"/>
-        </Link>
         <Link to="/study-tools" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Brain className="size-5"/></span>
           <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական գործիքներ")}</strong><span className="block text-xs text-muted-foreground">{tx("Քո առաջընթացն ու սխալները")}</span></span>
@@ -552,7 +540,6 @@ function Index() {
         </div>
       </section>
       <section className="grid gap-3 sm:grid-cols-3" aria-label={tx("Լրացուցիչ ուսումնական գործիքներ")}>
-        <ExamTile to="/assessment-builder" title={tx("Թեմատիկ և ամփոփիչ աշխատանքներ")} sub={tx("Կազմել ստուգողական թերթիկ ըստ թեմաների")} icon={<ClipboardCheck className="size-5"/>}/>
         <ExamTile to="/flashcards" title={tx("Հիշողության քարտեր")} sub={tx("Կրկնել իրական հարցերն ու պատասխանները")} icon={<BookOpen className="size-5"/>}/>
         <ExamTile to="/mini-games" title={tx("Ուսումնական խաղեր")} sub={tx("Վիկտորինա, ճիշտ/սխալ և համապատասխանեցում")} icon={<Trophy className="size-5"/>}/>
       </section>
