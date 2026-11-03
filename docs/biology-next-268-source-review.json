@@ -2957,5 +2957,12 @@
       "status": "pending-source-and-answer-type-review",
       "originalExclusionReason": "answer-type-pending"
     }
-  ]
+  ],
+  "sourceMarkerAudit": {
+    "source": "user-provided original PDF (SHA-256 matched)",
+    "checked": 268,
+    "uniqueQuestionNumberMarkers": 268,
+    "sourcePageMismatches": 0,
+    "method": "PyMuPDF scan of bold printed question markers and physical PDF pages; did not validate wording, answer keys or question format."
+  }
 }
