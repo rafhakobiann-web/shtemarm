@@ -26,6 +26,10 @@ on:
       - 'docs/biology-next-500-source-queue.json'
       - 'docs/biology-next-500.md'
       - 'docs/biology-final-500.md'
+      - 'public/data/biology-source-practice-568.json'
+      - 'src/components/BiologySourcePractice568.tsx'
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/test/biology-source-practice-568.test.ts'
       - 'docs/biology-final-500-source-queue.json'
       - 'scripts/verify-biology-all-source-coverage.mjs'
       - 'scripts/verify-biology-final-500-source.py'
@@ -58,4 +62,5 @@ jobs:
           node scripts/verify-biology-next-268.mjs
           node scripts/verify-biology-next-500.mjs
           node scripts/verify-biology-all-source-coverage.mjs
+          bunx vitest run src/test/biology-source-practice-568.test.ts
           bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts
