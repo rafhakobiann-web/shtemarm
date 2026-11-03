@@ -16,6 +16,22 @@ This document describes **third-volume question-bank maintenance**, not a declar
 
 Of the 926 pending: 892 await answer-type handling/source verification, 17 figure reviews, 15 formula reviews and 2 incomplete-text reviews. The 911 existing multiple-choice answers match the indexed printed answer key; that **does not** prove every transcription is fully verified.
 
+## Private source PDF examination — 2026-11-03
+
+The author-supplied 384-page source PDF was inspected locally, without uploading it to the repository. All **926 pending printed question numbers** were located in the corresponding chapter pages. This is evidence of source-document availability **only**: it is not manual proofreading of the question wording, illustrations, or answer keys. No new original text or playable answers have been imported by that discovery.
+
+The project provides a maintainer-only, no-text metadata audit:
+
+```sh
+python scripts/audit_biology3_pdf.py /private/kensab-3.pdf \
+  --output /tmp/biology3-page-audit.json \
+  --pending-output /tmp/biology3-pending-source-locations.json
+```
+
+The source hash is checked before the per-question report is generated. The report records the 926 printed numbers, source pages, detection status and tentative **format hints** without copying the copyrighted question wording. A recognized printed number does not establish a correct or publishable transcription.
+
+**Publication rights** are separate from source possession. Do not publish wholesale book contents in the public repository or deployed website without rights clearance. Existing 911 imported tasks remain untouched. Real question-content imports require verified transcriptions, answer checks, format support and rights confirmation.
+
 ## Use the source-aware importer
 
 The repository does not ship the copyrighted source PDF. Students should **never** need to upload any PDF.
