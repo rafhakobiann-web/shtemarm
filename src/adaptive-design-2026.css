@@ -457,6 +457,7 @@ html.user-high-contrast[data-surface="liquid"] .sht-palette-panel {
   .sht-landing-nav .sht-brand-icon { width: 2.2rem; height: 2.2rem; }
   .sht-nav-actions { gap: .18rem !important; }
   .sht-palette-picker > summary,
+  html[data-surface="liquid"] .sht-palette-picker > summary,
   .sht-mobile-links > summary { width: 2.1rem; min-height: 2.4rem; }
   .sht-nav-login { width: 2.25rem; min-height: 2.4rem; font-size: 0 !important; padding: 0 !important; }
   .sht-nav-login svg { display: block !important; width: 1rem; height: 1rem; }
