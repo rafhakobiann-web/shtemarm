@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download, HeartHandshake } from "lucide-react";
+import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download, HeartHandshake, ListChecks } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -164,6 +164,9 @@ export function AppHeader() {
 
               <div className="space-y-1 border-t pt-3">
                 <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{lang === "en" ? "Learning tools" : lang === "ru" ? "Инструменты" : "Ուսումնական գործիքներ"}</p>
+                <Link to="/mistakes" onClick={close} className={item}>
+                  <ListChecks className="size-4"/>{lang === "en" ? "My mistakes" : lang === "ru" ? "Мои ошибки" : "Իմ սխալները"}
+                </Link>
                 <Link to="/math-handbook" search={{book:"matem-1",chapter:1,section:1,topic:undefined}} onClick={close} className={item}>
                   <Calculator className="size-4"/>{lang==="en"?"Mathematics handbook":lang==="ru"?"Справочник по математике":"Մաթեմատիկայի կանոնների ձեռնարկ"}
                 </Link>

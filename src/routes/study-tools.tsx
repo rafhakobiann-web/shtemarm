@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Layers, Gamepad2, Languages } from "lucide-react";
+import { ArrowLeft, BookOpen, Layers, Gamepad2, Languages, ListChecks } from "lucide-react";
 import { StudyTools } from "@/components/StudyTools";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 export const Route = createFileRoute("/study-tools")({
   staticData: { sitemap: true },
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/study-tools")({
 
 function StudyToolsPage() {
   const tx = useTx();
+  const lang = useLang();
   return (
     <div className="mx-auto max-w-4xl space-y-6 py-4">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
@@ -28,6 +29,7 @@ function StudyToolsPage() {
       </header>
       <div className="grid gap-3 sm:grid-cols-2">
         {[
+          {to:"/mistakes",title:lang === "en" ? "My mistakes" : lang === "ru" ? "Мои ошибки" : "Իմ սխալները",desc:lang === "en" ? "All mistakes and step-by-step review" : lang === "ru" ? "Все ошибки и последовательное повторение" : "Բոլոր սխալներն ու հերթական կրկնությունը",Icon:ListChecks},
           {to:"/flashcards",title:"Հիշողության քարտեր",desc:"Կրկնել տերմինները և թեմաները",Icon:Layers},
           {to:"/mini-games",title:"Մինի խաղեր",desc:"Արագ հարցեր, ճիշտ/սխալ, համապատասխանեցում",Icon:Gamepad2},
           {to:"/vocabulary",title:"Իմ բառապաշարը",desc:"Սովորել և կրկնել բառերը",Icon:Languages},

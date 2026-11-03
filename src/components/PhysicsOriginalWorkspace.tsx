@@ -5,6 +5,7 @@ import {BookOpenCheck,ClipboardCheck,RefreshCw,ShieldCheck,Shuffle,Trophy} from 
 import {Button} from "@/components/ui/button";
 import {UnitCard,scoreUnit,type UnitAnswer} from "@/components/UnitCard";
 import {useTx} from "@/lib/lang";
+import {recordUnitMistakes} from "@/lib/unitMistakes";
 import {PHYSICS_SOURCES,type PhysicsVolume} from "@/lib/physics-source";
 import {loadPhysicsOriginalBank,sourceQuestionsForVolume,sourceAsUnit,
  type PhysicsSourceEntry} from "@/lib/physics-original";
@@ -38,6 +39,8 @@ export function PhysicsOriginalWorkspace(){
     setRevealed({});setComplete(false);setShowReview(false);
   }
   function finish(){
+    if(complete)return;
+    recordUnitMistakes("physics",units,answers);
     setComplete(true);
     try{
       const history=JSON.parse(window.localStorage.getItem(RESULTS)??"[]") as unknown;

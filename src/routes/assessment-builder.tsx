@@ -57,7 +57,7 @@ function AssessmentBuilder() {
       setGenerated(assessment);setShowKey(false);setError("");setMode("print");
     }catch(e){setError(e instanceof Error?e.message:String(e));}
   };
-  if (generated && mode==="test") return <HistorySession
+  if (generated && mode==="test") return <HistorySession subjectId={subject}
     title={generated.title} units={generated.units} minutes={0} practice
     onExit={()=>setMode("print")}/>;
 

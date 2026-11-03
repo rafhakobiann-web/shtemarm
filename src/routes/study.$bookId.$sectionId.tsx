@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
+import { recordUnitMistakes, subjectForBookId } from "@/lib/unitMistakes";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
   staticData: { sitemap: false },
@@ -92,7 +93,7 @@ function StudyPage() {
       ) : mode === "game" ? (
         <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       ) : (
-        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} />
+        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       )}
     </div>
   );
@@ -101,7 +102,7 @@ function StudyPage() {
 const perQuestion = (u: Unit) => u.kind === "mc" || u.kind === "num";
 const qKey = (u: Unit, k: string) => (perQuestion(u) ? `${u.id}:${k}` : u.id);
 
-function useRevealer(onResult?: (correct: boolean) => void) {
+function useRevealer(subject: string, onResult?: (correct: boolean) => void) {
   const [answers, setAnswers] = useState<Record<string, UnitAnswer>>({});
   const [revealed, updateRevealed] = useState<Record<string, boolean>>({});
   const checkedRef = useRef<Set<string>>(new Set());
@@ -125,6 +126,10 @@ function useRevealer(onResult?: (correct: boolean) => void) {
     else if (u.kind === "num") ok = normNum(a?.mc?.[key]) === normNum(questionForAnswerKey(u, key)?.answer);
     else ok = scoreUnit(u, a).got === 1;
     recordAnswer(id, ok);
+    if (a) {
+      const attempted: UnitAnswer = perQuestion(u) ? {mc: {[key]: a.mc?.[key] ?? ""}} : a;
+      recordUnitMistakes(subject, [u], {[u.id]: attempted});
+    }
     onResult?.(ok);
   };
   return { answers, setAnswers, revealed, setRevealed, check };
@@ -146,9 +151,9 @@ function PhysicsSourceJump({unit}:{unit:Unit}){
 }
 
 /* ---------------- Classic ---------------- */
-function Classic({ units, instr, instrEn }: { units: Unit[]; instr: string; instrEn: string }) {
+function Classic({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
   const tx = useTx();
-  const { answers, setAnswers, revealed, check } = useRevealer();
+  const { answers, setAnswers, revealed, check } = useRevealer(subjectForBookId(bookId));
   // A single History/Biology section can contain hundreds of units. Rendering
   // the entire section on first paint blocks input and makes scrolling laggy.
   // Expand in source order without dropping any tasks or current answers.
@@ -218,7 +223,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
   const [earned, setEarned] = useState(0);
   const [right, setRight] = useState(0);
   const [total, setTotal] = useState(0);
-  const { answers, setAnswers, revealed, setRevealed, check } = useRevealer((ok) => {
+  const { answers, setAnswers, revealed, setRevealed, check } = useRevealer(subjectForBookId(bookId), (ok) => {
     setTotal((t) => t + 1);
     if (ok) {
       setRight((r) => r + 1);

@@ -84,6 +84,7 @@ export function WorkbookExamWorkspace({
   if (active) {
     return (
       <HistorySession
+        subjectId={subject}
         units={active.units}
         title={active.title}
         minutes={active.minutes}

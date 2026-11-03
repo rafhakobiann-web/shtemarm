@@ -55,7 +55,7 @@ function StarterSubjectPage() {
   const pool = entries.filter(e => !sections.length || sections.includes(e.section));
   const valid = Number.isInteger(count) && count > 0 && count <= pool.length
     && Number.isInteger(minutes) && minutes >= 0 && minutes <= 300;
-  if (active) return <HistorySession units={active} title={guide.name} practice={practice} minutes={minutes}
+  if (active) return <HistorySession subjectId={s} units={active} title={guide.name} practice={practice} minutes={minutes}
     onExit={() => setActive(null)} recordResult={(score, total) =>
       update(p => ({ ...p, exams: [...p.exams,
         { book: bookId, score, total, date: new Date().toISOString() }].slice(-50) }))}/>;

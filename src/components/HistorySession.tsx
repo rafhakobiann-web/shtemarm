@@ -4,6 +4,7 @@ import { UnitCard, scoreUnit, isAnswered, type UnitAnswer } from "@/components/U
 import { KIND_HY, type Unit } from "@/lib/books";
 import { useHistoryProgress } from "@/lib/history-progress";
 import { useTx } from "@/lib/lang";
+import { recordUnitMistakes } from "@/lib/unitMistakes";
 
 export function HistorySession({
   units,
@@ -12,6 +13,7 @@ export function HistorySession({
   practice,
   onExit,
   recordResult,
+  subjectId,
 }: {
   units: Unit[];
   title: string;
@@ -19,6 +21,7 @@ export function HistorySession({
   practice: boolean;
   onExit: () => void;
   recordResult?: (correct: number, total: number) => void;
+  subjectId?: string;
 }) {
   const tx = useTx();
   const { addExam } = useHistoryProgress();
@@ -38,9 +41,10 @@ export function HistorySession({
     saved.current = true;
     setFinished(true);
     setConfirm(false);
+    recordUnitMistakes(subjectId ?? title, units, answers);
     if (recordResult) recordResult(score, total);
     else addExam(score, total);
-  }, [score, total, addExam, recordResult]);
+  }, [score, total, addExam, recordResult, subjectId, title, units, answers]);
   useEffect(() => {
     if (!deadline || finished) return;
     const tick = () => {
