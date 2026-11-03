@@ -7,6 +7,10 @@ on:
       - 'src/lib/auth-feedback.ts'
       - 'src/lib/google-oauth-routing.ts'
       - 'src/test/google-oauth-routing.test.ts'
+      - 'src/test/public-auth-config.test.ts'
+      - 'src/lib/public-auth-config.ts'
+      - 'src/routes/api/public-auth-config.ts'
+      - 'src/integrations/supabase/client.ts'
       - 'src/components/BookCover.tsx'
       - 'src/routes/index.tsx'
       - 'src/routes/book.$bookId.tsx'
@@ -32,6 +36,6 @@ jobs:
       - name: Install exact dependencies
         run: bun install --frozen-lockfile
       - name: Validate source question pages, answer keys and cover assets
-        run: bunx vitest run src/test/google-oauth-routing.test.ts src/test/auth-and-covers.test.ts src/test/biology-original-bank-integrity.test.ts src/test/biology-source-banks.test.ts src/test/biology-original-navigation.test.ts src/test/text-only-study.test.ts src/test/ux-cleanup.test.ts
+        run: bunx vitest run src/test/public-auth-config.test.ts src/test/google-oauth-routing.test.ts src/test/auth-and-covers.test.ts src/test/biology-original-bank-integrity.test.ts src/test/biology-source-banks.test.ts src/test/biology-original-navigation.test.ts src/test/text-only-study.test.ts src/test/ux-cleanup.test.ts
       - name: Build full production website without deploying
         run: bun run build
