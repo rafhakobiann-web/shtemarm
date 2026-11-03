@@ -1,0 +1,25 @@
+name: Verify Biology III 34 adapted questions
+on:
+  pull_request:
+    paths:
+      - 'public/data/bio-book3.json'
+      - 'public/data/biology-volume3-coverage.json'
+      - 'public/data/biology-backlog-summary.json'
+      - 'public/data/biology-pending-books.json'
+      - 'src/test/biology3-adapted34.test.ts'
+      - 'scripts/validate-biology-transcriptions.mjs'
+      - '.github/workflows/verify-biology3-adapted34.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Validate source answers and 34 adapted task records
+        run: node scripts/validate-biology-transcriptions.mjs
+      - name: Verify 34 new MCQs, source IDs, coverage, and existing Biology bank
+        run: bunx vitest run src/test/biology3-adapted34.test.ts src/test/biology-backlog-audit.test.ts src/test/biology-original-bank-integrity.test.ts
+      - name: Build production website
+        run: bun run build
