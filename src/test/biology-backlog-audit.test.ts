@@ -53,14 +53,16 @@ describe("Biology III/IV backlog: every original printed question is accounted f
         const present = new Set<number>();
         for (const unit of importedUnits) {
           expect(["mc", "num", "set", "seq", "match"]).toContain(unit.kind);
-          if (unit.kind === "mc" || unit.kind === "num") expect(unit.questions).toHaveLength(1);
-          const n = Number(unit.kind === "mc" || unit.kind === "num" ? unit.questions[0].n : unit.label);
+          if (unit.kind === "mc") expect(unit.questions).toHaveLength(1);
+          if (unit.kind === "num") expect(unit.questions.length).toBeGreaterThan(0);
+          const n = Number(unit.kind === "mc" ? unit.questions[0].n : unit.label);
           expect(Number.isInteger(n) && n >= 1 && n <= ch.questionCount).toBe(true);
           if (unit.kind === "mc") {
             expect(unit.questions[0].answer).toBe(ch.choiceKeys[n - 1]);
           }
           expect(present.has(n), `duplicate imported ${volume}:${ch.id}:${n}`).toBe(false);
           present.add(n);
+          expect(unit.sourcePage).toBe(pageForBiologyQuestion(ch, n));
         }
         const missing = new Set<number>();
         const reasons: Record<string, number> = {};
