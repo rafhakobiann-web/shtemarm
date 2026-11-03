@@ -243,7 +243,7 @@ function LandingPage() {
               </button>
             </div>
           </details>
-          <Link to="/auth" className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
+          <Link to="/auth" aria-label={ui.signIn} className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>
 
