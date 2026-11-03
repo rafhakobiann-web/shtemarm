@@ -136,10 +136,10 @@ function BookPage() {
               "Սկսիր սովորել՝ առանց PDF-ի"}</h2>
             <p className="text-sm text-muted-foreground">
               {lang === "en" ?
-                "Available, source-reviewed questions open right here with answer controls and feedback. Other original tasks are still being verified and will appear only when ready." :
+                "Available digitized questions open directly here with answer controls and feedback. Other original tasks are still being checked and will appear only when ready." :
                lang === "ru" ?
-                "Доступные, проверенные по источнику задания открываются здесь с ответами и проверкой. Остальные задания появятся после проверки." :
-                "Հասանելի և բնօրինակով ստուգված հարցերը բացվում են հենց կայքում՝ պատասխանելու և ստուգելու հնարավորությամբ։ Մնացած առաջադրանքները կավելանան միայն ստուգվելուց հետո։"}
+                "Доступные оцифрованные задания открываются здесь с ответами и проверкой. Остальные появятся после дополнительной проверки." :
+                "Հասանելի թվայնացված հարցերը բացվում են հենց կայքում՝ պատասխանելու և ստուգելու հնարավորությամբ։ Մնացած առաջադրանքները կավելանան միայն լրացուցիչ ստուգվելուց հետո։"}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
