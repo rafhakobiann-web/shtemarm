@@ -138,6 +138,15 @@ function BookPage() {
             const printedSection = printedVolume?.sections.find((section) => section.number === s.n);
             const ids = s.units.flatMap((u) => ("questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
             const hasQuestions = ids.length > 0;
+            const instruction = !isArmenianBook
+              ? (s.instr_hy || KIND_HY[s.units[0]?.kind ?? "mc"])
+              : hasQuestions
+                ? lang === "en" ? `Shtemarm-authored practice · ${ids.length} questions`
+                  : lang === "ru" ? `Авторские упражнения Shtemarm · ${ids.length} вопросов`
+                    : `Shtemarm-ի հեղինակային վարժանքներ · ${ids.length} հարց`
+                : lang === "en" ? "Original section; interactive practice is not available yet."
+                  : lang === "ru" ? "Раздел оригинала; интерактивных заданий пока нет."
+                    : "Բնօրինակի բաժին․ ինտերակտիվ հարցեր դեռ չկան։";
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (
@@ -146,7 +155,7 @@ function BookPage() {
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{secNum(s.n)}</span>
                   <div className="min-w-0">
                     <h2 className="text-base font-bold">{secTitle(s)}</h2>
-                    <p className="text-sm leading-snug text-muted-foreground">{s.instr_hy || KIND_HY[s.units[0]?.kind ?? "mc"]}</p>
+                    <p className="text-sm leading-snug text-muted-foreground">{instruction}</p>
                     {printedSection && (
                       <p className="mt-1 text-xs font-medium text-muted-foreground">
                         {lang === "en" ? "Original PDF pages" : lang === "ru" ? "Страницы оригинала" : "Բնօրինակի էջեր"}: {printedSection.pdfPage}–{printedSection.lastPdfPage}
