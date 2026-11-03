@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Layers, RefreshCw, RotateCcw, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Layers, RefreshCw, RotateCcw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { loadBook, type Unit } from "@/lib/books";
 import { historyBookEntries } from "@/lib/history";
@@ -58,6 +59,10 @@ function FlashcardsPage(){
   const [revealed,setRevealed]=useState(false);
   const [known,setKnown]=useState<Record<string,boolean>>(()=>readKnown("biology"));
   const [onlyMissed,setOnlyMissed]=useState(false);
+  const [dragX,setDragX]=useState(0);
+  const [animating,setAnimating]=useState(false);
+  const start=useRef<{x:number;y:number;id:number;dragged:boolean}|null>(null);
+  const animationTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const result=useQuery({queryKey:["flashcards-v1",subject],queryFn:()=>loadCards(subject),staleTime:Infinity});
   const all=result.data??[];
   const sections=useMemo(()=>[...new Set(all.map(v=>v.source))],[all]);
@@ -79,7 +84,33 @@ function FlashcardsPage(){
     });
     setIndex(i=>i+1);setRevealed(false);
   };
-  const restart=()=>{setRetry(n=>n+1);setIndex(0);setRevealed(false);};
+  const finishSwipe=(success:boolean)=>{
+    if(animating||!current)return;
+    setAnimating(true);
+    setDragX(success?-window.innerWidth:window.innerWidth);
+    if(animationTimer.current)clearTimeout(animationTimer.current);
+    animationTimer.current=setTimeout(()=>{answer(success);setDragX(0);setAnimating(false);animationTimer.current=null;},210);
+  };
+  const pointerDown=(e:ReactPointerEvent<HTMLButtonElement>)=>{
+    if(animating||e.button!==0)return;
+    start.current={x:e.clientX,y:e.clientY,id:e.pointerId,dragged:false};
+  };
+  const pointerMove=(e:ReactPointerEvent<HTMLButtonElement>)=>{
+    const s=start.current;
+    if(!s||s.id!==e.pointerId||animating)return;
+    const dx=e.clientX-s.x,dy=e.clientY-s.y;
+    if(!s.dragged&&Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12){start.current=null;return;}
+    if(Math.abs(dx)>8){s.dragged=true;e.currentTarget.setPointerCapture(e.pointerId);setDragX(Math.max(-240,Math.min(240,dx)));}
+  };
+  const pointerUp=(e:ReactPointerEvent<HTMLButtonElement>)=>{
+    const s=start.current;
+    if(!s||s.id!==e.pointerId)return;
+    start.current=null;
+    const dx=e.clientX-s.x;
+    if(s.dragged&&Math.abs(dx)>=85)finishSwipe(dx<0);
+    else setDragX(0);
+  };
+  const restart=()=>{if(animationTimer.current)clearTimeout(animationTimer.current);animationTimer.current=null;setAnimating(false);setDragX(0);start.current=null;setRetry(n=>n+1);setIndex(0);setRevealed(false);};
   return <main className="mx-auto max-w-5xl space-y-6 px-4 pb-20">
     <Link to="/study-tools" className="inline-flex items-center gap-2 pt-5 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4"/>{tx("Ուսումնական գործիքներ")}</Link>
     <header className="space-y-3 rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-violet-500/10 p-6 sm:p-8">
@@ -129,8 +160,11 @@ function FlashcardsPage(){
         <span>{index+1} / {cards.length}</span><span className="max-w-[65%] truncate">{current?.source}</span>
       </div>
       <progress className="h-2 w-full accent-primary" max={cards.length} value={index}/>
-      <button type="button" aria-expanded={revealed} className="flex min-h-64 w-full flex-col items-center justify-center gap-5 rounded-3xl border bg-card p-6 text-center shadow-sm transition-colors hover:border-primary/50 sm:min-h-80"
-        onClick={()=>setRevealed(v=>!v)}>
+      <div className="grid grid-cols-2 gap-3 text-center text-xs font-bold sm:text-sm"><span className="rounded-xl bg-emerald-500/10 p-3 text-emerald-700 dark:text-emerald-300">← {tx("Գիտեի")}</span><span className="rounded-xl bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">{tx("Պետք է կրկնեմ")} →</span></div>
+      <button type="button" aria-expanded={revealed} aria-label={tx("Հպիր քարտին՝ շրջելու համար")} className="relative flex min-h-64 w-full touch-pan-y select-none flex-col items-center justify-center gap-5 rounded-3xl border bg-card p-6 text-center shadow-sm transition-[transform,opacity,border-color] duration-200 ease-out hover:border-primary/50 sm:min-h-80"
+        style={{transform:"translate3d("+dragX+"px,0,0) rotate("+(dragX/24)+"deg)",opacity:Math.max(.35,1-Math.abs(dragX)/500),transition:dragX!==0&&!animating?"none":undefined}}
+        onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={()=>{start.current=null;setDragX(0)}}
+        onClick={()=>{if(!animating&&Math.abs(dragX)<8)setRevealed(v=>!v)}}>
         <span className="text-xs font-bold uppercase tracking-widest text-primary">{revealed?tx("Պատասխան"):tx("Հարց")}</span>
         <span className="max-w-2xl whitespace-pre-wrap text-lg font-bold leading-relaxed sm:text-2xl">{revealed?current?.back:current?.front}</span>
         <span className="text-xs text-muted-foreground">{tx("Հպիր քարտին՝ շրջելու համար")}</span>
@@ -138,11 +172,12 @@ function FlashcardsPage(){
       <div className="grid gap-2 sm:grid-cols-3">
         {!revealed ? <Button size="lg" className="sm:col-span-3" onClick={()=>setRevealed(true)}>{tx("Տեսնել պատասխանը")}</Button> :
           <>
-            <Button variant="outline" size="lg" onClick={()=>answer(false)}>{tx("Պետք է կրկնեմ")}</Button>
-            <Button size="lg" onClick={()=>answer(true)}>{tx("Գիտեի")}</Button>
+            <Button variant="outline" size="lg" disabled={animating} onClick={()=>finishSwipe(false)}>{tx("Պետք է կրկնեմ")}</Button>
+            <Button size="lg" disabled={animating} onClick={()=>finishSwipe(true)}>{tx("Գիտեի")}</Button>
             <Button variant="ghost" size="lg" onClick={()=>{setIndex(v=>v+1);setRevealed(false)}}>{tx("Բաց թողնել")}</Button>
           </>}
       </div>
+      <p className="text-center text-xs text-muted-foreground">{tx("Միայն չիմացած քարտերը")} · {Object.values(known).filter(v=>v===false).length}</p>
       <Button variant="ghost" onClick={restart}><RotateCcw className="mr-2 size-4"/>{tx("Սկսել նորից")}</Button>
     </section>}
   </main>;
