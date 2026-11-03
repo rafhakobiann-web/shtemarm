@@ -14,7 +14,7 @@ All four volumes have eight main sections:
 7. Ոճագիտություն
 8. Գրականություն
 
-The last pages of each book contain answer keys. Source page ranges were checked using PDF headings, not inferred from the site's existing practice banks.
+The last pages of each book contain answer keys; a separate «Պնդումների փունջ» precedes them. Source page ranges were checked using PDF headings, not inferred from practice banks. **Volume III section 7 starts at PDF page 182, not 181.** See `docs/ARMENIAN_SOURCE_ALIGNMENT_20261103.md` for corrected page boundaries, SHA-256 fingerprints, UI routing and the latest audited counts.
 
 ## Current online question-bank coverage (2026-10-30)
 
@@ -26,7 +26,7 @@ The last pages of each book contain answer keys. Source page ranges were checked
 | IV | 31 | 8 | 0 |
 | **Total** | **189** | **32** | **0** |
 
-**Important:** These are original practice exercises, not transcriptions or answer-key checks of the official PDFs. Online practice sections now have eight topic headings per volume, but the first-volume question content and the first section of volumes II–IV still need subject-level review. Volumes II–IV reuse some practice prompts; more varied, verified items are needed. Never treat matching numbers as proof of a verified source mapping.
+**Important:** These are original practice exercises, not transcriptions or answer-key checks of the official PDFs. Online practice sections now have eight topic headings per volume, and existing questions have now been redistributed into the matching topics; however volumes III and IV have zero authored phonetics questions, and the entire authored bank still requires individual pedagogical review. Volumes II–IV reuse some practice prompts; more varied, verified items are needed. Never treat matching numbers as proof of a verified source mapping.
 
 ## Next implementation tasks
 
