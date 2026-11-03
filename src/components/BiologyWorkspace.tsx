@@ -68,6 +68,7 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
   if (attempt) {
     return (
       <HistorySession
+        subjectId="biology"
         {...attempt}
         onExit={() => setAttempt(null)}
         recordResult={(score, total) => {
