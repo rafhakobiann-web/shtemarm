@@ -3,7 +3,8 @@ import { useSyncExternalStore } from "react";
 export type Theme = "light" | "dark";
 export type ColorMode = Theme | "system";
 export type SurfaceTheme = "classic" | "soft" | "liquid";
-export type GlassIntensity = "subtle" | "balanced" | "vivid";
+export type GlassIntensity = "adaptive" | "subtle" | "balanced" | "vivid";
+export type GlassQuality = "lite" | "balanced" | "rich";
 export type Appearance = {
   mode: ColorMode;
   surface: SurfaceTheme;
@@ -16,12 +17,12 @@ const LEGACY_KEY = "shtemarm-theme";
 export const DEFAULT_APPEARANCE: Readonly<Appearance> = Object.freeze({
   mode: "system",
   surface: "liquid",
-  glass: "vivid",
+  glass: "adaptive",
   blur: true,
 });
 const modes: readonly ColorMode[] = ["system", "light", "dark"];
 const surfaces: readonly SurfaceTheme[] = ["classic", "soft", "liquid"];
-const glasses: readonly GlassIntensity[] = ["subtle", "balanced", "vivid"];
+const glasses: readonly GlassIntensity[] = ["adaptive", "subtle", "balanced", "vivid"];
 
 function valid<T extends string>(value: unknown, options: readonly T[], fallback: T): T {
   return typeof value === "string" && options.includes(value as T) ? value as T : fallback;
@@ -55,12 +56,30 @@ function systemDark() {
 export function resolvedTheme(appearance: Appearance): Theme {
   return appearance.mode === "system" ? (systemDark() ? "dark" : "light") : appearance.mode;
 }
+// Conservative, capability-aware rendering: never test GPU benchmarks or block navigation.
+// Unknown hardware receives balanced glass; reduced-transparency always takes priority.
+export function detectGlassQuality(): GlassQuality {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return "balanced";
+  const device = navigator as Navigator & {
+    deviceMemory?: number;
+    connection?: { saveData?: boolean; effectiveType?: string };
+  };
+  if (window.matchMedia?.("(prefers-reduced-transparency: reduce)").matches ||
+      device.connection?.saveData ||
+      (device.deviceMemory !== undefined && device.deviceMemory <= 4) ||
+      (device.hardwareConcurrency !== undefined && device.hardwareConcurrency <= 4)) return "lite";
+  if ((device.deviceMemory ?? 0) >= 8 && (device.hardwareConcurrency ?? 0) >= 8 &&
+      window.innerWidth >= 768) return "rich";
+  return "balanced";
+}
+
 export function applyAppearance(appearance: Appearance) {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.classList.toggle("dark", resolvedTheme(appearance) === "dark");
   root.dataset.surface = appearance.surface;
   root.dataset.glass = appearance.glass;
+  root.dataset.glassQuality = detectGlassQuality();
   root.dataset.glassBlur = appearance.blur ? "on" : "off";
 }
 
@@ -114,10 +133,22 @@ export function initAppearance() {
     applyAppearance(snapshot);
     broadcast();
   };
+  const onDeviceChange = () => {
+    if (snapshot.glass !== "adaptive") return;
+    const next = detectGlassQuality();
+    if (document.documentElement.dataset.glassQuality !== next) {
+      document.documentElement.dataset.glassQuality = next;
+    }
+  };
+  const transparency = window.matchMedia?.("(prefers-reduced-transparency: reduce)");
   media?.addEventListener?.("change", onMediaChange);
+  transparency?.addEventListener?.("change", onDeviceChange);
+  window.addEventListener("resize", onDeviceChange, { passive: true });
   window.addEventListener("storage", onStorage);
   return () => {
     media?.removeEventListener?.("change", onMediaChange);
+    transparency?.removeEventListener?.("change", onDeviceChange);
+    window.removeEventListener("resize", onDeviceChange);
     window.removeEventListener("storage", onStorage);
   };
 }
@@ -131,13 +162,23 @@ function startupAppearance() {
     const mode = ["light", "dark", "system"].includes(v.mode)
       ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
     const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "liquid";
-    const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "vivid";
+    const glass = ["adaptive", "subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "adaptive";
     const dark = mode === "dark" ||
       (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
     const root = document.documentElement;
     root.classList.toggle("dark", dark);
     root.dataset.surface = surface;
     root.dataset.glass = glass;
+    const hardware = navigator as Navigator & {
+      deviceMemory?: number; connection?: { saveData?: boolean };
+    };
+    const isLite = matchMedia("(prefers-reduced-transparency: reduce)").matches ||
+      hardware.connection?.saveData ||
+      (hardware.deviceMemory !== undefined && hardware.deviceMemory <= 4) ||
+      (hardware.hardwareConcurrency !== undefined && hardware.hardwareConcurrency <= 4);
+    const isRich = (hardware.deviceMemory ?? 0) >= 8 &&
+      (hardware.hardwareConcurrency ?? 0) >= 8 && window.innerWidth >= 768;
+    root.dataset.glassQuality = isLite ? "lite" : isRich ? "rich" : "balanced";
     root.dataset.glassBlur = v.blur === false ? "off" : "on";
   } catch { /* No stored theme: use CSS defaults. */ }
 }
