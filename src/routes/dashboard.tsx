@@ -350,7 +350,7 @@ function Index() {
         </span>
         <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" />
       </Link>
-      <nav aria-label={tx("Արագ անցումներ")} className="grid gap-3 sm:grid-cols-3">
+      <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-3">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
           <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
@@ -368,7 +368,7 @@ function Index() {
             {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
           </p>
           <h2 className="text-2xl font-black sm:text-3xl">{tx("Քո ուսումնական վահանակը")}</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="sht-dashboard-bento grid gap-3 sm:grid-cols-3">
             <div className="academy-bento p-4">
               <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
               <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
