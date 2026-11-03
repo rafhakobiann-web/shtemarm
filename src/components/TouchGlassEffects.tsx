@@ -1,79 +1,108 @@
 import { useEffect } from "react";
 
 /**
- * One delegated, passive pointer listener for the entire site. Avoids a React
- * render on every touchmove and does not intercept scrolling or navigation.
+ * Lightweight delegated interaction feedback for Shtemarm.
+ * Mouse hover follows the pointer at most once per animation frame; touch
+ * only adds a press state, never tracks touchmove or blocks native scrolling.
+ * No React rerenders, layout animations, observers or extra dependencies.
  */
 export function TouchGlassEffects() {
   useEffect(() => {
     const root = document.documentElement;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const targets = ".academy-bento, .academy-quick-action, .mobile-liquid-dock, .site-header";
-    let active: HTMLElement | null = null;
+    const glowTargets = ".academy-bento, .academy-quick-action, .mobile-liquid-dock, .site-header";
+    const pressTargets = [
+      ".sht-demo-option", ".sht-subject-card", ".sht-button-primary",
+      ".sht-button-secondary", ".sht-nav-login", ".sht-palette-picker > summary",
+      ".sht-palette-colors button", ".academy-quick-action", ".academy-download-cta",
+      ".mobile-liquid-tab", ".site-header button", ".answer-option:not(:disabled)"
+    ].join(", ");
+    let glowing: HTMLElement | null = null;
+    let pressed: HTMLElement | null = null;
+    let pressedPointer: number | null = null;
     let frame = 0;
     let x = 50;
     let y = 50;
-    let scrolling = false;
-    const enabled = () => !reduced.matches && !root.classList.contains("user-reduced-motion") &&
-      !root.classList.contains("user-high-contrast") && root.dataset.surface === "liquid";
 
-    const paint = () => {
-      frame = 0;
-      if (!active) return;
-      active.style.setProperty("--touch-x", x + "%");
-      active.style.setProperty("--touch-y", y + "%");
+    const enabled = () => !reduced.matches &&
+      !root.classList.contains("user-reduced-motion") &&
+      !root.classList.contains("user-high-contrast") &&
+      root.dataset.surface === "liquid";
+    const targetOf = (event: PointerEvent, selector: string) => {
+      const node = event.target;
+      return node instanceof Element ? node.closest<HTMLElement>(selector) : null;
     };
-    const clear = () => {
+    const clearGlow = () => {
       if (frame) cancelAnimationFrame(frame);
       frame = 0;
-      if (active) {
-        active.removeAttribute("data-touch-glow");
-        active = null;
-      }
+      glowing?.removeAttribute("data-touch-glow");
+      glowing = null;
     };
-    const move = (event: PointerEvent) => {
-      if (!enabled() || scrolling) { clear(); return; }
-      if (event.pointerType === "mouse" && event.type === "pointermove" && event.buttons === 0) {
-        // Hover can show a highlight, but never animate the whole page.
+    const clearPress = () => {
+      pressed?.removeAttribute("data-motion-pressed");
+      pressed = null;
+      pressedPointer = null;
+    };
+    const paint = () => {
+      frame = 0;
+      if (!glowing) return;
+      glowing.style.setProperty("--touch-x", x + "%");
+      glowing.style.setProperty("--touch-y", y + "%");
+    };
+    const onMove = (event: PointerEvent) => {
+      // Finger movement should belong exclusively to scrolling and gestures.
+      if (event.pointerType !== "mouse" || !enabled()) {
+        clearGlow();
+        return;
       }
-      const target = (event.target as Element | null)?.closest?.(targets) as HTMLElement | null;
-      if (!target) { clear(); return; }
-      if (target !== active) {
-        clear();
-        active = target;
-        active.dataset.touchGlow = "true";
+      const target = targetOf(event, glowTargets);
+      if (target !== glowing) {
+        clearGlow();
+        glowing = target;
+        if (glowing) glowing.dataset.touchGlow = "true";
       }
-      const rect = target.getBoundingClientRect();
+      if (!glowing) return;
+      const rect = glowing.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
-      x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
-      y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+      x = Math.max(0, Math.min(100, 100 * (event.clientX - rect.left) / rect.width));
+      y = Math.max(0, Math.min(100, 100 * (event.clientY - rect.top) / rect.height));
       if (!frame) frame = requestAnimationFrame(paint);
     };
-    // Touch glow should not compete with compositor-driven scrolling.
-    // Resume only on the next intentional pointerdown after a scroll.
-    const onScroll = () => {
-      scrolling = true;
-      clear();
-    };
     const onDown = (event: PointerEvent) => {
-      scrolling = false;
-      move(event);
+      clearPress();
+      if (!enabled() || event.button !== 0) return;
+      pressed = targetOf(event, pressTargets);
+      if (pressed) {
+        pressedPointer = event.pointerId;
+        pressed.dataset.motionPressed = "true";
+      }
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const onUp = (event: PointerEvent) => {
+      if (event.pointerId === pressedPointer) clearPress();
+    };
+    const onScroll = () => {
+      clearPress();
+      clearGlow();
+    };
+    const onBlur = () => {
+      clearPress();
+      clearGlow();
+    };
+
+    document.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerdown", onDown, { passive: true });
-    // Only mouse hover needs continuous tracking; touchmove is reserved for scrolling.
-    document.addEventListener("pointermove", move, { passive: true });
-    document.addEventListener("pointerup", clear, { passive: true });
-    document.addEventListener("pointercancel", clear, { passive: true });
-    window.addEventListener("blur", clear);
+    document.addEventListener("pointerup", onUp, { passive: true });
+    document.addEventListener("pointercancel", onUp, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("blur", onBlur);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", clear);
-      document.removeEventListener("pointercancel", clear);
-      window.removeEventListener("blur", clear);
-      clear();
+      document.removeEventListener("pointerup", onUp);
+      document.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("blur", onBlur);
+      onBlur();
     };
   }, []);
   return null;
