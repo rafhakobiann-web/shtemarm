@@ -13,6 +13,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import liquidGlassCss from "../liquid-glass-2026.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -111,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0b766b" },
+      { name: "theme-color", content: "#141e42" },
       { name: "application-name", content: "Shtemarm" },
       { name: "google-site-verification", content: "InvqhMBgY6g8r9G17BLWthQsPSKpetfpNqSguZ_km6E" },
       { property: "og:type", content: "website" },
@@ -123,6 +124,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "stylesheet",
+        href: liquidGlassCss,
       },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },

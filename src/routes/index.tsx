@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, ShieldCheck, Sparkles, Target, Trophy } from "lucide-react";
-import { useLang } from "@/lib/lang";
+import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
+import { initLang, setLang, useLang } from "@/lib/lang";
+import { setAppearance } from "@/lib/theme";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -13,10 +14,29 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 const COPY = {
-  hy: { login:"Մուտք",start:"Սկսել անվճար",learn:"Իմանալ ավելին",tag:"Քո ուսումը՝ քո ռիթմով",hero:"Պատրաստվիր քննություններին ավելի վստահ",intro:"Սովորիր բնօրինակ շտեմարաններով, կրկնիր սխալներդ և հետևիր քո առաջընթացին՝ մեկ հարթակում։",benefits:"Ինչու ընտրել Shtemarm-ը",subjects:"Սովորիր քեզ անհրաժեշտ առարկաները",steps:"Ինչպես է աշխատում",preview:"Տես՝ ինչ է սպասվում քեզ",faq:"Հաճախ տրվող հարցեր",ready:"Պատրա՞ստ ես սկսել",readyDesc:"Ստեղծիր հաշիվ և սկսիր սովորել քո նպատակներով։",b1:"Շտեմարաններ",b1d:"Աշխատիր առարկայական հարցերով և ստուգիր պատասխաններդ։",b2:"Սխալների կրկնություն",b2d:"Վերադարձիր սխալ հարցերին ու ամրապնդիր գիտելիքներդ։",b3:"Անհատական պլան",b3d:"Ընտրիր առարկաներդ և ստացիր օրվա առաջադրանքներ։",b4:"XP և նվաճումներ",b4d:"Հետևիր առաջընթացին և նշիր փոքր հաղթանակներդ։",s1:"Ստեղծիր հաշիվ",s2:"Ընտրիր նպատակներդ",s3:"Սկսիր լուծել և կրկնել",demo:"Օրինակ՝ այսօրվա ուսումնական պլան",demo1:"Կրկնիր սխալ հարցերը",demo2:"Լուծիր նոր առաջադրանքներ",faq1:"Կարո՞ղ եմ սովորել առանց հաշվի։",faq1a:"Ուսումնական բաժիններից օգտվելու համար անհրաժեշտ է մուտք գործել։ Ներկայացման էջը բաց է բոլորի համար։",faq2:"Ի՞նչ կլինի նախկին առաջընթացիս հետ։",faq2a:"Նախկինում այս սարքում պահված առաջընթացը չի ջնջվում։ Մուտքից հետո հնարավորության դեպքում այն համաժամացվում է հաշվի հետ։",faq3:"Ո՞ր լեզուներն են հասանելի։",faq3a:"Ինտերֆեյսը հասանելի է հայերեն, անգլերեն և ռուսերեն։ Շտեմարանների հարցերը մնում են իրենց բնօրինակ լեզվով։"},
-  en: {login:"Sign in",start:"Get started",learn:"Learn more",tag:"Learn at your own pace",hero:"Prepare for exams with confidence",intro:"Practice with question books, revisit mistakes and track your progress in one place.",benefits:"Why Shtemarm?",subjects:"Study the subjects you need",steps:"How it works",preview:"See what's waiting for you",faq:"Frequently asked questions",ready:"Ready to begin?",readyDesc:"Create an account and start learning toward your goals.",b1:"Question books",b1d:"Practice subject questions and check your answers.",b2:"Mistake review",b2d:"Return to missed questions and strengthen your knowledge.",b3:"Personal study plan",b3d:"Choose subjects and get daily learning tasks.",b4:"XP and achievements",b4d:"Track progress and celebrate small milestones.",s1:"Create an account",s2:"Choose your goals",s3:"Practice and review",demo:"Example daily study plan",demo1:"Review missed questions",demo2:"Practice new questions",faq1:"Can I study without an account?",faq1a:"Sign-in is required for study tools. The introductory page is public.",faq2:"What happens to my previous progress?",faq2a:"Previously saved progress on this device is not deleted and can be synced to your account when available.",faq3:"Which languages are available?",faq3a:"The interface supports Armenian, English and Russian. Original question text stays in its source language."},
-  ru: {login:"Войти",start:"Начать",learn:"Подробнее",tag:"Учись в своём ритме",hero:"Готовься к экзаменам увереннее",intro:"Решай задания, повторяй ошибки и отслеживай прогресс на одной платформе.",benefits:"Почему Shtemarm?",subjects:"Изучай нужные предметы",steps:"Как это работает",preview:"Посмотри, что тебя ждёт",faq:"Частые вопросы",ready:"Готов начать?",readyDesc:"Создай аккаунт и учись в соответствии со своими целями.",b1:"Сборники заданий",b1d:"Решай вопросы по предметам и проверяй ответы.",b2:"Работа над ошибками",b2d:"Возвращайся к ошибкам и закрепляй знания.",b3:"Личный план",b3d:"Выбирай предметы и получай задания на день.",b4:"XP и достижения",b4d:"Следи за прогрессом и отмечай достижения.",s1:"Создай аккаунт",s2:"Выбери цели",s3:"Решай и повторяй",demo:"Пример плана на день",demo1:"Повтори ошибки",demo2:"Реши новые задания",faq1:"Можно ли учиться без аккаунта?",faq1a:"Для учебных разделов нужен вход. Вводная страница открыта всем.",faq2:"Что будет со старым прогрессом?",faq2a:"Прогресс, сохранённый на этом устройстве, не удаляется и может синхронизироваться с аккаунтом.",faq3:"Какие языки доступны?",faq3a:"Интерфейс доступен на армянском, английском и русском. Текст заданий остаётся на языке оригинала."},
+  hy: { login:"Մուտք",start:"Սկսել անվճար",learn:"Իմանալ ավելին",tag:"Քո ուսումը՝ քո ռիթմով",hero:"Պատրաստվիր քննություններին ավելի վստահ",intro:"Սովորիր բնօրինակ շտեմարաններով, կրկնիր սխալներդ և հետևիր քո առաջընթացին՝ մեկ հարթակում։",benefits:"Ինչու ընտրել Shtemarm-ը",subjects:"Սովորիր քեզ անհրաժեշտ առարկաները",steps:"Ինչպես է աշխատում",preview:"Տես՝ ինչ է սպասվում քեզ",faq:"Հաճախ տրվող հարցեր",ready:"Պատրա՞ստ ես սկսել",readyDesc:"Ստեղծիր հաշիվ և սկսիր սովորել քո նպատակներով։",b1:"Շտեմարաններ",b1d:"Աշխատիր առարկայական հարցերով և ստուգիր պատասխաններդ։",b2:"Սխալների կրկնություն",b2d:"Վերադարձիր սխալ հարցերին ու ամրապնդիր գիտելիքներդ։",b3:"Անհատական պլան",b3d:"Ընտրիր առարկաներդ և ստացիր օրվա առաջադրանքներ։",b4:"XP և նվաճումներ",b4d:"Հետևիր առաջընթացին և նշիր փոքր հաղթանակներդ։",s1:"Ստեղծիր հաշիվ",s2:"Ընտրիր նպատակներդ",s3:"Սկսիր լուծել և կրկնել",demo:"Օրինակ՝ այսօրվա ուսումնական պլան",demo1:"Կրկնիր սխալ հարցերը",demo2:"Լուծիր նոր առաջադրանքներ",demo3:"Կրկնիր բառերը քարտերով",faq1:"Կարո՞ղ եմ սովորել առանց հաշվի։",faq1a:"Ուսումնական բաժիններից օգտվելու համար անհրաժեշտ է մուտք գործել։ Ներկայացման էջը բաց է բոլորի համար։",faq2:"Ի՞նչ կլինի նախկին առաջընթացիս հետ։",faq2a:"Նախկինում այս սարքում պահված առաջընթացը չի ջնջվում։ Մուտքից հետո հնարավորության դեպքում այն համաժամացվում է հաշվի հետ։",faq3:"Ո՞ր լեզուներն են հասանելի։",faq3a:"Ինտերֆեյսը հասանելի է հայերեն, անգլերեն և ռուսերեն։ Շտեմարանների հարցերը մնում են իրենց բնօրինակ լեզվով։"},
+  en: {login:"Sign in",start:"Get started",learn:"Learn more",tag:"Learn at your own pace",hero:"Prepare for exams with confidence",intro:"Practice with question books, revisit mistakes and track your progress in one place.",benefits:"Why Shtemarm?",subjects:"Study the subjects you need",steps:"How it works",preview:"See what's waiting for you",faq:"Frequently asked questions",ready:"Ready to begin?",readyDesc:"Create an account and start learning toward your goals.",b1:"Question books",b1d:"Practice subject questions and check your answers.",b2:"Mistake review",b2d:"Return to missed questions and strengthen your knowledge.",b3:"Personal study plan",b3d:"Choose subjects and get daily learning tasks.",b4:"XP and achievements",b4d:"Track progress and celebrate small milestones.",s1:"Create an account",s2:"Choose your goals",s3:"Practice and review",demo:"Example daily study plan",demo1:"Review missed questions",demo2:"Practice new questions",demo3:"Review vocabulary cards",faq1:"Can I study without an account?",faq1a:"Sign-in is required for study tools. The introductory page is public.",faq2:"What happens to my previous progress?",faq2a:"Previously saved progress on this device is not deleted and can be synced to your account when available.",faq3:"Which languages are available?",faq3a:"The interface supports Armenian, English and Russian. Original question text stays in its source language."},
+  ru: {login:"Войти",start:"Начать",learn:"Подробнее",tag:"Учись в своём ритме",hero:"Готовься к экзаменам увереннее",intro:"Решай задания, повторяй ошибки и отслеживай прогресс на одной платформе.",benefits:"Почему Shtemarm?",subjects:"Изучай нужные предметы",steps:"Как это работает",preview:"Посмотри, что тебя ждёт",faq:"Частые вопросы",ready:"Готов начать?",readyDesc:"Создай аккаунт и учись в соответствии со своими целями.",b1:"Сборники заданий",b1d:"Решай вопросы по предметам и проверяй ответы.",b2:"Работа над ошибками",b2d:"Возвращайся к ошибкам и закрепляй знания.",b3:"Личный план",b3d:"Выбирай предметы и получай задания на день.",b4:"XP и достижения",b4d:"Следи за прогрессом и отмечай достижения.",s1:"Создай аккаунт",s2:"Выбери цели",s3:"Решай и повторяй",demo:"Пример плана на день",demo1:"Повтори ошибки",demo2:"Реши новые задания",demo3:"Повтори слова по карточкам",faq1:"Можно ли учиться без аккаунта?",faq1a:"Для учебных разделов нужен вход. Вводная страница открыта всем.",faq2:"Что будет со старым прогрессом?",faq2a:"Прогресс, сохранённый на этом устройстве, не удаляется и может синхронизироваться с аккаунтом.",faq3:"Какие языки доступны?",faq3a:"Интерфейс доступен на армянском, английском и русском. Текст заданий остаётся на языке оригинала."},
 };
+// These are sample activity descriptions, never the user's actual study progress.
+const DEMO_DETAILS = {
+  hy: [
+    "Կրկնիր դժվարացած հարցերը՝ ավելի լավ հասկանալու անցած նյութը։",
+    "Ընտրիր նոր առաջադրանքներ և ստուգիր քո պատասխանները։",
+    "Սահեցրու բառաքարտերը և կրկնիր դեռ չյուրացրած բառերը։",
+  ],
+  en: [
+    "Revisit difficult questions to reinforce what you have learned.",
+    "Try fresh practice questions and check your answers.",
+    "Swipe vocabulary cards and return to words you are still learning.",
+  ],
+  ru: [
+    "Вернись к сложным вопросам и закрепи изученный материал.",
+    "Решай новые задания и проверяй ответы.",
+    "Листай карточки и повторяй слова, которые ещё изучаешь.",
+  ],
+} as const;
+
 const FAQ_ITEMS = {
   "hy": [
     [
@@ -121,36 +141,211 @@ const FAQ_ITEMS = {
     ]
   ]
 } as const;
-const SUBJECTS = ["Հայոց լեզու","Անգլերեն","Մաթեմատիկա","Կենսաբանություն","Հայոց պատմություն","Ֆիզիկա","Քիմիա","Աշխարհագրություն","Русский язык"];
+const SUBJECTS = [
+  { key: "armenian", names: { hy: "Հայոց լեզու", en: "Armenian language", ru: "Армянский язык" }, Icon: Languages },
+  { key: "english", names: { hy: "Անգլերեն", en: "English", ru: "Английский язык" }, Icon: BookOpen },
+  { key: "math", names: { hy: "Մաթեմատիկա", en: "Mathematics", ru: "Математика" }, Icon: Target },
+  { key: "biology", names: { hy: "Կենսաբանություն", en: "Biology", ru: "Биология" }, Icon: Sparkles },
+  { key: "history", names: { hy: "Հայոց պատմություն", en: "Armenian history", ru: "История Армении" }, Icon: GraduationCap },
+  { key: "physics", names: { hy: "Ֆիզիկա", en: "Physics", ru: "Физика" }, Icon: ShieldCheck },
+] as const;
+
+const LANDING_UI = {
+  hy: { navBenefits: "Առավելություններ", navSteps: "Ինչպես սկսել", sample: "Ինտերակտիվ նախադիտում", example: "Ցուցադրական օրինակ", focus: "Այսօրվա ուղղությունը", focused: "Ընտրված առաջադրանք", practice: "Ուսումնական գործիքներ", review: "Կրկնիր և ամրապնդիր", progress: "Քո տեմպով, առանց շտապելու", viewSubjects: "Դիտել առարկաները", subjectsIntro: "Ընտրիր քեզ անհրաժեշտ առարկան և սկսիր պատրաստվել մեկ հարմար տարածքում։", openSubject: "Սկսել պարապել", stepsIntro: "Քո պատրաստությունն սկսվում է ընդամենը երեք պարզ քայլից։", faqIntro: "Կարճ ու հստակ պատասխաններ՝ սովորելը հեշտ սկսելու համար։", footer: "Ստեղծված է դպրոցականների և դիմորդների համար։", explore: "Հարցաշարեր, կրկնություն, առաջընթաց", signIn: "Մուտք", account: "Ուսման տարածք", demoNote: "Սա հնարավորությունների նախադիտում է, ոչ թե քո իրական առաջընթացը։" },
+  en: { navBenefits: "Benefits", navSteps: "How it works", sample: "Interactive preview", example: "Sample experience", focus: "Today's focus", focused: "Selected activity", practice: "Study tools", review: "Review and improve", progress: "At your own pace", viewSubjects: "Explore subjects", subjectsIntro: "Choose a subject and start preparing in one convenient place.", openSubject: "Start practicing", stepsIntro: "Your learning journey starts with three simple steps.", faqIntro: "Clear answers to help you get started.", footer: "Built for students and exam applicants.", explore: "Practice, review, progress", signIn: "Sign in", account: "Study space", demoNote: "This is a feature preview, not your actual learning progress." },
+  ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс." },
+} as const;
+
 function LandingPage() {
   const lang = useLang();
   const t = COPY[lang];
+  const ui = LANDING_UI[lang];
   const navigate = useNavigate();
-  const [active,setActive] = useState(0);
+  const [active, setActive] = useState(0);
+
   useEffect(() => {
+    initLang();
     let mounted = true;
-    void ensureBrowserSupabaseConfig().then(ok => ok ? supabase.auth.getSession() : null).then(result => {
-      if (mounted && result?.data.session) void navigate({to:"/dashboard",replace:true});
-    }).catch(() => {});
-    return () => {mounted=false};
-  },[navigate]);
-  const benefits = [[BookOpen,t.b1,t.b1d],[ListChecks,t.b2,t.b2d],[Target,t.b3,t.b3d],[Trophy,t.b4,t.b4d]] as const;
-  return <div className="space-y-20 pb-16 sm:space-y-28">
-    <section className="relative isolate flex min-h-[72vh] flex-col items-center justify-center overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/15 via-card to-violet-500/10 px-5 py-16 text-center sm:px-10">
-      <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl"/>
-      <span className="relative mb-5 inline-flex items-center gap-2 rounded-full border bg-background/70 px-4 py-2 text-sm font-bold text-primary"><Sparkles className="size-4"/>{t.tag}</span>
-      <h1 className="relative max-w-3xl text-4xl font-black leading-tight tracking-tight sm:text-6xl">{t.hero}</h1>
-      <p className="relative mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{t.intro}</p>
-      <div className="relative mt-8 flex flex-wrap justify-center gap-3">
-        <Link to="/auth" className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground transition-transform hover:-translate-y-0.5">{t.start}<ArrowRight className="size-4"/></Link>
-        <a href="#benefits" className="inline-flex min-h-12 items-center gap-2 rounded-2xl border bg-background px-6 py-3 font-bold transition-colors hover:bg-muted">{t.learn}<ArrowDown className="size-4"/></a>
+    void ensureBrowserSupabaseConfig()
+      .then(ok => ok ? supabase.auth.getSession() : null)
+      .then(result => {
+        if (mounted && result?.data.session) void navigate({ to: "/dashboard", replace: true });
+      })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, [navigate]);
+
+  const benefits = [
+    { Icon: BookOpen, title: t.b1, description: t.b1d, className: "sht-feature-featured" },
+    { Icon: ListChecks, title: t.b2, description: t.b2d, className: "" },
+    { Icon: Target, title: t.b3, description: t.b3d, className: "" },
+    { Icon: Trophy, title: t.b4, description: t.b4d, className: "" },
+  ];
+  const demoTasks = [t.demo1, t.demo2, t.demo3];
+
+  return (
+    <div className="sht-landing">
+      <header className="sht-landing-nav" aria-label={lang === "hy" ? "Կայքի նավարկում" : lang === "ru" ? "Навигация сайта" : "Site navigation"}>
+        <Link to="/" className="sht-brand" aria-label="Shtemarm">
+          <span className="sht-brand-icon"><img src="/shtemarm-logo.svg" alt="" width="34" height="34" /></span>
+          <span>Shtemarm</span>
+        </Link>
+        <nav className="sht-nav-links" aria-label={lang === "hy" ? "Հիմնական բաժիններ" : lang === "ru" ? "Основные разделы" : "Main sections"}>
+          <a href="#benefits">{ui.navBenefits}</a>
+          <a href="#subjects">{t.subjects}</a>
+          <a href="#how-it-works">{ui.navSteps}</a>
+          <a href="#faq">{t.faq}</a>
+        </nav>
+        <div className="sht-nav-actions">
+          <details className="sht-mobile-links">
+            <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
+            <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
+              {[["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
+                <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
+              ))}
+            </nav>
+          </details>
+          <div className="sht-lang-switch" role="group" aria-label={lang === "hy" ? "Լեզու" : lang === "ru" ? "Язык" : "Language"}>
+            {(["hy", "en", "ru"] as const).map(code => (
+              <button key={code} type="button" onClick={() => setLang(code)} aria-pressed={lang === code} title={{ hy: "Հայերեն", en: "English", ru: "Русский" }[code]}>{code.toUpperCase()}</button>
+            ))}
+          </div>
+          <button type="button" className="sht-landing-theme" aria-label={lang === "hy" ? "Փոխել գունային ռեժիմը" : lang === "ru" ? "Изменить тему" : "Toggle color theme"} onClick={() => setAppearance({ mode: document.documentElement.classList.contains("dark") ? "light" : "dark" })}><Moon className="sht-theme-moon size-4" aria-hidden="true" /><Sun className="sht-theme-sun size-4" aria-hidden="true" /></button>
+          <Link to="/auth" className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
+        </div>
+      </header>
+
+      <section className="sht-hero" aria-labelledby="sht-hero-title">
+        <div className="sht-hero-copy">
+          <span className="sht-eyebrow"><Sparkles className="size-4" aria-hidden="true" />{t.tag}</span>
+          <h1 id="sht-hero-title">{t.hero}<span className="sht-hero-period">.</span></h1>
+          <p className="sht-hero-description">{t.intro}</p>
+          <div className="sht-hero-actions">
+            <Link to="/auth" className="sht-button-primary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+            <a href="#subjects" className="sht-button-secondary">{ui.viewSubjects}<ArrowDown className="size-4" aria-hidden="true" /></a>
+          </div>
+          <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{ui.explore}</span></div>
+        </div>
+
+        <div className="sht-hero-visual" role="region" aria-label={ui.sample}>
+          <div className="sht-orbit sht-orbit-one" aria-hidden="true" />
+          <div className="sht-orbit sht-orbit-two" aria-hidden="true" />
+          <div className="sht-preview" data-focus={active}>
+            <div className="sht-preview-top">
+              <div className="sht-window-dots" aria-hidden="true"><i /><i /><i /></div>
+              <span><Sparkles className="size-3.5" aria-hidden="true" />{ui.sample}</span>
+            </div>
+            <div className="sht-preview-body">
+              <div className="sht-preview-heading">
+                <span className="sht-preview-icon"><GraduationCap className="size-5" aria-hidden="true" /></span>
+                <div><span className="sht-mini-label">{ui.example}</span><h2>{t.demo}</h2></div>
+              </div>
+              <div className="sht-preview-focus">
+                <div className="sht-preview-focus-heading"><Target className="size-4" aria-hidden="true" /><span>{ui.focus}</span></div>
+                <p id="sht-demo-details" className="sht-focus-detail" aria-live="polite">{DEMO_DETAILS[lang][active]}</p>
+                <div className="sht-progress-track" aria-hidden="true"><span /></div>
+              </div>
+              <div className="sht-demo-options" role="group" aria-label={t.demo}>
+                {demoTasks.map((task, i) => (
+                  <button key={task} type="button" onClick={() => setActive(i)} aria-pressed={active === i} aria-controls="sht-demo-details" className={"sht-demo-option" + (active === i ? " is-active" : "")}>
+                    <span className="sht-demo-check"><CheckCircle2 className="size-5" aria-hidden="true" /></span>
+                    <span>{task}</span>
+                    <ArrowRight className="size-4" aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+              <div className="sht-demo-selection"><ShieldCheck className="size-4" aria-hidden="true" />{ui.focused}: <strong>{demoTasks[active]}</strong></div>
+              <p className="sht-demo-disclaimer">{ui.demoNote}</p>
+            </div>
+          </div>
+          <div className="sht-floating-label"><BookOpen className="size-5" aria-hidden="true" /><span>{ui.review}</span></div>
+        </div>
+      </section>
+
+      <div className="sht-info-band" aria-label={ui.explore}>
+        <span><BookOpen className="size-5" aria-hidden="true" />{t.b1}</span>
+        <span><ListChecks className="size-5" aria-hidden="true" />{t.b2}</span>
+        <span><Target className="size-5" aria-hidden="true" />{t.b3}</span>
+        <span><Trophy className="size-5" aria-hidden="true" />{t.b4}</span>
       </div>
-    </section>
-    <section id="benefits" className="scroll-mt-24 space-y-7"><h2 className="text-center text-3xl font-black">{t.benefits}</h2><div className="grid gap-4 sm:grid-cols-2">{benefits.map(([Icon,title,desc]) => <article key={title} className="rounded-3xl border bg-card p-6 transition-transform duration-200 hover:-translate-y-1"><span className="mb-4 grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><Icon className="size-6"/></span><h3 className="text-lg font-black">{title}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p></article>)}</div></section>
-    <section className="space-y-6"><h2 className="text-center text-3xl font-black">{t.subjects}</h2><div className="flex flex-wrap justify-center gap-3">{SUBJECTS.map(subject => <span key={subject} className="rounded-2xl border bg-card px-4 py-3 text-sm font-bold">{subject}</span>)}</div></section>
-    <section className="space-y-7"><h2 className="text-center text-3xl font-black">{t.steps}</h2><div className="grid gap-4 md:grid-cols-3">{[t.s1,t.s2,t.s3].map((step,i) => <div key={step} className="rounded-3xl border bg-card p-6"><span className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-lg font-black text-primary">{i+1}</span><h3 className="mt-5 text-lg font-black">{step}</h3></div>)}</div></section>
-    <section className="space-y-6"><h2 className="text-center text-3xl font-black">{t.preview}</h2><div className="mx-auto max-w-2xl rounded-3xl border bg-card p-5 shadow-sm sm:p-8"><div className="flex items-center gap-2 text-lg font-black"><GraduationCap className="size-6 text-primary"/>{t.demo}</div><div className="mt-6 grid gap-3 sm:grid-cols-2">{[t.demo1,t.demo2].map((item,i) => <button key={item} type="button" onClick={() => setActive(i)} aria-pressed={active===i} className={`rounded-2xl border p-5 text-left transition-colors ${active===i?"border-primary bg-primary/10":"hover:bg-muted"}`}><CheckCircle2 className="mb-3 size-5 text-primary"/><p className="font-bold">{item}</p><p className="mt-2 text-xs text-muted-foreground">{active===i?"✓ "+t.preview:t.learn}</p></button>)}</div><p className="mt-4 text-xs text-muted-foreground">{t.preview} · {t.demo}</p></div></section>
-    <section id="faq" className="mx-auto max-w-3xl scroll-mt-24 space-y-7"><div className="space-y-2 text-center"><span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary"><BookOpen className="size-4"/>{t.learn}</span><h2 className="text-3xl font-black sm:text-4xl">{t.faq}</h2></div><div className="space-y-3">{FAQ_ITEMS[lang].map(([q,a],i) => <details key={q} className="group rounded-2xl border bg-card px-5 py-1 transition-colors open:border-primary/30 open:bg-primary/[0.03] sm:px-6"><summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-bold marker:hidden [&::-webkit-details-marker]:hidden"><span className="flex items-start gap-3"><span className="text-sm font-black tabular-nums text-primary/70">{String(i+1).padStart(2,"0")}</span><span>{q}</span></span><ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"/></summary><p className="pb-5 pl-8 pr-6 text-sm leading-7 text-muted-foreground">{a}</p></details>)}</div></section>
-    <section className="rounded-3xl border bg-primary/10 p-8 text-center sm:p-12"><h2 className="text-3xl font-black">{t.ready}</h2><p className="mt-3 text-muted-foreground">{t.readyDesc}</p><Link to="/auth" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground">{t.start}<ArrowRight className="size-4"/></Link></section>
-  </div>;
+
+      <section id="benefits" className="sht-section sht-section-benefits" aria-labelledby="sht-benefits-title">
+        <div className="sht-section-heading">
+          <span className="sht-section-kicker"><Sparkles className="size-4" aria-hidden="true" /> Shtemarm</span>
+          <h2 id="sht-benefits-title">{t.benefits}</h2>
+          <p>{t.intro}</p>
+        </div>
+        <div className="sht-bento-grid">
+          {benefits.map(({ Icon, title, description, className }, i) => (
+            <article key={title} className={"sht-feature " + className}>
+              <div className="sht-feature-top"><span className="sht-feature-icon"><Icon className="size-6" aria-hidden="true" /></span><span className="sht-feature-number">0{i + 1}</span></div>
+              <div><h3>{title}</h3><p>{description}</p></div>
+              <span className="sht-feature-decoration" aria-hidden="true"><Icon /></span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="subjects" className="sht-section" aria-labelledby="sht-subjects-title">
+        <div className="sht-section-heading">
+          <span className="sht-section-kicker"><BookOpen className="size-4" aria-hidden="true" />{ui.account}</span>
+          <h2 id="sht-subjects-title">{t.subjects}</h2>
+          <p>{ui.subjectsIntro}</p>
+        </div>
+        <div className="sht-subject-grid">
+          {SUBJECTS.map(({ key, names, Icon }) => (
+            <Link key={key} to="/auth" data-subject={key} className="sht-subject-card" aria-label={names[lang] + " · " + ui.openSubject}>
+              <span className="sht-subject-icon"><Icon className="size-6" aria-hidden="true" /></span>
+              <strong>{names[lang]}</strong>
+              <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="how-it-works" className="sht-section sht-steps-section" aria-labelledby="sht-steps-title">
+        <div className="sht-section-heading">
+          <span className="sht-section-kicker"><Target className="size-4" aria-hidden="true" />{ui.navSteps}</span>
+          <h2 id="sht-steps-title">{t.steps}</h2><p>{ui.stepsIntro}</p>
+        </div>
+        <div className="sht-step-grid">
+          {[t.s1, t.s2, t.s3].map((step, i) => (
+            <div key={step} className="sht-step">
+              <span className="sht-step-number">0{i + 1}</span>
+              <h3>{step}</h3>
+              <span className="sht-step-rule" aria-hidden="true" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="faq" className="sht-section sht-faq-section" aria-labelledby="sht-faq-title">
+        <div className="sht-section-heading">
+          <span className="sht-section-kicker"><ShieldCheck className="size-4" aria-hidden="true" /> Shtemarm</span>
+          <h2 id="sht-faq-title">{t.faq}</h2>
+          <p>{ui.faqIntro}</p>
+        </div>
+        <div className="sht-faq-list">
+          {FAQ_ITEMS[lang].map(([q, a], i) => (
+            <details key={q} className="sht-faq-item">
+              <summary><span className="sht-faq-index">{String(i + 1).padStart(2, "0")}</span><span>{q}</span><ChevronDown className="sht-faq-chevron size-5" aria-hidden="true" /></summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="sht-bottom-cta" aria-labelledby="sht-cta-title">
+        <span className="sht-cta-decoration" aria-hidden="true"><GraduationCap /></span>
+        <div><span className="sht-cta-overline">SHTEMARM</span><h2 id="sht-cta-title">{t.ready}</h2><p>{t.readyDesc}</p></div>
+        <Link to="/auth" className="sht-button-primary sht-cta-button">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+      </section>
+
+      <footer className="sht-landing-footer">
+        <Link to="/" className="sht-brand"><span className="sht-brand-icon"><img src="/shtemarm-logo.svg" alt="" width="28" height="28" /></span><span>Shtemarm</span></Link>
+        <p>{ui.footer}</p>
+        <Link to="/about">{t.learn}<ArrowRight className="size-4" aria-hidden="true" /></Link>
+      </footer>
+    </div>
+  );
 }

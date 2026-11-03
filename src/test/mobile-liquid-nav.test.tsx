@@ -31,19 +31,20 @@ describe("Liquid Glass bottom dock routes", () => {
       "home", "books", "exams", "games", "tools",
     ]);
     for (const tab of MOBILE_TAB_TARGETS) {
-      const routeFile = tab.to === "/" ? "src/routes/index.tsx" :
+      const routeFile = tab.to === "/dashboard" ? "src/routes/dashboard.tsx" :
         tab.to === "/mini-games" ? "src/routes/mini-games.tsx" :
         tab.to === "/study-tools" ? "src/routes/study-tools.tsx" : "";
       expect(routeFile).not.toBe("");
       expect(readFileSync(routeFile, "utf8")).toContain('createFileRoute("' + tab.to + '")');
     }
-    const home = readFileSync("src/routes/index.tsx", "utf8");
+    const home = readFileSync("src/routes/dashboard.tsx", "utf8");
     expect(home).toContain('id="subjects"');
     expect(home).toContain('id="exams"');
   });
 
   it("keeps the correct selected item across studies, exams, games and tools", () => {
     const scenarios: Array<[string,string,number]> = [
+      ["/dashboard", "", 0], ["/dashboard", "subjects", 1], ["/dashboard", "#exams", 2],
       ["/", "", 0], ["/", "subjects", 1], ["/", "#exams", 2],
       ["/book/61", "", 1], ["/study/61/1", "", 1],
       ["/math/books", "", 1], ["/physics/original", "", 1],
@@ -67,7 +68,7 @@ describe("Liquid Glass bottom dock routes", () => {
     const links = within(dock).getAllByRole("link");
     expect(links).toHaveLength(5);
     expect(links.map(link => link.getAttribute("href"))).toEqual([
-      "/", "/#subjects", "/#exams", "/mini-games", "/study-tools",
+      "/dashboard", "/dashboard#subjects", "/dashboard#exams", "/mini-games", "/study-tools",
     ]);
     expect(within(dock).getByRole("link", {name:"Խաղեր"})).toHaveAttribute(
       "aria-current", "page",
@@ -80,7 +81,7 @@ describe("Liquid Glass bottom dock routes", () => {
 
   it("moves the active bubble by whole tab widths for every destination", () => {
     for (const [path, expected] of [
-      ["/", "translate3d(0%, 0, 0)"],
+      ["/dashboard", "translate3d(0%, 0, 0)"],
       ["/book/61", "translate3d(500%, 0, 0)"],
       ["/exam/english", "translate3d(1000%, 0, 0)"],
       ["/mini-games", "translate3d(1500%, 0, 0)"],

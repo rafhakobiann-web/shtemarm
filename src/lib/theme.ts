@@ -16,7 +16,7 @@ const LEGACY_KEY = "shtemarm-theme";
 export const DEFAULT_APPEARANCE: Readonly<Appearance> = Object.freeze({
   mode: "system",
   surface: "liquid",
-  glass: "balanced",
+  glass: "vivid",
   blur: true,
 });
 const modes: readonly ColorMode[] = ["system", "light", "dark"];
@@ -131,7 +131,7 @@ function startupAppearance() {
     const mode = ["light", "dark", "system"].includes(v.mode)
       ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
     const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "liquid";
-    const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "balanced";
+    const glass = ["subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "vivid";
     const dark = mode === "dark" ||
       (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
     const root = document.documentElement;
