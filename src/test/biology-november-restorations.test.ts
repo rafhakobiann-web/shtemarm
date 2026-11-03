@@ -26,7 +26,7 @@ describe("Biology source restorations checked on 2026-11-03", () => {
       [4,5,62,278,"3"],
     ] as const;
     const entries = read("biology-reviewed-restorations").entries.filter(
-      (e: {reviewDate:string}) => e.reviewDate === "2026-11-03",
+      (e: {reviewDate:string;restoredFrom:string}) => e.reviewDate === "2026-11-03" && e.restoredFrom !== "figure-review",
     );
     expect(entries).toHaveLength(expected.length);
     for (const [v, s, n, page, answer] of expected) {
@@ -68,7 +68,7 @@ describe("Biology source restorations checked on 2026-11-03", () => {
   });
 
   it("leaves essential figures and unsupported answer formats in the review queue", () => {
-    for (const [v, count, pending] of [[3,928,909],[4,790,898]]) {
+    for (const [v, count, pending] of [[3,945,892],[4,812,876]]) {
       const coverage = read(`biology-volume${v}-coverage`);
       expect(coverage.importedQuestions).toBe(count);
       expect(coverage.chapters.flatMap((c: {excluded:unknown[]}) => c.excluded)).toHaveLength(pending);

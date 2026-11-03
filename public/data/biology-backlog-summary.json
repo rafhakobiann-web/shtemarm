@@ -6,10 +6,9 @@
       "volume": 3,
       "sourceSha256": "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93",
       "indexed": 1837,
-      "imported": 928,
-      "pending": 909,
+      "imported": 945,
+      "pending": 892,
       "byReason": {
-        "figure-review": 17,
         "answer-type-pending": 892
       },
       "chapters": [
@@ -17,10 +16,9 @@
           "chapter": 1,
           "title": "Կենդանի օրգանիզմների բազմազանությունը",
           "indexed": 305,
-          "imported": 178,
-          "pending": 127,
+          "imported": 182,
+          "pending": 123,
           "byReason": {
-            "figure-review": 4,
             "answer-type-pending": 123
           }
         },
@@ -38,10 +36,9 @@
           "chapter": 3,
           "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
           "indexed": 347,
-          "imported": 217,
-          "pending": 130,
+          "imported": 227,
+          "pending": 120,
           "byReason": {
-            "figure-review": 10,
             "answer-type-pending": 120
           }
         },
@@ -49,10 +46,9 @@
           "chapter": 4,
           "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
           "indexed": 337,
-          "imported": 215,
-          "pending": 122,
+          "imported": 218,
+          "pending": 119,
           "byReason": {
-            "figure-review": 3,
             "answer-type-pending": 119
           }
         },
@@ -82,10 +78,9 @@
       "volume": 4,
       "sourceSha256": "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e",
       "indexed": 1688,
-      "imported": 790,
-      "pending": 898,
+      "imported": 812,
+      "pending": 876,
       "byReason": {
-        "figure-review": 22,
         "answer-type-pending": 876
       },
       "chapters": [
@@ -93,10 +88,9 @@
           "chapter": 1,
           "title": "Կենդանի օրգանիզմների բազմազանությունը",
           "indexed": 232,
-          "imported": 177,
-          "pending": 55,
+          "imported": 183,
+          "pending": 49,
           "byReason": {
-            "figure-review": 6,
             "answer-type-pending": 49
           }
         },
@@ -104,10 +98,9 @@
           "chapter": 2,
           "title": "Մարդ",
           "indexed": 300,
-          "imported": 138,
-          "pending": 162,
+          "imported": 142,
+          "pending": 158,
           "byReason": {
-            "figure-review": 4,
             "answer-type-pending": 158
           }
         },
@@ -115,10 +108,9 @@
           "chapter": 3,
           "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
           "indexed": 301,
-          "imported": 184,
-          "pending": 117,
+          "imported": 187,
+          "pending": 114,
           "byReason": {
-            "figure-review": 3,
             "answer-type-pending": 114
           }
         },
@@ -126,10 +118,9 @@
           "chapter": 4,
           "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
           "indexed": 338,
-          "imported": 162,
-          "pending": 176,
+          "imported": 169,
+          "pending": 169,
           "byReason": {
-            "figure-review": 7,
             "answer-type-pending": 169
           }
         },
@@ -137,10 +128,9 @@
           "chapter": 5,
           "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
           "indexed": 214,
-          "imported": 129,
-          "pending": 85,
+          "imported": 131,
+          "pending": 83,
           "byReason": {
-            "figure-review": 2,
             "answer-type-pending": 83
           }
         },

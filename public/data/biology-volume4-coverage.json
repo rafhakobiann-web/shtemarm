@@ -5,38 +5,8 @@
   "chapters": [
     {
       "id": 1,
-      "imported": 177,
+      "imported": 183,
       "excluded": [
-        {
-          "n": 6,
-          "page": 6,
-          "reason": "figure-review"
-        },
-        {
-          "n": 22,
-          "page": 8,
-          "reason": "figure-review"
-        },
-        {
-          "n": 38,
-          "page": 10,
-          "reason": "figure-review"
-        },
-        {
-          "n": 64,
-          "page": 14,
-          "reason": "figure-review"
-        },
-        {
-          "n": 151,
-          "page": 26,
-          "reason": "figure-review"
-        },
-        {
-          "n": 165,
-          "page": 28,
-          "reason": "figure-review"
-        },
         {
           "n": 184,
           "reason": "answer-type-pending"
@@ -237,28 +207,8 @@
     },
     {
       "id": 2,
-      "imported": 138,
+      "imported": 142,
       "excluded": [
-        {
-          "n": 14,
-          "page": 46,
-          "reason": "figure-review"
-        },
-        {
-          "n": 28,
-          "page": 48,
-          "reason": "figure-review"
-        },
-        {
-          "n": 56,
-          "page": 52,
-          "reason": "figure-review"
-        },
-        {
-          "n": 71,
-          "page": 54,
-          "reason": "figure-review"
-        },
         {
           "n": 143,
           "reason": "answer-type-pending"
@@ -895,23 +845,8 @@
     },
     {
       "id": 3,
-      "imported": 184,
+      "imported": 187,
       "excluded": [
-        {
-          "n": 30,
-          "page": 120,
-          "reason": "figure-review"
-        },
-        {
-          "n": 90,
-          "page": 128,
-          "reason": "figure-review"
-        },
-        {
-          "n": 143,
-          "page": 135,
-          "reason": "figure-review"
-        },
         {
           "n": 188,
           "reason": "answer-type-pending"
@@ -1372,43 +1307,8 @@
     },
     {
       "id": 4,
-      "imported": 162,
+      "imported": 169,
       "excluded": [
-        {
-          "n": 13,
-          "page": 186,
-          "reason": "figure-review"
-        },
-        {
-          "n": 26,
-          "page": 188,
-          "reason": "figure-review"
-        },
-        {
-          "n": 39,
-          "page": 190,
-          "reason": "figure-review"
-        },
-        {
-          "n": 80,
-          "page": 196,
-          "reason": "figure-review"
-        },
-        {
-          "n": 140,
-          "page": 206,
-          "reason": "figure-review"
-        },
-        {
-          "n": 153,
-          "page": 208,
-          "reason": "figure-review"
-        },
-        {
-          "n": 167,
-          "page": 210,
-          "reason": "figure-review"
-        },
         {
           "n": 170,
           "reason": "answer-type-pending"
@@ -2089,18 +1989,8 @@
     },
     {
       "id": 5,
-      "imported": 129,
+      "imported": 131,
       "excluded": [
-        {
-          "n": 6,
-          "page": 270,
-          "reason": "figure-review"
-        },
-        {
-          "n": 20,
-          "page": 272,
-          "reason": "figure-review"
-        },
         {
           "n": 132,
           "reason": "answer-type-pending"
@@ -3654,5 +3544,5 @@
       ]
     }
   ],
-  "importedQuestions": 790
+  "importedQuestions": 812
 }

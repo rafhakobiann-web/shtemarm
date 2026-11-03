@@ -8,7 +8,7 @@ import {
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 
 describe("Biology III/IV original-book text and source-answer integrity", () => {
-  for (const [volume, expected] of [[3, 928], [4, 790]] as const) {
+  for (const [volume, expected] of [[3, 945], [4, 812]] as const) {
     it(`book ${volume}: validates every published stem, printed key, source page and distinct ID`, () => {
       const book = read(`public/data/bio-book${volume}.json`);
       const original = validateBiologyOriginalIndex(read(`public/data/biology-original-volume${volume}-index.json`), volume as BiologyVolume);

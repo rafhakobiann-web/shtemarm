@@ -62,3 +62,7 @@
 - Մետատվյալներում անձամբ ստուգված հարցերը հիմա 37 են (նախկին 7 + նոր 30)։ Մնացած 1 681 հարցերի ամբողջական ձեռքով սրբագրումը չի հաստատվում։
 - Հաջորդը՝ 39 նկար կախյալ և 1 768 այլ պատասխանաձևով առաջադրանքների ստուգում։
 - Route-ները, Production-ը և Preview-ի կարգավորումները չեն փոխվել։ Փոփոխությունները մնում են Draft PR-ում։
+
+## Further source review — 2026-11-03
+
+Restored 39 more four-choice questions (III:17, IV:22). The figure-review queue consisted of decorative page graphics and false-positive keyword matches; rendered crops confirm these tasks require no figure. Original printed keys and wording retained. Current totals supersede the earlier tables: III 945 imported / 892 pending; IV 812 imported / 876 pending. All 1,757 indexed four-choice tasks are now imported. The remaining 1,768 tasks require their actual matching, sequence, multi-selection, true/false or numeric response formats. Full books are not complete.

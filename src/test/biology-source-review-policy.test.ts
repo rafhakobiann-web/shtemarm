@@ -13,8 +13,8 @@ const base: Omit<BiologyReviewEvidence, "format"> = {
 describe("Approved 1C,2C,3B,4B Biology review rules", () => {
   it("1C: tracks newly corrected wording with original pages and printed answer keys", () => {
     const reviewed = read("public/data/biology-reviewed-restorations.json");
-    const expected = {3:18,4:19};
-    expect(reviewed.entries).toHaveLength(37);
+    const expected = {3:35,4:41};
+    expect(reviewed.entries).toHaveLength(76);
     for (const volume of [3,4] as const) {
       const book = read(`public/data/bio-book${volume}.json`);
       const index = validateBiologyOriginalIndex(read(`public/data/biology-original-volume${volume}-index.json`),volume);

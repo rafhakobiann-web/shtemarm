@@ -46,8 +46,8 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
     const p3 = pending.books.find((b: { part: number }) => b.part === 3);
     const p4 = pending.books.find((b: { part: number }) => b.part === 4);
     expect(p3.originalPracticeQuestions).toBe(36);
-    expect(p3.verifiedQuestions).toBe(18);
-    expect(p4.verifiedQuestions).toBe(19);
+    expect(p3.verifiedQuestions).toBe(35);
+    expect(p4.verifiedQuestions).toBe(41);
     expect(p3.sourceIndexedQuestions).toBe(1837);
     expect(p4.sourceIndexedQuestions).toBe(1688);
   });
