@@ -5,33 +5,26 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { resetAppearance, setAppearance, useAppearance, type ColorMode, type SurfaceTheme, type GlassIntensity } from "@/lib/theme";
+import { ACCENT_SWATCHES, DEFAULT_ACCENT, DISPLAY_PREFERENCES_KEY, applyAccent, normalizeAccent, type Accent } from "@/lib/accent";
 import { setLang, useLang, type Lang } from "@/lib/lang";
 
 type Dock = "left" | "right";
-type Accent = "blue" | "violet" | "emerald" | "rose" | "amber" | "teal";
 type Preferences = { username: string; textScale: number; highContrast: boolean; reduceMotion: boolean; dock: Dock; accent: Accent };
-const KEY = "shtemarm-display-preferences-v1";
-const defaults: Preferences = { username: "", textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: "teal" };
-const accents: { id: Accent; label: string; color: string }[] = [
-  { id: "blue", label: "Blue", color: "#4263eb" },
-  { id: "violet", label: "Violet", color: "#7c3aed" },
-  { id: "emerald", label: "Emerald", color: "#059669" },
-  { id: "rose", label: "Rose", color: "#e11d48" },
-  { id: "amber", label: "Amber", color: "#b7791f" },
-  { id: "teal", label: "Academy teal", color: "#0b766b" },
-];
+const KEY = DISPLAY_PREFERENCES_KEY;
+const defaults: Preferences = { username: "", textScale: 100, highContrast: false, reduceMotion: false, dock: "right", accent: DEFAULT_ACCENT };
+const accents = ACCENT_SWATCHES;
 const copy = {
   hy: {
     accessibility: "Մատչելիություն", settings: "Կարգավորումներ", textSize: "Տեքստի չափ", contrast: "Բարձր հակադրություն",
     motion: "Նվազեցնել անիմացիաները", dock: "Կոճակների դիրքը", left: "Ձախ", right: "Աջ", appearance: "Արտաքին տեսք",
-    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Ակադեմիական", glassStrength: "Ապակու էֆեկտ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
+    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Ակադեմիական", glassStrength: "Ապակու էֆեկտ", adaptive: "Ավտոմատ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
     username: "Իմ օգտանունը", usernameHelp: "Պահպանվում է այս սարքում։ Հանրային վարկանիշում դեռ չի հրապարակվում։", reset: "Վերականգնել լռելյայնը", close: "Փակել", subtitle: "Անհատականացրու քո ուսումնական միջավայրը",
     small: "Փոքր", normal: "Սովորական", large: "Մեծ", extraLarge: "Շատ մեծ", on: "Միացված", off: "Անջատված",
   },
   en: {
     accessibility: "Accessibility", settings: "Settings", textSize: "Text size", contrast: "High contrast",
     motion: "Reduce animations", dock: "Floating buttons position", left: "Left", right: "Right", appearance: "Appearance",
-    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Academy", glassStrength: "Glass strength", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
+    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Academy", glassStrength: "Glass strength", adaptive: "Adaptive", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
     username: "My username", usernameHelp: "Saved on this device only. Not published to a public leaderboard yet.", reset: "Reset to defaults", close: "Close", subtitle: "Make your study space feel like yours",
     small: "Small", normal: "Default", large: "Large", extraLarge: "Extra large", on: "On", off: "Off",
   },
@@ -40,7 +33,7 @@ const copy = {
     motion: "Меньше анимаций", dock: "Положение кнопок", left: "Слева", right: "Справа", appearance: "Внешний вид",
     language: "Язык", accent: "Цветовой акцент", theme: "Цветовая тема", light: "Светлая", dark: "Тёмная",
     system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Учебный",
-    glassStrength: "Интенсивность стекла", subtle: "Низкая", balanced: "Средняя", vivid: "Высокая",
+    glassStrength: "Интенсивность стекла", adaptive: "Авто", subtle: "Низкая", balanced: "Средняя", vivid: "Высокая",
     blur: "Размытие фона", glassHelp: "Для более быстрой работы можно уменьшить эффект размытия или отключить его.",
     username: "Мой никнейм", usernameHelp: "Хранится только на устройстве. Пока не публикуется в общем рейтинге.", reset: "Сбросить настройки", close: "Закрыть", subtitle: "Настройте удобную учебную среду",
     small: "Маленький", normal: "Обычный", large: "Большой", extraLarge: "Очень большой", on: "Вкл.", off: "Выкл.",
@@ -55,15 +48,12 @@ function applyPreferences(value: Preferences) {
   root.style.fontSize = `${value.textScale}%`;
   root.classList.toggle("user-high-contrast", value.highContrast);
   root.classList.toggle("user-reduced-motion", value.reduceMotion);
-  const accent = accents.find((item) => item.id === value.accent) ?? accents[0];
-  root.style.setProperty("--primary", accent.color);
-  root.style.setProperty("--ring", accent.color);
-  root.style.setProperty("--primary-foreground", "#ffffff");
+  applyAccent(value.accent);
 }
 function readPreferences(): Preferences {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) ?? "null") as Partial<Preferences> | null;
-    if (saved) return { ...defaults, ...saved, username: typeof saved.username === "string" ? saved.username.slice(0, 24) : "" };
+    if (saved) return { ...defaults, ...saved, accent: normalizeAccent(saved.accent), username: typeof saved.username === "string" ? saved.username.slice(0, 24) : "" };
   } catch { /* ignore invalid stored settings */ }
   return defaults;
 }
@@ -194,7 +184,7 @@ export function PersonalizationControls() {
                   <Droplets className="size-4 text-primary" />{t.glassStrength}
                 </h4>
                 <div className="grid grid-cols-3 gap-1.5">
-                  {(["subtle", "balanced", "vivid"] as GlassIntensity[]).map((glass) => (
+                  {(["adaptive", "subtle", "balanced", "vivid"] as GlassIntensity[]).map((glass) => (
                     <Button type="button" key={glass} size="sm"
                       className="min-w-0 px-1 text-[11px]"
                       variant={appearance.glass === glass ? "default" : "outline"}
