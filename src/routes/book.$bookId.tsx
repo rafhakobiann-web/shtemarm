@@ -51,8 +51,8 @@ function BookPage() {
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><Trophy /> {tx("Ինքնաստուգում")}</Link>
-              ) : id === 41 || (id >= 1 && id <= 3) ? (
-                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
+              ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}><Trophy /> {tx("Քննություն")}</Link>
               ) : id === 63 || id === 64 ? (
                 <Link to="/physics/original"><Trophy /> {tx("Քննություն")}</Link>
               ) : (
@@ -68,8 +68,8 @@ function BookPage() {
                 <Link to="/subject/$subject" params={{ subject: "physics" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id >= 51 && id <= 54 ? (
                 <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
-              ) : id === 41 || (id >= 1 && id <= 3) ? (
-                <Link to="/exam/$subject" params={{ subject: id === 41 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
+              ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
+                <Link to="/exam/$subject" params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : id === 63 || id === 64 ? (
                 <Link to="/physics/original"><ClipboardCheck /> {tx("Կազմել թեստ")}</Link>
               ) : (
@@ -104,6 +104,7 @@ function BookPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {book.sections.map((s) => {
             const ids = s.units.flatMap((u) => ("questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
+            const hasQuestions = ids.length > 0;
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (
@@ -118,14 +119,22 @@ function BookPage() {
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                   <div className="h-full bg-success" style={{ width: `${(right / Math.max(1, ids.length)) * 100}%` }} />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {tx("{done}/{total} արված · {right} ճիշտ", { done, total: ids.length, right })}
-                </p>
+                {hasQuestions ? (
+                  <p className="text-xs text-muted-foreground">
+                    {tx("{done}/{total} արված · {right} ճիշտ", { done, total: ids.length, right })}
+                  </p>
+                ) : (
+                  <p role="status" className="text-sm font-medium text-muted-foreground">
+                    {lang === "en" ? "This section is listed in the original book; practice questions are still being prepared." :
+                      lang === "ru" ? "Раздел есть в оригинальном сборнике; учебные задания ещё готовятся." :
+                      "Այս բաժինը կա բնօրինակ շտեմարանում, սակայն կայքում դրա վարժությունները դեռ պատրաստ չեն։"}
+                  </p>
+                )}
                 {id >= 1 && id <= 3 && <Link to="/english-grammar" search={{book:id,section:s.n,topic:undefined}}
                   className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3 text-sm font-semibold text-primary hover:bg-primary/10">
                   <BookText className="size-4" />{lang==="en"?"Rules & study tips":lang==="ru"?"Правила и советы":"Կանոններ և ուսուցման հուշումներ"}
                 </Link>}
-                <div className="mt-auto grid grid-cols-3 gap-2">
+                {hasQuestions && <div className="mt-auto grid grid-cols-3 gap-2">
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> {tx("Խաղալ")}
@@ -141,9 +150,9 @@ function BookPage() {
                       <Link to="/subject/$subject" params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]! }} search={{ section: s.n }}>
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
-                    ) : id === 41 || (id >= 1 && id <= 3) ? (
+                    ) : (id >= 41 && id <= 44) || (id >= 1 && id <= 3) ? (
                       <Link to="/exam/$subject"
-                        params={{ subject: id === 41 ? "armenian" : "english" }}
+                        params={{ subject: id >= 41 && id <= 44 ? "armenian" : "english" }}
                         search={{ book: id, section: s.n }}>
                         <ClipboardCheck /> {tx("Թեստ")}
                       </Link>
@@ -153,7 +162,7 @@ function BookPage() {
                       </Link>
                     )}
                   </Button>
-                </div>
+                </div>}
               </div>
             );
           })}
