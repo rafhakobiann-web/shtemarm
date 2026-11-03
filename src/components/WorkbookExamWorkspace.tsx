@@ -8,7 +8,7 @@ import { GtcGuidePanel } from "@/components/GtcGuidePanel";
 import { HistorySession } from "@/components/HistorySession";
 import { KIND_HY, type Unit } from "@/lib/books";
 import { update } from "@/lib/progress";
-import { loadWorkbookSources, makeWorkbookExam, workbookEntries, type WorkbookSubject } from "@/lib/workbook-exams";
+import { loadWorkbookSources, makeWorkbookExam, uniqueArmenianPracticeEntries, workbookEntries, type WorkbookSubject } from "@/lib/workbook-exams";
 import { useLang, useTx } from "@/lib/lang";
 
 type Active = { units: Unit[]; title: string; minutes: number; practice: boolean; bookId: number };
@@ -44,6 +44,7 @@ export function WorkbookExamWorkspace({
   const [error, setError] = useState("");
 
   const allEntries = useMemo(() => workbookEntries(books.data ?? []), [books.data]);
+  const distinctEntries = useMemo(() => english ? allEntries : uniqueArmenianPracticeEntries(allEntries), [allEntries, english]);
   const scoped = useMemo(
     () => allEntries.filter((entry) => source === "all" || entry.source === "book-" + source),
     [allEntries, source],
@@ -59,11 +60,13 @@ export function WorkbookExamWorkspace({
   const pool = scoped.filter(
     (entry) => (!selectedSections.length || selectedSections.includes(entry.section)) && kinds.includes(entry.unit.kind),
   );
-  const available = new Set(pool.map((entry) => entry.unit.id)).size;
+  const distinctPool = english ? pool : uniqueArmenianPracticeEntries(pool);
+  const available = new Set(distinctPool.map((entry) => entry.unit.id)).size;
+  const fullAvailable = english ? scoped.length : uniqueArmenianPracticeEntries(scoped).length;
   const validCustom = Number.isInteger(count) && count > 0 && count <= available;
   const validMinutes = Number.isInteger(minutes) && minutes >= 0 && minutes <= 300;
   const canStart = !books.isPending && !books.isError &&
-    validMinutes && (mode === "full" ? (english || scoped.length >= 70) : validCustom);
+    validMinutes && (mode === "full" ? (english || fullAvailable >= 70) : validCustom);
 
   function changeSource(value: string) {
     setSource(value);
@@ -74,7 +77,7 @@ export function WorkbookExamWorkspace({
   function start() {
     if (!canStart || !books.data) return;
     try {
-      const result = makeWorkbookExam(books.data, subject, source, mode, pool, count, random);
+      const result = makeWorkbookExam(books.data, subject, source, mode, distinctPool, count, random);
       setActive({ units: result.units, title: name, bookId: result.bookId, minutes, practice });
       setError("");
       window.scrollTo(0, 0);
@@ -111,10 +114,19 @@ export function WorkbookExamWorkspace({
         subject={name}
         title={tx("{name} · Քննությունների կազմիչ", { name })}
         description={tx("Կազմիր անհատական թեստ՝ ընտրելով շտեմարանները, բաժինները, առաջադրանքների տեսակները և ժամանակը։ Պատասխանները վերանայիր ավարտելուց հետո։")}
-        sources={english ? tx("3 շտեմարան") : tx("1 հարցաշար")}
-        available={allEntries.length || undefined}
+        sources={english ? tx("3 շտեմարան") : lang === "en" ? "4 practice volumes" : lang === "ru" ? "4 учебных сборника" : "4 ուսումնական մաս"}
+        available={distinctEntries.length || undefined}
         icon={english ? <Languages className="size-5" /> : <BookOpen className="size-5" />}
       />
+      {!english && !books.isPending && !books.isError && (
+        <p role="note" className="rounded-xl border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+          {lang === "en"
+            ? `${allEntries.length} authored practice questions, ${distinctEntries.length} distinct; repeated questions are excluded from combined tests. These are not transcriptions of the official PDFs.`
+            : lang === "ru"
+              ? `${allEntries.length} авторских упражнений, ${distinctEntries.length} уникальных; повторы исключены из общих тестов. Это не задания, переписанные из официальных PDF.`
+              : `${allEntries.length} հեղինակային վարժություն, ${distinctEntries.length} չկրկնվող հարց։ Համատեղ թեստերից կրկնությունները հեռացված են։ Սրանք բնօրինակ PDF-ների թվայնացված առաջադրանքները չեն։`}
+        </p>
+      )}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <section className="min-w-0 space-y-6 rounded-3xl border bg-card p-5 shadow-sm sm:p-7">
           <ExamBuilderTitle />
