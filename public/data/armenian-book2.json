@@ -4,8 +4,8 @@
     {
       "n": 1,
       "title": "Հնչյունաբանություն",
-      "instr_en": "Original practice questions; not a transcription of the official book.",
-      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական շտեմարանի բառացի թվայնացում չեն։",
+      "instr_en": "Phonetics and spelling · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Հնչյունաբանություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-1",
@@ -47,17 +47,6 @@
               "answer": "2"
             },
             {
-              "n": "4",
-              "stem": "Ո՞ր նախադասության վերջում է անհրաժեշտ հարցական նշան։",
-              "options": {
-                "1": "Այսօր արևոտ է",
-                "2": "Ե՞րբ ես վերադառնալու",
-                "3": "Գնացինք տուն",
-                "4": "Նա կարդում է"
-              },
-              "answer": "2"
-            },
-            {
               "n": "5",
               "stem": "Ո՞ր բառն է գրված ճիշտ։",
               "options": {
@@ -91,17 +80,6 @@
               "answer": "1"
             },
             {
-              "n": "8",
-              "stem": "Ո՞ր նախադասությունն ունի ուղիղ խոսք։",
-              "options": {
-                "1": "Նա ասաց, որ կգա։",
-                "2": "Նա ասաց. «Ես կգամ»։",
-                "3": "Նա շուտ եկավ։",
-                "4": "Նա կգա վաղը։"
-              },
-              "answer": "2"
-            },
-            {
               "n": "9",
               "stem": "Ո՞ր բառն է գրված ճիշտ։",
               "options": {
@@ -125,13 +103,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Հնչյունաբանություն"
     },
     {
       "n": 2,
       "title": "Բառագիտություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Lexicology and word formation · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Բառագիտություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-2",
@@ -174,13 +153,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Բառագիտություն"
     },
     {
       "n": 3,
       "title": "Ձևաբանություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Morphology · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ձևաբանություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-3",
@@ -223,13 +203,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Ձևաբանություն"
     },
     {
       "n": 4,
       "title": "Շարահյուսություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Syntax and punctuation · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Շարահյուսություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-4",
@@ -271,14 +252,45 @@
               "answer": "3"
             }
           ]
+        },
+        {
+          "id": "42-1-syntax",
+          "label": "1",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "4",
+              "stem": "Ո՞ր նախադասության վերջում է անհրաժեշտ հարցական նշան։",
+              "options": {
+                "1": "Այսօր արևոտ է",
+                "2": "Ե՞րբ ես վերադառնալու",
+                "3": "Գնացինք տուն",
+                "4": "Նա կարդում է"
+              },
+              "answer": "2"
+            },
+            {
+              "n": "8",
+              "stem": "Ո՞ր նախադասությունն ունի ուղիղ խոսք։",
+              "options": {
+                "1": "Նա ասաց, որ կգա։",
+                "2": "Նա ասաց. «Ես կգամ»։",
+                "3": "Նա շուտ եկավ։",
+                "4": "Նա կգա վաղը։"
+              },
+              "answer": "2"
+            }
+          ]
         }
-      ]
+      ],
+      "label": "Շարահյուսություն"
     },
     {
       "n": 5,
       "title": "Կապակցված խոսք",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Connected speech · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Կապակցված խոսք․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-5",
@@ -321,13 +333,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Կապակցված խոսք"
     },
     {
       "n": 6,
       "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "General knowledge about Armenian · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-6",
@@ -370,13 +383,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին"
     },
     {
       "n": 7,
       "title": "Ոճագիտություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Stylistics · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ոճագիտություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-7",
@@ -419,13 +433,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Ոճագիտություն"
     },
     {
       "n": 8,
       "title": "Գրականություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Literature · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Գրականություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "42-8",
@@ -468,8 +483,13 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Գրականություն"
     }
   ],
-  "sourceStatus": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ PDF-ի թեմաների, ոչ թե բնօրինակ հարցերի արտագրություն։"
+  "sourceStatus": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ PDF-ի թեմաների, ոչ թե բնօրինակ հարցերի արտագրություն։",
+  "sourceRelation": "Independently authored practice content, NOT an official PDF question bank",
+  "officialSourceVerifiedQuestions": 0,
+  "sourceBookVolume": 2,
+  "sectionTitlesVerifiedAgainstPdfToc": true
 }

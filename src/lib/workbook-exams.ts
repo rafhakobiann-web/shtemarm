@@ -4,7 +4,7 @@ import { historyBookEntries, selectHistoryUnits, type HistoryEntry } from "@/lib
 export type WorkbookSubject = "english" | "armenian";
 export const WORKBOOK_SOURCES: Record<WorkbookSubject, readonly number[]> = {
   english: [1, 2, 3],
-  armenian: [41],
+  armenian: [41, 42, 43, 44],
 };
 
 export async function loadWorkbookSources(subject: WorkbookSubject): Promise<Book[]> {
@@ -13,6 +13,25 @@ export async function loadWorkbookSources(subject: WorkbookSubject): Promise<Boo
 
 export function workbookEntries(books: readonly Book[]): HistoryEntry[] {
   return books.flatMap((book) => historyBookEntries(book, book.id));
+}
+
+/** Deduplicate repeated authored Armenian MCQs across volumes by question content.
+ * Keep the first entry's original ID so saved progress remains valid. Do not
+ * deduplicate English passages or compound question formats by their wording.
+ * This is not official-source validation; it only avoids repeated practice.
+ */
+export function uniqueArmenianPracticeEntries(entries: readonly HistoryEntry[]): HistoryEntry[] {
+  const seen = new Set<string>();
+  return entries.filter(({ unit }) => {
+    if (unit.kind !== "mc" || unit.questions.length !== 1) return true;
+    const question = unit.questions[0];
+    const fingerprint = [question.stem, ...["1", "2", "3", "4"].map((key) => question.options[key] ?? "")]
+      .map((value) => value.trim().toLocaleLowerCase("hy"))
+      .join("\u241f");
+    if (seen.has(fingerprint)) return false;
+    seen.add(fingerprint);
+    return true;
+  });
 }
 
 export function makeWorkbookExam(
@@ -26,7 +45,7 @@ export function makeWorkbookExam(
 ): { units: Unit[]; bookId: number } {
   if (mode === "custom") {
     return {
-      units: selectHistoryUnits(pool, count, random),
+      units: selectHistoryUnits(subject === "armenian" ? uniqueArmenianPracticeEntries(pool) : pool, count, random),
       bookId: source === "all" ? (subject === "english" ? 0 : 41) : Number(source),
     };
   }
@@ -37,12 +56,25 @@ export function makeWorkbookExam(
   if (!choices.length) throw new Error("Քննության համար հասանելի շտեմարան չկա։");
   const selected = random ? choices[Math.floor(Math.random() * choices.length)] : choices[0];
   if (subject === "armenian") {
-    // Official 2027 Armenian exam = 70 TASKS worth 80 points. The current
-    // practice bank lacks the mandatory short-answer and six-claim items,
-    // so this is explicitly a 70-task PRACTICE set (70 achievable points),
-    // never a fake GTC-compliant 80-point exam.
-    const pool = workbookEntries([selected]);
-    return { units: selectHistoryUnits(pool, 70, random), bookId: 41 };
+    // A 70-question authored PRACTICE set, never an official 80-point exam:
+    // the source PDFs contain response types not digitized here. For "all",
+    // sample the available questions from all four practice volumes.
+    const perBook = (source === "all" ? choices : [selected]).map(book => workbookEntries([book]));
+    const practicePool: HistoryEntry[] = [];
+    const maximum = Math.max(...perBook.map(entries => entries.length));
+    // In original-book order, round-robin keeps all four selected books
+    // represented instead of taking 70 questions exclusively from Part I.
+    for (let index = 0; index < maximum; index++) {
+      for (const entries of perBook) {
+        const item = entries[index];
+        if (item) practicePool.push(item);
+      }
+    }
+    const distinctPractice = uniqueArmenianPracticeEntries(practicePool);
+    if (distinctPractice.length < 70) {
+      throw new Error("Ընտրված գրքում դեռ բավարար՝ 70 վարժություն չկա։ Ընտրիր բոլոր մասերը կամ անհատական թեստը։");
+    }
+    return { units: selectHistoryUnits(distinctPractice, 70, random), bookId: source === "all" ? 41 : selected.id };
   }
   const items = buildExam(selected, selected.id);
   return {

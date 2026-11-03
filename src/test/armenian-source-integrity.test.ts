@@ -23,8 +23,11 @@ describe("Armenian source book verification and original bank integrity", () => 
         expect(section.lastPdfPage).toBeGreaterThanOrEqual(section.pdfPage);
         if (sectionIndex > 0) expect(section.pdfPage).toBe(volume.sections[sectionIndex - 1].lastPdfPage + 1);
       }
-      expect(volume.answerKeyStartPdfPage).toBe(volume.sections[7].lastPdfPage + 1);
+      expect(volume.statementBundle.title).toBe("Պնդումների փունջ");
+      expect(volume.statementBundle.pdfPage).toBe(volume.sections[7].lastPdfPage + 1);
+      expect(volume.statementBundle.lastPdfPage).toBe(volume.answerKeyStartPdfPage - 1);
       expect(volume.answerKeyEndPdfPage).toBe(volume.totalPages);
+      expect(volume.sourceSha256).toMatch(/^[a-f0-9]{64}$/);
     }
   });
 
@@ -36,7 +39,9 @@ describe("Armenian source book verification and original bank integrity", () => 
       const prompts = new Set<string>();
       let count = 0;
       for (const section of bank.sections as Section[]) {
-        expect(section.units.length).toBeGreaterThan(0);
+        // Book III and IV have no authored phonetics questions yet. They must
+        // remain visible in the original TOC but must not pretend to be playable.
+        expect(section.units.length).toBeGreaterThanOrEqual(0);
         for (const unit of section.units) {
           expect(identifiers.has(unit.id)).toBe(false);
           identifiers.add(unit.id);

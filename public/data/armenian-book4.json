@@ -4,9 +4,58 @@
     {
       "n": 1,
       "title": "Հնչյունաբանություն",
-      "instr_en": "Original practice questions; not a transcription of the official book.",
-      "instr_hy": "Հեղինակային փորձնական առաջադրանքներ․ պաշտոնական շտեմարանի բառացի թվայնացում չեն։",
+      "instr_en": "Phonetics and spelling · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Հնչյունաբանություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
+      "units": [],
+      "label": "Հնչյունաբանություն"
+    },
+    {
+      "n": 2,
+      "title": "Բառագիտություն",
+      "instr_en": "Lexicology and word formation · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Բառագիտություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
+        {
+          "id": "44-2",
+          "label": "2",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "1",
+              "stem": "Ո՞ր զույգն է հականիշների զույգ։",
+              "options": {
+                "1": "համարձակ — քաջ",
+                "2": "բարձր — ցածր",
+                "3": "ուրախ — զվարթ",
+                "4": "գեղեցիկ — սիրուն"
+              },
+              "answer": "2"
+            },
+            {
+              "n": "2",
+              "stem": "Ո՞ր բառն է բարդ բառ։",
+              "options": {
+                "1": "ծաղիկ",
+                "2": "արևածաղիկ",
+                "3": "գրիչ",
+                "4": "տուն"
+              },
+              "answer": "2"
+            },
+            {
+              "n": "3",
+              "stem": "Ո՞ր բառն է ածանցավոր։",
+              "options": {
+                "1": "քար",
+                "2": "գետ",
+                "3": "անտուն",
+                "4": "ծով"
+              },
+              "answer": "3"
+            }
+          ]
+        },
         {
           "id": "44-1",
           "label": "1",
@@ -56,17 +105,6 @@
                 "4": "լույս"
               },
               "answer": "1"
-            },
-            {
-              "n": "5",
-              "stem": "Ո՞ր արտահայտությունն է փոխաբերական։",
-              "options": {
-                "1": "երկաթե դուռ",
-                "2": "ոսկե սիրտ",
-                "3": "փայտե սեղան",
-                "4": "քարե պատ"
-              },
-              "answer": "2"
             },
             {
               "n": "6",
@@ -125,62 +163,14 @@
             }
           ]
         }
-      ]
-    },
-    {
-      "n": 2,
-      "title": "Բառագիտություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
-      "units": [
-        {
-          "id": "44-2",
-          "label": "2",
-          "kind": "mc",
-          "passage": "",
-          "questions": [
-            {
-              "n": "1",
-              "stem": "Ո՞ր զույգն է հականիշների զույգ։",
-              "options": {
-                "1": "համարձակ — քաջ",
-                "2": "բարձր — ցածր",
-                "3": "ուրախ — զվարթ",
-                "4": "գեղեցիկ — սիրուն"
-              },
-              "answer": "2"
-            },
-            {
-              "n": "2",
-              "stem": "Ո՞ր բառն է բարդ բառ։",
-              "options": {
-                "1": "ծաղիկ",
-                "2": "արևածաղիկ",
-                "3": "գրիչ",
-                "4": "տուն"
-              },
-              "answer": "2"
-            },
-            {
-              "n": "3",
-              "stem": "Ո՞ր բառն է ածանցավոր։",
-              "options": {
-                "1": "քար",
-                "2": "գետ",
-                "3": "անտուն",
-                "4": "ծով"
-              },
-              "answer": "3"
-            }
-          ]
-        }
-      ]
+      ],
+      "label": "Բառագիտություն"
     },
     {
       "n": 3,
       "title": "Ձևաբանություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Morphology · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ձևաբանություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-3",
@@ -223,13 +213,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Ձևաբանություն"
     },
     {
       "n": 4,
       "title": "Շարահյուսություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Syntax and punctuation · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Շարահյուսություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-4",
@@ -272,13 +263,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Շարահյուսություն"
     },
     {
       "n": 5,
       "title": "Կապակցված խոսք",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Connected speech · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Կապակցված խոսք․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-5",
@@ -321,13 +313,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Կապակցված խոսք"
     },
     {
       "n": 6,
       "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "General knowledge about Armenian · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-6",
@@ -370,13 +363,14 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին"
     },
     {
       "n": 7,
       "title": "Ոճագիտություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Stylistics · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Ոճագիտություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-7",
@@ -418,14 +412,34 @@
               "answer": "2"
             }
           ]
+        },
+        {
+          "id": "44-1-stylistics",
+          "label": "1",
+          "kind": "mc",
+          "passage": "",
+          "questions": [
+            {
+              "n": "5",
+              "stem": "Ո՞ր արտահայտությունն է փոխաբերական։",
+              "options": {
+                "1": "երկաթե դուռ",
+                "2": "ոսկե սիրտ",
+                "3": "փայտե սեղան",
+                "4": "քարե պատ"
+              },
+              "answer": "2"
+            }
+          ]
         }
-      ]
+      ],
+      "label": "Ոճագիտություն"
     },
     {
       "n": 8,
       "title": "Գրականություն",
-      "instr_en": "Original practice exercises aligned to the PDF section topic, not official questions.",
-      "instr_hy": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ շտեմարանի բաժնի թեմայի։",
+      "instr_en": "Literature · Independent study exercises; not an official 2018 question transcription.",
+      "instr_hy": "Գրականություն․ հեղինակային ուսումնական վարժություններ (ԳԹԿ-ի 2018 թ. բնօրինակ հարցերի արտագրություն չեն)։",
       "units": [
         {
           "id": "44-8",
@@ -468,8 +482,13 @@
             }
           ]
         }
-      ]
+      ],
+      "label": "Գրականություն"
     }
   ],
-  "sourceStatus": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ PDF-ի թեմաների, ոչ թե բնօրինակ հարցերի արտագրություն։"
+  "sourceStatus": "Հեղինակային վարժանքներ՝ ըստ բնօրինակ PDF-ի թեմաների, ոչ թե բնօրինակ հարցերի արտագրություն։",
+  "sourceRelation": "Independently authored practice content, NOT an official PDF question bank",
+  "officialSourceVerifiedQuestions": 0,
+  "sourceBookVolume": 4,
+  "sectionTitlesVerifiedAgainstPdfToc": true
 }
