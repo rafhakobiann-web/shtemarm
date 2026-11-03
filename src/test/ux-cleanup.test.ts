@@ -20,7 +20,7 @@ describe("simplified study experience and truthful biology status",()=>{
    expect(coop).toContain("const team=(index%2) as Team");
  });
  it("renders stable book covers, without embedding question-page pictures",()=>{
-   const home=read("src/routes/index.tsx");
+   const home=read("src/routes/dashboard.tsx");
    const detail=read("src/routes/book.$bookId.tsx");
    const reader=read("src/components/BiologyQuestionFromPdf.tsx");
    const practice=read("src/components/BiologyOriginalPractice.tsx");
