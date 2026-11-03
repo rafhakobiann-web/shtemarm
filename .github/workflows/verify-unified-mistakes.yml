@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'src/lib/unitMistakes.ts'
+      - 'src/lib/legacyMistakeRecovery.ts'
+      - 'src/test/legacy-mistake-recovery.test.ts'
       - 'src/lib/mistakeNotebook.ts'
       - 'src/lib/mathMistakes.ts'
       - 'src/routes/mistakes.tsx'
@@ -23,6 +25,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Verify mistake notebook storage, scoring and math regression
-        run: bunx vitest run src/test/unit-mistakes.test.ts src/test/math-handbook.test.ts
+        run: bunx vitest run src/test/unit-mistakes.test.ts src/test/legacy-mistake-recovery.test.ts src/test/math-handbook.test.ts
       - name: Build website without deploying
         run: bun run build
