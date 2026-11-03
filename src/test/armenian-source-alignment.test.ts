@@ -199,6 +199,10 @@ describe("2018 Armenian language and literature source-aligned coverage", () => 
     expect(page).toContain("printedSection.lastPdfPage");
     expect(page).toContain("Բնօրինակի էջեր");
     expect(page).toContain("PDF վերբեռնել պետք չէ");
+    expect(page).toContain("printedVolume.statementBundle.pdfPage");
+    expect(page).toContain("printedVolume.answerKeyStartPdfPage");
+    expect(page).toContain("Պնդումների փունջ");
+    expect(page).toContain("Պատասխանների բանալի");
     expect(page).not.toContain('type="file"');
   });
 });
