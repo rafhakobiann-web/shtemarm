@@ -15,6 +15,25 @@ export function workbookEntries(books: readonly Book[]): HistoryEntry[] {
   return books.flatMap((book) => historyBookEntries(book, book.id));
 }
 
+/** Deduplicate repeated authored Armenian MCQs across volumes by question content.
+ * Keep the first entry's original ID so saved progress remains valid. Do not
+ * deduplicate English passages or compound question formats by their wording.
+ * This is not official-source validation; it only avoids repeated practice.
+ */
+export function uniqueArmenianPracticeEntries(entries: readonly HistoryEntry[]): HistoryEntry[] {
+  const seen = new Set<string>();
+  return entries.filter(({ unit }) => {
+    if (unit.kind !== "mc" || unit.questions.length !== 1) return true;
+    const question = unit.questions[0];
+    const fingerprint = [question.stem, ...["1", "2", "3", "4"].map((key) => question.options[key] ?? "")]
+      .map((value) => value.trim().toLocaleLowerCase("hy"))
+      .join("\u241f");
+    if (seen.has(fingerprint)) return false;
+    seen.add(fingerprint);
+    return true;
+  });
+}
+
 export function makeWorkbookExam(
   books: readonly Book[],
   subject: WorkbookSubject,
@@ -26,7 +45,7 @@ export function makeWorkbookExam(
 ): { units: Unit[]; bookId: number } {
   if (mode === "custom") {
     return {
-      units: selectHistoryUnits(pool, count, random),
+      units: selectHistoryUnits(subject === "armenian" ? uniqueArmenianPracticeEntries(pool) : pool, count, random),
       bookId: source === "all" ? (subject === "english" ? 0 : 41) : Number(source),
     };
   }
@@ -51,10 +70,11 @@ export function makeWorkbookExam(
         if (item) practicePool.push(item);
       }
     }
-    if (practicePool.length < 70) {
+    const distinctPractice = uniqueArmenianPracticeEntries(practicePool);
+    if (distinctPractice.length < 70) {
       throw new Error("Ընտրված գրքում դեռ բավարար՝ 70 վարժություն չկա։ Ընտրիր բոլոր մասերը կամ անհատական թեստը։");
     }
-    return { units: selectHistoryUnits(practicePool, 70, random), bookId: source === "all" ? 41 : selected.id };
+    return { units: selectHistoryUnits(distinctPractice, 70, random), bookId: source === "all" ? 41 : selected.id };
   }
   const items = buildExam(selected, selected.id);
   return {
