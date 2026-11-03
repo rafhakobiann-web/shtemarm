@@ -47,6 +47,16 @@
   outline: 3px solid var(--ring);
   outline-offset: 2px;
 }
+.sht-swipe-hint { display: none; }
+@media (pointer: coarse) {
+  .sht-swipe-hint {
+    display: block;
+    margin-top: .25rem;
+    color: var(--muted-foreground);
+    font-size: .7rem;
+    text-align: end;
+  }
+}
 .sht-activity-count {
   min-width: 3rem;
   text-align: center;
