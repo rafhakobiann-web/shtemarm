@@ -9,7 +9,7 @@ import { HistorySession } from "@/components/HistorySession";
 import { KIND_HY, type Unit } from "@/lib/books";
 import { update } from "@/lib/progress";
 import { loadWorkbookSources, makeWorkbookExam, workbookEntries, type WorkbookSubject } from "@/lib/workbook-exams";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
 
 type Active = { units: Unit[]; title: string; minutes: number; practice: boolean; bookId: number };
 const kindOrder: Unit["kind"][] = ["mc", "set", "seq", "match", "num"];
@@ -25,13 +25,14 @@ export function WorkbookExamWorkspace({
 }) {
   const tx = useTx();
   const english = subject === "english";
+  const lang = useLang();
   const name = tx(english ? "Անգլերեն" : "Հայոց լեզու և գրականություն");
   const books = useQuery({
     queryKey: ["workbook-exams", subject],
     queryFn: () => loadWorkbookSources(subject),
     staleTime: Infinity,
   });
-  const [source, setSource] = useState(initialBook && english && [1, 2, 3].includes(initialBook) ? String(initialBook) : "all");
+  const [source, setSource] = useState(initialBook && (english ? [1, 2, 3] : [41, 42, 43, 44]).includes(initialBook) ? String(initialBook) : "all");
   const [mode, setMode] = useState<"full" | "custom">(initialMode ?? "custom");
   const [sections, setSections] = useState<string[] | null>(initialSection ? null : []);
   const [kinds, setKinds] = useState<Unit["kind"][]>(kindOrder);
@@ -50,7 +51,7 @@ export function WorkbookExamWorkspace({
   const names = [...new Set(scoped.map((e) => e.section))];
   const initialSections = initialSection
     ? [...new Set(scoped
-      .filter((entry) => entry.unit.id.startsWith("book-" + (english ? (initialBook ?? 1) : 41) + ":" + initialSection + ":"))
+      .filter((entry) => entry.unit.id.startsWith("book-" + (initialBook ?? (english ? 1 : 41)) + ":" + initialSection + ":"))
       .map((entry) => entry.section))]
     : [];
   const selectedSections = sections ?? initialSections;
@@ -62,7 +63,7 @@ export function WorkbookExamWorkspace({
   const validCustom = Number.isInteger(count) && count > 0 && count <= available;
   const validMinutes = Number.isInteger(minutes) && minutes >= 0 && minutes <= 300;
   const canStart = !books.isPending && !books.isError &&
-    validMinutes && (mode === "full" || validCustom);
+    validMinutes && (mode === "full" ? (english || scoped.length >= 70) : validCustom);
 
   function changeSource(value: string) {
     setSource(value);
@@ -135,9 +136,17 @@ export function WorkbookExamWorkspace({
           <label className="block space-y-2">
             <span className="text-sm font-bold">{tx("Հարցերի աղբյուր")}</span>
             <select className={field} value={source} onChange={(e) => changeSource(e.target.value)}>
-              <option value="all">{tx(english ? "Բոլոր երեք շտեմարանները" : "Հայոց լեզվի և գրականության հարցաշար")}</option>
-              {english && [1, 2, 3].map((id) => (
-                <option key={id} value={String(id)}>{tx("Շտեմարան {n}", { n: id })}</option>
+              <option value="all">{english ? tx("Բոլոր երեք շտեմարանները") :
+                lang === "en" ? "All four Armenian practice volumes" :
+                lang === "ru" ? "Все четыре учебных сборника по армянскому" :
+                "Հայոց լեզվի և գրականության բոլոր 4 մասերը"}</option>
+              {(english ? [1, 2, 3] : [41, 42, 43, 44]).map((id) => (
+                <option key={id} value={String(id)}>
+                  {english ? tx("Շտեմարան {n}", { n: id }) :
+                    lang === "en" ? `Practice volume ${id - 40}` :
+                    lang === "ru" ? `Учебный сборник ${id - 40}` :
+                    `Ուսումնական մաս ${id - 40}`}
+                </option>
               ))}
             </select>
           </label>
@@ -244,10 +253,13 @@ export function WorkbookExamWorkspace({
           {!english && <GtcGuidePanel subject="armenian" />}
           <section className="space-y-4 rounded-3xl border bg-card p-5">
             <h2 className="flex items-center gap-2 font-black"><GraduationCap className="size-5 text-primary" />{tx("Հասանելի գրքեր")}</h2>
-            {(english ? [1, 2, 3] : [41]).map((id) => (
+            {(english ? [1, 2, 3] : [41, 42, 43, 44]).map((id) => (
               <Link key={id} to="/book/$bookId" params={{ bookId: String(id) }}
                 className="block rounded-xl border p-3 text-sm font-semibold hover:bg-muted">
-                {tx(english ? "Շտեմարան {n}" : "Հայոց լեզու և գրականություն", { n: id })}
+                {english ? tx("Շտեմարան {n}", { n: id }) :
+                  lang === "en" ? `Armenian · volume ${id - 40} (practice)` :
+                  lang === "ru" ? `Армянский · часть ${id - 40} (практика)` :
+                  `Հայոց լեզու և գրականություն · մաս ${id - 40} (վարժանք)`}
               </Link>
             ))}
           </section>
