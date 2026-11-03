@@ -85,12 +85,12 @@ export const BIO_BOOKS = [
   { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
-/** Original Armenian-language practice bank; official past-paper links are shown separately. */
+/** Armenian original PDF chapter outlines are verified separately. These IDs still load independently authored practice questions, NOT the original 2018 exam questions. */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · 2017 · 96 հեղինակային վարժանք", cover: "/covers/armenian-language.svg" },
+  { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · 2017 · 10 հեղինակային վարժանք", cover: "/covers/armenian-language.svg" },
+  { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · 2017 · 10 հեղինակային վարժանք", cover: "/covers/armenian-language.svg" },
+  { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · 2018 · 10 հեղինակային վարժանք", cover: "/covers/armenian-language.svg" },
 ] as const;
 
 /** Two playable original physics practice volumes, corresponding to the two
