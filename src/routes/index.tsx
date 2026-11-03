@@ -483,7 +483,6 @@ function Index() {
           {ARMENIAN_BOOKS.map((b) => <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}><TileBody cover={b.cover} title={b.title} sub={b.sub} /></Link>)}
         </SubjectRow>
         <SubjectRow title={tx("Կենսաբանություն")} beta>
-          <Link to="/" search={{ subject: "biology" }} className={TILE}><div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-emerald-500/15 via-muted to-primary/10 p-4 text-center text-primary sm:aspect-[3/4]"><Dna className="size-12" /><span className="font-black">{tx("Բոլոր կենսաբանության թեստերը")}</span></div><div className="p-4"><p className="text-xs text-muted-foreground">{tx("Հարցաշարեր և քննություն")}</p></div></Link>
           {BIO_BOOKS.filter(b => b.id === 31 || b.id === 32).map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
