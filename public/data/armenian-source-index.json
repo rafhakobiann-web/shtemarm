@@ -1,5 +1,5 @@
 {
-  "description": "Source PDF navigation metadata, not copyrighted question transcription. Page numbers are 1-based PDF pages; headings 5–8 require manual verification.",
+  "description": "Բնօրինակ PDF-ների 3-րդ էջերի բովանդակությունից ստուգված բաժինների վերնագրեր, սկզբի/ավարտի էջեր, հավելվածներ և SHA-256։ Սա հարցերի թվայնացում չէ։",
   "source": "User-provided hayoc-1.pdf through hayoc-4.pdf",
   "volumes": [
     {
@@ -11,49 +11,85 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 26,
+          "verifiedPage": true
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 27,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 48,
+          "verifiedPage": true
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 49,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 97,
+          "verifiedPage": true
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 98,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 172,
+          "verifiedPage": true
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 173,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 186,
+          "verifiedPage": true
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 187,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 188,
+          "verifiedPage": true
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 189,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 193,
+          "verifiedPage": true
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 194,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 239,
+          "verifiedPage": true
+        }
+      ],
+      "year": 2017,
+      "sourceSha256": "5894d996c336a5837c7ce4e7b77eca59bb0cec0ae6c5ab55d468e05cd9356e35",
+      "tocPdfPage": 3,
+      "sourceVerification": "Վերնագրերը և էջերը ստուգված են հայերեն կոդավորմամբ բնօրինակ PDF-ի բովանդակության և բաժինների սկզբի համեմատությամբ։",
+      "appendices": [
+        {
+          "title": "Պնդումների փունջ",
+          "pdfPage": 240,
+          "endPdfPage": 248,
+          "verifiedTitle": true,
+          "verifiedPage": true
+        },
+        {
+          "title": "Պատասխաններ",
+          "pdfPage": 249,
+          "endPdfPage": 256,
+          "verifiedTitle": true,
+          "verifiedPage": true
         }
       ]
     },
@@ -66,49 +102,85 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 29,
+          "verifiedPage": true
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 30,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 51,
+          "verifiedPage": true
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 52,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 73,
+          "verifiedPage": true
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 74,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 169,
+          "verifiedPage": true
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 170,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 183,
+          "verifiedPage": true
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 184,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 187,
+          "verifiedPage": true
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 188,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 201,
+          "verifiedPage": true
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 202,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 242,
+          "verifiedPage": true
+        }
+      ],
+      "year": 2017,
+      "sourceSha256": "e8b9f7e59326ad3938f9c27f4ff618ed7058bf7bd92844072cdcb1961210034d",
+      "tocPdfPage": 3,
+      "sourceVerification": "Վերնագրերը և էջերը ստուգված են հայերեն կոդավորմամբ բնօրինակ PDF-ի բովանդակության և բաժինների սկզբի համեմատությամբ։",
+      "appendices": [
+        {
+          "title": "Պնդումների փունջ",
+          "pdfPage": 243,
+          "endPdfPage": 249,
+          "verifiedTitle": true,
+          "verifiedPage": true
+        },
+        {
+          "title": "Պատասխաններ",
+          "pdfPage": 250,
+          "endPdfPage": 256,
+          "verifiedTitle": true,
+          "verifiedPage": true
         }
       ]
     },
@@ -121,51 +193,88 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 34,
+          "verifiedPage": true
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 35,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 60,
+          "verifiedPage": true
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 61,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 96,
+          "verifiedPage": true
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 97,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 168,
+          "verifiedPage": true
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 169,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 175,
+          "verifiedPage": true
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 176,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 181,
+          "verifiedPage": true
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
-          "pdfPage": 181,
-          "verifiedTitle": false
+          "title": "Ոճագիտություն",
+          "pdfPage": 182,
+          "verifiedTitle": true,
+          "endPdfPage": 189,
+          "verifiedPage": true
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 190,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 240,
+          "verifiedPage": true
         }
-      ]
+      ],
+      "year": 2017,
+      "sourceSha256": "c237c82c6ab4bfb93f786e777e013d9bccc697d51701b8895da30c899f02e3c8",
+      "tocPdfPage": 3,
+      "sourceVerification": "Վերնագրերը և էջերը ստուգված են հայերեն կոդավորմամբ բնօրինակ PDF-ի բովանդակության և բաժինների սկզբի համեմատությամբ։",
+      "appendices": [
+        {
+          "title": "Պնդումների փունջ",
+          "pdfPage": 241,
+          "endPdfPage": 248,
+          "verifiedTitle": true,
+          "verifiedPage": true
+        },
+        {
+          "title": "Պատասխաններ",
+          "pdfPage": 249,
+          "endPdfPage": 256,
+          "verifiedTitle": true,
+          "verifiedPage": true
+        }
+      ],
+      "sourceNote": "III մասի PDF 181-րդ էջի վազող վերնագիրը սխալմամբ «Բաժին 7» է, սակայն այնտեղ շարունակվում է 6-րդ բաժնի 2-րդ մասը․ «Ոճագիտություն»-ը իրականում սկսվում է 182-րդ էջում։"
     },
     {
       "volume": 4,
@@ -176,51 +285,90 @@
           "number": 1,
           "title": "Հնչյունաբանություն",
           "pdfPage": 6,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 37,
+          "verifiedPage": true
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 38,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 68,
+          "verifiedPage": true
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 69,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 110,
+          "verifiedPage": true
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 111,
-          "verifiedTitle": true
+          "verifiedTitle": true,
+          "endPdfPage": 185,
+          "verifiedPage": true
         },
         {
           "number": 5,
-          "title": "Բաժին 5 · վերնագիրը ստուգման ենթակա",
+          "title": "Կապակցված խոսք",
           "pdfPage": 186,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 197,
+          "verifiedPage": true
         },
         {
           "number": 6,
-          "title": "Բաժին 6 · վերնագիրը ստուգման ենթակա",
+          "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 198,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 202,
+          "verifiedPage": true
         },
         {
           "number": 7,
-          "title": "Բաժին 7",
+          "title": "Ոճագիտություն",
           "pdfPage": 203,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 209,
+          "verifiedPage": true
         },
         {
           "number": 8,
-          "title": "Բաժին 8",
+          "title": "Գրականություն",
           "pdfPage": 210,
-          "verifiedTitle": false
+          "verifiedTitle": true,
+          "endPdfPage": 241,
+          "verifiedPage": true
+        }
+      ],
+      "year": 2018,
+      "sourceSha256": "910266f221729f7b310c8656e1a65caaecca26536f9cfee78419c76286ad38bd",
+      "tocPdfPage": 3,
+      "sourceVerification": "Վերնագրերը և էջերը ստուգված են հայերեն կոդավորմամբ բնօրինակ PDF-ի բովանդակության և բաժինների սկզբի համեմատությամբ։",
+      "appendices": [
+        {
+          "title": "Պնդումների փունջ",
+          "pdfPage": 242,
+          "endPdfPage": 250,
+          "verifiedTitle": true,
+          "verifiedPage": true
+        },
+        {
+          "title": "Պատասխաններ",
+          "pdfPage": 251,
+          "endPdfPage": 256,
+          "verifiedTitle": true,
+          "verifiedPage": true
         }
       ]
     }
-  ]
+  ],
+  "schemaVersion": 2,
+  "sourceType": "2018 թ. պետական ավարտական և միասնական քննությունների առաջադրանքների պաշտոնական շտեմարանների չորս մասերը",
+  "practiceStatus": "Կայքի ներկայիս հարցերը առանձին հեղինակային ուսումնական նյութեր են, ոչ 2018 թ. գրքերի ամբողջական թվայնացում։"
 }
