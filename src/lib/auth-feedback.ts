@@ -1,6 +1,12 @@
 /** Predictable, non-sensitive messages for common auth failures. */
 export function authFeedback(error: unknown): string {
   const text = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  if (/no active session after (?:google )?sign-in|google sign-in returned no redirect URL/i.test(text)) {
+    return "Մուտքը չավարտվեց․ հաստատված նիստ չստացվեց։ Փորձիր նորից կամ օգտվիր էլ. փոստով մուտքից։";
+  }
+  if (/unsupported oauth origin/i.test(text)) {
+    return "Այս հասցեից մուտքն ապահով կերպով հնարավոր չէ։ Բացիր Shtemarm-ը սովորական HTTPS կայքում։";
+  }
   if (/invalid login|invalid credentials|invalid email or password/i.test(text)) {
     return "Սխալ էլ. փոստ կամ գաղտնաբառ։ Ստուգիր տվյալները կամ վերականգնիր գաղտնաբառը։";
   }
