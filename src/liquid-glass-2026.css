@@ -425,7 +425,12 @@ html[data-surface="liquid"] .sht-landing-footer {
   }
 }
 @media (prefers-reduced-transparency: reduce) {
-  html[data-surface="liquid"] { --lg-surface: var(--card); --lg-surface-strong: var(--card); }
+  html[data-surface="liquid"] { --lg-surface: var(--card); --lg-surface-strong: var(--card); --lg-blur: 0px; }
+  html[data-surface="liquid"] :is(.glass, .bg-card, .bg-popover, .site-header,
+    .site-settings-sheet, .sht-landing-nav, .sht-preview, .sht-floating-label) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 html[data-glass-blur="off"][data-surface="liquid"],
 html.user-high-contrast[data-surface="liquid"] {
