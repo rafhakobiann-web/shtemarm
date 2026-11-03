@@ -1,0 +1,22 @@
+name: Verify personal study plan
+on:
+  pull_request:
+    paths:
+      - 'src/lib/studyPlan.ts'
+      - 'src/routes/study-plan.tsx'
+      - 'src/routes/study-tools.tsx'
+      - 'src/components/AppHeader.tsx'
+      - 'src/test/study-plan.test.ts'
+      - '.github/workflows/verify-personal-study-plan.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Study plan regression tests
+        run: bunx vitest run src/test/study-plan.test.ts src/test/unit-mistakes.test.ts
+      - name: Production website build
+        run: bun run build
