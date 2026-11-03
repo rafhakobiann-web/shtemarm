@@ -44,7 +44,7 @@ function ChatPage() {
     setInput("");
     setLoading(true);
     try {
-      const res = await chatReply({ data: { messages: next.slice(-20) } });
+      const res = await chatReply({ data: { messages: next.filter(m => m.role === "user").slice(-20).map(m => ({ role: "user" as const, content: m.content })) } });
       setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
