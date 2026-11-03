@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
 
 type ArmenianSourceIndex = {
-  volumes: { volume: number; sections: { number: number; pdfPage: number; lastPdfPage: number }[] }[];
+  volumes: { volume: number; sections: { number: number; pdfPage: number; lastPdfPage: number }[]; statementBundle: { pdfPage: number; lastPdfPage: number }; answerKeyStartPdfPage: number; answerKeyEndPdfPage: number }[];
 };
 
 async function loadArmenianSourceIndex(): Promise<ArmenianSourceIndex> {
@@ -205,6 +205,33 @@ function BookPage() {
             );
           })}
         </div>
+      )}
+      {isArmenianBook && book && printedVolume && (
+        <section className="space-y-3" aria-label={lang === "en" ? "Additional original book sections" : lang === "ru" ? "Дополнительные разделы оригинала" : "Բնօրինակի լրացուցիչ բաժիններ"}>
+          <h2 className="text-lg font-black">
+            {lang === "en" ? "Other sections in the original" : lang === "ru" ? "Другие разделы оригинала" : "Բնօրինակի մյուս բաժինները"}
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border bg-card p-4">
+              <h3 className="font-bold">{lang === "en" ? "Statement bundle" : lang === "ru" ? "Набор утверждений" : "Պնդումների փունջ"}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {lang === "en" ? "PDF pages" : lang === "ru" ? "Страницы PDF" : "PDF էջեր"}: {printedVolume.statementBundle.pdfPage}–{printedVolume.statementBundle.lastPdfPage}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {lang === "en" ? "Not yet digitized as playable tasks." : lang === "ru" ? "Пока нет интерактивных заданий." : "Դեռ թվայնացված լուծելի առաջադրանքներ չկան։"}
+              </p>
+            </div>
+            <div className="rounded-2xl border bg-card p-4">
+              <h3 className="font-bold">{lang === "en" ? "Printed answer key" : lang === "ru" ? "Печатные ответы" : "Պատասխանների բանալի"}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {lang === "en" ? "PDF pages" : lang === "ru" ? "Страницы PDF" : "PDF էջեր"}: {printedVolume.answerKeyStartPdfPage}–{printedVolume.answerKeyEndPdfPage}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {lang === "en" ? "Official answers have not been individually checked against practice tasks." : lang === "ru" ? "Официальные ответы ещё не сверены с учебными заданиями." : "Պաշտոնական բանալիները դեռ չեն համադրվել ուսումնական հարցերի հետ։"}
+              </p>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );
