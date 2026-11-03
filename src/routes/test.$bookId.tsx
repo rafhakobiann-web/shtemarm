@@ -15,6 +15,7 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLang, useTx } from "@/lib/lang";
+import { recordUnitMistakes, subjectForBookId } from "@/lib/unitMistakes";
 
 export const Route = createFileRoute("/test/$bookId")({
   staticData: { sitemap: false },
@@ -228,7 +229,9 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
   const score = items.reduce((a, it) => a + scoreUnit(it.unit, answers[it.unit.id]).got, 0);
 
   const finish = () => {
+    if (finished) return;
     setFinished(true);
+    recordUnitMistakes(subjectForBookId(bookId), items.map(item => item.unit), answers);
     items.forEach(({ unit: u }) => {
       const r = scoreUnit(u, answers[u.id]);
       if (u.kind === "mc") u.questions.forEach((q, i) => recordAnswer(`${u.id}:${q.n}`, !!r.per[i], 5));
