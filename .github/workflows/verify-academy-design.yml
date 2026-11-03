@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/styles.css'
+      - 'src/adaptive-design-2026.css'
       - 'src/lib/theme.ts'
       - 'src/routes/index.tsx'
       - 'src/routes/__root.tsx'
@@ -15,6 +16,7 @@ on:
       - 'src/i18n/e.ts'
       - 'src/i18n/ru.ts'
       - 'src/test/academy-design.test.ts'
+      - 'src/test/responsive-shell-regression.test.ts'
       - 'src/test/theme.test.ts'
       - '.github/workflows/verify-academy-design.yml'
   workflow_dispatch:
@@ -33,6 +35,6 @@ jobs:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
       - name: Validate design semantics, theme persistence and navigation
-        run: bunx vitest run src/test/academy-design.test.ts src/test/theme.test.ts src/test/app-routing.test.tsx
+        run: bunx vitest run src/test/academy-design.test.ts src/test/responsive-shell-regression.test.ts src/test/adaptive-design.test.ts src/test/theme.test.ts src/test/app-routing.test.tsx
       - name: Build production website
         run: bun run build
