@@ -49,7 +49,8 @@ for volume in source["volumes"]:
     sections_ok = 0
     toc_ok = 0
     for section in volume["sections"]:
-        title = section["title"].upper()
+        # ARMSCII-8 sources use ԵՎ where Unicode uppercasing of և yields ԵՒ.
+        title = section["title"].upper().replace("ԵՒ", "ԵՎ")
         page = section["pdfPage"]
         if title not in toc:
             issues.append(f"{name}: TOC missing {title}")
