@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { ArrowDown, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
+import { previewIndex, previewSwipeDirection, type PreviewDirection } from "@/lib/preview-interaction";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 
@@ -156,9 +157,9 @@ const SUBJECTS = [
 ] as const;
 
 const LANDING_UI = {
-  hy: { navBenefits: "Առավելություններ", navSteps: "Ինչպես սկսել", sample: "Ինտերակտիվ նախադիտում", example: "Ցուցադրական օրինակ", focus: "Այսօրվա ուղղությունը", focused: "Ընտրված առաջադրանք", practice: "Ուսումնական գործիքներ", review: "Կրկնիր և ամրապնդիր", progress: "Քո տեմպով, առանց շտապելու", viewSubjects: "Դիտել առարկաները", subjectsIntro: "Ընտրիր քեզ անհրաժեշտ առարկան և սկսիր պատրաստվել մեկ հարմար տարածքում։", openSubject: "Սկսել պարապել", stepsIntro: "Քո պատրաստությունն սկսվում է ընդամենը երեք պարզ քայլից։", faqIntro: "Կարճ ու հստակ պատասխաններ՝ սովորելը հեշտ սկսելու համար։", footer: "Ստեղծված է դպրոցականների և դիմորդների համար։", explore: "Հարցաշարեր, կրկնություն, առաջընթաց", signIn: "Մուտք", account: "Ուսման տարածք", demoNote: "Սա հնարավորությունների նախադիտում է, ոչ թե քո իրական առաջընթացը։" },
-  en: { navBenefits: "Benefits", navSteps: "How it works", sample: "Interactive preview", example: "Sample experience", focus: "Today's focus", focused: "Selected activity", practice: "Study tools", review: "Review and improve", progress: "At your own pace", viewSubjects: "Explore subjects", subjectsIntro: "Choose a subject and start preparing in one convenient place.", openSubject: "Start practicing", stepsIntro: "Your learning journey starts with three simple steps.", faqIntro: "Clear answers to help you get started.", footer: "Built for students and exam applicants.", explore: "Practice, review, progress", signIn: "Sign in", account: "Study space", demoNote: "This is a feature preview, not your actual learning progress." },
-  ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс." },
+  hy: { navBenefits: "Առավելություններ", navSteps: "Ինչպես սկսել", sample: "Ինտերակտիվ նախադիտում", example: "Ցուցադրական օրինակ", focus: "Այսօրվա ուղղությունը", focused: "Ընտրված առաջադրանք", practice: "Ուսումնական գործիքներ", review: "Կրկնիր և ամրապնդիր", progress: "Քո տեմպով, առանց շտապելու", viewSubjects: "Դիտել առարկաները", subjectsIntro: "Ընտրիր քեզ անհրաժեշտ առարկան և սկսիր պատրաստվել մեկ հարմար տարածքում։", openSubject: "Սկսել պարապել", stepsIntro: "Քո պատրաստությունն սկսվում է ընդամենը երեք պարզ քայլից։", faqIntro: "Կարճ ու հստակ պատասխաններ՝ սովորելը հեշտ սկսելու համար։", footer: "Ստեղծված է դպրոցականների և դիմորդների համար։", explore: "Հարցաշարեր, կրկնություն, առաջընթաց", signIn: "Մուտք", account: "Ուսման տարածք", demoNote: "Սա հնարավորությունների նախադիտում է, ոչ թե քո իրական առաջընթացը։", swipeHint: "Սահեցրու աջ կամ ձախ" },
+  en: { navBenefits: "Benefits", navSteps: "How it works", sample: "Interactive preview", example: "Sample experience", focus: "Today's focus", focused: "Selected activity", practice: "Study tools", review: "Review and improve", progress: "At your own pace", viewSubjects: "Explore subjects", subjectsIntro: "Choose a subject and start preparing in one convenient place.", openSubject: "Start practicing", stepsIntro: "Your learning journey starts with three simple steps.", faqIntro: "Clear answers to help you get started.", footer: "Built for students and exam applicants.", explore: "Practice, review, progress", signIn: "Sign in", account: "Study space", demoNote: "This is a feature preview, not your actual learning progress.", swipeHint: "Swipe left or right" },
+  ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс.", swipeHint: "Листай вправо или влево" },
 } as const;
 
 const ACCENT_LABELS: Record<"hy" | "en" | "ru", Record<Accent, string>> = {
@@ -174,6 +175,24 @@ function LandingPage() {
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
+  const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
+  const changeActivity = (direction: PreviewDirection) =>
+    setActive((current) => previewIndex(current, direction, 3));
+  const startPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    previewSwipe.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+  const finishPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    const swipe = previewSwipe.current;
+    previewSwipe.current = null;
+    if (!swipe || swipe.pointerId !== event.pointerId) return;
+    const dx = event.clientX - swipe.x;
+    const dy = event.clientY - swipe.y;
+    // Horizontal intent only. Vertical reading gestures always scroll normally.
+    const direction = previewSwipeDirection(dx, dy);
+    if (direction !== 0) changeActivity(direction);
+  };
 
   useEffect(() => {
     const saved = readSavedAccent();
@@ -276,10 +295,18 @@ function LandingPage() {
                 <span className="sht-preview-icon"><GraduationCap className="size-5" aria-hidden="true" /></span>
                 <div><span className="sht-mini-label">{ui.example}</span><h2>{t.demo}</h2></div>
               </div>
-              <div className="sht-preview-focus">
+              <div className="sht-preview-focus" onPointerDown={startPreviewSwipe} onPointerUp={finishPreviewSwipe} onPointerCancel={() => { previewSwipe.current = null; }}>
                 <div className="sht-preview-focus-heading"><Target className="size-4" aria-hidden="true" /><span>{ui.focus}</span></div>
-                <p id="sht-demo-details" className="sht-focus-detail" aria-live="polite">{DEMO_DETAILS[lang][active]}</p>
-                <div className="sht-progress-track" aria-hidden="true"><span /></div>
+                <div className="sht-preview-message" aria-live="polite" aria-atomic="true">
+                  <p key={lang + "-" + active} id="sht-demo-details" className="sht-focus-detail sht-activity-text">{DEMO_DETAILS[lang][active]}</p>
+                </div>
+                <div className="sht-preview-controls" role="group" aria-label={ui.sample}>
+                  <button type="button" aria-label={lang === "hy" ? "Նախորդ առաջադրանքը" : lang === "ru" ? "Предыдущее задание" : "Previous activity"} onClick={() => changeActivity(-1)}><ChevronLeft className="size-4" aria-hidden="true" /></button>
+                  <span className="sht-activity-count" aria-hidden="true">{active + 1} / {demoTasks.length}</span>
+                  <button type="button" aria-label={lang === "hy" ? "Հաջորդ առաջադրանքը" : lang === "ru" ? "Следующее задание" : "Next activity"} onClick={() => changeActivity(1)}><ChevronRight className="size-4" aria-hidden="true" /></button>
+                </div>
+                <span className="sht-swipe-hint">{ui.swipeHint}</span>
+                <div className="sht-progress-track" aria-hidden="true"><span style={{ transform: `scaleX(${(active + 1) / demoTasks.length})` }} /></div>
               </div>
               <div className="sht-demo-options" role="group" aria-label={t.demo}>
                 {demoTasks.map((task, i) => (

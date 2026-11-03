@@ -50,6 +50,7 @@ export function MobileNav() {
   const dockRef = useRef<HTMLElement>(null);
   const drag = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
   const [hoverTab, setHoverTab] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
   const previewTab = hoverTab ?? selected;
   const pointerTab = (x: number) => {
     const rect = dockRef.current?.getBoundingClientRect();
@@ -70,10 +71,12 @@ export function MobileNav() {
       // Yield normal vertical scrolling to the browser.
       drag.current = null;
       setHoverTab(null);
+      setDragging(false);
       return;
     }
     if (!d.moved && dx > 12 && dx > dy * 1.2) {
       d.moved = true;
+      setDragging(true);
       e.currentTarget.setPointerCapture?.(e.pointerId);
     }
     if (d.moved) setHoverTab(pointerTab(e.clientX));
@@ -82,9 +85,14 @@ export function MobileNav() {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
-    setHoverTab(null);
-    if (!d.moved || e.type === "pointercancel") return;
+    setDragging(false);
+    if (!d.moved || e.type === "pointercancel") {
+      setHoverTab(null);
+      return;
+    }
     const index = pointerTab(e.clientX);
+    // Keep the pill under the released finger until TanStack updates the route.
+    setHoverTab(index);
     const link = dockRef.current?.querySelectorAll<HTMLAnchorElement>("a")[index];
     link?.click();
     if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate?.(8);
@@ -150,6 +158,8 @@ export function MobileNav() {
   useEffect(() => {
     setCompact(false);
     setHomeVisible(null);
+    setHoverTab(null);
+    setDragging(false);
   }, [pathname, hash]);
 
   // Home-page hash targets always scroll to the actual catalogue/exams section.
@@ -209,6 +219,7 @@ export function MobileNav() {
       onPointerCancel={dockEnd}
       aria-label={tx("Արագ նավարկում")}
       data-compact={compact ? "true" : "false"}
+      data-dragging={dragging ? "true" : "false"}
       className="site-mobile-nav mobile-liquid-dock fixed inset-x-3 z-40 mx-auto max-w-[29rem] rounded-[1.7rem] p-[6px] md:hidden"
     >
       <div className="mobile-liquid-track relative grid grid-cols-5 items-stretch">

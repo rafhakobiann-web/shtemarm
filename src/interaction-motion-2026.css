@@ -1,0 +1,211 @@
+/*
+ * Shtemarm · Intentional interaction motion.
+ *
+ * One-off, action-driven feedback; no continuous background animation,
+ * scroll-linked effects, extra blur layers or expensive layout measurement.
+ * Loaded after responsive and Liquid Glass rules; compatible with all themes.
+ */
+:root {
+  --sht-motion-press: 105ms cubic-bezier(.22, 1, .36, 1);
+  --sht-motion-fast: 175ms cubic-bezier(.22, 1, .36, 1);
+  --sht-motion-normal: 280ms cubic-bezier(.2, .85, .28, 1);
+  --sht-motion-spring: 360ms cubic-bezier(.2, 1.1, .3, 1);
+}
+
+/* A user can read, swipe or tap the preview. Only horizontal motion is handled
+   in React; vertical touch gestures remain native scrolling. */
+.sht-preview-focus {
+  touch-action: pan-y;
+  overflow: hidden;
+}
+.sht-preview-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .6rem;
+  margin-top: .85rem;
+}
+.sht-preview-controls button {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: .86rem;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--sht-motion-press), background-color var(--sht-motion-fast),
+              border-color var(--sht-motion-fast);
+}
+.sht-preview-controls button:active {
+  transform: scale(.93);
+}
+.sht-preview-controls button:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+.sht-swipe-hint { display: none; }
+@media (pointer: coarse) {
+  .sht-swipe-hint {
+    display: block;
+    margin-top: .25rem;
+    color: var(--muted-foreground);
+    font-size: .7rem;
+    text-align: end;
+  }
+}
+.sht-activity-count {
+  min-width: 3rem;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: .77rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+.sht-preview .sht-progress-track span {
+  display: block;
+  width: 100%;
+  transform-origin: 0% 50%;
+  transition: transform var(--sht-motion-normal);
+}
+@keyframes sht-activity-enter {
+  from { opacity: .25; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.sht-activity-text {
+  animation: sht-activity-enter 245ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.sht-demo-option {
+  transition: transform var(--sht-motion-press), border-color var(--sht-motion-fast),
+              background-color var(--sht-motion-fast);
+}
+.sht-demo-option .sht-demo-check,
+.sht-demo-option > svg:last-child {
+  transition: transform var(--sht-motion-normal), opacity var(--sht-motion-fast);
+}
+.sht-demo-option[aria-pressed="true"] .sht-demo-check {
+  transform: scale(1.12);
+}
+.sht-demo-option[aria-pressed="true"] > svg:last-child {
+  transform: translate3d(3px, 0, 0);
+}
+
+/* Instant press indication follows the actual pointer and clears on scroll,
+   pointer cancellation, or loss of focus. CSS is the feedback renderer. */
+html[data-surface="liquid"] :is(
+  .sht-demo-option, .sht-subject-card, .sht-button-primary,
+  .sht-button-secondary, .sht-nav-login, .academy-quick-action,
+  .academy-download-cta, .mobile-liquid-tab, .answer-option:not(:disabled)
+)[data-motion-pressed="true"] {
+  scale: .975;
+  transition: scale var(--sht-motion-press);
+}
+html[data-surface="liquid"] .sht-palette-picker > summary[data-motion-pressed="true"],
+html[data-surface="liquid"] .sht-palette-colors button[data-motion-pressed="true"] {
+  transform: scale(.91);
+  transition: transform var(--sht-motion-press);
+}
+
+/* The active item acknowledges an action, not an elapsed timer. */
+html[data-surface="liquid"] .mobile-liquid-dock .mobile-liquid-tab.is-selected {
+  color: color-mix(in srgb, var(--primary) 86%, var(--foreground));
+}
+html[data-surface="liquid"] .mobile-liquid-dock[data-dragging="true"] .mobile-liquid-indicator {
+  transition: none !important;
+}
+html[data-surface="liquid"] .mobile-liquid-dock[data-dragging="true"] .mobile-liquid-tab.is-selected .mobile-liquid-icon {
+  transform: translate3d(0, -3px, 0) scale(1.14);
+}
+html[data-surface="liquid"] .mobile-liquid-dock[data-dragging="false"] .mobile-liquid-indicator {
+  transition: transform var(--sht-motion-spring);
+}
+html[data-surface="liquid"] .mobile-liquid-tab .mobile-liquid-icon {
+  transition: transform var(--sht-motion-normal);
+}
+html[data-surface="liquid"] .mobile-liquid-tab:active .mobile-liquid-icon {
+  transform: scale(.90);
+}
+
+/* Dropdowns and FAQ content appear in the direction they open.
+   No exit animation delays a user's navigation or keeps hidden UI mounted. */
+@keyframes sht-menu-open {
+  from { opacity: 0; transform: translate3d(0, -7px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+.sht-palette-picker[open] .sht-palette-panel,
+.sht-mobile-links[open] nav {
+  transform-origin: top right;
+  animation: sht-menu-open 190ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.sht-faq-item[open] > p {
+  animation: sht-activity-enter 200ms ease-out both;
+}
+.sht-faq-item[open] .sht-faq-chevron {
+  transform: rotate(180deg);
+}
+.sht-palette-colors button {
+  transition: transform var(--sht-motion-press), outline-color var(--sht-motion-fast);
+}
+.sht-palette-colors button[aria-pressed="true"] {
+  transform: scale(1.05);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sht-preview-controls button:hover {
+    background: color-mix(in srgb, var(--primary) 8%, var(--card));
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+    transform: translate3d(0, -2px, 0);
+  }
+  .sht-demo-option:hover > svg:last-child {
+    transform: translate3d(3px, 0, 0);
+  }
+  .sht-subject-card:hover .sht-subject-icon {
+    transform: translate3d(0, -2px, 0) scale(1.04);
+  }
+  .sht-subject-icon {
+    transition: transform var(--sht-motion-spring);
+  }
+  .sht-nav-links a:focus-visible, .sht-nav-links a:hover {
+    transition: color var(--sht-motion-fast), background-color var(--sht-motion-fast);
+  }
+}
+
+/* Keep all controls accessible on touchscreen and to keyboard users. */
+:is(.sht-demo-option, .sht-palette-colors button, .mobile-liquid-tab):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  .sht-preview-controls { margin-top: .65rem; }
+  .sht-preview-controls button { width: 2.75rem; height: 2.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-activity-text, .sht-palette-picker[open] .sht-palette-panel,
+  .sht-mobile-links[open] nav, .sht-faq-item[open] > p {
+    animation: none !important;
+  }
+  :is(.sht-preview-controls button, .sht-demo-option, .sht-demo-option *,
+    .sht-preview .sht-progress-track span, .sht-palette-colors button,
+    .mobile-liquid-indicator, .mobile-liquid-icon, .sht-subject-icon) {
+    transition: none !important;
+  }
+}
+html.user-reduced-motion .sht-activity-text,
+html.user-reduced-motion .sht-palette-picker[open] .sht-palette-panel,
+html.user-reduced-motion .sht-mobile-links[open] nav,
+html.user-reduced-motion .sht-faq-item[open] > p {
+  animation: none !important;
+}
+html.user-reduced-motion :is(.sht-preview-controls button, .sht-demo-option,
+  .sht-demo-option *, .sht-preview .sht-progress-track span, .sht-palette-colors button,
+  .mobile-liquid-indicator, .mobile-liquid-icon, .sht-subject-icon) {
+  transition: none !important;
+}
+html.user-reduced-motion[data-surface="liquid"] [data-motion-pressed="true"],
+html.user-high-contrast[data-surface="liquid"] [data-motion-pressed="true"] {
+  scale: 1 !important;
+  transform: none !important;
+}
