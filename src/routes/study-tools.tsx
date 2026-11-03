@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, ClipboardList, Layers, Gamepad2, Languages } from "lucide-react";
+import { ArrowLeft, BookOpen, Layers, Gamepad2, Languages } from "lucide-react";
 import { StudyTools } from "@/components/StudyTools";
 import { useTx } from "@/lib/lang";
 
@@ -24,11 +24,10 @@ function StudyToolsPage() {
       <header className="space-y-3">
         <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary"><BookOpen className="size-4" />{tx("Ուսումնական կենտրոն")}</span>
         <h1 className="text-3xl font-black sm:text-4xl">{tx("Ուսումնական գործիքներ և առաջընթաց")}</h1>
-        <p className="max-w-2xl leading-relaxed text-muted-foreground">{tx("Հետևիր քո առաջընթացին, կրկնիր սխալ պատասխանները և օգտվիր թեմատիկ աշխատանքներից ու մինի խաղերից։")}</p>
+        <p className="max-w-2xl leading-relaxed text-muted-foreground">{tx("Հետևիր քո առաջընթացին, կրկնիր սխալ պատասխանները և օգտվիր հիշողության քարտերից ու մինի խաղերից։")}</p>
       </header>
       <div className="grid gap-3 sm:grid-cols-2">
         {[
-          {to:"/assessment-builder",title:"Թեմատիկ և ամփոփիչ աշխատանքներ",desc:"Կազմել, տպել կամ լուծել առցանց",Icon:ClipboardList},
           {to:"/flashcards",title:"Հիշողության քարտեր",desc:"Կրկնել տերմինները և թեմաները",Icon:Layers},
           {to:"/mini-games",title:"Մինի խաղեր",desc:"Արագ հարցեր, ճիշտ/սխալ, համապատասխանեցում",Icon:Gamepad2},
           {to:"/vocabulary",title:"Իմ բառապաշարը",desc:"Սովորել և կրկնել բառերը",Icon:Languages},
