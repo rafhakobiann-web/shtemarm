@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { ArrowDown, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
@@ -174,6 +174,25 @@ function LandingPage() {
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
+  const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
+  const changeActivity = (direction: number) =>
+    setActive((current) => (current + direction + 3) % 3);
+  const startPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    previewSwipe.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+  const finishPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    const swipe = previewSwipe.current;
+    previewSwipe.current = null;
+    if (!swipe || swipe.pointerId !== event.pointerId) return;
+    const dx = event.clientX - swipe.x;
+    const dy = event.clientY - swipe.y;
+    // Horizontal intent only. Vertical reading gestures always scroll normally.
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      changeActivity(dx < 0 ? 1 : -1);
+    }
+  };
 
   useEffect(() => {
     const saved = readSavedAccent();
@@ -276,10 +295,15 @@ function LandingPage() {
                 <span className="sht-preview-icon"><GraduationCap className="size-5" aria-hidden="true" /></span>
                 <div><span className="sht-mini-label">{ui.example}</span><h2>{t.demo}</h2></div>
               </div>
-              <div className="sht-preview-focus">
+              <div className="sht-preview-focus" onPointerDown={startPreviewSwipe} onPointerUp={finishPreviewSwipe} onPointerCancel={() => { previewSwipe.current = null; }}>
                 <div className="sht-preview-focus-heading"><Target className="size-4" aria-hidden="true" /><span>{ui.focus}</span></div>
-                <p id="sht-demo-details" className="sht-focus-detail" aria-live="polite">{DEMO_DETAILS[lang][active]}</p>
-                <div className="sht-progress-track" aria-hidden="true"><span /></div>
+                <p key={lang + "-" + active} id="sht-demo-details" className="sht-focus-detail sht-activity-text" aria-live="polite">{DEMO_DETAILS[lang][active]}</p>
+                <div className="sht-preview-controls" role="group" aria-label={ui.sample}>
+                  <button type="button" aria-label={lang === "hy" ? "Նախորդ առաջադրանքը" : lang === "ru" ? "Предыдущее задание" : "Previous activity"} onClick={() => changeActivity(-1)}><ChevronLeft className="size-4" aria-hidden="true" /></button>
+                  <span className="sht-activity-count" aria-hidden="true">{active + 1} / {demoTasks.length}</span>
+                  <button type="button" aria-label={lang === "hy" ? "Հաջորդ առաջադրանքը" : lang === "ru" ? "Следующее задание" : "Next activity"} onClick={() => changeActivity(1)}><ChevronRight className="size-4" aria-hidden="true" /></button>
+                </div>
+                <div className="sht-progress-track" aria-hidden="true"><span style={{ transform: `scaleX(${(active + 1) / demoTasks.length})` }} /></div>
               </div>
               <div className="sht-demo-options" role="group" aria-label={t.demo}>
                 {demoTasks.map((task, i) => (
