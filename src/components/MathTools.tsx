@@ -244,6 +244,8 @@ export function CalculatorPanel() {
   );
 }
 
+type Stroke = ImageData;
+
 export function DrawingPad() {
   const tx = useTx();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

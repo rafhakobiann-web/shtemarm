@@ -76,7 +76,7 @@ export function selectPhysicsSource(books:readonly Book[],source:string):Book[]{
   const selected=source==="all"?books:books.filter(b=>String(b.id)===source);
   if(!selected.length)throw new Error("Ընտրված ֆիզիկայի մասի հարցերը հասանելի չեն։");
   selected.forEach(checkPhysicsBook);
-  return selected;
+  return [...selected];
 }
 function chooseNumericalGroups(groups:Unit[],random:boolean):Unit[] {
   const order=random?shuffle(groups):[...groups];
