@@ -4,9 +4,9 @@ const read = (path: string) => readFileSync(path, "utf8");
 
 describe("Shtemarm text-only books and question UX", () => {
   it("restores book covers with a fallback, while keeping exam questions image-free", () => {
-    expect(read("src/routes/index.tsx")).toContain("function TileBody");
-    expect(read("src/routes/index.tsx")).not.toContain("cover-frame");
-    expect(read("src/routes/index.tsx")).toContain("<BookCover src={cover}");
+    expect(read("src/routes/dashboard.tsx")).toContain("function TileBody");
+    expect(read("src/routes/dashboard.tsx")).not.toContain("cover-frame");
+    expect(read("src/routes/dashboard.tsx")).toContain("<BookCover src={cover}");
     expect(read("src/routes/book.$bookId.tsx")).toContain("<BookCover src={meta.cover}");
     expect(read("src/components/BookCover.tsx")).toContain("onError={() => setFailed(true)}");
     expect(read("src/components/PhysicsWorkspace.tsx")).not.toContain("<img src={b.cover}");
@@ -45,8 +45,8 @@ describe("Shtemarm text-only books and question UX", () => {
       "src/test/study-music.test.tsx",
       ".github/workflows/verify-study-music.yml",
     ]) expect(existsSync(file)).toBe(false);
-    expect(read("src/routes/index.tsx")).not.toContain("function ComingSoon(");
-    expect(read("src/routes/index.tsx")).toContain('to="/mini-games"');
+    expect(read("src/routes/dashboard.tsx")).not.toContain("function ComingSoon(");
+    expect(read("src/routes/dashboard.tsx")).toContain('to="/mini-games"');
     expect(read("src/components/BiologyOriginalPractice.tsx")).toContain("recordAnswer");
   });
 });
