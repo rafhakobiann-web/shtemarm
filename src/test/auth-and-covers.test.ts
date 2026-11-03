@@ -37,7 +37,7 @@ describe("Authentication recovery and book covers", () => {
     const coverComponent = file("src/components/BookCover.tsx");
     expect(coverComponent).toContain("onError={() => setFailed(true)}");
     expect(coverComponent).toContain("setFailed(false)");
-    expect(file("src/routes/index.tsx")).toContain("<BookCover src={cover}");
+    expect(file("src/routes/dashboard.tsx")).toContain("<BookCover src={cover}");
     expect(file("src/routes/book.$bookId.tsx")).toContain('<BookCover src={meta.cover}');
     for (const book of [...BOOKS, ...HISTORY_BOOKS, ...BIO_BOOKS, ...ARMENIAN_BOOKS]) {
       expect(existsSync("public" + book.cover), book.cover).toBe(true);
