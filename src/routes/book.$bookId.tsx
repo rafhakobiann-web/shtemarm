@@ -5,6 +5,7 @@ import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookC
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { BookCover } from "@/components/BookCover";
+import { ArmenianOriginalContents } from "@/components/ArmenianOriginalContents";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
@@ -126,6 +127,8 @@ function BookPage() {
         </div>
       </div>
 
+      {id >= 41 && id <= 44 && <ArmenianOriginalContents volume={(id - 40) as 1 | 2 | 3 | 4} />}
+
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
@@ -141,6 +144,17 @@ function BookPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {id >= 41 && id <= 44 && (
+            <div className="col-span-full space-y-1">
+              <h2 className="text-xl font-black">{lang === "en" ? "Shtemarm-authored practice topics" :
+                lang === "ru" ? "Учебные темы Shtemarm" : "Shtemarm-ի հեղինակային վարժանքների թեմաները"}</h2>
+              <p className="text-sm text-muted-foreground">
+                {lang === "en" ? "These are learning themes, not the original book's official section numbers or verified exam questions." :
+                  lang === "ru" ? "Это учебные темы, а не официальная нумерация разделов и не проверенные экзаменационные задания." :
+                  "Սրանք ուսումնական թեմաներ են, ոչ բնօրինակ շտեմարանի պաշտոնական բաժինների համարներ կամ ստուգված քննական հարցեր։"}
+              </p>
+            </div>
+          )}
           {book.sections.map((s, sectionIndex) => {
             const ids = sectionIds[sectionIndex] ?? [];
             const done = ids.filter((k) => k in p.answers).length;
