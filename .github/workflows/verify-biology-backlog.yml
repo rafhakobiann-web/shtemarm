@@ -22,6 +22,9 @@ on:
       - 'public/data/bio-book3.json'
       - 'public/data/bio-book4.json'
       - 'docs/biology-backlog-20261102.md'
+      - 'docs/biology-next-268-source-review.json'
+      - 'scripts/verify-biology-next-268.mjs'
+      - 'scripts/verify-biology-next-268-source.py'
       - '.github/workflows/verify-biology-backlog.yml'
 
 permissions:
@@ -44,4 +47,5 @@ jobs:
       - name: Verify source-page restorations and all transcribed questions
         run: |
           node scripts/validate-biology-transcriptions.mjs
+          node scripts/verify-biology-next-268.mjs
           bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts

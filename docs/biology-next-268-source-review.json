@@ -1,0 +1,2968 @@
+{
+  "schemaVersion": 1,
+  "volume": 4,
+  "sourceFile": "kensab-4.pdf",
+  "sourceSha256": "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e",
+  "basePlayable": 1035,
+  "combinedBacklogBefore": 1268,
+  "selectionCount": 268,
+  "targetCombinedBacklogAfterSuccessfulRestoration": 1000,
+  "note": "Source-reference review queue only. Entries are not playable and do not change counts until source text, answer format, answer key and publishing rights are verified. No textbook passages are stored.",
+  "entries": [
+    {
+      "chapter": 1,
+      "printedNumber": 188,
+      "sourcePage": 31,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 190,
+      "sourcePage": 32,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 191,
+      "sourcePage": 32,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 192,
+      "sourcePage": 32,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 193,
+      "sourcePage": 33,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 194,
+      "sourcePage": 33,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 195,
+      "sourcePage": 33,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 206,
+      "sourcePage": 36,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 207,
+      "sourcePage": 36,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 209,
+      "sourcePage": 37,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 210,
+      "sourcePage": 37,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 211,
+      "sourcePage": 37,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 212,
+      "sourcePage": 37,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 213,
+      "sourcePage": 38,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 214,
+      "sourcePage": 38,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 215,
+      "sourcePage": 38,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 216,
+      "sourcePage": 38,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 217,
+      "sourcePage": 39,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 218,
+      "sourcePage": 39,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 219,
+      "sourcePage": 39,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 220,
+      "sourcePage": 40,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 1,
+      "printedNumber": 221,
+      "sourcePage": 40,
+      "answerPageRange": [
+        374,
+        375
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 143,
+      "sourcePage": 64,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 144,
+      "sourcePage": 64,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 145,
+      "sourcePage": 65,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 146,
+      "sourcePage": 65,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 147,
+      "sourcePage": 65,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 148,
+      "sourcePage": 66,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 149,
+      "sourcePage": 66,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 151,
+      "sourcePage": 67,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 154,
+      "sourcePage": 67,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 159,
+      "sourcePage": 69,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 161,
+      "sourcePage": 69,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 165,
+      "sourcePage": 70,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 182,
+      "sourcePage": 76,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 183,
+      "sourcePage": 76,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 184,
+      "sourcePage": 76,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 185,
+      "sourcePage": 77,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 186,
+      "sourcePage": 77,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 187,
+      "sourcePage": 77,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 188,
+      "sourcePage": 78,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 189,
+      "sourcePage": 78,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 190,
+      "sourcePage": 78,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 192,
+      "sourcePage": 79,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 193,
+      "sourcePage": 79,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 194,
+      "sourcePage": 79,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 195,
+      "sourcePage": 80,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 196,
+      "sourcePage": 80,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 197,
+      "sourcePage": 80,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 198,
+      "sourcePage": 81,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 199,
+      "sourcePage": 81,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 200,
+      "sourcePage": 81,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 201,
+      "sourcePage": 82,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 202,
+      "sourcePage": 82,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 203,
+      "sourcePage": 82,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 204,
+      "sourcePage": 83,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 205,
+      "sourcePage": 83,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 206,
+      "sourcePage": 83,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 207,
+      "sourcePage": 84,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 208,
+      "sourcePage": 84,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 209,
+      "sourcePage": 84,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 210,
+      "sourcePage": 85,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 211,
+      "sourcePage": 85,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 212,
+      "sourcePage": 85,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 213,
+      "sourcePage": 86,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 214,
+      "sourcePage": 86,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 215,
+      "sourcePage": 86,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 216,
+      "sourcePage": 87,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 217,
+      "sourcePage": 87,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 218,
+      "sourcePage": 87,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 219,
+      "sourcePage": 88,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 220,
+      "sourcePage": 88,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 221,
+      "sourcePage": 88,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 222,
+      "sourcePage": 89,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 223,
+      "sourcePage": 89,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 224,
+      "sourcePage": 89,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 225,
+      "sourcePage": 90,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 226,
+      "sourcePage": 90,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 227,
+      "sourcePage": 90,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 228,
+      "sourcePage": 91,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 229,
+      "sourcePage": 91,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 230,
+      "sourcePage": 91,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 231,
+      "sourcePage": 92,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 232,
+      "sourcePage": 92,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 233,
+      "sourcePage": 92,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 234,
+      "sourcePage": 93,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 235,
+      "sourcePage": 93,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 236,
+      "sourcePage": 93,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 237,
+      "sourcePage": 94,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 238,
+      "sourcePage": 94,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 239,
+      "sourcePage": 94,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 240,
+      "sourcePage": 95,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 241,
+      "sourcePage": 95,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 242,
+      "sourcePage": 95,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 243,
+      "sourcePage": 96,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 244,
+      "sourcePage": 96,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 245,
+      "sourcePage": 96,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 246,
+      "sourcePage": 97,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 247,
+      "sourcePage": 97,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 248,
+      "sourcePage": 98,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 249,
+      "sourcePage": 98,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 250,
+      "sourcePage": 98,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 251,
+      "sourcePage": 99,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 252,
+      "sourcePage": 99,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 253,
+      "sourcePage": 99,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 254,
+      "sourcePage": 100,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 2,
+      "printedNumber": 255,
+      "sourcePage": 100,
+      "answerPageRange": [
+        376,
+        379
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 188,
+      "sourcePage": 142,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 189,
+      "sourcePage": 142,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 190,
+      "sourcePage": 142,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 191,
+      "sourcePage": 143,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 192,
+      "sourcePage": 143,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 193,
+      "sourcePage": 143,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 194,
+      "sourcePage": 144,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 195,
+      "sourcePage": 144,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 196,
+      "sourcePage": 144,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 197,
+      "sourcePage": 145,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 198,
+      "sourcePage": 145,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 199,
+      "sourcePage": 146,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 200,
+      "sourcePage": 146,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 201,
+      "sourcePage": 146,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 202,
+      "sourcePage": 147,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 203,
+      "sourcePage": 147,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 204,
+      "sourcePage": 147,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 205,
+      "sourcePage": 148,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 206,
+      "sourcePage": 148,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 207,
+      "sourcePage": 148,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 208,
+      "sourcePage": 149,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 209,
+      "sourcePage": 149,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 232,
+      "sourcePage": 158,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 233,
+      "sourcePage": 158,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 234,
+      "sourcePage": 159,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 235,
+      "sourcePage": 159,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 236,
+      "sourcePage": 160,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 237,
+      "sourcePage": 160,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 238,
+      "sourcePage": 161,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 239,
+      "sourcePage": 161,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 240,
+      "sourcePage": 161,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 241,
+      "sourcePage": 162,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 242,
+      "sourcePage": 162,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 243,
+      "sourcePage": 162,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 244,
+      "sourcePage": 163,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 245,
+      "sourcePage": 163,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 246,
+      "sourcePage": 164,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 247,
+      "sourcePage": 164,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 248,
+      "sourcePage": 164,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 249,
+      "sourcePage": 165,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 250,
+      "sourcePage": 165,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 251,
+      "sourcePage": 165,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 252,
+      "sourcePage": 166,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 253,
+      "sourcePage": 166,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 254,
+      "sourcePage": 166,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 255,
+      "sourcePage": 167,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 256,
+      "sourcePage": 167,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 257,
+      "sourcePage": 167,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 258,
+      "sourcePage": 168,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 259,
+      "sourcePage": 168,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 260,
+      "sourcePage": 168,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 261,
+      "sourcePage": 169,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 262,
+      "sourcePage": 169,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 263,
+      "sourcePage": 170,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 264,
+      "sourcePage": 170,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 265,
+      "sourcePage": 170,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 266,
+      "sourcePage": 171,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 267,
+      "sourcePage": 171,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 268,
+      "sourcePage": 172,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 3,
+      "printedNumber": 269,
+      "sourcePage": 172,
+      "answerPageRange": [
+        380,
+        382
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 170,
+      "sourcePage": 210,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 171,
+      "sourcePage": 210,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 172,
+      "sourcePage": 211,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 173,
+      "sourcePage": 211,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 174,
+      "sourcePage": 211,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 175,
+      "sourcePage": 212,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 176,
+      "sourcePage": 212,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 177,
+      "sourcePage": 212,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 178,
+      "sourcePage": 213,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 179,
+      "sourcePage": 213,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 180,
+      "sourcePage": 213,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 181,
+      "sourcePage": 214,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 182,
+      "sourcePage": 214,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 183,
+      "sourcePage": 214,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 184,
+      "sourcePage": 215,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 185,
+      "sourcePage": 215,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 186,
+      "sourcePage": 215,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 187,
+      "sourcePage": 216,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 188,
+      "sourcePage": 216,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 189,
+      "sourcePage": 216,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 190,
+      "sourcePage": 217,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 191,
+      "sourcePage": 217,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 192,
+      "sourcePage": 217,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 193,
+      "sourcePage": 218,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 194,
+      "sourcePage": 218,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 195,
+      "sourcePage": 218,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 196,
+      "sourcePage": 219,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 197,
+      "sourcePage": 219,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 198,
+      "sourcePage": 219,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 199,
+      "sourcePage": 220,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 200,
+      "sourcePage": 220,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 201,
+      "sourcePage": 220,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 202,
+      "sourcePage": 221,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 203,
+      "sourcePage": 221,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 204,
+      "sourcePage": 222,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 205,
+      "sourcePage": 222,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 206,
+      "sourcePage": 222,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 207,
+      "sourcePage": 223,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 208,
+      "sourcePage": 223,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 209,
+      "sourcePage": 224,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 210,
+      "sourcePage": 224,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 211,
+      "sourcePage": 225,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 212,
+      "sourcePage": 225,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 213,
+      "sourcePage": 225,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 214,
+      "sourcePage": 226,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 215,
+      "sourcePage": 226,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 216,
+      "sourcePage": 227,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 217,
+      "sourcePage": 227,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 218,
+      "sourcePage": 227,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 239,
+      "sourcePage": 234,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 269,
+      "sourcePage": 244,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 270,
+      "sourcePage": 245,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 271,
+      "sourcePage": 245,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 272,
+      "sourcePage": 245,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 273,
+      "sourcePage": 246,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 274,
+      "sourcePage": 246,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 275,
+      "sourcePage": 247,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 276,
+      "sourcePage": 247,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 277,
+      "sourcePage": 247,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 278,
+      "sourcePage": 248,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 279,
+      "sourcePage": 248,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 280,
+      "sourcePage": 248,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 281,
+      "sourcePage": 249,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 282,
+      "sourcePage": 249,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 283,
+      "sourcePage": 249,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 284,
+      "sourcePage": 250,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 285,
+      "sourcePage": 250,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 286,
+      "sourcePage": 251,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 287,
+      "sourcePage": 251,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 288,
+      "sourcePage": 251,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 289,
+      "sourcePage": 252,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 290,
+      "sourcePage": 252,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 4,
+      "printedNumber": 291,
+      "sourcePage": 252,
+      "answerPageRange": [
+        383,
+        386
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 135,
+      "sourcePage": 288,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 136,
+      "sourcePage": 289,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 139,
+      "sourcePage": 289,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 140,
+      "sourcePage": 290,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 141,
+      "sourcePage": 290,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 142,
+      "sourcePage": 290,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 143,
+      "sourcePage": 291,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 144,
+      "sourcePage": 291,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 146,
+      "sourcePage": 291,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 160,
+      "sourcePage": 295,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 162,
+      "sourcePage": 296,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 163,
+      "sourcePage": 296,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 168,
+      "sourcePage": 297,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 169,
+      "sourcePage": 298,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 171,
+      "sourcePage": 298,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 172,
+      "sourcePage": 299,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 173,
+      "sourcePage": 299,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 178,
+      "sourcePage": 300,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 179,
+      "sourcePage": 301,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 180,
+      "sourcePage": 301,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 181,
+      "sourcePage": 301,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 183,
+      "sourcePage": 302,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 184,
+      "sourcePage": 302,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 185,
+      "sourcePage": 302,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 188,
+      "sourcePage": 303,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 189,
+      "sourcePage": 303,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 191,
+      "sourcePage": 304,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    },
+    {
+      "chapter": 5,
+      "printedNumber": 192,
+      "sourcePage": 304,
+      "answerPageRange": [
+        387,
+        388
+      ],
+      "status": "pending-source-and-answer-type-review",
+      "originalExclusionReason": "answer-type-pending"
+    }
+  ],
+  "sourceMarkerAudit": {
+    "source": "user-provided original PDF (SHA-256 matched)",
+    "checked": 268,
+    "uniqueQuestionNumberMarkers": 268,
+    "sourcePageMismatches": 0,
+    "method": "PyMuPDF scan of bold printed question markers and physical PDF pages; did not validate wording, answer keys or question format."
+  }
+}
