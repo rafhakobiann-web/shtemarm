@@ -4,7 +4,7 @@ import { historyBookEntries, selectHistoryUnits, type HistoryEntry } from "@/lib
 export type WorkbookSubject = "english" | "armenian";
 export const WORKBOOK_SOURCES: Record<WorkbookSubject, readonly number[]> = {
   english: [1, 2, 3],
-  armenian: [41],
+  armenian: [41, 42, 43, 44],
 };
 
 export async function loadWorkbookSources(subject: WorkbookSubject): Promise<Book[]> {
@@ -37,12 +37,14 @@ export function makeWorkbookExam(
   if (!choices.length) throw new Error("Քննության համար հասանելի շտեմարան չկա։");
   const selected = random ? choices[Math.floor(Math.random() * choices.length)] : choices[0];
   if (subject === "armenian") {
-    // Official 2027 Armenian exam = 70 TASKS worth 80 points. The current
-    // practice bank lacks the mandatory short-answer and six-claim items,
-    // so this is explicitly a 70-task PRACTICE set (70 achievable points),
-    // never a fake GTC-compliant 80-point exam.
-    const pool = workbookEntries([selected]);
-    return { units: selectHistoryUnits(pool, 70, random), bookId: 41 };
+    // A 70-question authored PRACTICE set, never an official 80-point exam:
+    // the source PDFs contain response types not digitized here. For "all",
+    // sample the available questions from all four practice volumes.
+    const practicePool = workbookEntries(source === "all" ? choices : [selected]);
+    if (practicePool.length < 70) {
+      throw new Error("Ընտրված գրքում դեռ բավարար՝ 70 վարժություն չկա։ Ընտրիր բոլոր մասերը կամ անհատական թեստը։");
+    }
+    return { units: selectHistoryUnits(practicePool, 70, random), bookId: source === "all" ? 41 : selected.id };
   }
   const items = buildExam(selected, selected.id);
   return {
