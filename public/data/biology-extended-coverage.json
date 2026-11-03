@@ -1,0 +1,5585 @@
+{
+  "schemaVersion": 1,
+  "verification": "Automated PDF text and printed-key extraction with structural validation and visual sample review; not a claim of exhaustive manual proofreading.",
+  "books": [
+    {
+      "volume": 3,
+      "sourceSha256": "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93",
+      "baseTasks": 945,
+      "additionalTasks": 277,
+      "totalPlayableTasks": 1222,
+      "remainingTasks": 615,
+      "entries": [
+        {
+          "chapter": 1,
+          "number": 183,
+          "kind": "set",
+          "page": 29,
+          "answerPage": 362,
+          "answer": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 184,
+          "kind": "set",
+          "page": 29,
+          "answerPage": 362,
+          "answer": [
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 185,
+          "kind": "set",
+          "page": 29,
+          "answerPage": 362,
+          "answer": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 186,
+          "kind": "set",
+          "page": 30,
+          "answerPage": 362,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 187,
+          "kind": "set",
+          "page": 30,
+          "answerPage": 362,
+          "answer": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 189,
+          "kind": "set",
+          "page": 30,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 190,
+          "kind": "set",
+          "page": 31,
+          "answerPage": 362,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 191,
+          "kind": "set",
+          "page": 31,
+          "answerPage": 362,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 192,
+          "kind": "set",
+          "page": 31,
+          "answerPage": 362,
+          "answer": [
+            1,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 193,
+          "kind": "set",
+          "page": 31,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 194,
+          "kind": "set",
+          "page": 31,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 197,
+          "kind": "set",
+          "page": 32,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 198,
+          "kind": "set",
+          "page": 32,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 199,
+          "kind": "seq",
+          "page": 33,
+          "answerPage": 362,
+          "answer": [
+            4,
+            2,
+            1,
+            5,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 203,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 362,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 204,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 206,
+          "kind": "seq",
+          "page": 35,
+          "answerPage": 362,
+          "answer": [
+            4,
+            3,
+            6,
+            1,
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 207,
+          "kind": "set",
+          "page": 35,
+          "answerPage": 362,
+          "answer": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 208,
+          "kind": "seq",
+          "page": 35,
+          "answerPage": 362,
+          "answer": [
+            5,
+            2,
+            4,
+            6,
+            3,
+            1
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 209,
+          "kind": "set",
+          "page": 36,
+          "answerPage": 362,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 212,
+          "kind": "seq",
+          "page": 37,
+          "answerPage": 363,
+          "answer": [
+            1,
+            3,
+            5,
+            6,
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 213,
+          "kind": "set",
+          "page": 37,
+          "answerPage": 363,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 214,
+          "kind": "set",
+          "page": 37,
+          "answerPage": 363,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 215,
+          "kind": "seq",
+          "page": 37,
+          "answerPage": 363,
+          "answer": [
+            8,
+            5,
+            2,
+            4,
+            7,
+            3,
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 217,
+          "kind": "set",
+          "page": 38,
+          "answerPage": 363,
+          "answer": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 220,
+          "kind": "set",
+          "page": 39,
+          "answerPage": 363,
+          "answer": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 221,
+          "kind": "set",
+          "page": 39,
+          "answerPage": 363,
+          "answer": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 224,
+          "kind": "set",
+          "page": 40,
+          "answerPage": 363,
+          "answer": [
+            1,
+            2,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 227,
+          "kind": "set",
+          "page": 40,
+          "answerPage": 363,
+          "answer": [
+            1,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 228,
+          "kind": "set",
+          "page": 41,
+          "answerPage": 363,
+          "answer": [
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 230,
+          "kind": "set",
+          "page": 41,
+          "answerPage": 363,
+          "answer": [
+            1,
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 252,
+          "kind": "seq",
+          "page": 47,
+          "answerPage": 363,
+          "answer": [
+            4,
+            2,
+            7,
+            3,
+            9,
+            5,
+            8,
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 255,
+          "kind": "seq",
+          "page": 48,
+          "answerPage": 363,
+          "answer": [
+            3,
+            1,
+            5,
+            4,
+            2
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 256,
+          "kind": "seq",
+          "page": 48,
+          "answerPage": 363,
+          "answer": [
+            1,
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 257,
+          "kind": "seq",
+          "page": 48,
+          "answerPage": 363,
+          "answer": [
+            1,
+            3,
+            2,
+            5,
+            4
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 260,
+          "kind": "seq",
+          "page": 49,
+          "answerPage": 363,
+          "answer": [
+            2,
+            6,
+            4,
+            3,
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 261,
+          "kind": "seq",
+          "page": 50,
+          "answerPage": 363,
+          "answer": [
+            1,
+            3,
+            4,
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 262,
+          "kind": "seq",
+          "page": 50,
+          "answerPage": 363,
+          "answer": [
+            2,
+            6,
+            4,
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 266,
+          "kind": "seq",
+          "page": 51,
+          "answerPage": 364,
+          "answer": [
+            2,
+            3,
+            4,
+            7,
+            5,
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 270,
+          "kind": "seq",
+          "page": 52,
+          "answerPage": 364,
+          "answer": [
+            3,
+            4,
+            2,
+            6,
+            7,
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 271,
+          "kind": "set",
+          "page": 52,
+          "answerPage": 364,
+          "answer": [
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 272,
+          "kind": "seq",
+          "page": 53,
+          "answerPage": 364,
+          "answer": [
+            3,
+            5,
+            1,
+            6,
+            4,
+            2
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 273,
+          "kind": "seq",
+          "page": 53,
+          "answerPage": 364,
+          "answer": [
+            2,
+            6,
+            5,
+            1,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 275,
+          "kind": "seq",
+          "page": 54,
+          "answerPage": 364,
+          "answer": [
+            8,
+            1,
+            5,
+            3,
+            6,
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 276,
+          "kind": "set",
+          "page": 54,
+          "answerPage": 364,
+          "answer": [
+            2,
+            3,
+            5,
+            6,
+            8
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 277,
+          "kind": "seq",
+          "page": 54,
+          "answerPage": 364,
+          "answer": [
+            6,
+            1,
+            7,
+            4,
+            5,
+            3,
+            2
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 280,
+          "kind": "set",
+          "page": 55,
+          "answerPage": 364,
+          "answer": [
+            2,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 281,
+          "kind": "set",
+          "page": 55,
+          "answerPage": 364,
+          "answer": [
+            1,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 282,
+          "kind": "set",
+          "page": 56,
+          "answerPage": 364,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 285,
+          "kind": "set",
+          "page": 57,
+          "answerPage": 364,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 286,
+          "kind": "seq",
+          "page": 57,
+          "answerPage": 364,
+          "answer": [
+            1,
+            4,
+            3,
+            2,
+            6,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 288,
+          "kind": "set",
+          "page": 57,
+          "answerPage": 364,
+          "answer": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 289,
+          "kind": "set",
+          "page": 58,
+          "answerPage": 364,
+          "answer": [
+            2,
+            4,
+            5,
+            6,
+            8
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 292,
+          "kind": "set",
+          "page": 59,
+          "answerPage": 364,
+          "answer": [
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 222,
+          "kind": "seq",
+          "page": 95,
+          "answerPage": 365,
+          "answer": [
+            4,
+            2,
+            3,
+            6,
+            1,
+            7,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 223,
+          "kind": "seq",
+          "page": 95,
+          "answerPage": 365,
+          "answer": [
+            3,
+            6,
+            4,
+            1,
+            5,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 224,
+          "kind": "seq",
+          "page": 96,
+          "answerPage": 365,
+          "answer": [
+            4,
+            8,
+            5,
+            3,
+            6,
+            1,
+            7,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 225,
+          "kind": "seq",
+          "page": 96,
+          "answerPage": 365,
+          "answer": [
+            4,
+            7,
+            5,
+            2,
+            6,
+            1,
+            3
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 226,
+          "kind": "seq",
+          "page": 96,
+          "answerPage": 365,
+          "answer": [
+            7,
+            3,
+            6,
+            2,
+            4,
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 227,
+          "kind": "seq",
+          "page": 96,
+          "answerPage": 365,
+          "answer": [
+            6,
+            3,
+            1,
+            4,
+            7,
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 228,
+          "kind": "seq",
+          "page": 97,
+          "answerPage": 365,
+          "answer": [
+            3,
+            6,
+            4,
+            7,
+            1,
+            8,
+            5,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 229,
+          "kind": "seq",
+          "page": 97,
+          "answerPage": 365,
+          "answer": [
+            5,
+            3,
+            6,
+            4,
+            1,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 231,
+          "kind": "set",
+          "page": 97,
+          "answerPage": 365,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 232,
+          "kind": "set",
+          "page": 98,
+          "answerPage": 365,
+          "answer": [
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 233,
+          "kind": "set",
+          "page": 98,
+          "answerPage": 365,
+          "answer": [
+            1,
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 234,
+          "kind": "set",
+          "page": 98,
+          "answerPage": 365,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 235,
+          "kind": "set",
+          "page": 98,
+          "answerPage": 365,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 236,
+          "kind": "set",
+          "page": 99,
+          "answerPage": 365,
+          "answer": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 237,
+          "kind": "set",
+          "page": 99,
+          "answerPage": 365,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 238,
+          "kind": "set",
+          "page": 99,
+          "answerPage": 365,
+          "answer": [
+            2,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 239,
+          "kind": "set",
+          "page": 100,
+          "answerPage": 365,
+          "answer": [
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 240,
+          "kind": "set",
+          "page": 100,
+          "answerPage": 365,
+          "answer": [
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 238,
+          "kind": "set",
+          "page": 159,
+          "answerPage": 368,
+          "answer": [
+            1,
+            2
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 241,
+          "kind": "set",
+          "page": 160,
+          "answerPage": 368,
+          "answer": [
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 252,
+          "kind": "set",
+          "page": 163,
+          "answerPage": 369,
+          "answer": [
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 253,
+          "kind": "set",
+          "page": 163,
+          "answerPage": 369,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 255,
+          "kind": "set",
+          "page": 164,
+          "answerPage": 369,
+          "answer": [
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 256,
+          "kind": "set",
+          "page": 164,
+          "answerPage": 369,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 265,
+          "kind": "set",
+          "page": 167,
+          "answerPage": 369,
+          "answer": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 266,
+          "kind": "set",
+          "page": 167,
+          "answerPage": 369,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 267,
+          "kind": "set",
+          "page": 168,
+          "answerPage": 369,
+          "answer": [
+            2,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 270,
+          "kind": "seq",
+          "page": 168,
+          "answerPage": 369,
+          "answer": [
+            2,
+            4,
+            1,
+            5,
+            6,
+            3
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 272,
+          "kind": "set",
+          "page": 169,
+          "answerPage": 369,
+          "answer": [
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 274,
+          "kind": "set",
+          "page": 169,
+          "answerPage": 369,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 280,
+          "kind": "set",
+          "page": 171,
+          "answerPage": 369,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 281,
+          "kind": "set",
+          "page": 171,
+          "answerPage": 369,
+          "answer": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 283,
+          "kind": "set",
+          "page": 172,
+          "answerPage": 369,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 284,
+          "kind": "set",
+          "page": 172,
+          "answerPage": 369,
+          "answer": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 285,
+          "kind": "set",
+          "page": 172,
+          "answerPage": 369,
+          "answer": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 287,
+          "kind": "set",
+          "page": 173,
+          "answerPage": 369,
+          "answer": [
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 288,
+          "kind": "set",
+          "page": 173,
+          "answerPage": 369,
+          "answer": [
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 292,
+          "kind": "set",
+          "page": 174,
+          "answerPage": 369,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 293,
+          "kind": "set",
+          "page": 174,
+          "answerPage": 369,
+          "answer": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 219,
+          "kind": "set",
+          "page": 224,
+          "answerPage": 371,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 221,
+          "kind": "set",
+          "page": 225,
+          "answerPage": 371,
+          "answer": [
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 223,
+          "kind": "set",
+          "page": 225,
+          "answerPage": 371,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 224,
+          "kind": "seq",
+          "page": 226,
+          "answerPage": 371,
+          "answer": [
+            1,
+            2,
+            3,
+            5,
+            6,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 225,
+          "kind": "set",
+          "page": 226,
+          "answerPage": 371,
+          "answer": [
+            1,
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 226,
+          "kind": "set",
+          "page": 226,
+          "answerPage": 371,
+          "answer": [
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 227,
+          "kind": "set",
+          "page": 226,
+          "answerPage": 371,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 228,
+          "kind": "set",
+          "page": 227,
+          "answerPage": 371,
+          "answer": [
+            2,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 229,
+          "kind": "set",
+          "page": 227,
+          "answerPage": 371,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 230,
+          "kind": "set",
+          "page": 227,
+          "answerPage": 371,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 232,
+          "kind": "set",
+          "page": 228,
+          "answerPage": 371,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 236,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 372,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 237,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 372,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 238,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 372,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 242,
+          "kind": "set",
+          "page": 230,
+          "answerPage": 372,
+          "answer": [
+            1,
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 252,
+          "kind": "set",
+          "page": 233,
+          "answerPage": 372,
+          "answer": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 254,
+          "kind": "set",
+          "page": 234,
+          "answerPage": 372,
+          "answer": [
+            1,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 257,
+          "kind": "seq",
+          "page": 234,
+          "answerPage": 372,
+          "answer": [
+            3,
+            5,
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 258,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 372,
+          "answer": [
+            1,
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 259,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 372,
+          "answer": [
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 260,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 372,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 261,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 372,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 262,
+          "kind": "set",
+          "page": 236,
+          "answerPage": 372,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 266,
+          "kind": "set",
+          "page": 237,
+          "answerPage": 372,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 268,
+          "kind": "set",
+          "page": 238,
+          "answerPage": 372,
+          "answer": [
+            1,
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 269,
+          "kind": "set",
+          "page": 238,
+          "answerPage": 372,
+          "answer": [
+            1,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 272,
+          "kind": "set",
+          "page": 239,
+          "answerPage": 372,
+          "answer": [
+            2,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 273,
+          "kind": "set",
+          "page": 239,
+          "answerPage": 372,
+          "answer": [
+            1,
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 280,
+          "kind": "set",
+          "page": 241,
+          "answerPage": 372,
+          "answer": [
+            1,
+            2,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 284,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 372,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 285,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 372,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 117,
+          "kind": "set",
+          "page": 281,
+          "answerPage": 375,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 125,
+          "kind": "set",
+          "page": 284,
+          "answerPage": 375,
+          "answer": [
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 126,
+          "kind": "seq",
+          "page": 284,
+          "answerPage": 376,
+          "answer": [
+            3,
+            1,
+            4,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 127,
+          "kind": "seq",
+          "page": 284,
+          "answerPage": 376,
+          "answer": [
+            3,
+            2,
+            1,
+            5,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 130,
+          "kind": "set",
+          "page": 285,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 132,
+          "kind": "seq",
+          "page": 285,
+          "answerPage": 376,
+          "answer": [
+            3,
+            2,
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 133,
+          "kind": "set",
+          "page": 286,
+          "answerPage": 376,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 134,
+          "kind": "set",
+          "page": 286,
+          "answerPage": 376,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 135,
+          "kind": "set",
+          "page": 286,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 136,
+          "kind": "set",
+          "page": 286,
+          "answerPage": 376,
+          "answer": [
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 142,
+          "kind": "seq",
+          "page": 288,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            5,
+            1,
+            6,
+            2
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 144,
+          "kind": "set",
+          "page": 289,
+          "answerPage": 376,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 147,
+          "kind": "seq",
+          "page": 290,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            4,
+            1
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 148,
+          "kind": "set",
+          "page": 290,
+          "answerPage": 376,
+          "answer": [
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 150,
+          "kind": "seq",
+          "page": 291,
+          "answerPage": 376,
+          "answer": [
+            2,
+            5,
+            3,
+            1,
+            6,
+            4
+          ]
+        },
+        {
+          "chapter": 6,
+          "number": 129,
+          "kind": "mc",
+          "page": 325,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 130,
+          "kind": "mc",
+          "page": 325,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 131,
+          "kind": "mc",
+          "page": 326,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 132,
+          "kind": "mc",
+          "page": 326,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 133,
+          "kind": "mc",
+          "page": 326,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 134,
+          "kind": "mc",
+          "page": 326,
+          "answerPage": 378,
+          "answer": "3"
+        },
+        {
+          "chapter": 6,
+          "number": 173,
+          "kind": "mc",
+          "page": 334,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 174,
+          "kind": "mc",
+          "page": 334,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 175,
+          "kind": "mc",
+          "page": 334,
+          "answerPage": 378,
+          "answer": "3"
+        },
+        {
+          "chapter": 6,
+          "number": 176,
+          "kind": "mc",
+          "page": 334,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 177,
+          "kind": "mc",
+          "page": 334,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 178,
+          "kind": "mc",
+          "page": 335,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 179,
+          "kind": "mc",
+          "page": 335,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 180,
+          "kind": "mc",
+          "page": 335,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 181,
+          "kind": "mc",
+          "page": 335,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 182,
+          "kind": "mc",
+          "page": 335,
+          "answerPage": 378,
+          "answer": "4"
+        },
+        {
+          "chapter": 6,
+          "number": 183,
+          "kind": "mc",
+          "page": 336,
+          "answerPage": 378,
+          "answer": "3"
+        },
+        {
+          "chapter": 6,
+          "number": 184,
+          "kind": "mc",
+          "page": 336,
+          "answerPage": 378,
+          "answer": "4"
+        },
+        {
+          "chapter": 6,
+          "number": 185,
+          "kind": "mc",
+          "page": 336,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 186,
+          "kind": "mc",
+          "page": 336,
+          "answerPage": 378,
+          "answer": "4"
+        },
+        {
+          "chapter": 6,
+          "number": 187,
+          "kind": "mc",
+          "page": 336,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 188,
+          "kind": "mc",
+          "page": 337,
+          "answerPage": 378,
+          "answer": "4"
+        },
+        {
+          "chapter": 6,
+          "number": 189,
+          "kind": "mc",
+          "page": 337,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 193,
+          "kind": "mc",
+          "page": 338,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 194,
+          "kind": "mc",
+          "page": 338,
+          "answerPage": 378,
+          "answer": "3"
+        },
+        {
+          "chapter": 6,
+          "number": 202,
+          "kind": "mc",
+          "page": 339,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 203,
+          "kind": "mc",
+          "page": 340,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 207,
+          "kind": "mc",
+          "page": 340,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 208,
+          "kind": "mc",
+          "page": 341,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 209,
+          "kind": "mc",
+          "page": 341,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 211,
+          "kind": "mc",
+          "page": 341,
+          "answerPage": 378,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 212,
+          "kind": "mc",
+          "page": 341,
+          "answerPage": 378,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 216,
+          "kind": "num",
+          "page": 342,
+          "answerPage": 378,
+          "answer": "240"
+        },
+        {
+          "chapter": 6,
+          "number": 217,
+          "kind": "num",
+          "page": 342,
+          "answerPage": 378,
+          "answer": "56"
+        },
+        {
+          "chapter": 6,
+          "number": 218,
+          "kind": "num",
+          "page": 342,
+          "answerPage": 378,
+          "answer": "600"
+        },
+        {
+          "chapter": 6,
+          "number": 219,
+          "kind": "num",
+          "page": 342,
+          "answerPage": 378,
+          "answer": "4200"
+        },
+        {
+          "chapter": 6,
+          "number": 220,
+          "kind": "num",
+          "page": 342,
+          "answerPage": 378,
+          "answer": "420"
+        },
+        {
+          "chapter": 6,
+          "number": 222,
+          "kind": "num",
+          "page": 343,
+          "answerPage": 378,
+          "answer": "540"
+        },
+        {
+          "chapter": 6,
+          "number": 223,
+          "kind": "num",
+          "page": 343,
+          "answerPage": 378,
+          "answer": "2700"
+        },
+        {
+          "chapter": 6,
+          "number": 243,
+          "kind": "num",
+          "page": 344,
+          "answerPage": 378,
+          "answer": "6"
+        },
+        {
+          "chapter": 6,
+          "number": 244,
+          "kind": "num",
+          "page": 344,
+          "answerPage": 378,
+          "answer": "1260"
+        },
+        {
+          "chapter": 6,
+          "number": 245,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "2580"
+        },
+        {
+          "chapter": 6,
+          "number": 246,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "6600"
+        },
+        {
+          "chapter": 6,
+          "number": 247,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "1400"
+        },
+        {
+          "chapter": 6,
+          "number": 248,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "12"
+        },
+        {
+          "chapter": 6,
+          "number": 249,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "1120"
+        },
+        {
+          "chapter": 6,
+          "number": 250,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "1820"
+        },
+        {
+          "chapter": 6,
+          "number": 251,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "162"
+        },
+        {
+          "chapter": 6,
+          "number": 252,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 378,
+          "answer": "18"
+        },
+        {
+          "chapter": 6,
+          "number": 253,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "10"
+        },
+        {
+          "chapter": 6,
+          "number": 254,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "10"
+        },
+        {
+          "chapter": 6,
+          "number": 255,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "82"
+        },
+        {
+          "chapter": 6,
+          "number": 256,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "192"
+        },
+        {
+          "chapter": 6,
+          "number": 257,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "360"
+        },
+        {
+          "chapter": 6,
+          "number": 258,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "204"
+        },
+        {
+          "chapter": 6,
+          "number": 259,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 378,
+          "answer": "234"
+        },
+        {
+          "chapter": 6,
+          "number": 260,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 379,
+          "answer": "36"
+        },
+        {
+          "chapter": 6,
+          "number": 261,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "30"
+        },
+        {
+          "chapter": 6,
+          "number": 262,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "358"
+        },
+        {
+          "chapter": 6,
+          "number": 263,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "1020"
+        },
+        {
+          "chapter": 6,
+          "number": 264,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "2380"
+        },
+        {
+          "chapter": 6,
+          "number": 265,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "126"
+        },
+        {
+          "chapter": 6,
+          "number": 266,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "22"
+        },
+        {
+          "chapter": 6,
+          "number": 267,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "2520"
+        },
+        {
+          "chapter": 6,
+          "number": 268,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 379,
+          "answer": "330"
+        },
+        {
+          "chapter": 6,
+          "number": 269,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 379,
+          "answer": "200"
+        },
+        {
+          "chapter": 6,
+          "number": 270,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 379,
+          "answer": "15000"
+        },
+        {
+          "chapter": 6,
+          "number": 272,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 379,
+          "answer": "24"
+        },
+        {
+          "chapter": 6,
+          "number": 275,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 379,
+          "answer": "244"
+        },
+        {
+          "chapter": 6,
+          "number": 276,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 379,
+          "answer": "9120"
+        },
+        {
+          "chapter": 6,
+          "number": 277,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "12"
+        },
+        {
+          "chapter": 6,
+          "number": 279,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "166"
+        },
+        {
+          "chapter": 6,
+          "number": 280,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "1540"
+        },
+        {
+          "chapter": 6,
+          "number": 281,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "14"
+        },
+        {
+          "chapter": 6,
+          "number": 283,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "10"
+        },
+        {
+          "chapter": 6,
+          "number": 284,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 379,
+          "answer": "6080"
+        },
+        {
+          "chapter": 6,
+          "number": 285,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "22"
+        },
+        {
+          "chapter": 6,
+          "number": 286,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "23000"
+        },
+        {
+          "chapter": 6,
+          "number": 287,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "182"
+        },
+        {
+          "chapter": 6,
+          "number": 288,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "11800"
+        },
+        {
+          "chapter": 6,
+          "number": 289,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "322"
+        },
+        {
+          "chapter": 6,
+          "number": 290,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "34"
+        },
+        {
+          "chapter": 6,
+          "number": 291,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "32"
+        },
+        {
+          "chapter": 6,
+          "number": 292,
+          "kind": "num",
+          "page": 350,
+          "answerPage": 379,
+          "answer": "212"
+        },
+        {
+          "chapter": 6,
+          "number": 293,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "10"
+        },
+        {
+          "chapter": 6,
+          "number": 294,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "480"
+        },
+        {
+          "chapter": 6,
+          "number": 295,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "534"
+        },
+        {
+          "chapter": 6,
+          "number": 296,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "30"
+        },
+        {
+          "chapter": 6,
+          "number": 297,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 298,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "26600"
+        },
+        {
+          "chapter": 6,
+          "number": 299,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "356"
+        },
+        {
+          "chapter": 6,
+          "number": 300,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 379,
+          "answer": "234"
+        },
+        {
+          "chapter": 6,
+          "number": 301,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "7020"
+        },
+        {
+          "chapter": 6,
+          "number": 302,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "318"
+        },
+        {
+          "chapter": 6,
+          "number": 303,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "20600"
+        },
+        {
+          "chapter": 6,
+          "number": 305,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "450"
+        },
+        {
+          "chapter": 6,
+          "number": 307,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "30"
+        },
+        {
+          "chapter": 6,
+          "number": 310,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "44800"
+        },
+        {
+          "chapter": 6,
+          "number": 311,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "60"
+        },
+        {
+          "chapter": 6,
+          "number": 312,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 379,
+          "answer": "20"
+        },
+        {
+          "chapter": 6,
+          "number": 313,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 379,
+          "answer": "10240"
+        },
+        {
+          "chapter": 6,
+          "number": 315,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 379,
+          "answer": "16800"
+        },
+        {
+          "chapter": 6,
+          "number": 318,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 379,
+          "answer": "9450"
+        },
+        {
+          "chapter": 6,
+          "number": 319,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 379,
+          "answer": "216"
+        },
+        {
+          "chapter": 6,
+          "number": 320,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 379,
+          "answer": "1152"
+        },
+        {
+          "chapter": 6,
+          "number": 321,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 379,
+          "answer": "7644"
+        },
+        {
+          "chapter": 6,
+          "number": 322,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 379,
+          "answer": "888"
+        },
+        {
+          "chapter": 6,
+          "number": 323,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 379,
+          "answer": "96"
+        },
+        {
+          "chapter": 6,
+          "number": 324,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 379,
+          "answer": "486"
+        },
+        {
+          "chapter": 6,
+          "number": 325,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 379,
+          "answer": "20412"
+        },
+        {
+          "chapter": 6,
+          "number": 327,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 379,
+          "answer": "4"
+        },
+        {
+          "chapter": 6,
+          "number": 329,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 379,
+          "answer": "28350"
+        },
+        {
+          "chapter": 6,
+          "number": 330,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 379,
+          "answer": "3465"
+        },
+        {
+          "chapter": 6,
+          "number": 331,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 379,
+          "answer": "324"
+        },
+        {
+          "chapter": 6,
+          "number": 332,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 379,
+          "answer": "288"
+        },
+        {
+          "chapter": 6,
+          "number": 333,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "1512"
+        },
+        {
+          "chapter": 6,
+          "number": 334,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "5"
+        },
+        {
+          "chapter": 6,
+          "number": 335,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "720"
+        },
+        {
+          "chapter": 6,
+          "number": 336,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "14700"
+        },
+        {
+          "chapter": 6,
+          "number": 337,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "1"
+        },
+        {
+          "chapter": 6,
+          "number": 338,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 379,
+          "answer": "9500"
+        },
+        {
+          "chapter": 6,
+          "number": 339,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 379,
+          "answer": "432"
+        },
+        {
+          "chapter": 6,
+          "number": 340,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 379,
+          "answer": "1200"
+        },
+        {
+          "chapter": 6,
+          "number": 341,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 379,
+          "answer": "6"
+        },
+        {
+          "chapter": 6,
+          "number": 342,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 379,
+          "answer": "10206"
+        },
+        {
+          "chapter": 6,
+          "number": 343,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 379,
+          "answer": "5"
+        },
+        {
+          "chapter": 6,
+          "number": 344,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 379,
+          "answer": "19026"
+        },
+        {
+          "chapter": 6,
+          "number": 345,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 379,
+          "answer": "336"
+        },
+        {
+          "chapter": 6,
+          "number": 346,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 379,
+          "answer": "252"
+        },
+        {
+          "chapter": 6,
+          "number": 347,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 379,
+          "answer": "1764"
+        },
+        {
+          "chapter": 6,
+          "number": 348,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 379,
+          "answer": "189"
+        },
+        {
+          "chapter": 6,
+          "number": 350,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 379,
+          "answer": "2000"
+        },
+        {
+          "chapter": 6,
+          "number": 351,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 379,
+          "answer": "500"
+        },
+        {
+          "chapter": 6,
+          "number": 362,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 379,
+          "answer": "23520"
+        },
+        {
+          "chapter": 6,
+          "number": 363,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 379,
+          "answer": "39600"
+        },
+        {
+          "chapter": 6,
+          "number": 370,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 379,
+          "answer": "38"
+        },
+        {
+          "chapter": 6,
+          "number": 371,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 379,
+          "answer": "35000"
+        },
+        {
+          "chapter": 6,
+          "number": 372,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 379,
+          "answer": "542"
+        }
+      ]
+    },
+    {
+      "volume": 4,
+      "sourceSha256": "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e",
+      "baseTasks": 812,
+      "additionalTasks": 223,
+      "totalPlayableTasks": 1035,
+      "remainingTasks": 653,
+      "entries": [
+        {
+          "chapter": 1,
+          "number": 184,
+          "kind": "seq",
+          "page": 30,
+          "answerPage": 374,
+          "answer": [
+            4,
+            5,
+            1,
+            3,
+            6,
+            2
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 185,
+          "kind": "seq",
+          "page": 31,
+          "answerPage": 374,
+          "answer": [
+            4,
+            1,
+            6,
+            8,
+            2,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 186,
+          "kind": "seq",
+          "page": 31,
+          "answerPage": 374,
+          "answer": [
+            1,
+            6,
+            5,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 187,
+          "kind": "seq",
+          "page": 31,
+          "answerPage": 374,
+          "answer": [
+            4,
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 189,
+          "kind": "seq",
+          "page": 32,
+          "answerPage": 374,
+          "answer": [
+            3,
+            9,
+            4,
+            7,
+            8,
+            5,
+            6,
+            1,
+            2
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 196,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 374,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 197,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 374,
+          "answer": [
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 198,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 374,
+          "answer": [
+            1,
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 199,
+          "kind": "set",
+          "page": 34,
+          "answerPage": 374,
+          "answer": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 200,
+          "kind": "set",
+          "page": 35,
+          "answerPage": 374,
+          "answer": [
+            1,
+            2,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 201,
+          "kind": "set",
+          "page": 35,
+          "answerPage": 374,
+          "answer": [
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 202,
+          "kind": "set",
+          "page": 35,
+          "answerPage": 374,
+          "answer": [
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 203,
+          "kind": "set",
+          "page": 35,
+          "answerPage": 374,
+          "answer": [
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 204,
+          "kind": "set",
+          "page": 36,
+          "answerPage": 374,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 205,
+          "kind": "set",
+          "page": 36,
+          "answerPage": 374,
+          "answer": [
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 1,
+          "number": 208,
+          "kind": "set",
+          "page": 36,
+          "answerPage": 374,
+          "answer": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 150,
+          "kind": "seq",
+          "page": 66,
+          "answerPage": 376,
+          "answer": [
+            5,
+            2,
+            6,
+            4,
+            1,
+            7,
+            3
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 152,
+          "kind": "seq",
+          "page": 67,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            2,
+            1,
+            6,
+            7,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 153,
+          "kind": "seq",
+          "page": 67,
+          "answerPage": 376,
+          "answer": [
+            2,
+            5,
+            1,
+            4,
+            3
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 155,
+          "kind": "seq",
+          "page": 68,
+          "answerPage": 376,
+          "answer": [
+            8,
+            1,
+            6,
+            2,
+            4,
+            5,
+            7,
+            3
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 156,
+          "kind": "seq",
+          "page": 68,
+          "answerPage": 376,
+          "answer": [
+            4,
+            3,
+            5,
+            6,
+            1,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 157,
+          "kind": "seq",
+          "page": 68,
+          "answerPage": 376,
+          "answer": [
+            6,
+            2,
+            1,
+            4,
+            5,
+            7,
+            3
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 158,
+          "kind": "seq",
+          "page": 68,
+          "answerPage": 376,
+          "answer": [
+            3,
+            5,
+            4,
+            1,
+            6,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 160,
+          "kind": "seq",
+          "page": 69,
+          "answerPage": 376,
+          "answer": [
+            6,
+            8,
+            3,
+            1,
+            5,
+            4,
+            9,
+            7,
+            2
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 162,
+          "kind": "set",
+          "page": 69,
+          "answerPage": 376,
+          "answer": [
+            2,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 163,
+          "kind": "set",
+          "page": 70,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 164,
+          "kind": "set",
+          "page": 70,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 166,
+          "kind": "set",
+          "page": 71,
+          "answerPage": 376,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 167,
+          "kind": "set",
+          "page": 71,
+          "answerPage": 376,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 168,
+          "kind": "set",
+          "page": 71,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 169,
+          "kind": "set",
+          "page": 71,
+          "answerPage": 376,
+          "answer": [
+            1,
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 170,
+          "kind": "set",
+          "page": 72,
+          "answerPage": 376,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 171,
+          "kind": "set",
+          "page": 72,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            6,
+            8
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 172,
+          "kind": "set",
+          "page": 72,
+          "answerPage": 376,
+          "answer": [
+            1,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 173,
+          "kind": "set",
+          "page": 73,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 174,
+          "kind": "set",
+          "page": 73,
+          "answerPage": 376,
+          "answer": [
+            1,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 175,
+          "kind": "set",
+          "page": 73,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 176,
+          "kind": "set",
+          "page": 74,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 177,
+          "kind": "set",
+          "page": 74,
+          "answerPage": 376,
+          "answer": [
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 178,
+          "kind": "set",
+          "page": 74,
+          "answerPage": 376,
+          "answer": [
+            1,
+            2,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 179,
+          "kind": "set",
+          "page": 75,
+          "answerPage": 376,
+          "answer": [
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 180,
+          "kind": "set",
+          "page": 75,
+          "answerPage": 376,
+          "answer": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 181,
+          "kind": "set",
+          "page": 75,
+          "answerPage": 376,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 2,
+          "number": 191,
+          "kind": "seq",
+          "page": 79,
+          "answerPage": 376,
+          "answer": [
+            5,
+            3,
+            8,
+            9,
+            4,
+            2,
+            6,
+            1,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 210,
+          "kind": "seq",
+          "page": 149,
+          "answerPage": 381,
+          "answer": [
+            7,
+            9,
+            4,
+            5,
+            3,
+            1,
+            8,
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 211,
+          "kind": "seq",
+          "page": 150,
+          "answerPage": 381,
+          "answer": [
+            1,
+            3,
+            4,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 212,
+          "kind": "seq",
+          "page": 150,
+          "answerPage": 381,
+          "answer": [
+            3,
+            1,
+            4,
+            5,
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 213,
+          "kind": "seq",
+          "page": 150,
+          "answerPage": 381,
+          "answer": [
+            1,
+            5,
+            3,
+            2,
+            4,
+            7,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 214,
+          "kind": "seq",
+          "page": 150,
+          "answerPage": 381,
+          "answer": [
+            3,
+            5,
+            6,
+            2,
+            4,
+            1,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 215,
+          "kind": "seq",
+          "page": 151,
+          "answerPage": 381,
+          "answer": [
+            1,
+            3,
+            2,
+            5,
+            4,
+            7,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 216,
+          "kind": "set",
+          "page": 151,
+          "answerPage": 381,
+          "answer": [
+            2,
+            5,
+            7,
+            8
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 217,
+          "kind": "set",
+          "page": 151,
+          "answerPage": 381,
+          "answer": [
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 218,
+          "kind": "set",
+          "page": 152,
+          "answerPage": 381,
+          "answer": [
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 219,
+          "kind": "set",
+          "page": 152,
+          "answerPage": 381,
+          "answer": [
+            1,
+            2,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 220,
+          "kind": "set",
+          "page": 153,
+          "answerPage": 381,
+          "answer": [
+            2,
+            5,
+            8
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 221,
+          "kind": "set",
+          "page": 153,
+          "answerPage": 381,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 222,
+          "kind": "set",
+          "page": 154,
+          "answerPage": 381,
+          "answer": [
+            1,
+            2,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 223,
+          "kind": "set",
+          "page": 154,
+          "answerPage": 381,
+          "answer": [
+            1,
+            2,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 224,
+          "kind": "set",
+          "page": 154,
+          "answerPage": 381,
+          "answer": [
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 225,
+          "kind": "set",
+          "page": 155,
+          "answerPage": 381,
+          "answer": [
+            1,
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 226,
+          "kind": "set",
+          "page": 155,
+          "answerPage": 381,
+          "answer": [
+            2,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 227,
+          "kind": "set",
+          "page": 156,
+          "answerPage": 381,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 228,
+          "kind": "set",
+          "page": 156,
+          "answerPage": 381,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 229,
+          "kind": "set",
+          "page": 156,
+          "answerPage": 381,
+          "answer": [
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 230,
+          "kind": "set",
+          "page": 157,
+          "answerPage": 381,
+          "answer": [
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 3,
+          "number": 231,
+          "kind": "set",
+          "page": 157,
+          "answerPage": 381,
+          "answer": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 219,
+          "kind": "set",
+          "page": 228,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 220,
+          "kind": "set",
+          "page": 228,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 221,
+          "kind": "set",
+          "page": 228,
+          "answerPage": 385,
+          "answer": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 222,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 385,
+          "answer": [
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 223,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 224,
+          "kind": "set",
+          "page": 229,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 225,
+          "kind": "set",
+          "page": 230,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 226,
+          "kind": "set",
+          "page": 230,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 227,
+          "kind": "set",
+          "page": 230,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 228,
+          "kind": "set",
+          "page": 231,
+          "answerPage": 385,
+          "answer": [
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 229,
+          "kind": "set",
+          "page": 231,
+          "answerPage": 385,
+          "answer": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 230,
+          "kind": "set",
+          "page": 231,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 231,
+          "kind": "set",
+          "page": 232,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 232,
+          "kind": "set",
+          "page": 232,
+          "answerPage": 385,
+          "answer": [
+            3,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 233,
+          "kind": "set",
+          "page": 232,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 234,
+          "kind": "set",
+          "page": 233,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 235,
+          "kind": "set",
+          "page": 233,
+          "answerPage": 385,
+          "answer": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 236,
+          "kind": "set",
+          "page": 233,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 237,
+          "kind": "set",
+          "page": 234,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 238,
+          "kind": "set",
+          "page": 234,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 240,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 241,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 242,
+          "kind": "set",
+          "page": 235,
+          "answerPage": 385,
+          "answer": [
+            3,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 243,
+          "kind": "set",
+          "page": 236,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 244,
+          "kind": "set",
+          "page": 236,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 245,
+          "kind": "set",
+          "page": 236,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 246,
+          "kind": "set",
+          "page": 237,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 247,
+          "kind": "set",
+          "page": 237,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 248,
+          "kind": "set",
+          "page": 237,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 249,
+          "kind": "set",
+          "page": 238,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 250,
+          "kind": "set",
+          "page": 238,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 251,
+          "kind": "set",
+          "page": 238,
+          "answerPage": 385,
+          "answer": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 252,
+          "kind": "set",
+          "page": 239,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 253,
+          "kind": "set",
+          "page": 239,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 254,
+          "kind": "set",
+          "page": 239,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 255,
+          "kind": "set",
+          "page": 240,
+          "answerPage": 385,
+          "answer": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 256,
+          "kind": "set",
+          "page": 240,
+          "answerPage": 385,
+          "answer": [
+            1,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 257,
+          "kind": "set",
+          "page": 240,
+          "answerPage": 385,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 258,
+          "kind": "set",
+          "page": 241,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 259,
+          "kind": "set",
+          "page": 241,
+          "answerPage": 385,
+          "answer": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 260,
+          "kind": "set",
+          "page": 241,
+          "answerPage": 385,
+          "answer": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 261,
+          "kind": "set",
+          "page": 242,
+          "answerPage": 385,
+          "answer": [
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 262,
+          "kind": "set",
+          "page": 242,
+          "answerPage": 385,
+          "answer": [
+            1,
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 263,
+          "kind": "set",
+          "page": 242,
+          "answerPage": 385,
+          "answer": [
+            1,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 264,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 265,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 266,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 385,
+          "answer": [
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 267,
+          "kind": "set",
+          "page": 243,
+          "answerPage": 385,
+          "answer": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 268,
+          "kind": "set",
+          "page": 244,
+          "answerPage": 385,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 320,
+          "kind": "seq",
+          "page": 263,
+          "answerPage": 386,
+          "answer": [
+            3,
+            2,
+            5,
+            6,
+            4,
+            1
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 321,
+          "kind": "seq",
+          "page": 263,
+          "answerPage": 386,
+          "answer": [
+            2,
+            4,
+            5,
+            6,
+            3,
+            1,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 322,
+          "kind": "seq",
+          "page": 263,
+          "answerPage": 386,
+          "answer": [
+            3,
+            1,
+            4,
+            7,
+            5,
+            2,
+            6,
+            8
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 323,
+          "kind": "seq",
+          "page": 263,
+          "answerPage": 386,
+          "answer": [
+            1,
+            4,
+            2,
+            5,
+            7,
+            6,
+            3
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 324,
+          "kind": "seq",
+          "page": 264,
+          "answerPage": 386,
+          "answer": [
+            4,
+            6,
+            7,
+            5,
+            1,
+            2,
+            8,
+            3
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 325,
+          "kind": "seq",
+          "page": 264,
+          "answerPage": 386,
+          "answer": [
+            2,
+            5,
+            1,
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 326,
+          "kind": "seq",
+          "page": 264,
+          "answerPage": 386,
+          "answer": [
+            4,
+            1,
+            5,
+            2,
+            3
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 327,
+          "kind": "seq",
+          "page": 265,
+          "answerPage": 386,
+          "answer": [
+            3,
+            1,
+            5,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 4,
+          "number": 328,
+          "kind": "seq",
+          "page": 265,
+          "answerPage": 386,
+          "answer": [
+            2,
+            4,
+            5,
+            3,
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 132,
+          "kind": "set",
+          "page": 288,
+          "answerPage": 387,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 133,
+          "kind": "set",
+          "page": 288,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 134,
+          "kind": "set",
+          "page": 288,
+          "answerPage": 387,
+          "answer": [
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 137,
+          "kind": "set",
+          "page": 289,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 138,
+          "kind": "set",
+          "page": 289,
+          "answerPage": 387,
+          "answer": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 145,
+          "kind": "set",
+          "page": 291,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 147,
+          "kind": "set",
+          "page": 292,
+          "answerPage": 387,
+          "answer": [
+            1,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 148,
+          "kind": "set",
+          "page": 292,
+          "answerPage": 387,
+          "answer": [
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 149,
+          "kind": "set",
+          "page": 292,
+          "answerPage": 387,
+          "answer": [
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 150,
+          "kind": "set",
+          "page": 293,
+          "answerPage": 387,
+          "answer": [
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 151,
+          "kind": "set",
+          "page": 293,
+          "answerPage": 387,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 152,
+          "kind": "set",
+          "page": 293,
+          "answerPage": 387,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 153,
+          "kind": "set",
+          "page": 293,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 154,
+          "kind": "set",
+          "page": 294,
+          "answerPage": 387,
+          "answer": [
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 155,
+          "kind": "set",
+          "page": 294,
+          "answerPage": 387,
+          "answer": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 156,
+          "kind": "set",
+          "page": 294,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 157,
+          "kind": "set",
+          "page": 295,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 158,
+          "kind": "set",
+          "page": 295,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 159,
+          "kind": "set",
+          "page": 295,
+          "answerPage": 387,
+          "answer": [
+            2,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 161,
+          "kind": "set",
+          "page": 296,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 164,
+          "kind": "set",
+          "page": 296,
+          "answerPage": 387,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 165,
+          "kind": "set",
+          "page": 297,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 166,
+          "kind": "set",
+          "page": 297,
+          "answerPage": 387,
+          "answer": [
+            1,
+            2,
+            3,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 167,
+          "kind": "set",
+          "page": 297,
+          "answerPage": 387,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 170,
+          "kind": "seq",
+          "page": 298,
+          "answerPage": 388,
+          "answer": [
+            5,
+            4,
+            2,
+            3,
+            1,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 174,
+          "kind": "seq",
+          "page": 299,
+          "answerPage": 388,
+          "answer": [
+            3,
+            2,
+            4,
+            1,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 175,
+          "kind": "set",
+          "page": 299,
+          "answerPage": 388,
+          "answer": [
+            1,
+            2,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 176,
+          "kind": "set",
+          "page": 300,
+          "answerPage": 388,
+          "answer": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 177,
+          "kind": "set",
+          "page": 300,
+          "answerPage": 388,
+          "answer": [
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 182,
+          "kind": "set",
+          "page": 301,
+          "answerPage": 388,
+          "answer": [
+            1,
+            4,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 186,
+          "kind": "set",
+          "page": 302,
+          "answerPage": 388,
+          "answer": [
+            1,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 187,
+          "kind": "set",
+          "page": 303,
+          "answerPage": 388,
+          "answer": [
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 190,
+          "kind": "set",
+          "page": 303,
+          "answerPage": 388,
+          "answer": [
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 193,
+          "kind": "set",
+          "page": 304,
+          "answerPage": 388,
+          "answer": [
+            2,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 195,
+          "kind": "set",
+          "page": 305,
+          "answerPage": 388,
+          "answer": [
+            1,
+            3,
+            5
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 196,
+          "kind": "set",
+          "page": 305,
+          "answerPage": 388,
+          "answer": [
+            1,
+            3,
+            5,
+            6,
+            8
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 198,
+          "kind": "set",
+          "page": 306,
+          "answerPage": 388,
+          "answer": [
+            1,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 208,
+          "kind": "set",
+          "page": 309,
+          "answerPage": 388,
+          "answer": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 211,
+          "kind": "set",
+          "page": 310,
+          "answerPage": 388,
+          "answer": [
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 213,
+          "kind": "seq",
+          "page": 311,
+          "answerPage": 388,
+          "answer": [
+            2,
+            3,
+            5,
+            1,
+            4
+          ]
+        },
+        {
+          "chapter": 5,
+          "number": 214,
+          "kind": "seq",
+          "page": 311,
+          "answerPage": 388,
+          "answer": [
+            2,
+            1,
+            4,
+            5,
+            6,
+            3
+          ]
+        },
+        {
+          "chapter": 6,
+          "number": 89,
+          "kind": "num",
+          "page": 331,
+          "answerPage": 390,
+          "answer": "2"
+        },
+        {
+          "chapter": 6,
+          "number": 94,
+          "kind": "num",
+          "page": 332,
+          "answerPage": 390,
+          "answer": "594"
+        },
+        {
+          "chapter": 6,
+          "number": 106,
+          "kind": "num",
+          "page": 335,
+          "answerPage": 390,
+          "answer": "144"
+        },
+        {
+          "chapter": 6,
+          "number": 108,
+          "kind": "num",
+          "page": 335,
+          "answerPage": 390,
+          "answer": "6552"
+        },
+        {
+          "chapter": 6,
+          "number": 110,
+          "kind": "num",
+          "page": 336,
+          "answerPage": 390,
+          "answer": "375"
+        },
+        {
+          "chapter": 6,
+          "number": 119,
+          "kind": "num",
+          "page": 338,
+          "answerPage": 390,
+          "answer": "459"
+        },
+        {
+          "chapter": 6,
+          "number": 122,
+          "kind": "num",
+          "page": 339,
+          "answerPage": 390,
+          "answer": "99"
+        },
+        {
+          "chapter": 6,
+          "number": 124,
+          "kind": "num",
+          "page": 339,
+          "answerPage": 390,
+          "answer": "12636"
+        },
+        {
+          "chapter": 6,
+          "number": 126,
+          "kind": "num",
+          "page": 340,
+          "answerPage": 390,
+          "answer": "23868"
+        },
+        {
+          "chapter": 6,
+          "number": 127,
+          "kind": "num",
+          "page": 340,
+          "answerPage": 390,
+          "answer": "7254"
+        },
+        {
+          "chapter": 6,
+          "number": 129,
+          "kind": "num",
+          "page": 341,
+          "answerPage": 390,
+          "answer": "720"
+        },
+        {
+          "chapter": 6,
+          "number": 141,
+          "kind": "num",
+          "page": 345,
+          "answerPage": 390,
+          "answer": "9139"
+        },
+        {
+          "chapter": 6,
+          "number": 150,
+          "kind": "num",
+          "page": 346,
+          "answerPage": 390,
+          "answer": "344"
+        },
+        {
+          "chapter": 6,
+          "number": 161,
+          "kind": "num",
+          "page": 347,
+          "answerPage": 390,
+          "answer": "29"
+        },
+        {
+          "chapter": 6,
+          "number": 165,
+          "kind": "num",
+          "page": 348,
+          "answerPage": 390,
+          "answer": "29"
+        },
+        {
+          "chapter": 6,
+          "number": 171,
+          "kind": "num",
+          "page": 349,
+          "answerPage": 391,
+          "answer": "29"
+        },
+        {
+          "chapter": 6,
+          "number": 183,
+          "kind": "num",
+          "page": 351,
+          "answerPage": 391,
+          "answer": "3008"
+        },
+        {
+          "chapter": 6,
+          "number": 190,
+          "kind": "num",
+          "page": 352,
+          "answerPage": 391,
+          "answer": "24640"
+        },
+        {
+          "chapter": 6,
+          "number": 191,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 391,
+          "answer": "11780"
+        },
+        {
+          "chapter": 6,
+          "number": 192,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 391,
+          "answer": "5977"
+        },
+        {
+          "chapter": 6,
+          "number": 194,
+          "kind": "num",
+          "page": 353,
+          "answerPage": 391,
+          "answer": "1150"
+        },
+        {
+          "chapter": 6,
+          "number": 199,
+          "kind": "num",
+          "page": 354,
+          "answerPage": 391,
+          "answer": "588"
+        },
+        {
+          "chapter": 6,
+          "number": 203,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 391,
+          "answer": "882"
+        },
+        {
+          "chapter": 6,
+          "number": 205,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 391,
+          "answer": "5"
+        },
+        {
+          "chapter": 6,
+          "number": 206,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 391,
+          "answer": "18200"
+        },
+        {
+          "chapter": 6,
+          "number": 207,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 391,
+          "answer": "72"
+        },
+        {
+          "chapter": 6,
+          "number": 208,
+          "kind": "num",
+          "page": 355,
+          "answerPage": 391,
+          "answer": "144"
+        },
+        {
+          "chapter": 6,
+          "number": 212,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 391,
+          "answer": "4800"
+        },
+        {
+          "chapter": 6,
+          "number": 213,
+          "kind": "num",
+          "page": 356,
+          "answerPage": 391,
+          "answer": "46"
+        },
+        {
+          "chapter": 6,
+          "number": 215,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 391,
+          "answer": "14"
+        },
+        {
+          "chapter": 6,
+          "number": 218,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 391,
+          "answer": "1400"
+        },
+        {
+          "chapter": 6,
+          "number": 219,
+          "kind": "num",
+          "page": 357,
+          "answerPage": 391,
+          "answer": "30"
+        },
+        {
+          "chapter": 6,
+          "number": 221,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 391,
+          "answer": "12"
+        },
+        {
+          "chapter": 6,
+          "number": 223,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 391,
+          "answer": "17800"
+        },
+        {
+          "chapter": 6,
+          "number": 224,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 391,
+          "answer": "3656"
+        },
+        {
+          "chapter": 6,
+          "number": 225,
+          "kind": "num",
+          "page": 358,
+          "answerPage": 391,
+          "answer": "7476"
+        },
+        {
+          "chapter": 6,
+          "number": 226,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "3572"
+        },
+        {
+          "chapter": 6,
+          "number": 227,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "120"
+        },
+        {
+          "chapter": 6,
+          "number": 228,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "22"
+        },
+        {
+          "chapter": 6,
+          "number": 229,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "576"
+        },
+        {
+          "chapter": 6,
+          "number": 230,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "9540"
+        },
+        {
+          "chapter": 6,
+          "number": 231,
+          "kind": "num",
+          "page": 359,
+          "answerPage": 391,
+          "answer": "190"
+        },
+        {
+          "chapter": 6,
+          "number": 232,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 391,
+          "answer": "1600"
+        },
+        {
+          "chapter": 6,
+          "number": 234,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 391,
+          "answer": "13200"
+        },
+        {
+          "chapter": 6,
+          "number": 235,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 391,
+          "answer": "23400"
+        },
+        {
+          "chapter": 6,
+          "number": 236,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 391,
+          "answer": "66"
+        },
+        {
+          "chapter": 6,
+          "number": 237,
+          "kind": "num",
+          "page": 360,
+          "answerPage": 391,
+          "answer": "28"
+        },
+        {
+          "chapter": 6,
+          "number": 238,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 391,
+          "answer": "900"
+        },
+        {
+          "chapter": 6,
+          "number": 239,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 391,
+          "answer": "12"
+        },
+        {
+          "chapter": 6,
+          "number": 241,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 391,
+          "answer": "15000"
+        },
+        {
+          "chapter": 6,
+          "number": 242,
+          "kind": "num",
+          "page": 361,
+          "answerPage": 391,
+          "answer": "3656"
+        },
+        {
+          "chapter": 6,
+          "number": 244,
+          "kind": "num",
+          "page": 362,
+          "answerPage": 391,
+          "answer": "600"
+        },
+        {
+          "chapter": 6,
+          "number": 249,
+          "kind": "num",
+          "page": 362,
+          "answerPage": 391,
+          "answer": "67200"
+        },
+        {
+          "chapter": 6,
+          "number": 251,
+          "kind": "num",
+          "page": 362,
+          "answerPage": 391,
+          "answer": "50"
+        },
+        {
+          "chapter": 6,
+          "number": 252,
+          "kind": "num",
+          "page": 362,
+          "answerPage": 391,
+          "answer": "25600"
+        },
+        {
+          "chapter": 6,
+          "number": 254,
+          "kind": "num",
+          "page": 362,
+          "answerPage": 391,
+          "answer": "25200"
+        },
+        {
+          "chapter": 6,
+          "number": 270,
+          "kind": "num",
+          "page": 365,
+          "answerPage": 391,
+          "answer": "6"
+        },
+        {
+          "chapter": 6,
+          "number": 271,
+          "kind": "num",
+          "page": 365,
+          "answerPage": 391,
+          "answer": "93869"
+        }
+      ]
+    }
+  ]
+}

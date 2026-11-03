@@ -3,6 +3,9 @@ name: Biology backlog integrity and stable student routes
 on:
   pull_request:
     paths:
+      - 'src/test/biology-extended.test.ts'
+      - 'src/lib/biology-extended.ts'
+      - 'public/data/biology-extended-*.json'
       - 'src/test/biology-backlog-audit.test.ts'
       - 'src/test/biology-november-restorations.test.ts'
       - 'scripts/validate-biology-transcriptions.mjs'
@@ -41,4 +44,4 @@ jobs:
       - name: Verify source-page restorations and all transcribed questions
         run: |
           node scripts/validate-biology-transcriptions.mjs
-          bunx vitest run src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts
+          bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts

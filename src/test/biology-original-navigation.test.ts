@@ -20,8 +20,8 @@ describe("Biology original book navigation from screenshot", () => {
   });
   it("removes the authored starter block from the source-book catalog", () => {
     expect(homepage).not.toContain('24 հեղինակային վարժանք');
-    expect(homepage).toContain('945 բնօրինակ հարց');
-    expect(homepage).toContain('812 բնօրինակ հարց');
+    expect(homepage).toContain('1222 բնօրինակ հարց');
+    expect(homepage).toContain('1035 բնօրինակ հարց');
   });
   it("uses URL volume 4 when student opens the fourth source book, with a safe default", () => {
     expect(route).toContain('volume: z.coerce.number().int().min(3).max(4).catch(3)');
