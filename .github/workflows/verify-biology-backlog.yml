@@ -23,6 +23,10 @@ on:
       - 'public/data/bio-book4.json'
       - 'docs/biology-backlog-20261102.md'
       - 'docs/biology-next-268-source-review.json'
+      - 'docs/biology-next-500-source-queue.json'
+      - 'docs/biology-next-500.md'
+      - 'scripts/verify-biology-next-500.mjs'
+      - 'scripts/verify-biology-next-500-source.py'
       - 'scripts/verify-biology-next-268.mjs'
       - 'scripts/verify-biology-next-268-source.py'
       - '.github/workflows/verify-biology-backlog.yml'
@@ -48,4 +52,5 @@ jobs:
         run: |
           node scripts/validate-biology-transcriptions.mjs
           node scripts/verify-biology-next-268.mjs
+          node scripts/verify-biology-next-500.mjs
           bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts
