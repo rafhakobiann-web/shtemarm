@@ -264,7 +264,7 @@ export function BiologySourcePractice568() {
       <label className="block space-y-2 text-sm font-semibold">
         <span>{t("answer")}</span>
         <textarea value={response.answer}
-          onChange={e=>updateResponse(e.target.value)}
+          onChange={e=>{ setCompared(false); updateResponse(e.target.value); }}
           rows={3} className="w-full resize-y rounded-xl border bg-background p-3"
           placeholder={t("answer")} />
       </label>
