@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
+import { previewIndex, previewSwipeDirection, type PreviewDirection } from "@/lib/preview-interaction";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 
@@ -175,8 +176,8 @@ function LandingPage() {
   const [active, setActive] = useState(0);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
   const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
-  const changeActivity = (direction: number) =>
-    setActive((current) => (current + direction + 3) % 3);
+  const changeActivity = (direction: PreviewDirection) =>
+    setActive((current) => previewIndex(current, direction, 3));
   const startPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
     if (event.target instanceof Element && event.target.closest("button")) return;
@@ -189,9 +190,8 @@ function LandingPage() {
     const dx = event.clientX - swipe.x;
     const dy = event.clientY - swipe.y;
     // Horizontal intent only. Vertical reading gestures always scroll normally.
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) {
-      changeActivity(dx < 0 ? 1 : -1);
-    }
+    const direction = previewSwipeDirection(dx, dy);
+    if (direction !== 0) changeActivity(direction);
   };
 
   useEffect(() => {
@@ -297,7 +297,9 @@ function LandingPage() {
               </div>
               <div className="sht-preview-focus" onPointerDown={startPreviewSwipe} onPointerUp={finishPreviewSwipe} onPointerCancel={() => { previewSwipe.current = null; }}>
                 <div className="sht-preview-focus-heading"><Target className="size-4" aria-hidden="true" /><span>{ui.focus}</span></div>
-                <p key={lang + "-" + active} id="sht-demo-details" className="sht-focus-detail sht-activity-text" aria-live="polite">{DEMO_DETAILS[lang][active]}</p>
+                <div className="sht-preview-message" aria-live="polite" aria-atomic="true">
+                  <p key={lang + "-" + active} id="sht-demo-details" className="sht-focus-detail sht-activity-text">{DEMO_DETAILS[lang][active]}</p>
+                </div>
                 <div className="sht-preview-controls" role="group" aria-label={ui.sample}>
                   <button type="button" aria-label={lang === "hy" ? "Նախորդ առաջադրանքը" : lang === "ru" ? "Предыдущее задание" : "Previous activity"} onClick={() => changeActivity(-1)}><ChevronLeft className="size-4" aria-hidden="true" /></button>
                   <span className="sht-activity-count" aria-hidden="true">{active + 1} / {demoTasks.length}</span>
