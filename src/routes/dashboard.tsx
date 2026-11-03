@@ -31,7 +31,7 @@ const TILE =
 
 /** Original source volumes remain separate from the authored Biology III exercises. */
 const BIOLOGY_ORIGINAL_BOOKS = [
-  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg" },
+  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց + 34 վերաշարադրված · լրացվում է", cover: "/covers/bio-3.svg" },
   { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg" },
 ];
 
