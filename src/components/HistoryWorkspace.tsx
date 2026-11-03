@@ -104,6 +104,7 @@ export function HistoryWorkspace({ initialTest }: { initialTest?: number | undef
   if (session)
     return (
       <HistorySession
+        subjectId="history"
         {...session}
         onExit={() => {
           setSession(null);
