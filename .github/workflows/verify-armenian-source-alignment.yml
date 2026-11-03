@@ -10,7 +10,9 @@ on:
       - 'src/components/WorkbookExamWorkspace.tsx'
       - 'src/test/armenian-*.test.ts'
       - 'scripts/verify-armenian-pdfs.py'
+      - 'scripts/verify-armenian-source-queue.py'
       - 'docs/ARMENIAN*.md'
+      - 'docs/armenian-*.json'
   workflow_dispatch:
 
 permissions:
@@ -29,6 +31,6 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Validate Armenian PDF index, practice banks and exam navigation
         run: |
-          bunx vitest run src/test/armenian-source-integrity.test.ts src/test/armenian-source-alignment.test.ts src/test/armenian-volumes.test.ts
+          bunx vitest run src/test/armenian-source-integrity.test.ts src/test/armenian-source-alignment.test.ts src/test/armenian-source-queue.test.ts src/test/armenian-volumes.test.ts
       - name: Verify site build (no deployment)
         run: bun run build

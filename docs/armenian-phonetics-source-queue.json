@@ -1,0 +1,444 @@
+{
+  "description": "Verified printed task-number-to-PDF-page locations for phonetics Section 1 / Part 1. Source navigation and maintainer review only: no question text, options or answer keys, no playable official tasks.",
+  "purpose": "maintainer_source_review_queue_not_student_questions",
+  "status": "numbers_and_pages_only_no_answers_verified",
+  "volumeCount": 4,
+  "sourceTaskMarkers": 572,
+  "originalQuestionTextsCommitted": 0,
+  "individuallyVerifiedOfficialAnswers": 0,
+  "volumes": [
+    {
+      "volume": 1,
+      "section": 1,
+      "part": 1,
+      "sourceSha256": "5894d996c336a5837c7ce4e7b77eca59bb0cec0ae6c5ab55d468e05cd9356e35",
+      "taskCount": 103,
+      "firstPdfPage": 5,
+      "lastPdfPage": 18,
+      "nextPartStartsPdfPage": 19,
+      "pageRanges": [
+        {
+          "pdfPage": 5,
+          "from": 1,
+          "to": 8
+        },
+        {
+          "pdfPage": 6,
+          "from": 9,
+          "to": 16
+        },
+        {
+          "pdfPage": 7,
+          "from": 17,
+          "to": 24
+        },
+        {
+          "pdfPage": 8,
+          "from": 25,
+          "to": 32
+        },
+        {
+          "pdfPage": 9,
+          "from": 33,
+          "to": 40
+        },
+        {
+          "pdfPage": 10,
+          "from": 41,
+          "to": 45
+        },
+        {
+          "pdfPage": 11,
+          "from": 46,
+          "to": 52
+        },
+        {
+          "pdfPage": 12,
+          "from": 53,
+          "to": 60
+        },
+        {
+          "pdfPage": 13,
+          "from": 61,
+          "to": 65
+        },
+        {
+          "pdfPage": 14,
+          "from": 66,
+          "to": 72
+        },
+        {
+          "pdfPage": 15,
+          "from": 73,
+          "to": 80
+        },
+        {
+          "pdfPage": 16,
+          "from": 81,
+          "to": 88
+        },
+        {
+          "pdfPage": 17,
+          "from": 89,
+          "to": 96
+        },
+        {
+          "pdfPage": 18,
+          "from": 97,
+          "to": 103
+        }
+      ]
+    },
+    {
+      "volume": 2,
+      "section": 1,
+      "part": 1,
+      "sourceSha256": "e8b9f7e59326ad3938f9c27f4ff618ed7058bf7bd92844072cdcb1961210034d",
+      "taskCount": 122,
+      "firstPdfPage": 5,
+      "lastPdfPage": 21,
+      "nextPartStartsPdfPage": 22,
+      "pageRanges": [
+        {
+          "pdfPage": 5,
+          "from": 1,
+          "to": 8
+        },
+        {
+          "pdfPage": 6,
+          "from": 9,
+          "to": 16
+        },
+        {
+          "pdfPage": 7,
+          "from": 17,
+          "to": 24
+        },
+        {
+          "pdfPage": 8,
+          "from": 25,
+          "to": 30
+        },
+        {
+          "pdfPage": 9,
+          "from": 31,
+          "to": 36
+        },
+        {
+          "pdfPage": 10,
+          "from": 37,
+          "to": 44
+        },
+        {
+          "pdfPage": 11,
+          "from": 45,
+          "to": 51
+        },
+        {
+          "pdfPage": 12,
+          "from": 52,
+          "to": 57
+        },
+        {
+          "pdfPage": 13,
+          "from": 58,
+          "to": 65
+        },
+        {
+          "pdfPage": 14,
+          "from": 66,
+          "to": 73
+        },
+        {
+          "pdfPage": 15,
+          "from": 74,
+          "to": 81
+        },
+        {
+          "pdfPage": 16,
+          "from": 82,
+          "to": 89
+        },
+        {
+          "pdfPage": 17,
+          "from": 90,
+          "to": 97
+        },
+        {
+          "pdfPage": 18,
+          "from": 98,
+          "to": 105
+        },
+        {
+          "pdfPage": 19,
+          "from": 106,
+          "to": 113
+        },
+        {
+          "pdfPage": 20,
+          "from": 114,
+          "to": 121
+        },
+        {
+          "pdfPage": 21,
+          "from": 122,
+          "to": 122
+        }
+      ]
+    },
+    {
+      "volume": 3,
+      "section": 1,
+      "part": 1,
+      "sourceSha256": "c237c82c6ab4bfb93f786e777e013d9bccc697d51701b8895da30c899f02e3c8",
+      "taskCount": 157,
+      "firstPdfPage": 5,
+      "lastPdfPage": 25,
+      "nextPartStartsPdfPage": 26,
+      "pageRanges": [
+        {
+          "pdfPage": 5,
+          "from": 1,
+          "to": 8
+        },
+        {
+          "pdfPage": 6,
+          "from": 9,
+          "to": 16
+        },
+        {
+          "pdfPage": 7,
+          "from": 17,
+          "to": 24
+        },
+        {
+          "pdfPage": 8,
+          "from": 25,
+          "to": 32
+        },
+        {
+          "pdfPage": 9,
+          "from": 33,
+          "to": 40
+        },
+        {
+          "pdfPage": 10,
+          "from": 41,
+          "to": 48
+        },
+        {
+          "pdfPage": 11,
+          "from": 49,
+          "to": 54
+        },
+        {
+          "pdfPage": 12,
+          "from": 55,
+          "to": 60
+        },
+        {
+          "pdfPage": 13,
+          "from": 61,
+          "to": 68
+        },
+        {
+          "pdfPage": 14,
+          "from": 69,
+          "to": 75
+        },
+        {
+          "pdfPage": 15,
+          "from": 76,
+          "to": 83
+        },
+        {
+          "pdfPage": 16,
+          "from": 84,
+          "to": 91
+        },
+        {
+          "pdfPage": 17,
+          "from": 92,
+          "to": 99
+        },
+        {
+          "pdfPage": 18,
+          "from": 100,
+          "to": 107
+        },
+        {
+          "pdfPage": 19,
+          "from": 108,
+          "to": 115
+        },
+        {
+          "pdfPage": 20,
+          "from": 116,
+          "to": 123
+        },
+        {
+          "pdfPage": 21,
+          "from": 124,
+          "to": 131
+        },
+        {
+          "pdfPage": 22,
+          "from": 132,
+          "to": 139
+        },
+        {
+          "pdfPage": 23,
+          "from": 140,
+          "to": 146
+        },
+        {
+          "pdfPage": 24,
+          "from": 147,
+          "to": 154
+        },
+        {
+          "pdfPage": 25,
+          "from": 155,
+          "to": 157
+        }
+      ]
+    },
+    {
+      "volume": 4,
+      "section": 1,
+      "part": 1,
+      "sourceSha256": "910266f221729f7b310c8656e1a65caaecca26536f9cfee78419c76286ad38bd",
+      "taskCount": 190,
+      "firstPdfPage": 6,
+      "lastPdfPage": 30,
+      "nextPartStartsPdfPage": 31,
+      "pageRanges": [
+        {
+          "pdfPage": 6,
+          "from": 1,
+          "to": 8
+        },
+        {
+          "pdfPage": 7,
+          "from": 9,
+          "to": 17
+        },
+        {
+          "pdfPage": 8,
+          "from": 18,
+          "to": 26
+        },
+        {
+          "pdfPage": 9,
+          "from": 27,
+          "to": 34
+        },
+        {
+          "pdfPage": 10,
+          "from": 35,
+          "to": 43
+        },
+        {
+          "pdfPage": 11,
+          "from": 44,
+          "to": 52
+        },
+        {
+          "pdfPage": 12,
+          "from": 53,
+          "to": 60
+        },
+        {
+          "pdfPage": 13,
+          "from": 61,
+          "to": 68
+        },
+        {
+          "pdfPage": 14,
+          "from": 69,
+          "to": 76
+        },
+        {
+          "pdfPage": 15,
+          "from": 77,
+          "to": 80
+        },
+        {
+          "pdfPage": 16,
+          "from": 81,
+          "to": 84
+        },
+        {
+          "pdfPage": 17,
+          "from": 85,
+          "to": 88
+        },
+        {
+          "pdfPage": 18,
+          "from": 89,
+          "to": 95
+        },
+        {
+          "pdfPage": 19,
+          "from": 96,
+          "to": 103
+        },
+        {
+          "pdfPage": 20,
+          "from": 104,
+          "to": 111
+        },
+        {
+          "pdfPage": 21,
+          "from": 112,
+          "to": 117
+        },
+        {
+          "pdfPage": 22,
+          "from": 118,
+          "to": 123
+        },
+        {
+          "pdfPage": 23,
+          "from": 124,
+          "to": 130
+        },
+        {
+          "pdfPage": 24,
+          "from": 131,
+          "to": 139
+        },
+        {
+          "pdfPage": 25,
+          "from": 140,
+          "to": 148
+        },
+        {
+          "pdfPage": 26,
+          "from": 149,
+          "to": 157
+        },
+        {
+          "pdfPage": 27,
+          "from": 158,
+          "to": 165
+        },
+        {
+          "pdfPage": 28,
+          "from": 166,
+          "to": 173
+        },
+        {
+          "pdfPage": 29,
+          "from": 174,
+          "to": 181
+        },
+        {
+          "pdfPage": 30,
+          "from": 182,
+          "to": 190
+        }
+      ]
+    }
+  ]
+}
