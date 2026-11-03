@@ -174,27 +174,26 @@ function AuthBoundary({children}:{children:ReactNode}) {
   const isPublic=PUBLIC_PATHS.has(pathname);
   useEffect(()=>{
     let active=true;
+    let subscription: {unsubscribe:()=>void}|undefined;
     const check=async()=>{
       try {
         const ready=await ensureBrowserSupabaseConfig();
-        if(!ready){if(active)setStatus("unavailable");return;}
+        if(!active)return;
+        if(!ready){setStatus("unavailable");return;}
         const {data,error}=await supabase.auth.getSession();
         if(!active)return;
         if(error){setStatus("unavailable");return;}
         setUserId(data.session?.user.id??"");
         setStatus(data.session?"signed-in":"signed-out");
+        const listener=supabase.auth.onAuthStateChange((_event,session:Session|null)=>{
+          if(!active)return;
+          setUserId(session?.user.id??"");
+          setStatus(session?"signed-in":"signed-out");
+        });
+        subscription=listener.data.subscription;
       }catch{if(active)setStatus("unavailable");}
     };
     void check();
-    let subscription: {unsubscribe:()=>void}|undefined;
-    try{
-      const {data}=supabase.auth.onAuthStateChange((_event,session:Session|null)=>{
-        if(!active)return;
-        setUserId(session?.user.id??"");
-        setStatus(session?"signed-in":"signed-out");
-      });
-      subscription=data.subscription;
-    }catch{/* configuration may be unavailable */}
     return()=>{active=false;subscription?.unsubscribe()};
   },[]);
   useEffect(()=>{
