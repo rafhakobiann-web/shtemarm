@@ -1,0 +1,29 @@
+name: Verify Biology III import workflow
+on:
+  pull_request:
+    paths:
+      - 'scripts/import-biology3-verified.mjs'
+      - 'scripts/tests/biology3-verified-import.test.mjs'
+      - 'src/test/biology-backlog-audit.test.ts'
+      - 'public/data/bio-book3.json'
+      - 'public/data/biology-volume3-coverage.json'
+      - 'public/data/biology-backlog-summary.json'
+      - 'public/data/biology-pending-books.json'
+      - '.github/workflows/verify-biology3-import.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: bun install --frozen-lockfile
+      - name: Verify existing indexed answers and import against synthetic fixtures
+        run: node --test scripts/tests/biology3-verified-import.test.mjs
+      - name: Audit all third and fourth volume coverage numbers
+        run: bunx vitest run src/test/biology-backlog-audit.test.ts src/test/biology-original-index.test.ts src/test/biology-volume-three.test.ts
+      - name: Build student website
+        run: bun run build
