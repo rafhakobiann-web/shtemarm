@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -10,6 +10,7 @@ import { EnglishText, PassageTranslation } from "@/components/EnglishText";
 import { useLang, useTx } from "@/lib/lang";
 import { RichExplanation } from "@/components/RichExplanation";
 import { getOfflineEnglishExplanation } from "@/lib/englishSectionOneMultilingual";
+import { localAvailability, localExplain } from "@/lib/local-explanation.client";
 
 export type UnitAnswer = {
   mc?: Record<string, string>;
@@ -132,9 +133,37 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [localBusy, setLocalBusy] = useState(false);
+  const [localSupport, setLocalSupport] = useState<string>("checking");
+  useEffect(() => {
+    let active = true;
+    void localAvailability().then(status => { if (active) setLocalSupport(status); });
+    return () => { active = false; };
+  }, []);
+  const [localNotice, setLocalNotice] = useState<string | null>(null);
   return (
     <div>
     {text && <RichExplanation text={text} error={failed}/>}
+    {localNotice && <p role="status" className="mt-2 text-sm text-muted-foreground">{localNotice}</p>}
+    {["available", "downloadable", "downloading"].includes(localSupport) && <Button type="button" variant="outline" disabled={localBusy} className="mt-3" onClick={async () => {
+      setLocalBusy(true);
+      setLocalNotice(null);
+      try {
+        const available = await localAvailability();
+        if (!["available", "downloadable", "downloading"].includes(available)) {
+          setLocalNotice(lang === "hy" ? "Տեղային ԱԲ-ն այս դիտարկիչում հասանելի չէ։" : lang === "ru" ? "Локальный ИИ недоступен в этом браузере." : "On-device AI is not available in this browser.");
+          return;
+        }
+        if (available !== "available" && !window.confirm(lang === "hy" ? "Տեղային ԱԲ մոդելը կարող է ներբեռնվել։ Շարունակե՞լ։" : "The browser may download an AI model. Continue?")) return;
+        const generated = await localExplain({ question: props.question, correct: props.correct, chosen: props.chosen, locale: lang });
+        setText(generated);
+        setFailed(false);
+        setLocalNotice(lang === "hy" ? "Ստեղծվել է սարքում՝ չստուգված ԱԲ բացատրություն։" : lang === "ru" ? "Создано на устройстве; объяснение ИИ не проверено." : "Generated on your device; AI explanation is not verified.");
+      } catch {
+        setLocalNotice(lang === "hy" ? "Տեղային ԱԲ-ն չաշխատեց։ Կարող եք օգտագործել սովորական բացատրությունը։" : "Local AI failed; use the standard explanation instead.");
+      } finally { setLocalBusy(false); }
+    }}>{localBusy ? <Loader2 className="animate-spin" /> : <Sparkles />} {lang === "hy" ? "Բացատրել սարքի ԱԲ-ով" : lang === "ru" ? "Объяснить локальным ИИ" : "Explain with on-device AI"}</Button>}
+    {["unsupported", "unavailable"].includes(localSupport) && <p role="note" className="mt-2 text-xs text-muted-foreground">{lang === "hy" ? "Սարքի ԱԲ-ն հասանելի չէ այս դիտարկիչում։ Օգտագործիր ներքևի սովորական բացատրությունը։" : lang === "ru" ? "Локальный ИИ не поддерживается. Используйте обычное объяснение ниже." : "On-device AI is unsupported here. Use the standard explanation below."}</p>
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
@@ -145,6 +174,7 @@ function Explain(props: { instruction: string; passage: string; question: string
           const r = await fn({ data: { ...props, locale: lang, passage: props.passage.slice(0, 5800) } });
           setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
+          setLocalNotice(r.cached ? (lang === "hy" ? "Պահված բացատրություն․ ճշտությունը դեռ հաստատված չէ։" : lang === "ru" ? "Сохранённое объяснение не проверено." : "Saved explanation; not independently verified.") : (lang === "hy" ? "Ընդհանուր ուսումնական ուղեցույց․ ոչ ամբողջական լուծում։" : lang === "ru" ? "Общая учебная подсказка, не полное решение." : "General study guidance, not a complete solution."));
         } catch {
           setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
           setFailed(true);
@@ -155,7 +185,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       className="mt-3 h-auto min-h-10 whitespace-normal text-left"
     >
       {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : tx("Ստանալ բացատրություն")}
+      {loading ? tx("Բացատրությունը պատրաստվում է…") : failed ? tx("Կրկին փորձել") : lang === "en" ? "Show study guidance" : lang === "ru" ? "Показать учебную подсказку" : "Ցույց տալ ուսումնական հուշումը"}
     </Button>}
     </div>
   );
@@ -226,6 +256,13 @@ export function UnitCard(props: {
   const { unit: u, value: a, onChange, revealed } = props;
   const tx = useTx();
   const language = useLang();
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (!focused) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setFocused(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focused]);
 
   const mcBlock = (q: MCQuestion, index: number) => {
     const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
@@ -421,7 +458,12 @@ export function UnitCard(props: {
       : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
 
   return (
-    <article className="question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
+    <article aria-label={focused ? (language === "hy" ? "Կենտրոնացված ուսուցում" : "Focused study") : undefined} className={cn("question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6", focused && "fixed inset-0 z-[100] overflow-y-auto overscroll-contain rounded-none border-0 bg-background px-4 pb-16 pt-4 shadow-none sm:px-8")}>
+      <div className="sticky top-0 z-10 flex justify-end bg-background/95 py-1 backdrop-blur-sm">
+        <button type="button" aria-pressed={focused} onClick={() => setFocused(v => !v)} className="min-h-10 rounded-xl border border-border bg-card px-4 text-sm font-semibold hover:bg-muted">
+          {focused ? (language === "hy" ? "Փակել կենտրոնացված տեսքը ✕" : language === "ru" ? "Закрыть режим фокуса ✕" : "Exit focus view ✕") : (language === "hy" ? "Կենտրոնացված տեսք" : language === "ru" ? "Режим фокуса" : "Focus view")}
+        </button>
+      </div>
       {props.header}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
