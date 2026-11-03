@@ -33,9 +33,10 @@ describe("Shtemarm Academy final design tokens",()=>{
     expect(css).toContain("user-high-contrast");
   });
   it("provides navigable content rather than hiding existing questions or features",()=>{
-    for(const value of ["academy-hero","academy-quick-action","academy-bento","id=\"subjects\"","id=\"exams\"","to=\"/mini-games\"","to=\"/assessment-builder\"","to=\"/math\"","to=\"/history\"","to=\"/subject/$subject\""]){
+    for(const value of ["academy-hero","academy-quick-action","academy-bento","id=\"subjects\"","id=\"exams\"","to=\"/mini-games\"","to=\"/math\"","to=\"/history\"","to=\"/subject/$subject\""]){
       expect(home).toContain(value);
     }
+    expect(home).not.toContain('to="/assessment-builder"');
     expect(home).toContain("PHYSICS_BOOKS.map");
     expect(home).toContain("BIO_BOOKS.filter");
     expect(home).toContain("HISTORY_BOOKS.map");

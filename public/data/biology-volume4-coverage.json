@@ -5,43 +5,8 @@
   "chapters": [
     {
       "id": 1,
-      "imported": 176,
+      "imported": 183,
       "excluded": [
-        {
-          "n": 6,
-          "page": 6,
-          "reason": "figure-review"
-        },
-        {
-          "n": 22,
-          "page": 8,
-          "reason": "figure-review"
-        },
-        {
-          "n": 38,
-          "page": 10,
-          "reason": "figure-review"
-        },
-        {
-          "n": 64,
-          "page": 14,
-          "reason": "figure-review"
-        },
-        {
-          "n": 98,
-          "page": 18,
-          "reason": "incomplete-text"
-        },
-        {
-          "n": 151,
-          "page": 26,
-          "reason": "figure-review"
-        },
-        {
-          "n": 165,
-          "page": 28,
-          "reason": "figure-review"
-        },
         {
           "n": 184,
           "reason": "answer-type-pending"
@@ -242,53 +207,8 @@
     },
     {
       "id": 2,
-      "imported": 133,
+      "imported": 142,
       "excluded": [
-        {
-          "n": 14,
-          "page": 46,
-          "reason": "figure-review"
-        },
-        {
-          "n": 28,
-          "page": 48,
-          "reason": "figure-review"
-        },
-        {
-          "n": 56,
-          "page": 52,
-          "reason": "figure-review"
-        },
-        {
-          "n": 71,
-          "page": 54,
-          "reason": "figure-review"
-        },
-        {
-          "n": 116,
-          "page": 60,
-          "reason": "formula-review"
-        },
-        {
-          "n": 121,
-          "page": 61,
-          "reason": "formula-review"
-        },
-        {
-          "n": 129,
-          "page": 62,
-          "reason": "formula-review"
-        },
-        {
-          "n": 134,
-          "page": 63,
-          "reason": "formula-review"
-        },
-        {
-          "n": 138,
-          "page": 63,
-          "reason": "formula-review"
-        },
         {
           "n": 143,
           "reason": "answer-type-pending"
@@ -925,33 +845,8 @@
     },
     {
       "id": 3,
-      "imported": 182,
+      "imported": 187,
       "excluded": [
-        {
-          "n": 30,
-          "page": 120,
-          "reason": "figure-review"
-        },
-        {
-          "n": 90,
-          "page": 128,
-          "reason": "figure-review"
-        },
-        {
-          "n": 143,
-          "page": 135,
-          "reason": "figure-review"
-        },
-        {
-          "n": 166,
-          "page": 138,
-          "reason": "formula-review"
-        },
-        {
-          "n": 179,
-          "page": 140,
-          "reason": "formula-review"
-        },
         {
           "n": 188,
           "reason": "answer-type-pending"
@@ -1412,63 +1307,8 @@
     },
     {
       "id": 4,
-      "imported": 158,
+      "imported": 169,
       "excluded": [
-        {
-          "n": 1,
-          "page": 184,
-          "reason": "formula-review"
-        },
-        {
-          "n": 7,
-          "page": 185,
-          "reason": "formula-review"
-        },
-        {
-          "n": 10,
-          "page": 185,
-          "reason": "formula-review"
-        },
-        {
-          "n": 13,
-          "page": 186,
-          "reason": "figure-review"
-        },
-        {
-          "n": 26,
-          "page": 188,
-          "reason": "figure-review"
-        },
-        {
-          "n": 32,
-          "page": 188,
-          "reason": "incomplete-text"
-        },
-        {
-          "n": 39,
-          "page": 190,
-          "reason": "figure-review"
-        },
-        {
-          "n": 80,
-          "page": 196,
-          "reason": "figure-review"
-        },
-        {
-          "n": 140,
-          "page": 206,
-          "reason": "figure-review"
-        },
-        {
-          "n": 153,
-          "page": 208,
-          "reason": "figure-review"
-        },
-        {
-          "n": 167,
-          "page": 210,
-          "reason": "figure-review"
-        },
         {
           "n": 170,
           "reason": "answer-type-pending"
@@ -2149,23 +1989,8 @@
     },
     {
       "id": 5,
-      "imported": 128,
+      "imported": 131,
       "excluded": [
-        {
-          "n": 6,
-          "page": 270,
-          "reason": "figure-review"
-        },
-        {
-          "n": 20,
-          "page": 272,
-          "reason": "figure-review"
-        },
-        {
-          "n": 62,
-          "page": 278,
-          "reason": "formula-review"
-        },
         {
           "n": 132,
           "reason": "answer-type-pending"
@@ -3719,5 +3544,5 @@
       ]
     }
   ],
-  "importedQuestions": 777
+  "importedQuestions": 812
 }

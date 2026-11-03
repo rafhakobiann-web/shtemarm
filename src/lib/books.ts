@@ -1,3 +1,4 @@
+import { mergeBiologyExtended } from "./biology-extended";
 import { fetchBookResponse } from "./fetch-book-response";
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
@@ -81,8 +82,8 @@ export const HISTORY_BOOKS = [
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
   { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
-  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 1222 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
+  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 1035 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
 /** Original Armenian-language practice bank; official past-paper links are shown separately. */
@@ -182,6 +183,14 @@ export function loadBook(id: number): Promise<Book> {
             throw new Error(`Book ${id} has an invalid question-bank format`);
           }
           return data as Book;
+        })
+        .then(async (book: Book) => {
+          if (id !== 33 && id !== 34) return book;
+          const extra = await fetchBookResponse(`/data/biology-extended-book${id - 30}.json`, async (r) => {
+            if (!r.ok) throw new Error(`Biology supplement HTTP ${r.status}`);
+            return await r.json() as Book;
+          });
+          return mergeBiologyExtended(book, extra);
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
@@ -410,5 +419,3 @@ export function buildExam(book: Book, requestedBookId = book.id): ExamItem[] {
   }
   return ordered(book, selected);
 }
-
-

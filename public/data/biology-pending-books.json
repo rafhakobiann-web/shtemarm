@@ -9,7 +9,7 @@
       "id": 33,
       "part": 3,
       "status": "partial-source-text-transcription",
-      "verifiedQuestions": 1,
+      "verifiedQuestions": 35,
       "targetFile": "public/data/bio-book3.json",
       "originalPracticeQuestions": 36,
       "sourceIndex": "public/data/biology-book3-source-index.json",
@@ -18,23 +18,23 @@
       "sourcePageIndex": "public/data/biology-original-volume3-index.json",
       "sourceIndexedQuestions": 1837,
       "sourceChoiceAnswerKeys": 945,
-      "transcribedQuestions": 911,
+      "transcribedQuestions": 945,
       "coverageFile": "public/data/biology-volume3-coverage.json",
-      "remainingQuestions": 926,
+      "remainingQuestions": 892,
       "archivedAuthoredFile": "public/data/bio-authored-book3.json"
     },
     {
       "id": 34,
       "part": 4,
       "status": "partial-source-text-transcription",
-      "verifiedQuestions": 6,
+      "verifiedQuestions": 41,
       "targetFile": "public/data/bio-book4.json",
       "sourcePageIndex": "public/data/biology-original-volume4-index.json",
       "sourceIndexedQuestions": 1688,
       "sourceChoiceAnswerKeys": 812,
-      "transcribedQuestions": 777,
+      "transcribedQuestions": 812,
       "coverageFile": "public/data/biology-volume4-coverage.json",
-      "remainingQuestions": 911,
+      "remainingQuestions": 876,
       "sourceYear": 2018
     }
   ]

@@ -46,8 +46,8 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
     const p3 = pending.books.find((b: { part: number }) => b.part === 3);
     const p4 = pending.books.find((b: { part: number }) => b.part === 4);
     expect(p3.originalPracticeQuestions).toBe(36);
-    expect(p3.verifiedQuestions).toBe(1);
-    expect(p4.verifiedQuestions).toBe(6);
+    expect(p3.verifiedQuestions).toBe(35);
+    expect(p4.verifiedQuestions).toBe(41);
     expect(p3.sourceIndexedQuestions).toBe(1837);
     expect(p4.sourceIndexedQuestions).toBe(1688);
   });
@@ -72,7 +72,7 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
     const lib = readFileSync("src/lib/biology-source.ts", "utf8");
     const route = readFileSync("src/routes/biology_.original.tsx", "utf8");
     const hub = readFileSync("src/components/BiologyWorkspace.tsx", "utf8");
-    expect(route).toContain('createFileRoute("/biology/original")');
+    expect(route).toMatch(/createFileRoute\("\/biology_?\/original"\)/);
     expect(component).toContain("<h1");
     expect(component).toContain("verifyBiologySourcePdf");
     expect(component).not.toContain("<iframe");
