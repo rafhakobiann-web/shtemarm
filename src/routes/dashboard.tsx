@@ -350,7 +350,7 @@ function Index() {
         </span>
         <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" />
       </Link>
-      <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-3">
+      <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
           <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
