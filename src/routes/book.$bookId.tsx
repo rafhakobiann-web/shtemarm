@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2 } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
@@ -6,6 +7,19 @@ import { LoadError } from "@/components/LoadError";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
+
+type ArmenianSourceIndex = {
+  volumes: { volume: number; sections: { number: number; pdfPage: number; lastPdfPage: number }[] }[];
+};
+
+async function loadArmenianSourceIndex(): Promise<ArmenianSourceIndex> {
+  const response = await fetch("/data/armenian-source-index.json");
+  if (!response.ok) throw new Error("Armenian source section index is unavailable");
+  const index: unknown = await response.json();
+  if (!index || typeof index !== "object" || !("volumes" in index) ||
+      !Array.isArray(index.volumes)) throw new Error("Invalid Armenian source section index");
+  return index as ArmenianSourceIndex;
+}
 
 export const Route = createFileRoute("/book/$bookId")({
   beforeLoad: ({ params }) => {
@@ -30,6 +44,14 @@ function BookPage() {
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
   const { data: book, isLoading, error, refetch } = useBook(id);
   const p = useProgress();
+  const isArmenianBook = id >= 41 && id <= 44;
+  const sourceIndex = useQuery({
+    queryKey: ["armenian-source-toc"],
+    queryFn: loadArmenianSourceIndex,
+    enabled: isArmenianBook,
+    staleTime: Infinity,
+  });
+  const printedVolume = sourceIndex.data?.volumes.find((volume) => volume.volume === id - 40);
 
   return (
     <div className="space-y-8">
@@ -96,6 +118,16 @@ function BookPage() {
         </div>
       </div>
 
+      {isArmenianBook && (
+        <p role="note" className="rounded-xl border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+          {lang === "en"
+            ? "The eight headings below follow the 2018 original volume. Questions currently available here are Shtemarm-authored practice, not digitized official tasks. Source page ranges are references only; no PDF upload is required."
+            : lang === "ru"
+              ? "Восемь разделов соответствуют сборнику 2018 года. Доступные задания — авторские упражнения Shtemarm, а не оцифрованные официальные вопросы. Страницы оригинала указаны для справки; загружать PDF не нужно."
+              : "Ստորև ներկայացված 8 բաժինները համապատասխանում են 2018 թ. բնօրինակ շտեմարանին։ Առկա հարցերը Shtemarm-ի հեղինակային վարժանքներ են, ոչ թե պաշտոնական առաջադրանքների թվայնացումներ։ Բնօրինակի էջերը նշված են որպես հղում․ PDF վերբեռնել պետք չէ։"}
+        </p>
+      )}
+
       {error && !book ? (
         <LoadError onRetry={() => refetch()} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
@@ -103,6 +135,7 @@ function BookPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {book.sections.map((s) => {
+            const printedSection = printedVolume?.sections.find((section) => section.number === s.n);
             const ids = s.units.flatMap((u) => ("questions" in u ? u.questions.map((q) => `${u.id}:${q.n}`) : [u.id]));
             const hasQuestions = ids.length > 0;
             const done = ids.filter((k) => k in p.answers).length;
@@ -114,6 +147,11 @@ function BookPage() {
                   <div className="min-w-0">
                     <h2 className="text-base font-bold">{secTitle(s)}</h2>
                     <p className="text-sm leading-snug text-muted-foreground">{s.instr_hy || KIND_HY[s.units[0]?.kind ?? "mc"]}</p>
+                    {printedSection && (
+                      <p className="mt-1 text-xs font-medium text-muted-foreground">
+                        {lang === "en" ? "Original PDF pages" : lang === "ru" ? "Страницы оригинала" : "Բնօրինակի էջեր"}: {printedSection.pdfPage}–{printedSection.lastPdfPage}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted">
