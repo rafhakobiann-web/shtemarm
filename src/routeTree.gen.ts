@@ -32,7 +32,9 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
+import { Route as AdminExplanationsRouteImport } from './routes/admin.explanations'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
+import { Route as BiologyOriginalRouteImport } from './routes/biology_.original'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
 import { Route as ExamSubjectRouteImport } from './routes/exam.$subject'
 import { Route as LevelTestLevelRouteImport } from './routes/level-test.$level'
@@ -161,9 +163,19 @@ const VocabularyRoute = VocabularyRouteImport.update({
   path: '/vocabulary',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminExplanationsRoute = AdminExplanationsRouteImport.update({
+  id: '/admin/explanations',
+  path: '/admin/explanations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
   id: '/admin/feedback',
   path: '/admin/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BiologyOriginalRoute = BiologyOriginalRouteImport.update({
+  id: '/biology_/original',
+  path: '/biology/original',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookBookIdRoute = BookBookIdRouteImport.update({
@@ -251,7 +263,9 @@ export interface FileRoutesByFullPath {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/biology/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
@@ -289,7 +303,9 @@ export interface FileRoutesByTo {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/biology/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
@@ -328,7 +344,9 @@ export interface FileRoutesById {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/biology_/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
   '/level-test/$level': typeof LevelTestLevelRoute
@@ -368,7 +386,9 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/admin/explanations'
     | '/admin/feedback'
+    | '/biology/original'
     | '/book/$bookId'
     | '/exam/$subject'
     | '/level-test/$level'
@@ -406,7 +426,9 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/admin/explanations'
     | '/admin/feedback'
+    | '/biology/original'
     | '/book/$bookId'
     | '/exam/$subject'
     | '/level-test/$level'
@@ -444,7 +466,9 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/admin/explanations'
     | '/admin/feedback'
+    | '/biology_/original'
     | '/book/$bookId'
     | '/exam/$subject'
     | '/level-test/$level'
@@ -483,7 +507,9 @@ export interface RootRouteChildren {
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
   VocabularyRoute: typeof VocabularyRoute
+  AdminExplanationsRoute: typeof AdminExplanationsRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
+  BiologyOriginalRoute: typeof BiologyOriginalRoute
   BookBookIdRoute: typeof BookBookIdRoute
   ExamSubjectRoute: typeof ExamSubjectRoute
   LevelTestLevelRoute: typeof LevelTestLevelRoute
@@ -661,11 +687,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VocabularyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/explanations': {
+      id: '/admin/explanations'
+      path: '/admin/explanations'
+      fullPath: '/admin/explanations'
+      preLoaderRoute: typeof AdminExplanationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/feedback': {
       id: '/admin/feedback'
       path: '/admin/feedback'
       fullPath: '/admin/feedback'
       preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/biology_/original': {
+      id: '/biology_/original'
+      path: '/biology/original'
+      fullPath: '/biology/original'
+      preLoaderRoute: typeof BiologyOriginalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book/$bookId': {
@@ -779,7 +819,9 @@ const rootRouteChildren: RootRouteChildren = {
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
   VocabularyRoute: VocabularyRoute,
+  AdminExplanationsRoute: AdminExplanationsRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
+  BiologyOriginalRoute: BiologyOriginalRoute,
   BookBookIdRoute: BookBookIdRoute,
   ExamSubjectRoute: ExamSubjectRoute,
   LevelTestLevelRoute: LevelTestLevelRoute,
