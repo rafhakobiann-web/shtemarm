@@ -1,4 +1,15 @@
-# Shtemarm sign-in repair: Google OAuth and session validation (Draft)
+# Shtemarm sign-in repair: Google OAuth, runtime configuration and session validation (Draft)
+
+## Screenshot diagnosis — Lovable hosting
+
+The screenshot of `shtemarm.lovable.app` shows the site's fallback **“Մուտքը ժամանակավորապես անհասանելի է”**, which is rendered when `hasSupabaseConfig()` returns false, **before** password or Google sign-in is attempted.
+
+Read-only investigation of the user's Lovable project confirmed that its Supabase-backed cloud database is **enabled**, but the project source exposes an `.env.example` and no `.env` file. This can mean the browser build lacks `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`, even if the server runtime supplies public Supabase credentials.
+
+The patch now attempts `GET /api/public-auth-config` from the **same origin** when build-time public config is missing. Its TanStack Start server route only returns a validated HTTPS Supabase URL and a **publishable / role=anon** key (both are public connection parameters). Service-role keys, `sb_secret_*`, and invalid keys are not returned. The browser checks these values before initializing the shared Supabase client and presents sign-in only after configuration succeeds. If runtime public settings are also unavailable, the guest-learning fallback remains with a retry button.
+
+**The new endpoint requires a working TanStack Start server runtime.** If Lovable's publish target does not serve server routes, or if the backend does not expose public Supabase URL and publishable/anon key under supported server variables, the owner must configure the two public `VITE_*` variables for the build. This patch cannot manufacture a missing backend credential or Google provider.
+
 
 This patch fixes two incorrect assumptions in the account page:
 
