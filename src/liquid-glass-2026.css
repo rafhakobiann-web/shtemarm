@@ -453,3 +453,46 @@ html.user-reduced-motion[data-surface="liquid"] :is(.sht-landing *, .sht-landing
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+/* High contrast must win over normal Liquid Glass tokens and color overrides. */
+html.user-high-contrast[data-surface="liquid"] {
+  --background: #fff;
+  --foreground: #111;
+  --card: #fff;
+  --card-foreground: #111;
+  --popover: #fff;
+  --popover-foreground: #111;
+  --primary: #172c96;
+  --primary-foreground: #fff;
+  --muted: #eee;
+  --muted-foreground: #333;
+  --border: #555;
+  --input: #555;
+  --ring: #162f9c;
+}
+html.dark.user-high-contrast[data-surface="liquid"] {
+  --background: #000;
+  --foreground: #fff;
+  --card: #090909;
+  --card-foreground: #fff;
+  --popover: #090909;
+  --popover-foreground: #fff;
+  --primary: #dce3ff;
+  --primary-foreground: #070d27;
+  --muted: #1d1d1d;
+  --muted-foreground: #eee;
+  --border: #bdbdbd;
+  --input: #bdbdbd;
+  --ring: #fff;
+}
+html.user-high-contrast[data-surface="liquid"] body {
+  background: var(--background);
+}
+html.user-high-contrast[data-surface="liquid"] :is(.sht-feature, .sht-subject-card, .sht-step,
+  .sht-faq-item, .sht-landing-nav, .sht-preview, .sht-info-band span, .sht-button-secondary) {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
