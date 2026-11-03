@@ -5,9 +5,11 @@ import { MathContent } from "@/components/MathText";
 import { UnitCard, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import { matchGrammarTopic } from "@/lib/grammarHandbook";
 import { useLang } from "@/lib/lang";
+import { useProgress } from "@/lib/progress";
+import { LEGACY_MISTAKES_CHANGED, legacyMistakeStatus, markRecoveredMastered, removeRecoveredMistake, ignoreRecoveredMathMistake, recoverHistoricalBookMistakes, recoverHistoricalMathMistakes, type RecoveredMistake } from "@/lib/legacyMistakeRecovery";
 import { getMistakes, markMistakeMastered, removeMistake, type Mistake } from "@/lib/mistakeNotebook";
 import { getMathMistakes, markMathMistakeMastered, removeMathMistake, MATH_MISTAKES_CHANGED, type MathMistake } from "@/lib/mathMistakes";
-import { getUnitMistakes, markUnitMistakeMastered, removeUnitMistake, UNIT_MISTAKES_CHANGED, type UnitMistake } from "@/lib/unitMistakes";
+import { getUnitMistakes, isUnitRetryCorrect, markUnitMistakeMastered, removeUnitMistake, UNIT_MISTAKES_CHANGED, type UnitMistake } from "@/lib/unitMistakes";
 
 export const Route = createFileRoute("/mistakes")({
   staticData: { sitemap: false },
@@ -17,7 +19,8 @@ export const Route = createFileRoute("/mistakes")({
 type Entry =
   | { kind: "level"; key: string; subject: string; section: string; mastered: boolean; attempts: number; updatedAt: number; item: Mistake }
   | { kind: "math"; key: string; subject: string; section: string; mastered: boolean; attempts: number; updatedAt: number; item: MathMistake }
-  | { kind: "unit"; key: string; subject: string; section: string; mastered: boolean; attempts: number; updatedAt: number; item: UnitMistake };
+  | { kind: "unit"; key: string; subject: string; section: string; mastered: boolean; attempts: number; updatedAt: number; item: UnitMistake }
+  | { kind: "historical"; key: string; subject: string; section: string; mastered: boolean; attempts: number; updatedAt: number; item: RecoveredMistake };
 
 function subjectKey(value: string) {
   const s = value.toLowerCase();
@@ -30,7 +33,9 @@ function subjectKey(value: string) {
   return value;
 }
 
-function getAllEntries(): Entry[] {
+function getAllEntries(recovered: RecoveredMistake[]): Entry[] {
+  const storedUnits = getUnitMistakes();
+  const current = new Set(storedUnits.map(item => item.subject + ":" + item.id));
   return [
     ...getMistakes().map((item): Entry => ({
       kind: "level", key: "level:" + item.subject + ":" + item.id,
@@ -42,10 +47,17 @@ function getAllEntries(): Entry[] {
       section: (item.book.endsWith("1") ? "1" : "2") + " · " + item.chapter + "." + item.section,
       mastered: item.mastered, attempts: item.attempts, updatedAt: item.lastWrong, item,
     })),
-    ...getUnitMistakes().map((item): Entry => ({
+    ...storedUnits.map((item): Entry => ({
       kind: "unit", key: "unit:" + item.subject + ":" + item.id,
       subject: subjectKey(item.subject), section: item.section,
       mastered: item.mastered, attempts: item.attempts, updatedAt: item.updatedAt, item,
+    })),
+    ...recovered.filter(item => !current.has(item.subject + ":" + item.id) &&
+      legacyMistakeStatus(item.key) !== "removed").map((item): Entry => ({
+      kind: "historical", key: "historical:" + item.key,
+      subject: subjectKey(item.subject), section: item.section,
+      mastered: legacyMistakeStatus(item.key) === "mastered",
+      attempts: 1, updatedAt: item.updatedAt, item,
     })),
   ].sort((a, b) => a.updatedAt - b.updatedAt);
 }
@@ -61,7 +73,8 @@ const WORDS = {
     attempts:"սխալ փորձ", remove:"Հեռացնել", removeConfirm:"Հեռացնե՞լ այս սխալը տետրից։",
     noText:"Հարցի տեքստը դեռ հասանելի չէ։ Բացիր համապատասխան շտեմարանի բաժինը։",
     type:"Գրիր պատասխանը", grammar:"Վերուսումնասիրել քերականական կանոնը", math:"Բացել մաթեմատիկայի բաժինը",
-    local:"Այս էջը միավորում է այս սարքում արդեն պահպանված սխալները։ Նախկինում չգրանցված կամ այլ սարքի սխալները ինքնաբերաբար չեն հայտնվի։",
+    local:"Վերականգնում ենք նաև նախկին առաջընթացում սխալ նշված հարցերը՝ այս դիտարկչից և, մուտք գործած լինելու դեպքում, համաժամեցված հաշվից։ Հին գրառումը կարող է չունենալ ընտրված պատասխանը, իսկ չպահպանված կամ միանշանակ չճանաչվող փորձերը վերականգնել հնարավոր չէ։",
+    loadingHistory:"Ստուգվում են նախկին արդյունքներն ու շտեմարանները…",
   },
   en: {
     title:"My mistakes",subtitle:"Review all saved mistakes in one place, one question at a time, until you get them right.",
@@ -73,7 +86,8 @@ const WORDS = {
     attempts:"wrong attempts",remove:"Remove",removeConfirm:"Remove this mistake from the notebook?",
     noText:"The question text is unavailable. Open the corresponding book section.",
     type:"Enter your answer",grammar:"Relearn grammar rule",math:"Open mathematics section",
-    local:"This page combines mistakes already saved on this device. Older unrecorded mistakes or mistakes from another device cannot be recovered automatically.",
+    local:"Earlier wrong-result records are also restored from this browser and synced account progress when available. Old entries may lack the selected answer; erased or ambiguous attempts cannot be reconstructed.",
+    loadingHistory:"Checking earlier results and question books…",
   },
   ru: {
     title:"Мои ошибки",subtitle:"Все сохранённые ошибки в одном месте. Исправляйте их по очереди до правильного ответа.",
@@ -85,7 +99,8 @@ const WORDS = {
     attempts:"ошибочных попыток",remove:"Удалить",removeConfirm:"Удалить эту ошибку из тетради?",
     noText:"Текст задания недоступен. Откройте соответствующий раздел сборника.",
     type:"Введите ответ",grammar:"Повторить правило",math:"Открыть раздел математики",
-    local:"Здесь собраны ошибки, уже сохранённые на этом устройстве. Старые незаписанные ошибки и ошибки с другого устройства автоматически не появятся.",
+    local:"Также восстанавливаются старые неверные результаты из браузера и синхронизированного прогресса аккаунта. Выбранный вариант может отсутствовать; удалённые или неоднозначные попытки восстановить нельзя.",
+    loadingHistory:"Проверяем прошлые результаты и сборники…",
   },
 } as const;
 
@@ -114,7 +129,8 @@ function preview(entry: Entry) {
 
 function removeEntry(entry: Entry) {
   if (entry.kind === "level") removeMistake(entry.item.id, entry.item.subject);
-  else if (entry.kind === "math") removeMathMistake(entry.item.id);
+  else if (entry.kind === "math") { ignoreRecoveredMathMistake(entry.item.id); removeMathMistake(entry.item.id); }
+  else if (entry.kind === "historical") removeRecoveredMistake(entry.item.key);
   else removeUnitMistake(entry.item.id, entry.item.subject);
 }
 
@@ -139,7 +155,12 @@ function ReviewQuestion({ entry, onSolved }: { entry: Entry; onSolved: () => voi
       correct = markMathMistakeMastered(entry.item.id, answer);
     } else {
       if (!isAnswered(entry.item.unit, unitAnswer)) return;
-      correct = markUnitMistakeMastered(entry.item.id, entry.item.subject, unitAnswer!);
+      if (entry.kind === "historical") {
+        correct = isUnitRetryCorrect(entry.item.unit, unitAnswer!);
+        if (correct) markRecoveredMastered(entry.item.key);
+      } else {
+        correct = markUnitMistakeMastered(entry.item.id, entry.item.subject, unitAnswer!);
+      }
     }
     setIncorrect(!correct);
     if (correct) onSolved();
@@ -157,7 +178,7 @@ function ReviewQuestion({ entry, onSolved }: { entry: Entry; onSolved: () => voi
       <span className="font-bold text-primary">{labelSubject(entry.subject,lang)} · {entry.section}</span>
       <span className="text-muted-foreground">{entry.attempts} {t.attempts}</span>
     </div>
-    {entry.kind === "unit"
+    {entry.kind === "unit" || entry.kind === "historical"
       ? <UnitCard key={entry.key} unit={entry.item.unit} instruction={labelSubject(entry.subject,lang)}
           value={unitAnswer} onChange={value => { setUnitAnswer(value); setIncorrect(false); }}
           revealed={() => false}/>
@@ -208,6 +229,9 @@ function ReviewQuestion({ entry, onSolved }: { entry: Entry; onSolved: () => voi
 function MistakesPage() {
   const lang = useLang();
   const t = WORDS[lang];
+  const progress = useProgress();
+  const [recovered, setRecovered] = useState<RecoveredMistake[]>([]);
+  const [recovering, setRecovering] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [subject, setSubject] = useState("all");
   const [status, setStatus] = useState<"pending" | "all" | "mastered">("pending");
@@ -215,12 +239,27 @@ function MistakesPage() {
   const [position, setPosition] = useState(0);
   const [solvedMessage, setSolvedMessage] = useState(false);
   useEffect(() => {
-    const refresh = () => setEntries(getAllEntries());
+    let active = true;
+    setRecovering(true);
+    const work = async () => {
+      const [oldBooks] = await Promise.all([
+        recoverHistoricalBookMistakes(progress.answers).catch(() => ({entries: [] as RecoveredMistake[], unavailable: 0})),
+        recoverHistoricalMathMistakes().catch(() => 0),
+      ]);
+      if (!active) return;
+      setRecovered(oldBooks.entries);
+      setRecovering(false);
+    };
+    void work();
+    return () => { active = false; };
+  }, [progress.answers]);
+  useEffect(() => {
+    const refresh = () => setEntries(getAllEntries(recovered));
     refresh();
-    const events = ["shtemarm:mistakes-changed", MATH_MISTAKES_CHANGED, UNIT_MISTAKES_CHANGED, "storage"];
+    const events = ["shtemarm:mistakes-changed", MATH_MISTAKES_CHANGED, UNIT_MISTAKES_CHANGED, LEGACY_MISTAKES_CHANGED, "storage"];
     events.forEach(event => window.addEventListener(event, refresh));
     return () => events.forEach(event => window.removeEventListener(event, refresh));
-  }, []);
+  }, [recovered]);
 
   const subjects = useMemo(() => [...new Set(entries.map(entry => entry.subject))].sort(), [entries]);
   const inSubject = useMemo(() => entries.filter(entry => subject === "all" || entry.subject === subject), [entries, subject]);
@@ -236,6 +275,7 @@ function MistakesPage() {
     <header className="space-y-4 rounded-3xl border bg-card p-5 sm:p-7">
       <div className="flex items-center gap-3"><span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><ListChecks className="size-6"/></span><h1 className="text-2xl font-black sm:text-3xl">{t.title}</h1></div>
       <p className="text-sm leading-relaxed text-muted-foreground">{t.subtitle}</p>
+      {recovering && <p role="status" className="flex items-center gap-2 text-sm text-primary"><RotateCcw className="size-4 animate-spin"/>{t.loadingHistory}</p>}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl bg-muted/50 p-3"><span className="block text-xs text-muted-foreground">{t.pending}</span><strong className="text-2xl tabular-nums">{totalPending}</strong></div>
         <div className="rounded-xl bg-muted/50 p-3"><span className="block text-xs text-muted-foreground">{t.mastered}</span><strong className="text-2xl tabular-nums">{totalMastered}</strong></div>
