@@ -5,12 +5,12 @@ import { useTx } from "@/lib/lang";
 
 /**
  * The five tabs have stable destinations; subjects/exams are real anchors
- * on the home screen. All other tabs use actual application routes.
+ * on the signed-in dashboard. All other tabs use actual application routes.
  */
 export const MOBILE_TAB_TARGETS = [
-  { id: "home", to: "/", hash: "" },
-  { id: "books", to: "/", hash: "subjects" },
-  { id: "exams", to: "/", hash: "exams" },
+  { id: "home", to: "/dashboard", hash: "" },
+  { id: "books", to: "/dashboard", hash: "subjects" },
+  { id: "exams", to: "/dashboard", hash: "exams" },
   { id: "games", to: "/mini-games", hash: "" },
   { id: "tools", to: "/study-tools", hash: "" },
 ] as const;
@@ -18,7 +18,7 @@ export const MOBILE_TAB_TARGETS = [
 export function getMobileNavIndex(pathname: string, hash = ""): number {
   const path = pathname.replace(/\/+$/, "") || "/";
   const anchor = hash.replace(/^#/, "");
-  if (path === "/") return anchor === "subjects" ? 1 : anchor === "exams" ? 2 : 0;
+  if (path === "/" || path === "/dashboard") return anchor === "subjects" ? 1 : anchor === "exams" ? 2 : 0;
   if (path === "/mini-games") return 3;
   if (
     path === "/study-tools" || path === "/flashcards" ||
@@ -43,7 +43,7 @@ export function MobileNav() {
   const tx = useTx();
   const { pathname, hash } = useLocation();
   const [homeVisible, setHomeVisible] = useState<0 | 1 | 2 | null>(null);
-  const selected = pathname === "/" && homeVisible !== null
+  const selected = (pathname === "/" || pathname === "/dashboard") && homeVisible !== null
     ? homeVisible : getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
   const lastY = useRef(0);
@@ -87,7 +87,7 @@ export function MobileNav() {
     let directionTravel = 0;
     let lastSectionY = lastY.current;
     const detectHomeSection = () => {
-      if (pathname !== "/") return;
+      if (pathname !== "/" && pathname !== "/dashboard") return;
       const subjects = document.getElementById("subjects");
       const exams = document.getElementById("exams");
       if (!subjects || !exams) return;
@@ -122,7 +122,7 @@ export function MobileNav() {
         lastY.current = nextY;
         // Reading multiple bounding rectangles on every frame can force
         // layout on long books. Sample section position every ~80px instead.
-        if (pathname === "/" && Math.abs(nextY - lastSectionY) >= 80) {
+        if ((pathname === "/" || pathname === "/dashboard") && Math.abs(nextY - lastSectionY) >= 80) {
           lastSectionY = nextY;
           detectHomeSection();
         }
@@ -144,7 +144,7 @@ export function MobileNav() {
   // Home-page hash targets always scroll to the actual catalogue/exams section.
   useEffect(() => {
     const anchor = hash?.replace(/^#/, "");
-    if (pathname !== "/" || (anchor !== "subjects" && anchor !== "exams")) return;
+    if ((pathname !== "/" && pathname !== "/dashboard") || (anchor !== "subjects" && anchor !== "exams")) return;
     const frame = window.requestAnimationFrame(() => {
       document.getElementById(anchor)?.scrollIntoView({
         behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
@@ -156,7 +156,7 @@ export function MobileNav() {
   }, [pathname, hash]);
 
   const onTabClick = (event: MouseEvent<HTMLAnchorElement>, index: number) => {
-    if (index === 0 && pathname === "/") {
+    if (index === 0 && (pathname === "/" || pathname === "/dashboard")) {
       // Home should take students to the top even from #subjects or #exams.
       // Clear the anchor using the actual router link, then scroll.
       window.scrollTo({
@@ -165,7 +165,7 @@ export function MobileNav() {
           ? "auto" : "smooth",
       });
     }
-    if (pathname === "/" && (index === 1 || index === 2)) {
+    if ((pathname === "/" || pathname === "/dashboard") && (index === 1 || index === 2)) {
       const anchor = index === 1 ? "subjects" : "exams";
       // Also works when tapping the currently selected tab again.
       if (hash.replace(/^#/, "") === anchor) {
