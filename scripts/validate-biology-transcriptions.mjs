@@ -34,20 +34,22 @@ for (const volume of [3, 4]) {
       // padding text merely to satisfy an arbitrary length threshold.
       // The exception is allowed only for a specifically page-and-key-checked
       // question from this exact source PDF.
-      if (question.stem.trim().length <= 10) {
-        const proof = reviewed.find(r =>
+      const proof = reviewed.find(r =>
           r.volume === volume && r.chapter === chapter.id &&
           r.number === number && r.page === expectedPage &&
           r.answer === question.answer && r.sourceSha256 === index.sourceSha256 &&
           r.wordingAndOptionsComparedToOriginal === true &&
           r.printedAnswerComparedToOriginal === true,
-        );
+      );
+      if (question.stem.trim().length <= 10) {
         assert(proof, `Short question without original-page proof: ${volume}:${chapter.id}:${number}`);
       }
       for (const text of [question.stem, ...Object.values(question.options)]) {
         assert(text.trim().length);
-        // U+00BB (») is a valid Armenian quotation mark, not legacy mojibake.
-        assert(!/\ufffd|www\.|atc\.am|[\u00b2-\u00ba\u00bc-\u00ff]/i.test(text));
+        // Reviewed scientific exponents ²/³ and Armenian quotation mark »
+        // are valid Unicode; keep rejecting legacy encoded Armenian glyphs.
+        if (/[²³]/.test(text)) assert(proof, `Exponent without original-page proof: ${unit.id}`);
+        assert(!/\ufffd|www\.|atc\.am|[\u00b4-\u00ba\u00bc-\u00ff]/i.test(text));
       }
     }
     assert.equal(report.imported, section?.units.length ?? 0);
