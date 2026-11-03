@@ -475,3 +475,19 @@ html.user-high-contrast[data-surface="liquid"] .sht-palette-panel {
   .sht-dashboard-bento .academy-bento:hover { transform: translateY(-2px); }
   .sht-palette-picker > summary:hover { border-color: var(--ring); }
 }
+
+/* Touch-sized accent choices: arrange the six swatches as 3 × 2 on phones. */
+@media (max-width: 480px) {
+  .sht-palette-colors,
+  html[data-surface="liquid"] .sht-palette-colors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
+    gap: .65rem;
+  }
+  .sht-palette-colors button,
+  html[data-surface="liquid"] .sht-palette-colors button {
+    width: 2.75rem;
+    min-height: 2.75rem;
+    aspect-ratio: 1;
+  }
+}
