@@ -2,7 +2,7 @@
   "subject": "Հայոց լեզու և հայ գրականություն",
   "guide": "https://escs.gov.am/api/assets/68a6827e-4608-4d90-9bc5-3304a692d0c5",
   "sourceArchive": "https://test.am/pdf.php?page=78",
-  "note": "Կայքում առկա 96 հարցանոց ներքին ուսումնական հավաքածուն չի փոխարինում ԳԹԿ-ի պաշտոնական շտեմարաններին։",
+  "note": "Կայքում առկա են 126 հեղինակային ուսումնական հարցեր (I մաս՝ 96, II–IV մասեր՝ 10-ական)։ Բնօրինակ PDF-ների 8 բաժինների վերնագրերն ու էջերը ստուգված են առանձին, բայց բնօրինակ առաջադրանքների ամբողջական թվայնացում դեռ չկա։",
   "currentPracticeFile": "public/data/armenian-book1.json",
   "officialDigitizedBooks": 0,
   "officialExam2027": {
@@ -16,5 +16,12 @@
       "tasks": 25,
       "points": 30
     }
-  }
+  },
+  "practiceQuestionCounts": {
+    "1": 96,
+    "2": 10,
+    "3": 10,
+    "4": 10
+  },
+  "sourceIndexFile": "public/data/armenian-source-index.json"
 }
