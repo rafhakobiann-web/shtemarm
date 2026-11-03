@@ -1,0 +1,32 @@
+name: Verify Armenian source contents and practice grading
+
+on:
+  pull_request:
+    paths:
+      - "public/data/armenian-*.json"
+      - "src/components/ArmenianOriginalContents.tsx"
+      - "src/routes/book.$bookId.tsx"
+      - "src/lib/books.ts"
+      - "src/test/armenian-*.test.ts"
+      - "scripts/verify-armenian-pdf-sources.py"
+      - ".github/workflows/verify-armenian-source-volumes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Validate 32 source headings, PDF page ranges and every existing practice answer
+        run: bunx vitest run src/test/armenian-source-index.test.ts src/test/armenian-bank-integrity.test.ts src/test/armenian-volumes.test.ts
+      - name: Build full website without deploying
+        run: bun run build
