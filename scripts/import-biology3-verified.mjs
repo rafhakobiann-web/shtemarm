@@ -38,11 +38,11 @@ function printedPage(ch, n) {
   return page;
 }
 function sourceNumber(unit) {
-  const n = (unit.kind === "mc" || unit.kind === "num")
+  const n = unit.kind === "mc"
     ? Number(unit.questions?.[0]?.n) : Number(unit.label);
   assert(Number.isInteger(n), "Imported unit is missing a printed question number: " + unit.id);
   if (unit.kind === "mc" || unit.kind === "num")
-    assert(unit.questions.length === 1, "Expected exactly one printed question: " + unit.id);
+    assert(unit.questions.length >= 1, "Expected a source-checked question: " + unit.id);
   return n;
 }
 function audit(book, coverage, index) {
@@ -83,6 +83,7 @@ function unitFromPatch(entry, ch) {
   const n = entry.number, payload = entry.payload;
   const id = "bio3-s" + entry.chapter + "-q" + n;
   const label = String(n);
+  const sourcePage = entry.sourcePage;
   assert(payload && typeof payload === "object", "Missing typed question payload");
   const passage = typeof payload.passage === "string" ? payload.passage : "";
   switch(entry.kind) {
@@ -90,24 +91,32 @@ function unitFromPatch(entry, ch) {
       assert(clean(payload.stem) && payload.options && typeof payload.options === "object", "Invalid multiple-choice question");
       assert(["1","2","3","4"].every(k => clean(payload.options[k], 1500)), "Question needs four nonempty options");
       assert(ch.choiceKeys.charAt(n - 1) === payload.answer && /^[1-4]$/.test(payload.answer), "Answer must match official choice key");
-      return { id, label, kind: "mc", passage, questions: [{ n: label, stem: payload.stem, options: Object.fromEntries(["1","2","3","4"].map(k=>[k,payload.options[k]])), answer: payload.answer }] };
+      return { id, label, sourcePage, kind: "mc", passage, questions: [{ n: label, stem: payload.stem, options: Object.fromEntries(["1","2","3","4"].map(k=>[k,payload.options[k]])), answer: payload.answer }] };
     }
     case "num": {
-      assert(clean(payload.stem) && clean(payload.answer, 120), "Invalid numeric question or answer");
-      return { id, label, kind: "num", passage, questions: [{n:label, stem:payload.stem, answer:payload.answer}] };
+      const questions = Array.isArray(payload.questions) ? payload.questions :
+        [{n:label,stem:payload.stem,answer:payload.answer}];
+      assert(questions.length > 0 && questions.length <= 20, "Invalid number of numeric subtasks");
+      const seen = new Set();
+      for (const q of questions) {
+        assert(clean(q.stem) && clean(q.answer, 120), "Invalid numeric subtask or answer");
+        assert(typeof q.n === "string" && (q.n === label || q.n.startsWith(label + ".")) && !seen.has(q.n), "Invalid or duplicate numeric subtask number");
+        seen.add(q.n);
+      }
+      return { id, label, sourcePage, kind: "num", passage, questions };
     }
     case "set":
     case "seq": {
       assert(clean(passage) && Array.isArray(payload.answer) && payload.answer.length <= 40 &&
         payload.answer.every(n=>Number.isInteger(n) && n >= 1 && n <= 100), "Invalid list/sequence task");
       if (entry.kind === "set") assert(new Set(payload.answer).size === payload.answer.length, "Repeated set answer");
-      return { id, label, kind: entry.kind, passage, answer: payload.answer, count: Math.max(1, payload.answer.length) };
+      return { id, label, sourcePage, kind: entry.kind, passage, answer: payload.answer, count: Math.max(1, payload.answer.length) };
     }
     case "match": {
       assert(clean(passage) && payload.answer && typeof payload.answer === "object" && !Array.isArray(payload.answer), "Invalid matching task");
       const items = Object.entries(payload.answer);
       assert(items.length > 0 && items.length <= 30 && items.every(([k,v])=>/^[A-Z]$/.test(k) && Number.isInteger(v) && v >= 1 && v <= 30), "Invalid matching answers");
-      return { id, label, kind: "match", passage, answer: payload.answer };
+      return { id, label, sourcePage, kind: "match", passage, answer: payload.answer };
     }
     default: throw new Error("Unsupported task type: " + entry.kind);
   }
