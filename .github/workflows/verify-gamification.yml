@@ -1,0 +1,24 @@
+name: Verify daily quests and achievements
+on:
+  pull_request:
+    paths:
+      - 'src/lib/gamification.ts'
+      - 'src/lib/progress.ts'
+      - 'src/lib/unitMistakes.ts'
+      - 'src/lib/mathMistakes.ts'
+      - 'src/lib/mistakeNotebook.ts'
+      - 'src/routes/achievements.tsx'
+      - 'src/test/gamification.test.ts'
+      - '.github/workflows/verify-gamification.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Gamification and notebook tests
+        run: bunx vitest run src/test/gamification.test.ts src/test/unit-mistakes.test.ts src/test/legacy-mistake-recovery.test.ts
+      - name: Website build
+        run: bun run build
