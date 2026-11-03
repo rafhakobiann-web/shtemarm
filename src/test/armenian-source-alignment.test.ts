@@ -193,5 +193,11 @@ describe("2018 Armenian language and literature source-aligned coverage", () => 
     expect(page).toContain('id >= 41 && id <= 44 ? "armenian" : "english"');
     expect(page).toContain("{hasQuestions && <div");
     expect(page).toContain("Այս բաժինը կա բնօրինակ շտեմարանում");
+    expect(page).toContain('fetch("/data/armenian-source-index.json")');
+    expect(page).toContain("printedSection.pdfPage");
+    expect(page).toContain("printedSection.lastPdfPage");
+    expect(page).toContain("Բնօրինակի էջեր");
+    expect(page).toContain("PDF վերբեռնել պետք չէ");
+    expect(page).not.toContain('type="file"');
   });
 });
