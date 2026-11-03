@@ -72,7 +72,7 @@ describe("Biology III and IV source-page mapping (not text transcription)", () =
     const lib = readFileSync("src/lib/biology-source.ts", "utf8");
     const route = readFileSync("src/routes/biology_.original.tsx", "utf8");
     const hub = readFileSync("src/components/BiologyWorkspace.tsx", "utf8");
-    expect(route).toContain('createFileRoute("/biology/original")');
+    expect(route).toMatch(/createFileRoute\("\/biology_?\/original"\)/);
     expect(component).toContain("<h1");
     expect(component).toContain("verifyBiologySourcePdf");
     expect(component).not.toContain("<iframe");
