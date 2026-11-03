@@ -1,3 +1,4 @@
+import { recordQuestActivity } from "@/lib/gamification";
 import { questionAnswerKey, type Unit } from "@/lib/books";
 import type { UnitAnswer } from "@/components/UnitCard";
 
@@ -130,6 +131,7 @@ export function markUnitMistakeMastered(id: string, subject: string, answer: Uni
   if (!found || !isUnitRetryCorrect(found.unit, answer)) return false;
   save(entries.map(entry => entry.id === id && entry.subject === subject
     ? { ...entry, mastered: true } : entry));
+  if (!found.mastered) recordQuestActivity(subject + ":" + id, "reviewed");
   return true;
 }
 
