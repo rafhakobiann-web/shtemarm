@@ -6,7 +6,7 @@ import { isPublicAuthConfig } from "@/lib/public-auth-config";
  * Supabase connection details only at server runtime, not through VITE_*.
  *
  * This returns ONLY a publishable or verified anon key. Service-role keys,
- * sb_secret_* keys and arbitrary credentials are never returned.
+ * private tokens and arbitrary credentials are never returned.
  */
 export const Route = createFileRoute("/api/public-auth-config")({
   server: {
