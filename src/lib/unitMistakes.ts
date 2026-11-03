@@ -107,7 +107,9 @@ export function recordUnitMistakes(subject: string, units: Unit[], answers: Reco
         if (!chosen?.trim() || !question.answer?.trim()) continue;
         const id = unit.id + ":" + key;
         // Use the original printed number in the single-question snapshot.
-        const one: Unit = { ...unit, id, questions: [question] };
+        const one: Unit = unit.kind === "mc"
+          ? { ...unit, id, questions: [unit.questions[i]!] }
+          : { ...unit, id, questions: [unit.questions[i]!] };
         consider({ id, subject, section: unit.label, unit: one, chosen: { mc: { [question.n]: chosen } } });
       }
     } else {
@@ -133,4 +135,18 @@ export function markUnitMistakeMastered(id: string, subject: string, answer: Uni
 
 export function removeUnitMistake(id: string, subject: string) {
   save(getUnitMistakes().filter(entry => entry.id !== id || entry.subject !== subject));
+}
+
+/** Stable subject IDs across translations and the different textbook routes. */
+export function subjectForBookId(bookId: number | string): string {
+  const id = Number(bookId);
+  if ([1, 2, 3].includes(id)) return "english";
+  if (id >= 21 && id <= 23) return "history";
+  if (id >= 31 && id <= 34) return "biology";
+  if (id === 41) return "armenian";
+  if (id === 51 || id === 61 || id === 62) return "physics";
+  if (id === 52) return "chemistry";
+  if (id === 53) return "geography";
+  if (id === 54) return "russian";
+  return "book-" + String(bookId);
 }
