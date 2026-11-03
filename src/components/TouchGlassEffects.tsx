@@ -21,6 +21,7 @@ export function TouchGlassEffects() {
     let pressed: HTMLElement | null = null;
     let pressedPointer: number | null = null;
     let frame = 0;
+    let hoverBounds: DOMRect | null = null;
     let x = 50;
     let y = 50;
 
@@ -37,6 +38,7 @@ export function TouchGlassEffects() {
       frame = 0;
       glowing?.removeAttribute("data-touch-glow");
       glowing = null;
+      hoverBounds = null;
     };
     const clearPress = () => {
       pressed?.removeAttribute("data-motion-pressed");
@@ -59,11 +61,15 @@ export function TouchGlassEffects() {
       if (target !== glowing) {
         clearGlow();
         glowing = target;
-        if (glowing) glowing.dataset.touchGlow = "true";
+        if (glowing) {
+          glowing.dataset.touchGlow = "true";
+          hoverBounds = glowing.getBoundingClientRect();
+        }
       }
       if (!glowing) return;
-      const rect = glowing.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
+      // Cache bounds until the pointer leaves or the page scrolls/resizes.
+      const rect = hoverBounds;
+      if (!rect || !rect.width || !rect.height) return;
       x = Math.max(0, Math.min(100, 100 * (event.clientX - rect.left) / rect.width));
       y = Math.max(0, Math.min(100, 100 * (event.clientY - rect.top) / rect.height));
       if (!frame) frame = requestAnimationFrame(paint);
@@ -94,6 +100,7 @@ export function TouchGlassEffects() {
     document.addEventListener("pointerup", onUp, { passive: true });
     document.addEventListener("pointercancel", onUp, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     window.addEventListener("blur", onBlur);
     return () => {
       document.removeEventListener("pointermove", onMove);
@@ -101,6 +108,7 @@ export function TouchGlassEffects() {
       document.removeEventListener("pointerup", onUp);
       document.removeEventListener("pointercancel", onUp);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       window.removeEventListener("blur", onBlur);
       onBlur();
     };
