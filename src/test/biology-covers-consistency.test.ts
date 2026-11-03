@@ -13,7 +13,7 @@ describe("Biology I–IV cover artwork is consistent", () => {
     for (const book of BIO_BOOKS) {
       expect(existsSync(`public${book.cover}`), book.cover).toBe(true);
     }
-    const catalog = read("src/routes/index.tsx");
+    const catalog = read("src/routes/dashboard.tsx");
     expect(catalog).toContain('cover: "/covers/bio-3.svg"');
     expect(catalog).toContain('cover: "/covers/bio-4.svg"');
     expect(catalog).not.toMatch(/bio-[34]\.webp/);
