@@ -183,10 +183,10 @@ export function PersonalizationControls() {
                 <h4 className="flex items-center gap-2 text-sm font-bold">
                   <Droplets className="size-4 text-primary" />{t.glassStrength}
                 </h4>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {(["adaptive", "subtle", "balanced", "vivid"] as GlassIntensity[]).map((glass) => (
                     <Button type="button" key={glass} size="sm"
-                      className="min-w-0 px-1 text-[11px]"
+                      className="min-h-11 min-w-0 px-1 text-[11px]"
                       variant={appearance.glass === glass ? "default" : "outline"}
                       aria-pressed={appearance.glass === glass}
                       onClick={() => setAppearance({ glass })}>{t[glass]}</Button>
