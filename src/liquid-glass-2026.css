@@ -1,0 +1,455 @@
+/*
+ * Shtemarm Liquid Glass 2.0 — progressive enhancement.
+ * Keeps classic/soft appearance modes untouched, respects accessibility
+ * preferences, and never changes auth, route behavior or question content.
+ */
+html[data-surface="liquid"] {
+  --radius: 1.5rem;
+  --background: #f0f4ff;
+  --foreground: #15203e;
+  --card: #fbfdff;
+  --card-foreground: #15203e;
+  --popover: #f8faff;
+  --popover-foreground: #15203e;
+  --primary: #4458dc;
+  --primary-foreground: #fff;
+  --secondary: #e6eaff;
+  --secondary-foreground: #273b86;
+  --muted: #e7ecfa;
+  --muted-foreground: #4b5c78;
+  --accent: #e0eaff;
+  --accent-foreground: #253c85;
+  --border: #bfcce4;
+  --input: #abbad6;
+  --ring: #4158e2;
+  --sky: #80c3fa;
+  --sun: #ffc878;
+  --ink: #15203e;
+  --lg-surface: rgb(255 255 255 / 68%);
+  --lg-surface-strong: rgb(255 255 255 / 82%);
+  --lg-line: rgb(255 255 255 / 88%);
+  --lg-inner-line: rgb(255 255 255 / 92%);
+  --lg-depth: rgb(35 52 122 / 19%);
+  --lg-glow: rgb(115 136 255 / 18%);
+  --lg-blur: 20px;
+  --liquid-fill: var(--lg-surface);
+  --liquid-stroke: var(--lg-line);
+  --liquid-shine: var(--lg-inner-line);
+  --liquid-depth: var(--lg-depth);
+  --glass-fill: var(--lg-surface);
+  --glass-border: var(--lg-line);
+  --shadow-card: 0 26px 58px -37px var(--lg-depth), 0 9px 26px -17px rgb(30 48 105 / 15%);
+  --shadow-pop: 0 16px 35px -22px var(--lg-depth);
+  --gradient-hero: linear-gradient(125deg, #1d2c68 2%, #414eae 47%, #587dce 100%);
+  color-scheme: light;
+}
+html.dark[data-surface="liquid"] {
+  --background: #0a1124;
+  --foreground: #f0f4ff;
+  --card: #1b2645;
+  --card-foreground: #f0f4ff;
+  --popover: #202b4e;
+  --popover-foreground: #f0f4ff;
+  --primary: #afbefd;
+  --primary-foreground: #121c39;
+  --secondary: #25345b;
+  --secondary-foreground: #ebefff;
+  --muted: #24314f;
+  --muted-foreground: #bfcae3;
+  --accent: #29375b;
+  --accent-foreground: #eff2ff;
+  --border: #506080;
+  --input: #607092;
+  --ring: #c0caff;
+  --ink: #f0f4ff;
+  --lg-surface: rgb(24 34 67 / 70%);
+  --lg-surface-strong: rgb(32 44 79 / 86%);
+  --lg-line: rgb(208 222 255 / 26%);
+  --lg-inner-line: rgb(250 252 255 / 23%);
+  --lg-depth: rgb(0 4 26 / 61%);
+  --lg-glow: rgb(98 107 242 / 26%);
+  --gradient-hero: linear-gradient(125deg, #101f4b, #34337c 50%, #1f5e88);
+  color-scheme: dark;
+}
+html[data-surface="liquid"][data-glass="subtle"] {
+  --lg-surface: rgb(255 255 255 / 89%);
+  --lg-surface-strong: rgb(255 255 255 / 95%);
+  --lg-blur: 9px;
+}
+html.dark[data-surface="liquid"][data-glass="subtle"] {
+  --lg-surface: rgb(28 39 69 / 92%);
+  --lg-surface-strong: rgb(32 45 78 / 97%);
+}
+html[data-surface="liquid"][data-glass="vivid"] {
+  --lg-surface: rgb(255 255 255 / 58%);
+  --lg-surface-strong: rgb(255 255 255 / 73%);
+  --lg-blur: 24px;
+}
+html.dark[data-surface="liquid"][data-glass="vivid"] {
+  --lg-surface: rgb(24 33 65 / 61%);
+  --lg-surface-strong: rgb(32 44 79 / 78%);
+}
+html[data-surface="liquid"] body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 65rem 43rem at -12% -7%, rgb(138 171 255 / 35%), transparent 70%),
+    radial-gradient(ellipse 52rem 40rem at 106% 7%, rgb(181 152 255 / 23%), transparent 68%),
+    radial-gradient(ellipse 60rem 46rem at 42% 85%, rgb(91 203 236 / 15%), transparent 71%),
+    linear-gradient(150deg, var(--background), color-mix(in srgb, var(--background) 92%, #b1bbff));
+  background-attachment: scroll;
+}
+html.dark[data-surface="liquid"] body {
+  background-image:
+    radial-gradient(ellipse 62rem 42rem at -8% -9%, rgb(49 87 173 / 29%), transparent 71%),
+    radial-gradient(ellipse 52rem 44rem at 110% 14%, rgb(101 70 157 / 30%), transparent 68%),
+    radial-gradient(ellipse 56rem 38rem at 42% 85%, rgb(27 124 146 / 18%), transparent 71%),
+    linear-gradient(150deg, #090f20, #101b31 62%, #0b1226);
+}
+html[data-surface="liquid"] :is(.glass, .bg-card, .bg-popover, .site-header, .site-settings-sheet) {
+  background-color: var(--lg-surface);
+  background-image: linear-gradient(149deg, rgb(255 255 255 / 25%), transparent 49%, rgb(255 255 255 / 4%));
+  border-color: var(--lg-line);
+  box-shadow:
+    0 20px 46px -32px var(--lg-depth),
+    inset 0 1px 0 var(--lg-inner-line),
+    inset 1px 0 0 rgb(255 255 255 / 16%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(155%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(155%);
+}
+html.dark[data-surface="liquid"] :is(.glass, .bg-card, .bg-popover, .site-header, .site-settings-sheet) {
+  background-image: linear-gradient(150deg, rgb(255 255 255 / 10%), transparent 49%, rgb(151 166 255 / 3%));
+}
+html[data-surface="liquid"] :is(button, input, select, textarea, [role="button"]) {
+  border-radius: clamp(.65rem, var(--radius), 1.2rem);
+}
+html[data-surface="liquid"] :is(button, a, [role="button"]):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+html[data-surface="liquid"] .site-header {
+  top: max(.5rem, env(safe-area-inset-top));
+  width: min(94rem, calc(100% - 1rem));
+  margin: .5rem auto 0;
+  border: 1px solid var(--lg-line) !important;
+  border-radius: 1.5rem;
+  background-color: var(--lg-surface-strong);
+  box-shadow: 0 20px 48px -32px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .site-header nav a:hover,
+html[data-surface="liquid"] .site-header nav a:focus-visible {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--foreground);
+}
+html[data-surface="liquid"] .site-mobile-nav,
+html[data-surface="liquid"] .mobile-liquid-dock {
+  border-color: var(--lg-line);
+  box-shadow: 0 20px 46px -26px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .site-settings-sheet {
+  background-color: var(--lg-surface-strong);
+}
+html[data-surface="liquid"] :is(.question-card, .answer-option) {
+  border-radius: 1.1rem;
+}
+html[data-surface="liquid"] .answer-option:focus-visible {
+  outline-offset: 2px;
+}
+
+/* The public homepage: distinctive translucent layers with no fake personal stats. */
+html[data-surface="liquid"] .sht-landing {
+  --sht-mint: color-mix(in srgb, var(--primary) 12%, var(--lg-surface-strong));
+  --sht-soft: color-mix(in srgb, var(--primary) 7%, var(--lg-surface));
+  --sht-outline: var(--lg-line);
+  gap: clamp(4.8rem, 9vw, 8rem);
+  isolation: isolate;
+}
+html[data-surface="liquid"] .sht-landing-nav {
+  position: sticky;
+  top: max(.55rem, env(safe-area-inset-top));
+  z-index: 40;
+  border: 1px solid var(--lg-line);
+  border-radius: 1.35rem;
+  background: var(--lg-surface-strong);
+  box-shadow: 0 20px 46px -27px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(165%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(165%);
+}
+html[data-surface="liquid"] .sht-brand-icon {
+  border: 1px solid var(--lg-inner-line);
+  border-radius: .95rem;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 12%, transparent), rgb(255 255 255 / 14%));
+  box-shadow: inset 0 1px 0 var(--lg-inner-line), 0 8px 16px -12px var(--lg-depth);
+}
+html[data-surface="liquid"] .sht-nav-links a,
+html[data-surface="liquid"] .sht-lang-switch button {
+  transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+html[data-surface="liquid"] .sht-lang-switch {
+  background: color-mix(in srgb, var(--primary) 6%, var(--lg-surface-strong));
+  border: 1px solid var(--lg-line);
+}
+html[data-surface="liquid"] .sht-lang-switch button[aria-pressed="true"] {
+  background: var(--lg-surface-strong);
+  color: var(--foreground);
+  box-shadow: inset 0 1px 0 var(--lg-inner-line), 0 2px 6px -3px var(--lg-depth);
+}
+html[data-surface="liquid"] :is(.sht-nav-login, .sht-button-primary) {
+  border: 1px solid rgb(255 255 255 / 25%);
+  background: linear-gradient(135deg, #4858e6 0%, #5264de 55%, #4089d5 100%);
+  color: #fff;
+  box-shadow: 0 17px 29px -17px rgb(49 70 201 / 58%), inset 0 1px 0 rgb(255 255 255 / 33%);
+}
+html[data-surface="liquid"] .sht-hero {
+  min-height: clamp(35rem, 65vh, 49rem);
+  gap: clamp(2rem, 5vw, 5.5rem);
+}
+html[data-surface="liquid"] .sht-hero::before {
+  left: -15%;
+  top: -10%;
+  width: min(49rem, 74vw);
+  height: 43rem;
+  background: radial-gradient(ellipse, rgb(113 129 255 / 24%), transparent 69%);
+  filter: blur(12px);
+}
+html[data-surface="liquid"] .sht-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -3%;
+  bottom: -7%;
+  width: 32rem;
+  max-width: 70vw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(113 216 239 / 19%), transparent 70%);
+  pointer-events: none;
+}
+html[data-surface="liquid"] .sht-eyebrow {
+  border: 1px solid var(--lg-line);
+  background: var(--lg-surface);
+  box-shadow: inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .sht-hero h1 {
+  max-width: 13ch;
+  font-size: clamp(2.45rem, 4.9vw, 5.2rem);
+  line-height: 1.21;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+html[data-surface="liquid"] .sht-hero-period {
+  color: #6d78ef;
+  filter: drop-shadow(0 2px 10px rgb(126 129 255 / 30%));
+}
+html[data-surface="liquid"] .sht-hero-description {
+  color: var(--muted-foreground);
+  max-width: 36rem;
+  line-height: 1.85;
+}
+html[data-surface="liquid"] .sht-button-secondary {
+  border: 1px solid var(--lg-line);
+  background: var(--lg-surface-strong);
+  color: var(--foreground);
+  box-shadow: 0 10px 24px -18px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+html[data-surface="liquid"] .sht-orbit-one {
+  background: radial-gradient(ellipse at 37% 34%, rgb(164 158 250 / 44%), rgb(112 199 248 / 19%) 40%, transparent 72%);
+}
+html[data-surface="liquid"] .sht-orbit-two {
+  border: 1px solid rgb(255 255 255 / 38%);
+  box-shadow: 0 0 0 25px rgb(141 159 254 / 6%), 0 0 0 65px rgb(141 159 254 / 4%);
+}
+html[data-surface="liquid"] .sht-preview {
+  border: 1px solid var(--lg-line);
+  border-radius: 1.8rem;
+  background: var(--lg-surface-strong);
+  box-shadow: 0 38px 88px -49px var(--lg-depth), 0 10px 30px -16px var(--lg-glow), inset 0 1px 0 var(--lg-inner-line);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  transform: rotate(1deg);
+}
+html[data-surface="liquid"] .sht-preview-top {
+  border-bottom: 1px solid var(--lg-line);
+  background: linear-gradient(110deg, rgb(255 255 255 / 25%), color-mix(in srgb, var(--primary) 5%, transparent));
+}
+html[data-surface="liquid"] .sht-window-dots i:nth-child(1) { background: #ff8c97; }
+html[data-surface="liquid"] .sht-window-dots i:nth-child(2) { background: #ffd187; }
+html[data-surface="liquid"] .sht-window-dots i:nth-child(3) { background: #87dcbe; }
+html[data-surface="liquid"] .sht-preview-focus,
+html[data-surface="liquid"] .sht-demo-option {
+  border: 1px solid var(--lg-line);
+  background: color-mix(in srgb, var(--primary) 6%, var(--lg-surface));
+}
+html[data-surface="liquid"] .sht-demo-option.is-active {
+  border-color: color-mix(in srgb, var(--primary) 64%, var(--lg-line));
+  background: color-mix(in srgb, var(--primary) 12%, var(--lg-surface-strong));
+  box-shadow: inset 0 1px 0 var(--lg-inner-line), 0 12px 25px -22px var(--lg-depth);
+}
+html[data-surface="liquid"] .sht-progress-track {
+  background: color-mix(in srgb, var(--primary) 17%, transparent);
+}
+html[data-surface="liquid"] .sht-progress-track span {
+  background: linear-gradient(90deg, #5369ef, #69b4ee);
+}
+html[data-surface="liquid"] .sht-floating-label {
+  border: 1px solid var(--lg-line);
+  border-radius: 1.05rem;
+  background: var(--lg-surface-strong);
+  box-shadow: 0 19px 40px -25px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+  -webkit-backdrop-filter: blur(13px);
+  backdrop-filter: blur(13px);
+}
+html[data-surface="liquid"] .sht-info-band span,
+html[data-surface="liquid"] .sht-feature,
+html[data-surface="liquid"] .sht-subject-card,
+html[data-surface="liquid"] .sht-step,
+html[data-surface="liquid"] .sht-faq-item {
+  border: 1px solid var(--lg-line);
+  background: var(--lg-surface);
+  box-shadow: 0 18px 40px -31px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .sht-feature {
+  border-radius: 1.65rem;
+  min-height: 13rem;
+}
+html[data-surface="liquid"] .sht-feature-featured {
+  background:
+    radial-gradient(circle at 0 0, color-mix(in srgb, var(--primary) 19%, transparent), transparent 68%),
+    var(--lg-surface);
+}
+html[data-surface="liquid"] .sht-feature-icon,
+html[data-surface="liquid"] .sht-subject-icon,
+html[data-surface="liquid"] .sht-preview-icon {
+  border: 1px solid var(--lg-inner-line);
+  background: color-mix(in srgb, var(--primary) 13%, var(--lg-surface-strong));
+  box-shadow: inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .sht-subject-card {
+  border-radius: 1.35rem;
+  min-height: 6.6rem;
+}
+html[data-surface="liquid"] .sht-steps-section {
+  border: 1px solid var(--lg-line);
+  background: color-mix(in srgb, var(--primary) 4%, var(--lg-surface));
+  box-shadow: inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .sht-step {
+  background: var(--lg-surface-strong);
+}
+html[data-surface="liquid"] .sht-faq-item[open] {
+  background: var(--lg-surface-strong);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--lg-line));
+}
+html[data-surface="liquid"] .sht-bottom-cta {
+  border: 1px solid rgb(210 223 255 / 38%);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 82% 16%, rgb(142 199 255 / 28%), transparent 42%),
+    linear-gradient(118deg, #19285c, #4446a0 58%, #2c719d);
+  box-shadow: 0 27px 60px -35px rgb(28 43 110 / 48%), inset 0 1px 0 rgb(255 255 255 / 27%);
+}
+html[data-surface="liquid"] .sht-bottom-cta .sht-cta-button {
+  background: rgb(255 255 255 / 93%);
+  color: #253371;
+  box-shadow: 0 10px 26px -19px #111e57;
+}
+html[data-surface="liquid"] .sht-landing-footer {
+  border-color: var(--lg-line);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html[data-surface="liquid"] :is(.sht-feature, .sht-subject-card, .sht-preview, .sht-floating-label) {
+    transition: transform .32s cubic-bezier(.2,.85,.2,1), box-shadow .3s ease, border-color .3s ease;
+  }
+  html[data-surface="liquid"] :is(.sht-feature, .sht-subject-card):hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--lg-line));
+    box-shadow: 0 24px 45px -30px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+  }
+  html[data-surface="liquid"] .sht-preview:hover { transform: translateY(-3px) rotate(.1deg); }
+  html[data-surface="liquid"] .sht-button-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+}
+@media (max-width: 767px) {
+  /* On phone, one blurred header and one preview are enough. Avoid blurring
+     every question / card while scrolling long textbook lists. */
+  html[data-surface="liquid"] { --lg-blur: 10px; }
+  html[data-surface="liquid"] .site-header {
+    top: max(.25rem, env(safe-area-inset-top));
+    border-radius: 1.1rem;
+    width: calc(100% - .5rem);
+    margin-top: .25rem;
+  }
+  html[data-surface="liquid"] .sht-landing-nav {
+    top: max(.35rem, env(safe-area-inset-top));
+    padding: .65rem .7rem;
+  }
+  html[data-surface="liquid"] .sht-hero {
+    min-height: 0;
+    gap: 1rem;
+  }
+  html[data-surface="liquid"] .sht-hero h1 {
+    max-width: 16ch;
+    font-size: clamp(2.05rem, 8.3vw, 3.6rem);
+    line-height: 1.27;
+  }
+  html[data-surface="liquid"] .sht-hero-visual { padding-inline: .05rem; }
+  html[data-surface="liquid"] .sht-preview { transform: none; }
+  html[data-surface="liquid"] :is(.bg-card, .glass, .sht-feature, .sht-subject-card, .sht-step, .sht-faq-item) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--lg-surface-strong);
+  }
+  html[data-surface="liquid"] :is(.sht-landing-nav, .sht-preview, .sht-floating-label) {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  html[data-surface="liquid"] .sht-info-band { margin-top: -1.25rem; }
+}
+@media (max-width: 480px) {
+  html[data-surface="liquid"] .sht-landing-nav {
+    gap: .3rem;
+  }
+  html[data-surface="liquid"] .sht-nav-actions { gap: .3rem; }
+  html[data-surface="liquid"] .sht-lang-switch { padding: .12rem; }
+  html[data-surface="liquid"] .sht-lang-switch button { min-width: 1.48rem; padding-inline: .13rem; }
+  html[data-surface="liquid"] .sht-brand { gap: .4rem; font-size: .95rem; }
+  html[data-surface="liquid"] .sht-hero-copy { gap: 1.15rem; }
+  html[data-surface="liquid"] .sht-hero-actions { width: 100%; }
+  html[data-surface="liquid"] .sht-hero-actions a { flex: 1 1 9rem; }
+  html[data-surface="liquid"] .sht-subject-card { min-height: 9rem; }
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  html[data-surface="liquid"] :is(.glass, .bg-card, .bg-popover, .site-header, .site-settings-sheet,
+    .sht-landing-nav, .sht-preview, .sht-floating-label) {
+    background-color: var(--card);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] { --lg-surface: var(--card); --lg-surface-strong: var(--card); }
+}
+html[data-glass-blur="off"][data-surface="liquid"],
+html.user-high-contrast[data-surface="liquid"] {
+  --lg-surface: var(--card);
+  --lg-surface-strong: var(--card);
+  --lg-blur: 0px;
+}
+html[data-glass-blur="off"][data-surface="liquid"] :is(.sht-landing-nav, .sht-preview, .sht-floating-label),
+html.user-high-contrast[data-surface="liquid"] :is(.sht-landing-nav, .sht-preview, .sht-floating-label),
+html.user-high-contrast[data-surface="liquid"] :is(.glass, .bg-card, .bg-popover, .site-header, .site-settings-sheet) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--card);
+  border-color: var(--border);
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-surface="liquid"] :is(.sht-landing *, .sht-landing *::before, .sht-landing *::after) {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+html.user-reduced-motion[data-surface="liquid"] :is(.sht-landing *, .sht-landing *::before, .sht-landing *::after) {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
