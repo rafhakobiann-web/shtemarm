@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
+import { supabase, hasSupabaseConfig, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ function AuthPage() {
   const nav = useNavigate();
   const progress = useProgress();
   const [configured, setConfigured] = useState<boolean | null>(null);
+  const [configurationAttempt, setConfigurationAttempt] = useState(0);
   const [mode, setMode] = useState<AuthMode>("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,9 +42,23 @@ function AuthPage() {
   const [notice, setNotice] = useState("");
   const [problem, setProblem] = useState("");
 
-  // Only check configuration after hydration, to avoid mismatch between
-  // server-only environment variables and browser build-time public config.
-  useEffect(() => { setConfigured(hasSupabaseConfig()); }, []);
+  // During hydration, a Lovable Cloud backend may have public Supabase
+  // connection values only in the server environment. Fetch public-only
+  // settings from our same-origin endpoint rather than disabling sign-in.
+  useEffect(() => {
+    let active = true;
+    setConfigured(null);
+    if (hasSupabaseConfig()) {
+      setConfigured(true);
+    } else {
+      void ensureBrowserSupabaseConfig().then(ok => {
+        if (active) setConfigured(ok);
+      }).catch(() => {
+        if (active) setConfigured(false);
+      });
+    }
+    return () => { active = false; };
+  }, [configurationAttempt]);
 
   useEffect(() => {
     if (!configured) return;
@@ -221,6 +236,12 @@ function AuthPage() {
       <p role="alert" className="text-sm text-muted-foreground">
         {tx("Այս կայքի մուտքի ծառայությունը դեռ կարգավորված չէ։ Կարող ես շարունակել սովորել առանց մուտքի, և տվյալներդ կպահվեն սարքում։")}
       </p>
+      <button type="button"
+        className="inline-flex min-h-11 items-center justify-center rounded-xl border border-primary/30 px-4 font-semibold text-primary"
+        onClick={() => setConfigurationAttempt(n => n + 1)}>
+        {lang === "en" ? "Retry sign-in connection" :
+          lang === "ru" ? "Повторить подключение" : "Կրկին փորձել մուտքի կապը"}
+      </button>
       <Link to="/" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-bold text-primary-foreground">
         {tx("Շարունակել առանց մուտքի")}
       </Link>
