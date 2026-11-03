@@ -301,3 +301,90 @@ html.user-reduced-motion[data-surface="liquid"] :is(.mobile-liquid-indicator,.sh
   transition: none !important;
   animation: none !important;
 }
+
+/* Palette controls also remain usable when switching back to Classic or Academy. */
+.sht-palette-picker {
+  position: relative;
+  flex-shrink: 0;
+}
+.sht-palette-picker > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 2.45rem;
+  min-height: 2.45rem;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: .83rem;
+  color: var(--foreground);
+  background: var(--card);
+  cursor: pointer;
+}
+.sht-palette-picker > summary::-webkit-details-marker { display: none; }
+.sht-palette-dot {
+  position: absolute;
+  right: .2rem;
+  bottom: .18rem;
+  width: .55rem;
+  height: .55rem;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+.sht-palette-panel {
+  position: absolute;
+  z-index: 60;
+  right: 0;
+  top: calc(100% + .65rem);
+  display: grid;
+  gap: .85rem;
+  width: min(16rem, calc(100vw - 2rem));
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+.sht-palette-panel p { font-size: .8rem; font-weight: 800; }
+.sht-palette-colors {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: .35rem;
+}
+.sht-palette-colors button {
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+.sht-palette-colors button[aria-pressed="true"] {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+.sht-palette-mode {
+  display: flex;
+  width: 100%;
+  min-height: 2.6rem;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: .76rem;
+  font-weight: 750;
+}
+.sht-palette-picker :is(summary, button):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  html[data-surface="liquid"] .sht-demo-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html[data-surface="liquid"] .sht-demo-option:first-child {
+    grid-column: span 2;
+    min-height: 4.6rem;
+  }
+}
