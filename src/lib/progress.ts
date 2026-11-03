@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { recordQuestActivity } from "@/lib/gamification";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 
 export type Progress = {
@@ -89,6 +90,7 @@ export function update(fn: (p: Progress) => Progress) {
 const today = () => new Date().toISOString().slice(0, 10);
 
 export function recordAnswer(id: string, correct: boolean, xp = 10) {
+  recordQuestActivity(id, "answered");
   update((p) => {
     const d = today();
     let streak = p.streak;
