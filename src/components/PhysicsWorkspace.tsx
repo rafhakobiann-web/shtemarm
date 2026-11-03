@@ -64,7 +64,7 @@ export function PhysicsWorkspace(){
       window.scrollTo({top:0,behavior:"instant"});
     }catch(e){setError(e instanceof Error?e.message:tx("Չհաջողվեց կազմել թեստը։"));}
   };
-  if(active)return <HistorySession units={active.units}
+  if(active)return <HistorySession subjectId="physics" units={active.units}
     title={tx("Ֆիզիկա · ուսումնական քննություն")} practice={active.practice}
     minutes={active.minutes}
     onExit={()=>setActive(null)}
