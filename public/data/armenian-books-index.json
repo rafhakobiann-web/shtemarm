@@ -34,5 +34,6 @@
   "sourceVerifiedOfficialQuestions": 0,
   "originalSectionHeadingsVerified": 32,
   "separateStatementBundles": 4,
-  "sourceCoverageIndex": "public/data/armenian-source-index.json"
+  "sourceCoverageIndex": "public/data/armenian-source-index.json",
+  "uniqueAuthorPracticeQuestionsAcrossVolumes": 147
 }
