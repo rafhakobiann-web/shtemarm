@@ -61,6 +61,7 @@ function audit(book, coverage, index) {
       const n = sourceNumber(unit);
       assert(n >= 1 && n <= ch.questionCount && !imported.has(n), "Duplicate/invalid source number " + ch.id + ":" + n);
       imported.add(n);
+      assert(unit.sourcePage === printedPage(ch,n), "Wrong source page at " + ch.id + ":" + n);
       if (unit.kind === "mc") {
         const answer = ch.choiceKeys.charAt(n - 1);
         assert(answer && unit.questions[0].answer === answer, "Official answer key mismatch at " + ch.id + ":" + n);
@@ -140,7 +141,9 @@ function applyPatch(state, patch) {
     const at = covered.excluded.findIndex(item=>item.n===n);
     assert(at >= 0, "Question already imported, or not on pending list: " + key);
     const reason = covered.excluded[at].reason;
-    if (reason === "figure-review") assert(entry.figureReviewed === true, "Figure must be manually reviewed: " + key);
+    const hasPrintedChoiceKey = !!ch.choiceKeys.charAt(n - 1);
+    assert((entry.kind === "mc") === hasPrintedChoiceKey, "Preserve the printed answer format: " + key);
+    if (reason === "figure-review") assert(entry.figureReviewed === true && entry.equivalentTextChecked === true, "Essential figure needs a verified complete text equivalent: " + key);
     if (reason === "formula-review") assert(entry.formulaReviewed === true, "Formula must be manually reviewed: " + key);
     if (reason === "incomplete-text") assert(entry.textRechecked === true, "Text must be manually rechecked: " + key);
     const unit = unitFromPatch(entry, ch);
