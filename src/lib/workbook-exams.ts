@@ -40,7 +40,17 @@ export function makeWorkbookExam(
     // A 70-question authored PRACTICE set, never an official 80-point exam:
     // the source PDFs contain response types not digitized here. For "all",
     // sample the available questions from all four practice volumes.
-    const practicePool = workbookEntries(source === "all" ? choices : [selected]);
+    const perBook = (source === "all" ? choices : [selected]).map(book => workbookEntries([book]));
+    const practicePool: HistoryEntry[] = [];
+    const maximum = Math.max(...perBook.map(entries => entries.length));
+    // In original-book order, round-robin keeps all four selected books
+    // represented instead of taking 70 questions exclusively from Part I.
+    for (let index = 0; index < maximum; index++) {
+      for (const entries of perBook) {
+        const item = entries[index];
+        if (item) practicePool.push(item);
+      }
+    }
     if (practicePool.length < 70) {
       throw new Error("Ընտրված գրքում դեռ բավարար՝ 70 վարժություն չկա։ Ընտրիր բոլոր մասերը կամ անհատական թեստը։");
     }
