@@ -198,6 +198,10 @@ describe("2018 Armenian language and literature source-aligned coverage", () => 
     expect(page).toContain("printedSection.pdfPage");
     expect(page).toContain("printedSection.lastPdfPage");
     expect(page).toContain("Բնօրինակի էջեր");
+    expect(page).toContain("Shtemarm-authored practice");
+    expect(page).toContain("Авторские упражнения Shtemarm");
+    expect(page).toContain("Shtemarm-ի հեղինակային վարժանքներ");
+    expect(page).toContain("Original section; interactive practice is not available yet.");
     expect(page).toContain("PDF վերբեռնել պետք չէ");
     expect(page).toContain("printedVolume.statementBundle.pdfPage");
     expect(page).toContain("printedVolume.answerKeyStartPdfPage");
