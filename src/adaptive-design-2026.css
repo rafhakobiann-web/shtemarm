@@ -1,0 +1,303 @@
+/*
+ * Shtemarm 2026 · approved design iteration 1C / 2C / 3B / 4B / 5C / 6D.
+ * Progressive, opt-in Liquid Glass design. HTML semantics + TanStack routes
+ * remain intact. No fixed images, simulated student stats or per-frame JS blur.
+ */
+html[data-surface="liquid"] {
+  --sht-ui-accent: var(--brand-accent, var(--primary));
+  --sht-spring: cubic-bezier(.18, 1.15, .32, 1);
+  --sht-elevation: 0 24px 50px -37px var(--lg-depth),
+                    inset 0 1px 0 var(--lg-inner-line);
+}
+
+/* Unknown device capabilities use balanced rendering; high-spec hardware
+   gets more translucency, while saver/low-memory devices stay almost opaque. */
+html[data-surface="liquid"][data-glass="adaptive"] {
+  --lg-surface: rgb(255 255 255 / 77%);
+  --lg-surface-strong: rgb(255 255 255 / 87%);
+  --lg-blur: 13px;
+}
+html.dark[data-surface="liquid"][data-glass="adaptive"] {
+  --lg-surface: rgb(24 33 65 / 81%);
+  --lg-surface-strong: rgb(32 44 79 / 90%);
+}
+html[data-surface="liquid"][data-glass="adaptive"][data-glass-quality="rich"] {
+  --lg-surface: rgb(255 255 255 / 58%);
+  --lg-surface-strong: rgb(255 255 255 / 73%);
+  --lg-blur: 24px;
+}
+html.dark[data-surface="liquid"][data-glass="adaptive"][data-glass-quality="rich"] {
+  --lg-surface: rgb(24 33 65 / 61%);
+  --lg-surface-strong: rgb(32 44 79 / 78%);
+}
+html[data-surface="liquid"][data-glass="adaptive"][data-glass-quality="lite"] {
+  --lg-surface: rgb(255 255 255 / 96%);
+  --lg-surface-strong: #fff;
+  --lg-blur: 0px;
+}
+html.dark[data-surface="liquid"][data-glass="adaptive"][data-glass-quality="lite"] {
+  --lg-surface: rgb(26 37 65 / 96%);
+  --lg-surface-strong: #202b49;
+}
+html[data-surface="liquid"][data-glass="adaptive"][data-glass-quality="lite"]
+  :is(.site-header, .sht-landing-nav, .sht-preview, .sht-floating-label, .sht-palette-panel,
+      .mobile-liquid-dock, .glass, .bg-card, .bg-popover, .site-settings-sheet) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* One color selection reaches all three experiences without repaint-heavy effects. */
+html[data-surface="liquid"] .sht-hero-period {
+  color: var(--sht-ui-accent);
+  filter: none;
+}
+html[data-surface="liquid"] :is(.sht-nav-login, .sht-button-primary) {
+  background: linear-gradient(132deg,
+    color-mix(in srgb, var(--sht-ui-accent) 88%, #142a62),
+    color-mix(in srgb, var(--sht-ui-accent) 74%, #428aa7));
+  color: #fff;
+  box-shadow: 0 18px 30px -20px color-mix(in srgb, var(--sht-ui-accent) 42%, transparent),
+              inset 0 1px 0 rgb(255 255 255 / 30%);
+}
+html[data-surface="liquid"] .sht-preview-focus-heading svg,
+html[data-surface="liquid"] .sht-subject-arrow,
+html[data-surface="liquid"] .sht-feature-icon,
+html[data-surface="liquid"] .sht-section-kicker {
+  color: var(--sht-ui-accent);
+}
+html[data-surface="liquid"] .sht-hero::before {
+  background: radial-gradient(ellipse,
+    color-mix(in srgb, var(--sht-ui-accent) 23%, transparent), transparent 70%);
+}
+html[data-surface="liquid"] .sht-hero::after {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--sht-ui-accent) 13%, #9de2ff), transparent 70%);
+}
+
+/* A single compact control accommodates theme and all six saved accent choices. */
+html[data-surface="liquid"] .sht-palette-picker {
+  position: relative;
+  z-index: 55;
+  flex: 0 0 auto;
+}
+html[data-surface="liquid"] .sht-palette-picker > summary {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 2.45rem;
+  min-height: 2.45rem;
+  border: 1px solid var(--lg-line);
+  border-radius: .83rem;
+  background: var(--lg-surface-strong);
+  color: var(--foreground);
+  cursor: pointer;
+  list-style: none;
+}
+html[data-surface="liquid"] .sht-palette-picker > summary::-webkit-details-marker {
+  display: none;
+}
+html[data-surface="liquid"] .sht-palette-dot {
+  position: absolute;
+  bottom: .18rem;
+  right: .2rem;
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+html[data-surface="liquid"] .sht-palette-panel {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + .65rem);
+  right: 0;
+  display: grid;
+  gap: .85rem;
+  width: min(16rem, calc(100vw - 2rem));
+  padding: 1rem;
+  border-radius: 1.1rem;
+  border: 1px solid var(--lg-line);
+  background: var(--lg-surface-strong);
+  box-shadow: 0 19px 50px -21px var(--lg-depth), inset 0 1px 0 var(--lg-inner-line);
+  -webkit-backdrop-filter: blur(var(--lg-blur));
+  backdrop-filter: blur(var(--lg-blur));
+}
+html[data-surface="liquid"] .sht-palette-panel p {
+  margin: 0;
+  color: var(--foreground);
+  font-size: .8rem;
+  font-weight: 800;
+}
+html[data-surface="liquid"] .sht-palette-colors {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: .35rem;
+}
+html[data-surface="liquid"] .sht-palette-colors button {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+html[data-surface="liquid"] .sht-palette-colors button[aria-pressed="true"] {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+html[data-surface="liquid"] .sht-palette-mode {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 2.6rem;
+  border: 1px solid var(--lg-line);
+  border-radius: .8rem;
+  background: var(--lg-surface);
+  color: var(--foreground);
+  font-size: .76rem;
+  font-weight: 750;
+}
+html[data-surface="liquid"] .sht-palette-picker :is(summary,button):focus-visible {
+  outline: 3px solid var(--sht-ui-accent);
+  outline-offset: 3px;
+}
+
+/* Richer Bento composition on the landing and student dashboard. */
+html[data-surface="liquid"] .sht-feature-featured {
+  background:
+    radial-gradient(ellipse at 3% 0%, color-mix(in srgb, var(--sht-ui-accent) 18%, transparent), transparent 73%),
+    var(--lg-surface);
+}
+html[data-surface="liquid"] .sht-demo-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html[data-surface="liquid"] .sht-demo-option {
+  min-height: 7.3rem;
+  border-radius: 1.05rem;
+}
+html[data-surface="liquid"] .academy-home .academy-hero {
+  border: 1px solid rgb(255 255 255 / 24%);
+  background:
+    radial-gradient(ellipse at 90% 15%, color-mix(in srgb, var(--sht-ui-accent) 26%, #8dc5ff), transparent 65%),
+    linear-gradient(120deg, #14244d, color-mix(in srgb, #213d6b 72%, var(--sht-ui-accent)) 75%, #29385c);
+  box-shadow: 0 31px 75px -49px var(--lg-depth), inset 0 1px 0 rgb(255 255 255 / 19%);
+}
+html[data-surface="liquid"] .academy-home .academy-hero > div:last-child {
+  border-color: rgb(255 255 255 / 24%);
+  background: rgb(255 255 255 / 9%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%);
+}
+html[data-surface="liquid"] .sht-dashboard-bento .academy-bento {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--lg-line);
+  border-radius: 1.4rem;
+  background: var(--lg-surface-strong);
+  box-shadow: var(--sht-elevation);
+}
+html[data-surface="liquid"] .sht-dashboard-bento .academy-bento:first-child {
+  background:
+    radial-gradient(ellipse at 95% 10%, color-mix(in srgb, var(--sht-ui-accent) 15%, transparent), transparent 72%),
+    var(--lg-surface-strong);
+}
+html[data-surface="liquid"] .academy-home .academy-quick-action,
+html[data-surface="liquid"] .academy-home .academy-download-cta {
+  min-width: 0;
+  border: 1px solid var(--lg-line);
+  border-radius: 1.15rem;
+  background: var(--lg-surface-strong);
+  box-shadow: var(--sht-elevation);
+}
+html[data-surface="liquid"] .sht-dashboard-shortcuts {
+  align-items: stretch;
+}
+html[data-surface="liquid"] .sht-dashboard-shortcuts > * {
+  min-height: 5.2rem;
+}
+
+/* The shared ExamHero gets the same hierarchy and colors without altering tests. */
+html[data-surface="liquid"] .sht-exam-hero {
+  border: 1px solid var(--lg-line);
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(ellipse at 92% 7%, color-mix(in srgb, var(--sht-ui-accent) 14%, transparent), transparent 68%),
+    var(--lg-surface-strong);
+  box-shadow: var(--sht-elevation);
+}
+html[data-surface="liquid"] .sht-exam-metric {
+  border: 1px solid var(--lg-line);
+  border-radius: 1.1rem;
+  background: var(--lg-surface);
+  box-shadow: inset 0 1px 0 var(--lg-inner-line);
+}
+html[data-surface="liquid"] .sht-exam-builder-title {
+  padding-left: .9rem;
+  border-left: 3px solid var(--sht-ui-accent);
+}
+
+/* Touch and pointer share one dock. Vertical swipes should still scroll.
+   GPU-friendly transforms animate selection; backdrop filters never animate. */
+@media (max-width: 767px) {
+  html[data-surface="liquid"] .mobile-liquid-dock,
+  html[data-surface="liquid"] .mobile-liquid-tab {
+    touch-action: pan-y;
+  }
+  html[data-surface="liquid"] .mobile-liquid-indicator {
+    transition: transform 420ms cubic-bezier(.2, 1.12, .26, 1);
+  }
+  html[data-surface="liquid"] .sht-demo-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html[data-surface="liquid"] .sht-demo-option:first-child {
+    grid-column: span 2;
+    min-height: 4.5rem;
+  }
+}
+@media (max-width: 420px) {
+  html[data-surface="liquid"] .sht-palette-picker > summary {
+    width: 2.12rem;
+    min-height: 2.3rem;
+  }
+  html[data-surface="liquid"] .sht-demo-option {
+    padding: .7rem;
+    min-height: 6.3rem;
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html[data-surface="liquid"] :is(.sht-feature,.sht-subject-card,.sht-demo-option,
+    .academy-home .academy-quick-action,.academy-home .academy-download-cta,
+    .sht-dashboard-bento .academy-bento,.sht-exam-metric) {
+    transition: transform 410ms var(--sht-spring), box-shadow 240ms ease, border-color 240ms ease;
+  }
+  html[data-surface="liquid"] :is(.academy-home .academy-quick-action,
+    .academy-home .academy-download-cta,.sht-demo-option):hover {
+    transform: translateY(-3px);
+  }
+  html[data-surface="liquid"] :is(.sht-demo-option,.academy-home .academy-quick-action):active {
+    transform: translateY(0) scale(.985);
+    transition-duration: 100ms;
+  }
+}
+@media (prefers-reduced-motion: reduce), (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] .sht-palette-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--card);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-surface="liquid"] :is(.mobile-liquid-indicator,.sht-demo-option,
+    .sht-exam-metric,.academy-quick-action,.sht-feature,.sht-subject-card) {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html.user-reduced-motion[data-surface="liquid"] :is(.mobile-liquid-indicator,.sht-demo-option,
+  .sht-exam-metric,.academy-quick-action,.sht-feature,.sht-subject-card) {
+  transition: none !important;
+  animation: none !important;
+}
