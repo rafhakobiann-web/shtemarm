@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { applyAccent, readSavedAccent, DISPLAY_PREFERENCES_KEY } from "@/lib/accent";
 
 export type Theme = "light" | "dark";
 export type ColorMode = Theme | "system";
@@ -119,6 +120,7 @@ export function resetAppearance() {
 export function initAppearance() {
   snapshot = readAppearance();
   applyAppearance(snapshot);
+  applyAccent(readSavedAccent());
   broadcast();
   const media = window.matchMedia?.("(prefers-color-scheme: dark)");
   const onMediaChange = () => {
@@ -128,6 +130,10 @@ export function initAppearance() {
     broadcast();
   };
   const onStorage = (event: StorageEvent) => {
+    if (event.key === DISPLAY_PREFERENCES_KEY) {
+      applyAccent(readSavedAccent());
+      return;
+    }
     if (event.key !== APPEARANCE_KEY && event.key !== LEGACY_KEY) return;
     snapshot = readAppearance();
     applyAppearance(snapshot);
@@ -180,6 +186,19 @@ function startupAppearance() {
       (hardware.hardwareConcurrency ?? 0) >= 8 && window.innerWidth >= 768;
     root.dataset.glassQuality = isLite ? "lite" : isRich ? "rich" : "balanced";
     root.dataset.glassBlur = v.blur === false ? "off" : "on";
+    // Match the stored palette before hydration; values come only from this list.
+    const accents: Record<string, string> = {
+      blue: "#4263eb", violet: "#7139ce", emerald: "#087f60",
+      rose: "#c5274c", amber: "#96620e", teal: "#0b766b"
+    };
+    const preferences = JSON.parse(localStorage.getItem("shtemarm-display-preferences-v1") || "null");
+    const chosen = typeof preferences?.accent === "string" && Object.prototype.hasOwnProperty.call(accents, preferences.accent)
+      ? preferences.accent : "teal";
+    root.dataset.accent = chosen;
+    root.style.setProperty("--brand-accent", accents[chosen]);
+    root.style.setProperty("--primary", accents[chosen]);
+    root.style.setProperty("--ring", accents[chosen]);
+    root.style.setProperty("--primary-foreground", "#ffffff");
   } catch { /* No stored theme: use CSS defaults. */ }
 }
 export const THEME_INIT_SCRIPT = "(" + startupAppearance.toString() + ")();";
