@@ -501,3 +501,105 @@ html.user-high-contrast[data-surface="liquid"] :is(.sht-feature, .sht-subject-ca
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+
+/* Shtemarm Liquid Glass: interactive study preview + subject identity, revision 3. */
+html[data-surface="liquid"] .sht-preview {
+  --sht-focus-accent: #5967e9;
+}
+html[data-surface="liquid"] .sht-preview[data-focus="1"] {
+  --sht-focus-accent: #258cb7;
+}
+html[data-surface="liquid"] .sht-preview[data-focus="2"] {
+  --sht-focus-accent: #9063d8;
+}
+html[data-surface="liquid"] .sht-preview-focus {
+  background: linear-gradient(
+    130deg,
+    color-mix(in srgb, var(--sht-focus-accent) 11%, var(--lg-surface-strong)),
+    var(--lg-surface)
+  );
+  border-color: color-mix(in srgb, var(--sht-focus-accent) 24%, var(--lg-line));
+  transition: background-color 240ms ease, border-color 240ms ease;
+}
+html[data-surface="liquid"] .sht-preview-focus-heading svg,
+html[data-surface="liquid"] .sht-demo-selection strong {
+  color: var(--sht-focus-accent);
+}
+html[data-surface="liquid"] .sht-preview-focus .sht-focus-detail {
+  min-height: 3.1em;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+html[data-surface="liquid"] .sht-demo-option[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--sht-focus-accent) 55%, var(--lg-line));
+  background: color-mix(in srgb, var(--sht-focus-accent) 12%, var(--lg-surface-strong));
+}
+html[data-surface="liquid"] .sht-demo-option:focus-visible,
+html[data-surface="liquid"] .sht-subject-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 70%, white);
+  outline-offset: 3px;
+}
+html[data-surface="liquid"] .sht-subject-card {
+  --sht-subject-accent: #5874d9;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+html[data-surface="liquid"] .sht-subject-card[data-subject="armenian"] { --sht-subject-accent: #be765f; }
+html[data-surface="liquid"] .sht-subject-card[data-subject="english"] { --sht-subject-accent: #855ccf; }
+html[data-surface="liquid"] .sht-subject-card[data-subject="math"] { --sht-subject-accent: #477cdb; }
+html[data-surface="liquid"] .sht-subject-card[data-subject="biology"] { --sht-subject-accent: #248f77; }
+html[data-surface="liquid"] .sht-subject-card[data-subject="history"] { --sht-subject-accent: #b48335; }
+html[data-surface="liquid"] .sht-subject-card[data-subject="physics"] { --sht-subject-accent: #5887ab; }
+html[data-surface="liquid"] .sht-subject-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 8% 4%,
+    color-mix(in srgb, var(--sht-subject-accent) 15%, transparent),
+    transparent 73%
+  );
+}
+html[data-surface="liquid"] .sht-subject-card > * {
+  position: relative;
+  z-index: 1;
+}
+html[data-surface="liquid"] .sht-subject-card .sht-subject-icon {
+  color: var(--sht-subject-accent);
+  background: color-mix(in srgb, var(--sht-subject-accent) 13%, var(--lg-surface-strong));
+}
+html[data-surface="liquid"] .sht-subject-card .sht-subject-arrow {
+  color: var(--sht-subject-accent);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html[data-surface="liquid"] :is(.sht-subject-card, .sht-demo-option, .sht-button-primary, .sht-button-secondary):active {
+    transform: translateY(0) scale(.985);
+    transition-duration: 90ms;
+  }
+  html[data-surface="liquid"] .sht-subject-card:hover .sht-subject-arrow {
+    transform: translateX(3px);
+  }
+  html[data-surface="liquid"] .sht-subject-arrow {
+    transition: transform 240ms cubic-bezier(.22,.8,.25,1);
+  }
+}
+@media (max-width: 767px) {
+  html[data-surface="liquid"] .sht-preview-focus .sht-focus-detail {
+    min-height: 0;
+  }
+  html[data-surface="liquid"] .sht-subject-card::before {
+    opacity: .65;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-surface="liquid"] :is(.sht-preview-focus, .sht-subject-arrow) {
+    transition: none;
+  }
+}
+html.user-reduced-motion[data-surface="liquid"] :is(.sht-preview-focus, .sht-subject-arrow) {
+  transition: none;
+}
