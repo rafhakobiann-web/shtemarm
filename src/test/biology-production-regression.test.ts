@@ -15,7 +15,7 @@ describe("Biology production crash regression", () => {
     expect(existsSync("src/routes/biology_.original.tsx")).toBe(true);
     expect(existsSync("src/routes/biology.original.tsx")).toBe(false);
     const standalone = readFileSync("src/routes/biology_.original.tsx", "utf8");
-    expect(standalone).toContain('createFileRoute("/biology/original")');
+    expect(standalone).toContain('createFileRoute("/biology_/original")');
     expect(standalone).toContain('throw redirect({ to: "/book/$bookId"');
     expect(standalone).toContain('search.volume === 4 ? "34" : "33"');
     const biologyRoute = readFileSync("src/routes/biology.tsx", "utf8");
