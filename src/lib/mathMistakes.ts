@@ -1,4 +1,5 @@
 import { isRight } from "./math-progress";
+import { recordQuestActivity } from "@/lib/gamification";
 const KEY = "shtemarm:math-mistakes:v1";
 export type MathMistakeKind = "choice" | "tf" | "open";
 export type MathMistake = {
@@ -45,6 +46,7 @@ export function markMathMistakeMastered(id:string,value:string):boolean{
   const mistake=items.find(m=>m.id===id);
   if (!mistake || !isRight(mistake.correct,value))return false;
   save(items.map(m=>m.id===id?{...m,mastered:true}:m));
+  if (!mistake.mastered) recordQuestActivity("math:" + id, "reviewed");
   return true;
 }
 export function removeMathMistake(id:string) {

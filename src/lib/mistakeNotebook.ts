@@ -1,3 +1,4 @@
+import { recordQuestActivity } from "@/lib/gamification";
 export type Mistake = {
   id: string; subject: string; section: string; prompt: string;
   options: string[]; chosen: number; correct: number; explanation: string;
@@ -25,7 +26,10 @@ export function recordMistake(item: Omit<Mistake, "attempts" | "updatedAt" | "ma
   save([entry, ...items]);
 }
 export function markMistakeMastered(id: string, subject: string) {
-  save(getMistakes().map(m => m.id === id && m.subject === subject ? { ...m, mastered: true } : m));
+  const entries = getMistakes();
+  const item = entries.find(m => m.id === id && m.subject === subject);
+  save(entries.map(m => m.id === id && m.subject === subject ? { ...m, mastered: true } : m));
+  if (item && !item.mastered) recordQuestActivity(subject + ":" + id, "reviewed");
 }
 export function removeMistake(id: string, subject: string) {
   save(getMistakes().filter(m => !(m.id === id && m.subject === subject)));
