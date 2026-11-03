@@ -1,0 +1,34 @@
+name: Verify Armenian language books and source-aligned navigation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/verify-armenian-source-alignment.yml'
+      - 'public/data/armenian-*.json'
+      - 'src/routes/book.$bookId.tsx'
+      - 'src/lib/workbook-exams.ts'
+      - 'src/components/WorkbookExamWorkspace.tsx'
+      - 'src/test/armenian-*.test.ts'
+      - 'scripts/verify-armenian-pdfs.py'
+      - 'docs/ARMENIAN*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Validate Armenian PDF index, practice banks and exam navigation
+        run: |
+          bunx vitest run src/test/armenian-source-integrity.test.ts src/test/armenian-source-alignment.test.ts src/test/armenian-volumes.test.ts
+      - name: Verify site build (no deployment)
+        run: bun run build
