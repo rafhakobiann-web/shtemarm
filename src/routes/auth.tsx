@@ -138,7 +138,7 @@ function AuthPage() {
           throw new Error("No active session after sign-in");
         }
         setPassword("");
-        await nav({ to: "/" });
+        await nav({ to: "/dashboard" });
         return;
       }
       const { data, error } = await supabase.auth.signUp({
@@ -234,7 +234,7 @@ function AuthPage() {
     <div className="mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6">
       <h1 className="text-2xl font-black">{tx("Մուտքը ժամանակավորապես անհասանելի է")}</h1>
       <p role="alert" className="text-sm text-muted-foreground">
-        {tx("Այս կայքի մուտքի ծառայությունը դեռ կարգավորված չէ։ Կարող ես շարունակել սովորել առանց մուտքի, և տվյալներդ կպահվեն սարքում։")}
+        {tx("Այս կայքի մուտքի ծառայությունը դեռ կարգավորված չէ։ Քո նախկին առաջընթացը չի ջնջվել։ Փորձիր կրկին ավելի ուշ։")}
       </p>
       <button type="button"
         className="inline-flex min-h-11 items-center justify-center rounded-xl border border-primary/30 px-4 font-semibold text-primary"
@@ -243,7 +243,7 @@ function AuthPage() {
           lang === "ru" ? "Повторить подключение" : "Կրկին փորձել մուտքի կապը"}
       </button>
       <Link to="/" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-bold text-primary-foreground">
-        {tx("Շարունակել առանց մուտքի")}
+        {tx("Վերադառնալ ներկայացման էջ")}
       </Link>
     </div>
   );
@@ -269,7 +269,7 @@ function AuthPage() {
             <p className="text-xl font-black">{Object.values(progress.answers).filter(v => v === 0).length}</p>
           </div>
         </div>
-        <Link to="/" search={{ subject: "english" }} className="inline-flex min-h-11 items-center rounded-xl border bg-background px-3 py-2 text-sm font-semibold">
+        <Link to="/dashboard" search={{ subject: "english" }} className="inline-flex min-h-11 items-center rounded-xl border bg-background px-3 py-2 text-sm font-semibold">
           {tx("Շարունակել ուսուցումը")}
         </Link>
       </section>
