@@ -109,7 +109,7 @@ describe("Biology III/IV backlog: every original printed question is accounted f
     expect(route).toContain("initialBook={book} initialSection={section}");
     expect(bookPage).toContain('to="/biology" search={{ book: id, section: s.n }}');
     expect(bookPage).toContain('to="/biology" search={{ book: id }}');
-    expect(original).toContain('createFileRoute("/biology/original")');
+    expect(original).toContain('createFileRoute("/biology_/original")');
     expect(original).toContain('search.volume === 4 ? "34" : "33"');
   });
 
