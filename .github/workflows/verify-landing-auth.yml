@@ -1,0 +1,24 @@
+name: Verify landing, authentication and dashboard
+on:
+  pull_request:
+    paths:
+      - 'src/routes/index.tsx'
+      - 'src/routes/dashboard.tsx'
+      - 'src/routes/onboarding.tsx'
+      - 'src/routes/auth.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/lib/onboarding.ts'
+      - 'src/test/onboarding.test.ts'
+      - '.github/workflows/verify-landing-auth.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Regression tests
+        run: bunx vitest run src/test/onboarding.test.ts src/test/google-oauth-routing.test.ts src/test/progress.test.ts
+      - name: Website production build
+        run: bun run build
