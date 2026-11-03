@@ -52,10 +52,13 @@ describe("Biology III/IV backlog: every original printed question is accounted f
         expect(importedUnits.length, `book ${volume} section ${ch.id}`).toBe(recorded.imported);
         const present = new Set<number>();
         for (const unit of importedUnits) {
-          expect(unit.kind).toBe("mc");
-          expect(unit.questions).toHaveLength(1);
-          const n = Number(unit.questions[0].n);
+          expect(["mc", "num", "set", "seq", "match"]).toContain(unit.kind);
+          if (unit.kind === "mc" || unit.kind === "num") expect(unit.questions).toHaveLength(1);
+          const n = Number(unit.kind === "mc" || unit.kind === "num" ? unit.questions[0].n : unit.label);
           expect(Number.isInteger(n) && n >= 1 && n <= ch.questionCount).toBe(true);
+          if (unit.kind === "mc") {
+            expect(unit.questions[0].answer).toBe(ch.choiceKeys[n - 1]);
+          }
           expect(present.has(n), `duplicate imported ${volume}:${ch.id}:${n}`).toBe(false);
           present.add(n);
         }
@@ -108,15 +111,19 @@ describe("Biology III/IV backlog: every original printed question is accounted f
     expect(original).toContain('search.volume === 4 ? "34" : "33"');
   });
 
-  it("keeps the unsupported sixth chapter out of auto-graded four-choice exams", () => {
+  it("keeps sixth-chapter pending tasks out of exams until actual typed units are imported", () => {
     for (const volume of [3, 4] as const) {
       const book = read(`public/data/bio-book${volume}.json`);
-      expect(book.sections.some((section: { n: number }) => section.n === 6)).toBe(false);
+      const section = book.sections.find((row: { n: number }) => row.n === 6);
       const data = summary.books.find((entry: { volume: number }) => entry.volume === volume);
       const sixth = data.chapters.find((entry: { chapter: number }) => entry.chapter === 6);
-      expect(sixth.imported).toBe(0);
-      expect(sixth.pending).toBeGreaterThan(0);
-      expect(sixth.byReason["answer-type-pending"]).toBe(sixth.pending);
+      expect(sixth.imported).toBe(section?.units.length ?? 0);
+      expect(sixth.pending).toBe(sixth.indexed - sixth.imported);
+      // Missing tasks are metadata-only, never auto-graded as empty question cards.
+      for (const unit of section?.units ?? []) {
+        expect(["mc", "num", "set", "seq", "match"]).toContain(unit.kind);
+        expect(unit.id).toMatch(/^bio[34]-s6-q\d+$/);
+      }
     }
   });
 });
