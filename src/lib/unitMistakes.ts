@@ -143,8 +143,8 @@ export function subjectForBookId(bookId: number | string): string {
   if ([1, 2, 3].includes(id)) return "english";
   if (id >= 21 && id <= 23) return "history";
   if (id >= 31 && id <= 34) return "biology";
-  if (id === 41) return "armenian";
-  if (id === 51 || id === 61 || id === 62) return "physics";
+  if (id >= 41 && id <= 44) return "armenian";
+  if (id === 51 || (id >= 61 && id <= 64)) return "physics";
   if (id === 52) return "chemistry";
   if (id === 53) return "geography";
   if (id === 54) return "russian";
