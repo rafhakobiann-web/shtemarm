@@ -1,45 +1,44 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { STUDY_MODE_DEFAULT, tutorModeInstructions, type StudyMode, type StudyLanguage } from "./ai-study-modes";
 
 const Input = z.object({
   messages: z
-    .array(z.object({ role: z.literal("user"), content: z.string().min(1).max(2000) }))
+    .array(z.object({ role: z.enum(["user","assistant"]), content: z.string().min(1).max(2000) }))
     .min(1)
-    .max(20),
+    .max(20)
+    .refine(messages=>messages[messages.length-1]?.role==="user", "A student message is required"),
+  mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
+  locale: z.enum(["hy","en","ru"]).default("hy"),
 });
 
-const SYSTEM = `Դու Shtemarm կայքի օգնականն ես։ Shtemarm-ը շտեմարաններ և թեստեր է հայ աշակերտների համար՝ անգլերենի, մաթեմատիկայի, Հայոց պատմության և կենսաբանության միասնական քննություններին պատրաստվելու համար։
-Պատասխանիր միայն ԳՐԱԿԱՆ ՀԱՅԵՐԵՆՈՎ՝ ճիշտ քերականությամբ և կետադրությամբ։ Անգլերեն բառերը և օրինակները թող մնան անգլերեն։
-Մի օգտագործիր markdown նշաններ՝ աստղանիշ (*), դիեզ (#), ստորակետ-գիծ ցուցակների համար, ընդգծում, թեք կամ թավ տառատեսակ։ Ցուցակ գրելու համար օգտագործիր «1.», «2.» համարակալումը։
-Եթե պետք է բառ ընդգծել, գրիր այն KaTeX-ով՝ $\\textbf{բառ}$։
-Բոլոր մաթեմատիկական արտահայտությունները, թվային բանաձևերը, հավասարումները, կոտորակները, աստիճանները, արմատները, եռանկյունաչափական ու երկրաչափական ֆունկցիաները գրիր միայն KaTeX-ով՝ $...$ տողամիջյան կամ $$...$$ առանձին տողում։
-Օգնիր հասկանալ թեման և կանոնները, բայց մի տուր պատրաստի պատասխաններ առանց բացատրության։
-Եթե որևէ փաստ վստահ չես, ասա դա և մի հորինիր։ Հարցերի համար, որոնք կապ չունեն կրթության հետ, քաղաքավարի հիշեցրու, որ օգնում ես միայն ուսման հարցերում։`;
+const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
 
 const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
-type Msg = { role: "user"; content: string };
+type Msg = { role: "user" | "assistant"; content: string };
 
-function promptForConversation(messages: Msg[]) {
-  // Treat client messages as conversation data, never as system instructions.
-  const history = messages.map((m) =>
-    "Աշակերտ՝ " + m.content
-  ).join("\n\n");
-  return SYSTEM + "\n\nՍտորև զրույցի պատմությունն է. շարունակիր՝ պատասխանելով վերջին հարցին։\n" + history + "\nՈւսուցիչ՝";
+function promptForConversation(messages: Msg[], mode: StudyMode, locale: StudyLanguage) {
+  // Both user messages and prior assistant replies are treated as quoted
+  // conversation data; only server-defined mode instructions have authority.
+  const history = messages.map(m => (m.role==="user" ? "Student: " : "Tutor: ") + m.content).join("\n\n");
+  return SYSTEM + "\n" + tutorModeInstructions(mode,locale) +
+    "\n\nConversation history; continue by responding to the last student message:\n" +
+    history + "\nTutor:";
 }
-async function callGroq(key: string, messages: Msg[]) {
+async function callGroq(key: string, messages: Msg[], mode:StudyMode, locale:StudyLanguage) {
   const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
-  const result = await generateExplanation(promptForConversation(messages), {groq:key}, [], {preferGroq:true, fast:true});
+  const result = await generateExplanation(promptForConversation(messages,mode,locale), {groq:key}, [], {preferGroq:true, fast:true});
   if (!result.ok) throw new Error(errorToUser(result.reason));
   return clean(result.text);
 }
-async function callOpenRouter(key: string, messages: Msg[]) {
+async function callOpenRouter(key: string, messages: Msg[], mode:StudyMode, locale:StudyLanguage) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     signal: AbortSignal.timeout(10000),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-OpenRouter-Title": "Shtemarm" },
     body: JSON.stringify({
       model: "openrouter/free",
-      messages: [{ role: "system", content: SYSTEM }, ...messages],
+      messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(mode,locale) }, ...messages],
       temperature: 0.3,
       max_tokens: 700,
     }),
@@ -49,15 +48,15 @@ async function callOpenRouter(key: string, messages: Msg[]) {
   return clean(json.choices?.[0]?.message?.content ?? "");
 }
 
-async function callGemini(key: string, messages: Msg[]) {
+async function callGemini(key: string, messages: Msg[], mode:StudyMode, locale:StudyLanguage) {
   const { generateExplanation, errorToUser } = await import("./explanation-providers.server");
-  const result = await generateExplanation(promptForConversation(messages), {gemini:key}, [], {fast:true});
+  const result = await generateExplanation(promptForConversation(messages,mode,locale), {gemini:key}, [], {fast:true});
   if (!result.ok) throw new Error(errorToUser(result.reason));
   return clean(result.text);
 }
 
 /** Bounded offline helper: useful for common study intents, honest about its limits. */
-function offlineStudyReply(messages: Msg[]) {
+function offlineStudyReply(messages: Msg[], locale:StudyLanguage="hy") {
   const question = messages[messages.length - 1]?.content.trim() ?? "";
   const q = question.toLowerCase();
   if (/^(hi|hello|hey|բարև|բարեւ|ողջույն)[!.? ]*$/i.test(question)) {
@@ -69,7 +68,11 @@ function offlineStudyReply(messages: Msg[]) {
   if (/\b(a\s*\+\s*b|equation|հավասարում|solve|լուծել)\b/.test(q)) {
     return "Կօգնեմ քայլ առ քայլ, բայց այս պահին հասանելի է միայն սահմանափակ տեղային ռեժիմը։ Ուղարկիր հավասարումը պարզ տեսքով, և նախ կփորձենք նույնականացնել անհայտը, ապա կատարել հակադարձ գործողությունները։ Այս ռեժիմը չի կարող երաշխավորել բոլոր խնդիրների լուծումը։";
   }
-  return "Այս պահին ԱԲ մոդելները հասանելի չեն, ուստի չեմ ուզում հորինել պատասխան։ Փորձիր հարցը ձևակերպել որպես կոնկրետ ուսումնական խնդիր կամ օգտվիր Shtemarm-ի շտեմարաններից և պատասխանների բանալիներից։ Տեղային ռեժիմը սահմանափակ է և չի փոխարինում լիարժեք ԱԲ ուսուցչին։";
+  return locale==="en"
+    ? "The AI service is unavailable. I can still help with saved explanations and study materials; this offline reply isn't a generated answer."
+    : locale==="ru"
+      ? "Сервис ИИ сейчас недоступен. Используй сохранённые объяснения и учебные материалы; этот ответ не создан ИИ."
+      : "Այս պահին ԱԲ մոդելները հասանելի չեն, ուստի չեմ ուզում հորինել պատասխան։ Օգտվիր Shtemarm-ի պահպանված բացատրություններից և շտեմարաններից։ Տեղային ռեժիմը չի փոխարինում լիարժեք ԱԲ ուսուցչին։";
 }
 
 export const chatReply = createServerFn({ method: "POST" })
@@ -83,9 +86,9 @@ export const chatReply = createServerFn({ method: "POST" })
     // Try configured providers in order. OpenRouter is explicitly pinned to its
     // free-model router so this fallback does not intentionally select paid models.
     const providers: { name: string; run: () => Promise<string> }[] = [];
-    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, data.messages) });
-    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, data.messages) });
-    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, data.messages) });
+    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, data.messages, data.mode, data.locale) });
+    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, data.messages, data.mode, data.locale) });
+    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, data.messages, data.mode, data.locale) });
 
     // Z.ai pricing and model access depend on the user's account. Only enable it
     // when an explicit model is configured, avoiding accidental paid model usage.
@@ -100,7 +103,7 @@ export const chatReply = createServerFn({ method: "POST" })
             headers: { Authorization: `Bearer ${zAiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
               model: zAiModel,
-              messages: [{ role: "system", content: SYSTEM }, ...data.messages],
+              messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(data.mode,data.locale) }, ...data.messages],
               temperature: 0.3,
               max_tokens: 700,
             }),
@@ -114,7 +117,7 @@ export const chatReply = createServerFn({ method: "POST" })
 
     if (providers.length === 0) {
       return {
-        text: offlineStudyReply(data.messages),
+        text: offlineStudyReply(data.messages,data.locale),
         error: false,
         offline: true,
       };
@@ -140,7 +143,7 @@ export const chatReply = createServerFn({ method: "POST" })
     // If all remote providers fail, offer a bounded, honest study fallback.
     // Do not expose provider credentials or deployment configuration to visitors.
     return {
-      text: offlineStudyReply(data.messages),
+      text: offlineStudyReply(data.messages,data.locale),
       error: false,
       offline: true,
     };
