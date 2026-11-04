@@ -1,0 +1,14 @@
+# Shtemarm is a TanStack Start SSR app (not a static SPA).
+# The Lovable Vite preset includes Nitro. Target the Netlify functions
+# adapter here without changing the Vite/Nitro configuration for Lovable
+# Production or Vercel.
+#
+# Nitro v3 'netlify' writes static assets into dist/ and SSR function and
+# redirects into the Netlify Frameworks API output (.netlify/v1).
+# A generic "/* /index.html 200" rewrite is NOT appropriate for SSR.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NITRO_PRESET = "netlify"
