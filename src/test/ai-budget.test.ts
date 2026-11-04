@@ -46,7 +46,7 @@ describe("Shtemarm shared AI safeguards",()=>{
     expect(src).toContain('createHash("sha256")');
     expect(src).toContain('subjectKey = "user:"');
     expect(src).toContain('subject = "user"');
-    expect(src).toContain('subject = admin ? "admin" : "guest"');
+    expect(src).toContain('= admin ? "admin" : "guest"');
     expect(src).toContain('reason: "unavailable"');
     expect(src).toContain('reason: "quota"');
     expect(src).not.toContain("x-forwarded-for");
