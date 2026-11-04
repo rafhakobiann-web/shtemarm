@@ -1,0 +1,1 @@
+GRANT ALL ON public.question_explanations TO service_role;
