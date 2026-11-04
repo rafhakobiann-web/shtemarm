@@ -13,9 +13,9 @@ export const Route = createFileRoute("/try")({
   validateSearch: z.object({subject: z.enum(["english","math","history","biology","armenian","physics","other"]).optional()}),
   head: () => ({ meta: [
     { title: "Try Shtemarm | Փորձիր առանց գրանցման" },
-    { name: "description", content: "Իրական Shtemarm շտեմարաններ. փորձիր յուրաքանչյուր գրքից առաջին երկու հարցը և գրանցվիր՝ մնացածը բացելու համար։" },
+    { name: "description", content: "Իրական շտեմարաններ. յուրաքանչյուր բաժնից փորձիր երկու հարց, իսկ անգլերենից՝ երկու ամբողջական տեքստ՝ իրենց առաջադրանքներով։" },
     { property: "og:title", content: "Try Shtemarm — No account needed" },
-    { property: "og:description", content: "Browse real Shtemarm question books, answer two guest questions per book, and unlock the rest after signing in." },
+    { property: "og:description", content: "Browse real Shtemarm books: two questions per section or two complete English texts per section, then sign in for the rest." },
   ] }),
   component: GuestExperience,
 });
