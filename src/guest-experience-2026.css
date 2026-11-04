@@ -274,3 +274,6 @@ html.user-reduced-motion .sht-try :is(*,*::before,*::after){
   .sht-try-lock-item span:last-child{display:inline}
   .sht-try-unlock-actions>*{flex:1 1 12rem}
 }
+
+.sht-try-next-book:disabled{opacity:.48;cursor:not-allowed}
+.sht-try-next-book:disabled:hover{filter:none}
