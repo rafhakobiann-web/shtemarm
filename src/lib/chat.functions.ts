@@ -2,15 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { STUDY_MODE_DEFAULT, tutorModeInstructions, type StudyMode, type StudyLanguage } from "./ai-study-modes";
 
+// The visitor can submit only a question; they never choose prior assistant
+// roles. Earlier tutor messages are verified from a server-signed context token.
 const Input = z.object({
-  messages: z
-    .array(z.object({ role: z.enum(["user","assistant"]), content: z.string().min(1).max(2000) }))
-    .min(1)
-    .max(20)
-    .refine(messages=>messages[messages.length-1]?.role==="user", "A student message is required"),
+  question: z.string().trim().min(1).max(2000),
+  contextToken: z.string().max(56000).optional(),
   mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
   locale: z.enum(["hy","en","ru"]).default("hy"),
-});
+}).strict();
 
 const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
 
@@ -18,7 +17,7 @@ const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").repla
 type Msg = { role: "user" | "assistant"; content: string };
 
 function promptForConversation(messages: Msg[], mode: StudyMode, locale: StudyLanguage) {
-  // Both user messages and prior assistant replies are treated as quoted
+  // Only HMAC-verified tutor replies and user questions are present; both are treated as quoted
   // conversation data; only server-defined mode instructions have authority.
   const history = messages.map(m => (m.role==="user" ? "Student: " : "Tutor: ") + m.content).join("\n\n");
   return SYSTEM + "\n" + tutorModeInstructions(mode,locale) +
@@ -78,6 +77,19 @@ function offlineStudyReply(messages: Msg[], locale:StudyLanguage="hy") {
 export const chatReply = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
+    const { readChatContext, sealChatContext } = await import("./chat-context.server");
+    // This is trusted only after HMAC verification. Unsigned role claims are
+    // never accepted from the browser.
+    const previous = await readChatContext(data.contextToken);
+    const messages: Msg[] = [...previous, {role:"user",content:data.question}].slice(-13);
+    const makeResult = async (text:string, extra:Record<string,unknown>={})=>({
+      text,
+      ...extra,
+      contextToken: await sealChatContext([
+        ...messages,
+        {role:"assistant", content:text.slice(0,2000)},
+      ]),
+    });
     const groqKey = process.env["GROQ_API_KEY"];
     const geminiKey = process.env["GEMINI_API_KEY"];
     const openRouterKey = process.env["OPENROUTER_API_KEY"];
@@ -86,9 +98,9 @@ export const chatReply = createServerFn({ method: "POST" })
     // Try configured providers in order. OpenRouter is explicitly pinned to its
     // free-model router so this fallback does not intentionally select paid models.
     const providers: { name: string; run: () => Promise<string> }[] = [];
-    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, data.messages, data.mode, data.locale) });
-    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, data.messages, data.mode, data.locale) });
-    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, data.messages, data.mode, data.locale) });
+    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, messages, data.mode, data.locale) });
+    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, messages, data.mode, data.locale) });
+    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, messages, data.mode, data.locale) });
 
     // Z.ai pricing and model access depend on the user's account. Only enable it
     // when an explicit model is configured, avoiding accidental paid model usage.
@@ -103,7 +115,7 @@ export const chatReply = createServerFn({ method: "POST" })
             headers: { Authorization: `Bearer ${zAiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
               model: zAiModel,
-              messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(data.mode,data.locale) }, ...data.messages],
+              messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(data.mode,data.locale) }, ...messages],
               temperature: 0.3,
               max_tokens: 700,
             }),
@@ -116,11 +128,7 @@ export const chatReply = createServerFn({ method: "POST" })
     }
 
     if (providers.length === 0) {
-      return {
-        text: offlineStudyReply(data.messages,data.locale),
-        error: false,
-        offline: true,
-      };
+      return makeResult(offlineStudyReply(messages,data.locale), {error:false,offline:true});
     }
 
     // All configured remote providers share one atomic request budget.
@@ -134,7 +142,7 @@ export const chatReply = createServerFn({ method: "POST" })
     for (const provider of providers) {
       try {
         const text = await provider.run();
-        if (text) return { text, error: false, provider: provider.name };
+        if (text) return makeResult(text,{error:false,provider:provider.name});
       } catch {
         // Try the next configured provider without leaking server details.
       }
@@ -142,9 +150,5 @@ export const chatReply = createServerFn({ method: "POST" })
 
     // If all remote providers fail, offer a bounded, honest study fallback.
     // Do not expose provider credentials or deployment configuration to visitors.
-    return {
-      text: offlineStudyReply(data.messages,data.locale),
-      error: false,
-      offline: true,
-    };
+    return makeResult(offlineStudyReply(messages,data.locale), {error:false,offline:true});
   });
