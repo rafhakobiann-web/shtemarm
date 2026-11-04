@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AssessmentBuilderRouteImport } from './routes/assessment-builder'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BiologyRouteImport } from './routes/biology'
 import { Route as CalcRouteImport } from './routes/calc'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as EnglishGrammarRouteImport } from './routes/english-grammar'
 import { Route as EnglishTestsRouteImport } from './routes/english-tests'
@@ -28,12 +30,15 @@ import { Route as MathHandbookRouteImport } from './routes/math-handbook'
 import { Route as MathReviewRouteImport } from './routes/math-review'
 import { Route as MiniGamesRouteImport } from './routes/mini-games'
 import { Route as MistakesRouteImport } from './routes/mistakes'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StudyPlanRouteImport } from './routes/study-plan'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
 import { Route as AdminExplanationsRouteImport } from './routes/admin.explanations'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
+import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public-auth-config'
 import { Route as BiologyOriginalRouteImport } from './routes/biology_.original'
 import { Route as BookBookIdRouteImport } from './routes/book.$bookId'
 import { Route as ExamSubjectRouteImport } from './routes/exam.$subject'
@@ -56,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AchievementsRoute = AchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssessmentBuilderRoute = AssessmentBuilderRouteImport.update({
@@ -86,6 +96,11 @@ const ChangelogRoute = ChangelogRouteImport.update({
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadRoute = DownloadRouteImport.update({
@@ -143,9 +158,19 @@ const MistakesRoute = MistakesRouteImport.update({
   path: '/mistakes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudyPlanRoute = StudyPlanRouteImport.update({
+  id: '/study-plan',
+  path: '/study-plan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudyToolsRoute = StudyToolsRouteImport.update({
@@ -171,6 +196,11 @@ const AdminExplanationsRoute = AdminExplanationsRouteImport.update({
 const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
   id: '/admin/feedback',
   path: '/admin/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
+  id: '/api/public-auth-config',
+  path: '/api/public-auth-config',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BiologyOriginalRoute = BiologyOriginalRouteImport.update({
@@ -242,12 +272,14 @@ const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
   '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
   '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
@@ -259,12 +291,15 @@ export interface FileRoutesByFullPath {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-plan': typeof StudyPlanRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
   '/biology/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
@@ -282,12 +317,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
   '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
   '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
@@ -299,12 +336,15 @@ export interface FileRoutesByTo {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-plan': typeof StudyPlanRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
   '/biology/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
@@ -323,12 +363,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/assessment-builder': typeof AssessmentBuilderRoute
   '/auth': typeof AuthRoute
   '/biology': typeof BiologyRoute
   '/calc': typeof CalcRoute
   '/changelog': typeof ChangelogRoute
   '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
@@ -340,12 +382,15 @@ export interface FileRoutesById {
   '/math-review': typeof MathReviewRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-plan': typeof StudyPlanRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
   '/biology_/original': typeof BiologyOriginalRoute
   '/book/$bookId': typeof BookBookIdRoute
   '/exam/$subject': typeof ExamSubjectRoute
@@ -365,12 +410,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/achievements'
     | '/assessment-builder'
     | '/auth'
     | '/biology'
     | '/calc'
     | '/changelog'
     | '/chat'
+    | '/dashboard'
     | '/download'
     | '/english-grammar'
     | '/english-tests'
@@ -382,12 +429,15 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/onboarding'
     | '/sitemap.xml'
+    | '/study-plan'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
     | '/admin/explanations'
     | '/admin/feedback'
+    | '/api/public-auth-config'
     | '/biology/original'
     | '/book/$bookId'
     | '/exam/$subject'
@@ -405,12 +455,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/achievements'
     | '/assessment-builder'
     | '/auth'
     | '/biology'
     | '/calc'
     | '/changelog'
     | '/chat'
+    | '/dashboard'
     | '/download'
     | '/english-grammar'
     | '/english-tests'
@@ -422,12 +474,15 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/onboarding'
     | '/sitemap.xml'
+    | '/study-plan'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
     | '/admin/explanations'
     | '/admin/feedback'
+    | '/api/public-auth-config'
     | '/biology/original'
     | '/book/$bookId'
     | '/exam/$subject'
@@ -445,12 +500,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/achievements'
     | '/assessment-builder'
     | '/auth'
     | '/biology'
     | '/calc'
     | '/changelog'
     | '/chat'
+    | '/dashboard'
     | '/download'
     | '/english-grammar'
     | '/english-tests'
@@ -462,12 +519,15 @@ export interface FileRouteTypes {
     | '/math-review'
     | '/mini-games'
     | '/mistakes'
+    | '/onboarding'
     | '/sitemap.xml'
+    | '/study-plan'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
     | '/admin/explanations'
     | '/admin/feedback'
+    | '/api/public-auth-config'
     | '/biology_/original'
     | '/book/$bookId'
     | '/exam/$subject'
@@ -486,12 +546,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AchievementsRoute: typeof AchievementsRoute
   AssessmentBuilderRoute: typeof AssessmentBuilderRoute
   AuthRoute: typeof AuthRoute
   BiologyRoute: typeof BiologyRoute
   CalcRoute: typeof CalcRoute
   ChangelogRoute: typeof ChangelogRoute
   ChatRoute: typeof ChatRoute
+  DashboardRoute: typeof DashboardRoute
   DownloadRoute: typeof DownloadRoute
   EnglishGrammarRoute: typeof EnglishGrammarRoute
   EnglishTestsRoute: typeof EnglishTestsRoute
@@ -503,12 +565,15 @@ export interface RootRouteChildren {
   MathReviewRoute: typeof MathReviewRoute
   MiniGamesRoute: typeof MiniGamesRoute
   MistakesRoute: typeof MistakesRoute
+  OnboardingRoute: typeof OnboardingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudyPlanRoute: typeof StudyPlanRoute
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
   VocabularyRoute: typeof VocabularyRoute
   AdminExplanationsRoute: typeof AdminExplanationsRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
+  ApiPublicAuthConfigRoute: typeof ApiPublicAuthConfigRoute
   BiologyOriginalRoute: typeof BiologyOriginalRoute
   BookBookIdRoute: typeof BookBookIdRoute
   ExamSubjectRoute: typeof ExamSubjectRoute
@@ -538,6 +603,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/achievements': {
+      id: '/achievements'
+      path: '/achievements'
+      fullPath: '/achievements'
+      preLoaderRoute: typeof AchievementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assessment-builder': {
@@ -580,6 +652,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/download': {
@@ -659,11 +738,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MistakesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/study-plan': {
+      id: '/study-plan'
+      path: '/study-plan'
+      fullPath: '/study-plan'
+      preLoaderRoute: typeof StudyPlanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/study-tools': {
@@ -699,6 +792,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/feedback'
       fullPath: '/admin/feedback'
       preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public-auth-config': {
+      id: '/api/public-auth-config'
+      path: '/api/public-auth-config'
+      fullPath: '/api/public-auth-config'
+      preLoaderRoute: typeof ApiPublicAuthConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/biology_/original': {
@@ -798,12 +898,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AchievementsRoute: AchievementsRoute,
   AssessmentBuilderRoute: AssessmentBuilderRoute,
   AuthRoute: AuthRoute,
   BiologyRoute: BiologyRoute,
   CalcRoute: CalcRoute,
   ChangelogRoute: ChangelogRoute,
   ChatRoute: ChatRoute,
+  DashboardRoute: DashboardRoute,
   DownloadRoute: DownloadRoute,
   EnglishGrammarRoute: EnglishGrammarRoute,
   EnglishTestsRoute: EnglishTestsRoute,
@@ -815,12 +917,15 @@ const rootRouteChildren: RootRouteChildren = {
   MathReviewRoute: MathReviewRoute,
   MiniGamesRoute: MiniGamesRoute,
   MistakesRoute: MistakesRoute,
+  OnboardingRoute: OnboardingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudyPlanRoute: StudyPlanRoute,
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
   VocabularyRoute: VocabularyRoute,
   AdminExplanationsRoute: AdminExplanationsRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
+  ApiPublicAuthConfigRoute: ApiPublicAuthConfigRoute,
   BiologyOriginalRoute: BiologyOriginalRoute,
   BookBookIdRoute: BookBookIdRoute,
   ExamSubjectRoute: ExamSubjectRoute,
