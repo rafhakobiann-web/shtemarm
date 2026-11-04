@@ -34,7 +34,55 @@ declare
   v_used_daily integer;
   v_used_minute integer;
 begin
-  if p_subject is null or p_subject !~ '^(guest|user:[a-f0-9]{64})$'
+  if p_subject is null or p_subject !~ '^(guest|admin|user:[a-f0-9]{64})
+    or p_subject_daily_limit < 1 or p_subject_daily_limit > 10000
+    or p_global_daily_limit < 1 or p_global_daily_limit > 100000
+    or p_global_minute_limit < 1 or p_global_minute_limit > 10000
+  then
+    return false;
+  end if;
+  v_subject_bucket := 'subject:' || p_subject;
+
+  perform pg_catalog.pg_advisory_xact_lock(14477, 16285);
+  insert into public.ai_request_counters(bucket, period_start, used)
+    values (v_subject_bucket, v_day, 0), ('global:day', v_day, 0),
+           ('global:minute', v_minute, 0)
+    on conflict (bucket, period_start) do nothing;
+
+  select used into v_used_subject from public.ai_request_counters
+    where bucket = v_subject_bucket and period_start = v_day;
+  select used into v_used_daily from public.ai_request_counters
+    where bucket = 'global:day' and period_start = v_day;
+  select used into v_used_minute from public.ai_request_counters
+    where bucket = 'global:minute' and period_start = v_minute;
+
+  if v_used_subject >= p_subject_daily_limit
+    or v_used_daily >= p_global_daily_limit
+    or v_used_minute >= p_global_minute_limit
+  then
+    return false;
+  end if;
+
+  update public.ai_request_counters
+    set used = used + 1
+    where bucket = v_subject_bucket and period_start = v_day;
+  update public.ai_request_counters
+    set used = used + 1
+    where bucket = 'global:day' and period_start = v_day;
+  update public.ai_request_counters
+    set used = used + 1
+    where bucket = 'global:minute' and period_start = v_minute;
+  return true;
+end;
+$$;
+revoke all on function public.reserve_ai_request(text,integer,integer,integer)
+  from public, anon, authenticated;
+grant execute on function public.reserve_ai_request(text,integer,integer,integer)
+  to service_role;
+
+comment on function public.reserve_ai_request(text,integer,integer,integer)
+  is 'Service-role-only atomic reservation for AI usage caps. Run migration before enabling hosted model keys.';
+
     or p_subject_daily_limit < 1 or p_subject_daily_limit > 10000
     or p_global_daily_limit < 1 or p_global_daily_limit > 100000
     or p_global_minute_limit < 1 or p_global_minute_limit > 10000
