@@ -7,7 +7,7 @@ import { STUDY_MODE_DEFAULT, tutorModeInstructions, type StudyMode, type StudyLa
 const Input = z.object({
   question: z.string().trim().min(1).max(2000),
   contextToken: z.string().max(56000).optional(),
-  mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
+  mode: z.enum(["adaptive","hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
   locale: z.enum(["hy","en","ru"]).default("hy"),
 }).strict();
 
