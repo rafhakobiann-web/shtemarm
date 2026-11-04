@@ -110,7 +110,7 @@ describe("Shtemarm shared AI safeguards",()=>{
     expect(env).toContain("AI_GLOBAL_DAILY_LIMIT=800");
     expect(doc).toContain("20261104000000_ai_request_quotas.sql");
     expect(doc).toContain("Fail-closed");
-    expect(doc).toContain("NOT 20 per guest");
+    expect(doc).toContain("zero anonymous metered calls");
     expect(env).not.toContain("VITE_GEMINI_API_KEY");
     expect(env).not.toContain("VITE_GROQ_API_KEY");
   });
