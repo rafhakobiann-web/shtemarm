@@ -1,0 +1,25 @@
+name: Verify personalized dashboard and tutor
+on:
+  pull_request:
+    paths:
+      - 'src/routes/dashboard.tsx'
+      - 'src/routes/chat.tsx'
+      - 'src/test/personal-dashboard-2026.test.ts'
+      - '.github/workflows/verify-personal-dashboard.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/test/personal-dashboard-2026.test.ts src/test/study-plan.test.ts src/test/ai-learning.test.ts src/test/security-feedback-chat.test.ts
+      - run: bunx tsc --noEmit
+      - run: node scripts/check-repo-secrets.mjs
+      - run: bun run build
