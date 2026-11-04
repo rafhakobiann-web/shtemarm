@@ -199,36 +199,36 @@ export const GUEST_BOOK_TEXT: Record<GuestLang,{
   rest:string; login:string; ready:string; explanation:string; correct:string; incorrect:string;
   check:string; next:string; restart:string; input:string; pending:string; failed:string;
   missing:string; preview:string; disclaimer:string; source:string; selected:string;
-  sectionsLocked:string; count:string;
+  sectionsLocked:string; count:string; chooseSection:string; section:string; twoTexts:string; twoQuestions:string; englishNotice:string; sectionNotice:string; text:string;
 }> = {
   hy:{
-    browse:"Դիտել բոլոր շտեմարանները",title:"Իրական շտեմարաններ",description:"Ընտրիր գիրք, փորձիր դրա առաջին 2 հարցը և բացահայտիր աշխատանքի ընթացքը։ Մնացած առաջադրանքները հասանելի են մուտք գործելուց հետո։",
+    browse:"Դիտել բոլոր շտեմարանները",title:"Իրական շտեմարաններ",description:"Ընտրիր շտեմարանն ու բաժինը։ Յուրաքանչյուր բաժնից հասանելի են 2 հարց, իսկ անգլերենում՝ 2 ամբողջական տեքստ՝ իրենց առաջադրանքներով։",
     all:"Բոլորը",categories:{all:"Բոլորը",english:"Անգլերեն",math:"Մաթեմատիկա",history:"Հայոց պատմություն",biology:"Կենսաբանություն",armenian:"Հայոց լեզու",physics:"Ֆիզիկա",other:"Այլ առարկաներ"},
-    question:"Հարց",firstTwo:"2 հարց՝ փորձարկման համար",back:"Վերադառնալ գրքերին",unlock:"Բացել ամբողջ շտեմարանը",locked:"Փակված",rest:"Մնացած հարցերը հասանելի են հաշիվ ստեղծելուց կամ մուտք գործելուց հետո։",
+    question:"Հարց",firstTwo:"2 առաջադրանք՝ յուրաքանչյուր բաժնից",back:"Վերադառնալ գրքերին",unlock:"Բացել ամբողջ շտեմարանը",locked:"Փակված",rest:"Մնացած հարցերը հասանելի են հաշիվ ստեղծելուց կամ մուտք գործելուց հետո։",
     login:"Գրանցվել կամ մուտք գործել",ready:"Ամբողջական պարապմունքները սկսվում են այստեղ",explanation:"Բացատրություն",correct:"Ճիշտ է",incorrect:"Սխալ է",
     check:"Ստուգել",next:"Հաջորդ հարցը",restart:"Կրկին փորձել",input:"Մուտքագրիր պատասխանը",pending:"Բեռնվում են իրական հարցերը…",
-    failed:"Չհաջողվեց բեռնել այս շտեմարանը։",missing:"Այս գրքի համար երկու ստուգվող տեքստային հարց դեռ պատրաստ չեն։ Մուտք գործիր՝ առկա առաջադրանքները տեսնելու համար։",
+    failed:"Չհաջողվեց բեռնել այս շտեմարանը։",missing:"Այս բաժնի համար ստուգվող հարցեր դեռ պատրաստ չեն։ Մուտք գործիր՝ առկա առաջադրանքները տեսնելու համար։",
     preview:"Բաց է միայն նախադիտումը",disclaimer:"Առաջադրանքները բեռնվում են Shtemarm-ի առկա գրքերից։ Հյուրի պատասխանները չեն պահպանվում։",
-    source:"Շտեմարանի բաժին",selected:"Ընտրիր գիրքը",sectionsLocked:"Հաջորդ բաժիններն ու հարցերը փակ են",count:"Գիրք",
+    source:"Շտեմարանի բաժին",selected:"Ընտրիր գիրքը",sectionsLocked:"Այս բաժնի մնացած առաջադրանքները փակ են",count:"Գիրք",chooseSection:"Ընտրիր բաժինը",section:"Բաժին",twoTexts:"2 ամբողջական տեքստ՝ յուրաքանչյուր բաժնից",twoQuestions:"2 հարց՝ յուրաքանչյուր բաժնից",englishNotice:"Բաց են առաջին երկու ամբողջական տեքստերը կամ վարժությունները՝ բոլոր ենթահարցերով։",sectionNotice:"Այս բաժնից կարող ես լուծել առաջին երկու հասանելի հարցերը։",text:"Տեքստ",
   },
   en:{
-    browse:"Browse the question books",title:"Real question books",description:"Choose a book, answer its first 2 questions, and explore the actual study flow. Sign in to continue with the rest.",
+    browse:"Browse the question books",title:"Real question books",description:"Choose a book and section. Try two questions from every section, or two complete English texts with their exercises.",
     all:"All",categories:{all:"All",english:"English",math:"Mathematics",history:"History",biology:"Biology",armenian:"Armenian",physics:"Physics",other:"Other subjects"},
-    question:"Question",firstTwo:"2 questions available to try",back:"Back to books",unlock:"Unlock the full question book",locked:"Locked",rest:"The remaining questions become available after you create an account or sign in.",
+    question:"Question",firstTwo:"2 per section",back:"Back to books",unlock:"Unlock the full question book",locked:"Locked",rest:"The remaining questions become available after you create an account or sign in.",
     login:"Sign up or sign in",ready:"Continue with the full study experience",explanation:"Explanation",correct:"Correct",incorrect:"Not quite",
     check:"Check answer",next:"Next question",restart:"Try again",input:"Enter your answer",pending:"Loading real questions…",
-    failed:"This book could not be loaded.",missing:"This book does not yet contain two suitable text-based preview questions. Sign in to explore the available exercises.",
+    failed:"This book could not be loaded.",missing:"This section does not yet contain suitable preview exercises. Sign in to explore the available exercises.",
     preview:"Preview only",disclaimer:"Questions come from Shtemarm's existing book content. Guest answers aren't saved.",
-    source:"Book section",selected:"Choose a book",sectionsLocked:"Further sections and questions are locked",count:"Books",
+    source:"Book section",selected:"Choose a book",sectionsLocked:"Remaining exercises in this section are locked",count:"Books",chooseSection:"Choose a section",section:"Section",twoTexts:"2 full texts per section",twoQuestions:"2 questions per section",englishNotice:"The first two complete texts or exercises are unlocked, including their subquestions.",sectionNotice:"Try the first two available questions in this section.",text:"Text",
   },
   ru:{
-    browse:"Посмотреть сборники",title:"Настоящие сборники заданий",description:"Выбери сборник, реши первые 2 вопроса и познакомься с интерфейсом. Остальное откроется после входа.",
+    browse:"Посмотреть сборники",title:"Настоящие сборники заданий",description:"Выбери сборник и раздел: по два вопроса в каждом разделе, а для английского — два полных текста с заданиями.",
     all:"Все",categories:{all:"Все",english:"Английский",math:"Математика",history:"История Армении",biology:"Биология",armenian:"Армянский язык",physics:"Физика",other:"Другие предметы"},
-    question:"Вопрос",firstTwo:"2 вопроса для ознакомления",back:"К списку книг",unlock:"Открыть полный сборник",locked:"Заблокировано",rest:"Остальные вопросы станут доступны после регистрации или входа.",
+    question:"Вопрос",firstTwo:"2 задания в каждом разделе",back:"К списку книг",unlock:"Открыть полный сборник",locked:"Заблокировано",rest:"Остальные вопросы станут доступны после регистрации или входа.",
     login:"Регистрация или вход",ready:"Продолжить полноценную подготовку",explanation:"Объяснение",correct:"Верно",incorrect:"Неверно",
     check:"Проверить",next:"Следующий вопрос",restart:"Начать заново",input:"Введи ответ",pending:"Загружаем реальные вопросы…",
-    failed:"Не удалось загрузить этот сборник.",missing:"В сборнике пока нет двух доступных для предпросмотра текстовых вопросов. Войди, чтобы открыть остальные задания.",
+    failed:"Не удалось загрузить этот сборник.",missing:"В этом разделе пока нет проверяемых заданий для просмотра. Войди, чтобы открыть остальные задания.",
     preview:"Только ознакомление",disclaimer:"Вопросы взяты из существующих сборников Shtemarm. Ответы гостя не сохраняются.",
-    source:"Раздел сборника",selected:"Выбери сборник",sectionsLocked:"Следующие разделы и вопросы заблокированы",count:"Сборников",
+    source:"Раздел сборника",selected:"Выбери сборник",sectionsLocked:"Остальные задания этого раздела заблокированы",count:"Сборников",chooseSection:"Выбери раздел",section:"Раздел",twoTexts:"2 полных текста на раздел",twoQuestions:"2 вопроса на раздел",englishNotice:"Первые два текста или упражнения доступны целиком, вместе со всеми подпунктами.",sectionNotice:"Попробуй первые два доступных вопроса в этом разделе.",text:"Текст",
   },
 };
