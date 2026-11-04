@@ -141,7 +141,7 @@ function Explain(props: { instruction: string; passage: string; question: string
   return (
     <div>
     {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
-    {text && <RichExplanation text={text} error={failed}/>
+    {text && <RichExplanation text={text} error={failed}/>}
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
@@ -305,6 +305,14 @@ export function UnitCard(props: {
         {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
+        {show && chosen !== q.answer && (
+          <div role="status" aria-live="polite" className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/5 px-3 py-2.5 text-sm leading-relaxed">
+            <X className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true"/>
+            <span>{language==="en"?"Not quite. The correct answer is highlighted above. Read the explanation, then revisit this question in your mistakes.":
+              language==="ru"?"Пока неверно. Правильный ответ выделен выше. Прочитай объяснение и повтори вопрос позже.":
+              "Դեռ ճիշտ չէ։ Ճիշտ պատասխանը նշված է վերևում։ Կարդա բացատրությունը և հետագայում կրկնիր սխալը։"}</span>
+          </div>
+        )}
         {show && chosen !== q.answer && englishSource && <Link to="/english-grammar"
           search={{book:Number(englishSource[1]),section:Number(englishSource[2]),topic:undefined}}
           className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/20 bg-primary/5 px-3 text-sm font-semibold text-primary">
@@ -362,6 +370,14 @@ export function UnitCard(props: {
           <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
             {tx("Ստուգել →")}
           </button>
+        )}
+        {show && !ok && (
+          <div role="status" aria-live="polite" className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/5 px-3 py-2.5 text-sm leading-relaxed">
+            <X className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true"/>
+            <span>{language==="en"?"Review the correct value and its steps. This question will be available to revisit in your mistakes.":
+              language==="ru"?"Сравни результат с правильным ответом и повтори решение по шагам.":
+              "Համեմատիր արդյունքդ ճիշտ պատասխանի հետ և քայլ առ քայլ կրկնիր լուծումը։"}</span>
+          </div>
         )}
         {show && q.explanation && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation}

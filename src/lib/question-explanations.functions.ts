@@ -84,6 +84,8 @@ async function askGroq(prompt: string): Promise<{ text: string; provider: string
 export const adminStoredExplanationIds = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200), bank: Bank }).parse(input))
   .handler(async ({ data }) => {
+    const { requireVerifiedAdminSession } = await import("./admin-session.server");
+    await requireVerifiedAdminSession();
     checkAdmin(data.password);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
@@ -98,6 +100,8 @@ export const adminStoredExplanationIds = createServerFn({ method: "POST" })
 export const adminGenerateExplanation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200), bank: Bank, question: Question }).parse(input))
   .handler(async ({ data }) => {
+    const { requireVerifiedAdminSession } = await import("./admin-session.server");
+    await requireVerifiedAdminSession();
     checkAdmin(data.password);
     const { reserveAiRequest } = await import("./ai-quota.server");
     const budget = await reserveAiRequest({ admin: true });
@@ -122,6 +126,8 @@ export const adminGenerateExplanation = createServerFn({ method: "POST" })
 export const adminSetExplanationReviewed = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200), bank: Bank, id: z.string().min(3).max(200), reviewed: z.boolean() }).parse(input))
   .handler(async ({ data }) => {
+    const { requireVerifiedAdminSession } = await import("./admin-session.server");
+    await requireVerifiedAdminSession();
     checkAdmin(data.password);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("question_explanations")

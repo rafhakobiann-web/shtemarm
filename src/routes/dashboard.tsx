@@ -4,9 +4,11 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useTx } from "@/lib/lang";
-import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
+import { ALL_BOOKS, ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 import { BookCover } from "@/components/BookCover";
+import { readStudyResume, type StudyResume } from "@/lib/study-resume";
+import { useLang } from "@/lib/lang";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
 
@@ -263,15 +265,20 @@ function ArmenianSubject() {
 
 function Index() {
   const tx = useTx();
+  const lang = useLang();
   const progress = useProgress();
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
+  const [resume, setResume] = useState<StudyResume | null>(null);
   useEffect(() => {
     if (!hasSupabaseConfig()) return;
     try {
       void supabase.auth.getUser()
         .then(({ data, error }) => {
-          if (!error) setName((data.user?.user_metadata?.username as string | undefined) ?? null);
+          if (!error && data.user?.id) {
+            setName((data.user.user_metadata?.username as string | undefined) ?? null);
+            setResume(readStudyResume(data.user.id));
+          }
         })
         .catch(() => { /* Keep the study dashboard usable without an account. */ });
     } catch {
@@ -321,6 +328,42 @@ function Index() {
             </div>
           ))}
         </div>
+      </section>
+      <section aria-label={lang==="en"?"Your next learning step":lang==="ru"?"Продолжить обучение":"Ուսման հաջորդ քայլը"}
+        className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center rounded-[1.35rem] border border-primary/20 bg-card p-4 shadow-sm sm:p-5">
+        <div className="min-w-0 space-y-2">
+          <p className="flex items-center gap-2 text-xs font-bold text-primary"><BookOpen className="size-4" aria-hidden="true" />
+            {lang==="en"?"YOUR LEARNING PATH":lang==="ru"?"ТВОЯ УЧЁБА":"ՔՈ ՈՒՍՈՒՄՆԱԿԱՆ ՈՒՂԻՆ"}
+          </p>
+          <h2 className="text-balance text-lg font-black sm:text-xl">
+            {resume
+              ? lang==="en"?"Continue learning where you left off":lang==="ru"?"Продолжай с последнего раздела":"Շարունակիր այնտեղից, որտեղ կանգ էիր առել"
+              : lang==="en"?"Ready for your next question?":lang==="ru"?"Готов к следующему заданию?":"Պատրա՞ստ ես հաջորդ առաջադրանքին"}
+          </h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {resume
+              ? (ALL_BOOKS.find(b=>b.id===resume.bookId)?.title ?? "")+" · "+
+                (lang==="en"?"Section ":lang==="ru"?"Раздел ":"Բաժին ")+resume.sectionId
+              : lang==="en"?"Choose a book and start with interactive questions and instant explanations."
+                :lang==="ru"?"Выбери сборник, решай задания и сразу получай обратную связь."
+                :"Ընտրիր շտեմարանը, լուծիր հարցերն ու անմիջապես տես բացատրությունները։"}
+          </p>
+          {resume && <span className="text-xs font-semibold text-muted-foreground">
+            {lang==="en"?"Saved on this device":lang==="ru"?"Сохранено на этом устройстве":"Պահպանվել է այս սարքում"}
+          </span>}
+        </div>
+        {resume ?
+          <Link to="/study/$bookId/$sectionId"
+            params={{bookId:String(resume.bookId),sectionId:String(resume.sectionId)}}
+            search={{mode:resume.mode}}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-black text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            {lang==="en"?"Continue learning":lang==="ru"?"Продолжить":"Շարունակել ուսումը"}
+            <ArrowRight className="size-4" aria-hidden="true"/>
+          </Link>
+          :<a href="#subjects" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-black text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            {lang==="en"?"Choose a book":lang==="ru"?"Выбрать сборник":"Ընտրել շտեմարան"}
+            <ArrowRight className="size-4" aria-hidden="true"/>
+          </a>}
       </section>
       <Link
         to="/download"
@@ -391,7 +434,7 @@ function Index() {
                 <p className="font-bold">{tx("Առաջարկ քեզ համար")}</p>
                 <p className="text-sm text-muted-foreground">{tx("Կրկնիր նախկինում սխալ պատասխանած հարցերը, հետո նորից ստուգիր առաջընթացդ։")}</p>
               </div>
-              <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
+              <Link to="/study-tools" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
             </div>
           )}
           <details className="group/progress rounded-[1.35rem] border bg-card shadow-card">

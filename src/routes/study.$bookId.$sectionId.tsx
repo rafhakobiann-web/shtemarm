@@ -11,6 +11,8 @@ import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 import { recordUnitMistakes, subjectForBookId } from "@/lib/unitMistakes";
+import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
+import { saveStudyResume } from "@/lib/study-resume";
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
   staticData: { sitemap: false },
@@ -43,6 +45,21 @@ function StudyPage() {
   useEffect(() => {
     update((p) => (p.mode === mode ? p : { ...p, mode }));
   }, [mode]);
+
+  // Only remember verified signed-in visitors. Do not capture answers,
+  // question text or any data from other accounts on a shared device.
+  useEffect(() => {
+    if (!hasSupabaseConfig() || !section) return;
+    let active = true;
+    void supabase.auth.getUser().then(({data,error}) => {
+      if (!active || error || !data.user?.id) return;
+      saveStudyResume(data.user.id,{
+        bookId:Number(bookId),sectionId:Number(sectionId),
+        mode,visitedAt:Date.now(),
+      });
+    }).catch(()=>{ /* Resume is optional; never block a study session. */ });
+    return () => {active=false;};
+  }, [bookId,sectionId,mode,!!section]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
