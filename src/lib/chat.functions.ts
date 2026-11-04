@@ -120,6 +120,14 @@ export const chatReply = createServerFn({ method: "POST" })
       };
     }
 
+    // All configured remote providers share one atomic request budget.
+    // If quota storage is not deployed, fail closed instead of spending.
+    const { reserveAiRequest, quotaMessage } = await import("./ai-quota.server");
+    const budget = await reserveAiRequest();
+    if (!budget.allowed) {
+      return { text: quotaMessage(budget.reason), error: true, offline: true, limited: budget.reason === "quota" };
+    }
+
     for (const provider of providers) {
       try {
         const text = await provider.run();
