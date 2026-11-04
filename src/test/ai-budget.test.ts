@@ -82,8 +82,8 @@ describe("Shtemarm shared AI safeguards",()=>{
   it("keeps keys out of VITE/browser code and documents the required migration",()=>{
     const env=read(".env.example");
     const doc=read("docs/AI_SETUP.md");
-    expect(env).toContain("AI_USER_DAILY_LIMIT=15");
-    expect(env).toContain("AI_GLOBAL_DAILY_LIMIT=200");
+    expect(env).toContain("AI_USER_DAILY_LIMIT=60");
+    expect(env).toContain("AI_GLOBAL_DAILY_LIMIT=800");
     expect(doc).toContain("20261104000000_ai_request_quotas.sql");
     expect(doc).toContain("Fail-closed");
     expect(doc).toContain("NOT 20 per guest");

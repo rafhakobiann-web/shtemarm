@@ -45,10 +45,10 @@ export async function reserveAiRequest({ admin = false }: { admin?: boolean } = 
     const perDay = aiQuotaLimit(
       process.env[subject === "user" ? "AI_USER_DAILY_LIMIT" :
         subject === "admin" ? "AI_ADMIN_DAILY_LIMIT" : "AI_GUEST_SHARED_DAILY_LIMIT"],
-      subject === "user" ? 15 : subject === "admin" ? 80 : 20, 10000,
+      subject === "user" ? 60 : subject === "admin" ? 80 : 30, 10000,
     );
-    const globalDay = aiQuotaLimit(process.env["AI_GLOBAL_DAILY_LIMIT"], 200);
-    const globalMinute = aiQuotaLimit(process.env["AI_GLOBAL_MINUTE_LIMIT"], 15, 10000);
+    const globalDay = aiQuotaLimit(process.env["AI_GLOBAL_DAILY_LIMIT"], 800);
+    const globalMinute = aiQuotaLimit(process.env["AI_GLOBAL_MINUTE_LIMIT"], 25, 10000);
 
     // The generated database types intentionally don't include migrations
     // until they are applied and regenerated. Both arguments and return type

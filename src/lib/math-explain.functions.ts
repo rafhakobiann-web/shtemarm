@@ -33,7 +33,6 @@ function valueLabel(kind: Input["kind"], v: string) {
 }
 
 function buildPrompt(d: Input) {
-  const wrong = d.chosen !== null && d.chosen !== d.correct;
   const optionNote =
     d.kind === "choice"
       ? "Տարբերակները համարակալված են 1)-ից 4)։ Ճիշտ պատասխանը վերցված է պաշտոնական պատասխաններից և ՃԻՇՏ Է․ մի վիճարկիր այն։"
@@ -54,7 +53,7 @@ ${optionNote}
 Մի ավելացրու գծագիր, եթե խնդրի տվյալներից այն ճշգրիտ չի բխում։ Այլ ձևաչափերով HTML, SVG կամ կատարվող կոդ մի գրիր։
 
 Ճիշտ պատասխան: ${valueLabel(d.kind, d.correct)}
-${d.chosen !== null ? `Աշակերտի պատասխանը: ${valueLabel(d.kind, d.chosen)}` : "Աշակերտը չի պատասխանել։"}`;
+Այս լուծումը կկարդան նույն առաջադրանքը կատարող տարբեր աշակերտներ։ Բացատրի՛ր ամբողջական լուծումը՝ առանց անհատական ընտրված պատասխանի անդրադառնալու։`;
 }
 
 function offlineMathExplanation(data: Input) {
@@ -73,7 +72,7 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
       return { text: "Առաջադրանքի պայմանը բացակայում է․ խնդրում ենք փորձել մեկ այլ հարց։", cached: false, error: true, offline: true };
 
     const cacheKey = await sha256Hex([
-      "math-v4", data.locale??"hy", data.item, data.kind, data.correct, data.chosen ?? "",
+      "math-shared-v5", data.locale??"hy", data.item, data.kind, data.correct,
       data.question, ...data.options, ...data.pages,
     ]);
     const cached = await getSavedExplanation(cacheKey);
