@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { getRequest } from "@tanstack/react-start/server";
 import { aiQuotaLimit } from "./ai-quota-policy";
 export { quotaMessage } from "./ai-quota-policy";
@@ -33,9 +32,12 @@ export async function reserveAiRequest({ admin = false }: { admin?: boolean } = 
         const { data, error } = await supabaseAdmin.auth.getUser(token);
         if (!error && data.user?.id) {
           subject = "user";
-          subjectKey = "user:" + createHash("sha256")
-            .update(data.user.id + ":" + (process.env["AI_QUOTA_SALT"] || "shtemarm-ai-v1"))
-            .digest("hex");
+          const bytes = new TextEncoder().encode(
+            data.user.id + ":" + (process.env["AI_QUOTA_SALT"] || "shtemarm-ai-v1"),
+          );
+          const digest = await crypto.subtle.digest("SHA-256", bytes);
+          subjectKey = "user:" + [...new Uint8Array(digest)]
+            .map(b=>b.toString(16).padStart(2,"0")).join("");
         }
       }
     }
