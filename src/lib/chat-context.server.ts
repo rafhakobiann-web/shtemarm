@@ -43,7 +43,7 @@ function toBase64Url(bytes: Uint8Array): string {
   for (const byte of bytes) text += String.fromCharCode(byte);
   return btoa(text).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
-function fromBase64Url(text: string): Uint8Array {
+function fromBase64Url(text: string): Uint8Array<ArrayBuffer> {
   if (!/^[A-Za-z0-9_-]+$/.test(text)) throw new Error("invalid token encoding");
   const decoded = atob(text.replace(/-/g, "+").replace(/_/g, "/"));
   return Uint8Array.from(decoded, c=>c.charCodeAt(0));
@@ -78,3 +78,4 @@ export async function readChatContext(token?:string): Promise<VerifiedChatTurn[]
     return [];
   }
 }
+

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useBook } from "@/lib/useBook";
 import { ALL_BOOKS, questionAnswerKey, questionForAnswerKey, secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
-import { UnitCard, scoreUnit, normNum, type UnitAnswer } from "@/components/UnitCard";
+import { UnitCard, scoreUnit, normNum, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
@@ -46,18 +46,18 @@ function StudyPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <div className="grid min-w-0 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">{section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}</span>
         </Link>
-        <div className="flex rounded-xl bg-muted p-1 text-sm font-semibold">
+        <div className="grid grid-cols-2 rounded-xl bg-muted p-1 text-center text-sm font-semibold">
           {(["game", "classic"] as const).map((m) => (
             <Link
               key={m}
               to="/study/$bookId/$sectionId"
               params={{ bookId, sectionId }}
               search={{ mode: m }}
-              className={cn("rounded-lg px-3 py-1.5", mode === m ? "bg-card shadow-sm" : "text-muted-foreground")}
+              className={cn("flex min-h-11 items-center justify-center rounded-lg px-3 py-2", mode === m ? "bg-card shadow-sm" : "text-muted-foreground")}
             >
               {m === "game" ? tx("Խաղային") : tx("Դասական")}
             </Link>
@@ -117,7 +117,7 @@ function useRevealer(subject: string, onResult?: (correct: boolean) => void) {
     const id = qKey(u, key);
     // Guard synchronously. React state updates can be batched, so two rapid
     // taps must not record the same question twice before re-render.
-    if (checkedRef.current.has(id) || revealed[id]) return;
+    if (checkedRef.current.has(id) || revealed[id] || !isAnswered(u, answers[u.id], perQuestion(u) ? key : undefined)) return;
     checkedRef.current.add(id);
     updateRevealed((r) => ({ ...r, [id]: true }));
     const a = answers[u.id];
@@ -153,46 +153,60 @@ function PhysicsSourceJump({unit}:{unit:Unit}){
 /* ---------------- Classic ---------------- */
 function Classic({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
   const tx = useTx();
+  const lang = useLang();
   const { answers, setAnswers, revealed, check } = useRevealer(subjectForBookId(bookId));
-  // A single History/Biology section can contain hundreds of units. Rendering
-  // the entire section on first paint blocks input and makes scrolling laggy.
-  // Expand in source order without dropping any tasks or current answers.
+  // A fixed window keeps hundreds of source units off the main thread.
+  // Answers and checked status live above the window and survive page changes.
   const PAGE_SIZE = 12;
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const visibleUnits = units.slice(0, visibleCount);
+  const [page, setPage] = useState(0);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const pageCount = Math.ceil(units.length / PAGE_SIZE);
+  const visibleUnits = units.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const words = lang === "en" ? { previous: "Previous", next: "Next", page: "Page", checked: "Checked", help: "Your answers stay here when you change pages." }
+    : lang === "ru" ? { previous: "Назад", next: "Далее", page: "Страница", checked: "Проверено", help: "При переходе между страницами ответы сохраняются в этом занятии." }
+    : { previous: "Նախորդը", next: "Հաջորդը", page: "Էջ", checked: "Ստուգված", help: "Էջերը փոխելիս պատասխաններդ պահպանվում են այս պարապմունքում։" };
+  const total = units.reduce((count, u) => count + (perQuestion(u) ? (u as Extract<Unit, {kind: "mc" | "num"}>).questions.length : 1), 0);
+  const checked = Object.values(revealed).filter(Boolean).length;
+  const go = (next: number) => {
+    setPage(Math.max(0, Math.min(pageCount - 1, next)));
+    requestAnimationFrame(() => {
+      heading.current?.focus({ preventScroll: true });
+      heading.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    });
+  };
+  const pager = <div className="study-pager flex flex-wrap items-center justify-between gap-3">
+    <Button type="button" variant="outline" disabled={page === 0} onClick={() => go(page - 1)} className="min-h-11">← {words.previous}</Button>
+    <label className="flex items-center gap-2 text-sm font-semibold">{words.page}
+      <select value={page} onChange={e => go(Number(e.target.value))} className="min-h-11 max-w-32 rounded-xl border bg-background px-3 text-base">
+        {Array.from({ length: pageCount }, (_, index) => <option key={index} value={index}>{index + 1} / {pageCount}</option>)}
+      </select>
+    </label>
+    <Button type="button" variant="outline" disabled={page + 1 >= pageCount} onClick={() => go(page + 1)} className="min-h-11">{words.next} →</Button>
+  </div>;
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border bg-card px-4 py-3 text-sm shadow-sm">
-        <span className="font-semibold">{tx("Առաջադրանքներ")} · {Math.min(visibleCount, units.length)} / {units.length}</span>
-        <span className="text-muted-foreground">{tx("Գրքի հերթականությամբ")}</span>
-      </div>
+      <section className="space-y-3 rounded-2xl border bg-card p-4 shadow-sm">
+        <h2 ref={heading} tabIndex={-1} className="study-section-heading text-sm font-bold">
+          {tx("Առաջադրանքներ")} · {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, units.length)} / {units.length}
+        </h2>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <progress value={checked} max={Math.max(total, 1)} aria-label={words.checked} className="h-2 min-w-0 flex-1 accent-primary" />
+          <span role="status">{words.checked}: {checked} / {total}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">{tx("Գրքի հերթականությամբ")} · {words.help}</p>
+        {pageCount > 1 && pager}
+      </section>
       {visibleUnits.map((u) => (
         <div key={u.id} className="space-y-2">
           <PhysicsSourceJump unit={u}/>
-        <UnitCard
-          key={u.id}
-          unit={u}
-          instruction={instr}
-          instructionEn={instrEn}
-          value={answers[u.id]}
-          onChange={(v) => setAnswers((s) => ({ ...s, [u.id]: v }))}
-          revealed={(k) => !!revealed[qKey(u, k)]}
-          onCheck={(k) => check(u, k)}
-          header={<p className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? tx("Առաջադրանք {n}", { n: u.label }) : u.label}</p>}
-        />
+          <UnitCard unit={u} instruction={instr} instructionEn={instrEn}
+            value={answers[u.id]} onChange={(v) => setAnswers((s) => ({ ...s, [u.id]: v }))}
+            revealed={(k) => !!revealed[qKey(u, k)]} onCheck={(k) => check(u, k)}
+            header={<h2 className="font-display text-xs font-bold uppercase tracking-wide text-muted-foreground">{/^\d+$/.test(u.label) ? tx("Առաջադրանք {n}", { n: u.label }) : u.label}</h2>}
+          />
         </div>
       ))}
-      {visibleCount < units.length && (
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          className="min-h-12 w-full rounded-2xl"
-          onClick={() => setVisibleCount((count) => Math.min(units.length, count + PAGE_SIZE))}
-        >
-          {tx("Ցույց տալ ևս {n} առաջադրանք", { n: Math.min(PAGE_SIZE, units.length - visibleCount) })}
-        </Button>
-      )}
+      {pageCount > 1 && pager}
     </div>
   );
 }
@@ -201,6 +215,8 @@ function Classic({ units, instr, instrEn, bookId }: { units: Unit[]; instr: stri
 function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
   const tx = useTx();
   const progress = useProgress();
+  const lang = useLang();
+  const unitRegion = useRef<HTMLDivElement>(null);
   const ROUND = 6;
   const [seed, setSeed] = useState(0);
   const round = useMemo(() => {
@@ -271,19 +287,23 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
   const allRevealed = keys.every((k) => revealed[qKey(u, k)]);
   return (
     <div className="space-y-4">
+      <p role="status" className="text-sm font-semibold text-muted-foreground">
+        {tx("Առաջադրանքներ")} · {idx + 1} / {round.length}
+      </p>
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-        <div className="flex gap-0.5">
+        <div role="img" aria-label={`${hearts} / 3 ${lang === "en" ? "lives" : lang === "ru" ? "жизни" : "կյանք"}`} className="flex gap-0.5">
           {[0, 1, 2].map((i) => (
-            <Heart key={i} className={cn("size-5", i < hearts ? "fill-destructive text-destructive" : "text-muted-foreground/40")} />
+            <Heart aria-hidden="true" key={i} className={cn("size-5", i < hearts ? "fill-destructive text-destructive" : "text-muted-foreground/40")} />
           ))}
         </div>
-        <div className="h-3 overflow-hidden rounded-full bg-muted">
+        <div role="progressbar" aria-label={tx("Առաջադրանքներ")} aria-valuemin={0} aria-valuemax={round.length} aria-valuenow={idx} className="h-3 overflow-hidden rounded-full bg-muted">
           <div className="h-full rounded-full bg-success transition-all" style={{ width: `${(idx / round.length) * 100}%` }} />
         </div>
         <span className={cn("flex items-center gap-1 font-display text-sm font-bold", combo >= 2 ? "text-sun" : "text-muted-foreground")}>
           <Zap className="size-4" /> ×{combo}
         </span>
       </div>
+      <div ref={unitRegion} tabIndex={-1} className="study-active-unit">
       <PhysicsSourceJump unit={u}/>
       <UnitCard
         key={u.id}
@@ -295,9 +315,16 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
         revealed={(k) => !!revealed[qKey(u, k)]}
         onCheck={(k) => check(u, k)}
       />
+      </div>
       {allRevealed && (
-        <div className="sticky bottom-4 z-20 flex justify-end">
-          <Button variant="game" size="lg" onClick={() => { setIdx(idx + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+        <div className="study-action-bar sticky z-20 flex justify-end">
+          <Button variant="game" size="lg" onClick={() => {
+            setIdx(idx + 1);
+            requestAnimationFrame(() => {
+              unitRegion.current?.focus({ preventScroll: true });
+              unitRegion.current?.scrollIntoView({ block: "start", behavior: "auto" });
+            });
+          }}>
             {tx("Շարունակել →")}
           </Button>
         </div>
@@ -305,3 +332,4 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
     </div>
   );
 }
+

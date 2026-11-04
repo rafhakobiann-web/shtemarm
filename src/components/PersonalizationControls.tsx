@@ -58,7 +58,7 @@ function readPreferences(): Preferences {
   return defaults;
 }
 
-export function PersonalizationControls() {
+export function PersonalizationControls({ inline = false }: { inline?: boolean }) {
   const lang = useLang();
   const t = copy[lang];
   const [prefs, setPrefs] = useState<Preferences>(defaults);
@@ -85,7 +85,7 @@ export function PersonalizationControls() {
 
   return (
     <>
-      <div className={`site-floating-controls fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-center gap-2 md:bottom-6`}>
+      <div className={inline ? "site-inline-controls mx-auto flex w-full max-w-7xl justify-end gap-2 px-4 pt-3 sm:px-6 lg:px-8" : `site-floating-controls fixed ${floatingSide} bottom-[calc(6.35rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-center gap-2 md:bottom-6`}>
         <Button type="button" variant="outline" size="icon" className="size-10 shrink-0 rounded-xl border bg-card shadow-md transition-colors hover:border-primary/40 hover:bg-muted md:size-12" aria-label={t.accessibility} title={t.accessibility} onClick={() => setAccessOpen((v) => !v)}>
           <Accessibility className="size-5" />
         </Button>
@@ -229,3 +229,4 @@ export function PersonalizationControls() {
     </>
   );
 }
+

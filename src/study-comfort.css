@@ -1,0 +1,60 @@
+/* Reading and answering share one normal scroll surface on phones. */
+:root { --study-dock-clearance: calc(6.25rem + env(safe-area-inset-bottom, 0px)); }
+/* The touch-highlight rule sets position:relative on these surfaces in the
+   base theme. Restore their navigation positioning after that treatment. */
+html[data-surface="liquid"] .site-header { position: sticky; }
+html[data-surface="liquid"] .mobile-liquid-dock { position: fixed; }
+.site-inline-controls > button { min-width: 2.75rem; min-height: 2.75rem; }
+.study-unit, .study-question-list, .study-active-unit { min-width: 0; }
+.study-unit { overflow-wrap: anywhere; }
+.study-passage, .study-question-list, .study-active-unit, .study-section-heading {
+  scroll-margin-top: calc(var(--sticky-top, 4.5rem) + 1rem);
+}
+.study-passage-body[hidden], .site-mobile-nav[hidden] { display: none !important; }
+.study-context-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: .5rem;
+  border-radius: .6rem;
+  color: var(--primary);
+  font-size: .8rem;
+  font-weight: 700;
+}
+.study-context-link:focus-visible, .study-question-list:focus-visible,
+.study-active-unit:focus-visible, .study-section-heading:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.study-action-bar {
+  bottom: var(--study-dock-clearance);
+  padding: .5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 3px 16px rgb(0 0 0 / .08);
+}
+.study-action-bar > button { width: 100%; min-height: 3rem; }
+.study-answer-grid .answer-option { min-width: 0; }
+.study-answer-grid .answer-option input { min-width: 1rem; }
+@media (max-width: 767px) {
+  #main-content { padding-bottom: calc(var(--study-dock-clearance) + 1.5rem); }
+  .study-unit input, .study-unit select, .study-pager select { font-size: 1rem; }
+  .study-pager { display: grid; grid-template-columns: 1fr 1fr; }
+  .study-pager > label { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
+  .study-pager > button { min-width: 0; white-space: normal; }
+  .study-passage-body { max-height: none; overflow: visible; }
+}
+@media (min-width: 768px) {
+  .study-action-bar { bottom: 1rem; margin-left: auto; width: max-content; min-width: 12rem; }
+}
+@media (min-width: 1024px) {
+  .study-passage { position: sticky; top: calc(var(--sticky-top, 4.5rem) + .5rem); }
+  .study-passage-body { max-height: calc(100dvh - var(--sticky-top, 4.5rem) - 7rem); overflow-y: auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .study-question-list .answer-option { transition-duration: 150ms; }
+}
+@media (forced-colors: active) {
+  .study-unit .answer-option:has(input:checked) { outline: 2px solid Highlight; }
+}
