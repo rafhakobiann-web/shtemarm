@@ -6,9 +6,9 @@ const read=(p:string)=>readFileSync(p,"utf8");
 
 describe("Learning-first AI in Shtemarm",()=>{
   it("offers guiding hints, fully explained solutions, and adaptive quizzes",()=>{
-    expect(STUDY_MODE_DEFAULT).toBe("hint");
+    expect(STUDY_MODE_DEFAULT).toBe("adaptive");
     for(const lang of ["hy","en","ru"] as const){
-      for(const mode of ["hint","explain","quiz"] as const){
+      for(const mode of ["adaptive","hint","explain","quiz"] as const){
         const t=tutorModeInstructions(mode,lang);
         expect(t.length).toBeGreaterThan(350);
         expect(t).toContain("Shtemarm tutor");
@@ -17,6 +17,8 @@ describe("Learning-first AI in Shtemarm",()=>{
         expect(studyLabels[lang][`${mode}Description`].length).toBeGreaterThan(9);
       }
     }
+    expect(tutorModeInstructions("adaptive","hy")).toContain("After a wrong attempt");
+    expect(tutorModeInstructions("adaptive","hy")).toContain("After a correct explanation");
     expect(tutorModeInstructions("hint","hy")).toContain("provide a complete explained solution instead");
     expect(tutorModeInstructions("explain","hy")).toContain("Give the answer");
     expect(tutorModeInstructions("quiz","en")).toContain("explicitly check it");
@@ -31,7 +33,7 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain('contextToken: z.string().max(56000).optional()');
     expect(server).toContain('readChatContext(data.contextToken)');
     expect(server).not.toContain('role: z.enum(["user","assistant"])');
-    expect(server).toContain('mode: z.enum(["hint","explain","quiz"])');
+    expect(server).toContain('mode: z.enum(["adaptive","hint","explain","quiz"])');
     expect(server).toContain('locale: z.enum(["hy","en","ru"])');
     expect(server).toContain('tutorModeInstructions(data.mode,data.locale)');
     expect(server).toContain('promptForConversation(messages,mode,locale)');
