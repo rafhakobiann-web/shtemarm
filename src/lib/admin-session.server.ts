@@ -1,4 +1,4 @@
-/** 
+/**
  * Protect admin-only explanation management even when the public route or
  * TanStack client navigation guard is bypassed.
  *
@@ -25,4 +25,3 @@ export async function requireVerifiedAdminSession(): Promise<string> {
 
   return data.user.id;
 }
-
