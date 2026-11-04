@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 import { getRequest } from "@tanstack/react-start/server";
+import { aiQuotaLimit } from "./ai-quota-policy";
+export { quotaMessage } from "./ai-quota-policy";
 
 /**
  * Fail-closed shared AI budget. No client-provided IDs or IP addresses can
@@ -12,30 +14,6 @@ import { getRequest } from "@tanstack/react-start/server";
 export type AiQuotaResult =
   | { allowed: true; subject: "user" | "guest" | "admin" }
   | { allowed: false; reason: "quota" | "unavailable" };
-
-export function aiQuotaLimit(input: string | undefined, defaultValue: number, maximum = 100000): number {
-  if (!input || !/^[1-9]\d*$/.test(input)) return defaultValue;
-  const n = Number(input);
-  return Number.isSafeInteger(n) && n <= maximum ? n : defaultValue;
-}
-
-export function quotaMessage(reason: "quota" | "unavailable", lang: "hy" | "en" | "ru" = "hy"): string {
-  const labels = {
-    hy: {
-      quota: "ԱԲ հարցումների սահմանաչափը լրացել է։ Օգտվիր պատրաստի բացատրություններից կամ փորձիր ավելի ուշ։",
-      unavailable: "ԱԲ հարցումների անվտանգ սահմանափակման ծառայությունը ժամանակավորապես հասանելի չէ։ Փորձիր ավելի ուշ։",
-    },
-    en: {
-      quota: "The AI usage limit has been reached. Try saved explanations or come back later.",
-      unavailable: "The AI usage protection service is temporarily unavailable. Please try later.",
-    },
-    ru: {
-      quota: "Лимит запросов к ИИ исчерпан. Используй сохранённые объяснения или попробуй позже.",
-      unavailable: "Сервис контроля запросов к ИИ временно недоступен. Попробуй позже.",
-    },
-  } as const;
-  return labels[lang][reason];
-}
 
 /** Use only on the server, immediately before a remote model request. */
 export async function reserveAiRequest({ admin = false }: { admin?: boolean } = {}): Promise<AiQuotaResult> {
