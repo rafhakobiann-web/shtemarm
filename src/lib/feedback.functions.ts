@@ -12,6 +12,24 @@ export const submitFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => SubmitInput.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = await getVerifiedFeedbackUserId();
+
+    // Never trust a user-controlled clientId as sole anti-abuse protection.
+    // Signed-in accounts share their own quota even if the browser ID changes.
+    const quotaSource = (userId ? "user:" + userId : "guest:" + data.clientId) +
+      ":" + (process.env["FEEDBACK_QUOTA_SALT"] || "shtemarm-feedback-v1");
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(quotaSource));
+    const clientHash = [...new Uint8Array(digest)]
+      .map(byte=>byte.toString(16).padStart(2,"0")).join("");
+    const { data: reserved, error: quotaError } = await supabaseAdmin.rpc(
+      "reserve_feedback_submission" as never, {p_client_hash:clientHash} as never,
+    );
+    if (quotaError) {
+      console.error("[feedback] quota service unavailable", quotaError.code);
+      throw new Error("service_unavailable");
+    }
+    if (reserved !== true) throw new Error("rate_limited");
+
     const cutoff = new Date(Date.now() - 60_000).toISOString();
     const { data: recent, error: lookupError } = await supabaseAdmin.from("feedback")
       .select("id").eq("client_id", data.clientId).gte("created_at", cutoff).limit(1);
@@ -21,37 +39,49 @@ export const submitFeedback = createServerFn({ method: "POST" })
       message: data.message,
       contact: data.contact ? data.contact : null,
       client_id: data.clientId,
+      user_id: userId,
     });
     if (error) { console.error("[feedback] write failed", error.code); throw new Error("service_unavailable"); }
     return { ok: true };
   });
 
-// SECURITY: A clientId is browser-controlled and is not proof of ownership.
-// Do not return private messages/replies until records are bound to verified
-// Supabase auth.user IDs and the database has per-user RLS policies.
-// Preserve existing feedback rows and admin access during migration.
-export const getMyFeedback = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ clientId: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/) }).parse(input))
-  .handler(async () => {
-    return [] as { id: string; message: string; reply: string | null; created_at: string; replied_at: string | null }[];
-  });
-
 /**
- * The password alone isn't enough to invoke a privileged service-role
- * feedback endpoint. The caller also needs a verified Supabase session.
- * Guest feedback submission remains intentionally write-only.
+ * Feedback authorship is tied ONLY to a verified Supabase identity.
+ * Guest feedback remains write-only. A browser clientId never authorizes
+ * reading another visitor's message or reply.
  */
-async function requireVerifiedFeedbackAdminSession() {
+async function getVerifiedFeedbackUserId():Promise<string|null> {
   const { getRequest } = await import("@tanstack/react-start/server");
-  let token: string | undefined;
+  let token:string;
   try {
-    const bearer = getRequest().headers.get("authorization") ?? "";
-    if (/^Bearer\\s+\\S{20,8192}$/i.test(bearer)) token = bearer.replace(/^Bearer\\s+/i, "");
-  } catch { /* No request -> no authenticated session. */ }
-  if (!token) throw new Error("unauthorized");
+    const authorization = getRequest().headers.get("authorization") ?? "";
+    if (!/^Bearer\\s+\\S{20,8192}$/i.test(authorization)) return null;
+    token = authorization.replace(/^Bearer\\s+/i,"");
+  } catch { return null; }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.auth.getUser(token);
-  if (error || !data.user?.id) throw new Error("unauthorized");
+  return error ? null : data.user?.id ?? null;
+}
+
+export const getMyFeedback = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({}).strict().parse(input))
+  .handler(async () => {
+    const userId = await getVerifiedFeedbackUserId();
+    if (!userId) return [] as {
+      id:string; message:string; reply:string|null;
+      created_at:string; replied_at:string|null;
+    }[];
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin.from("feedback")
+      .select("id, message, reply, created_at, replied_at")
+      .eq("user_id", userId).order("created_at",{ascending:false}).limit(100);
+    if (error) throw new Error("load failed");
+    return rows ?? [];
+  });
+
+/** The administrative password is not an unauthenticated API token. */
+async function requireVerifiedFeedbackAdminSession() {
+  if (!await getVerifiedFeedbackUserId()) throw new Error("unauthorized");
 }
 
 function checkAdmin(password: string) {
