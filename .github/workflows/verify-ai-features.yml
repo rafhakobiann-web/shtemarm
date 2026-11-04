@@ -8,6 +8,15 @@ on:
       - 'src/lib/translate.functions.ts'
       - 'src/lib/explanation-providers.server.ts'
       - 'src/lib/explanation-cache.server.ts'
+      - 'src/lib/ai-quota.server.ts'
+      - 'src/lib/ai-quota-policy.ts'
+      - 'src/lib/explain.functions.ts'
+      - 'src/lib/math-explain.functions.ts'
+      - 'src/lib/question-explanations.functions.ts'
+      - 'src/components/UnitCard.tsx'
+      - 'src/components/MathExplain.tsx'
+      - 'src/test/ai-budget.test.ts'
+      - 'supabase/migrations/20261104000000_ai_request_quotas.sql'
       - 'src/routes/chat.tsx'
       - 'src/test/ai-runtime.test.ts'
       - 'src/test/explanation-providers.test.ts'
@@ -25,5 +34,5 @@ jobs:
         with:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
-      - run: bunx vitest run src/test/ai-runtime.test.ts src/test/explanation-providers.test.ts src/test/translation.test.ts src/test/rich-explanations.test.tsx
+      - run: bunx vitest run src/test/ai-runtime.test.ts src/test/explanation-providers.test.ts src/test/ai-budget.test.ts src/test/translation.test.ts src/test/rich-explanations.test.tsx
       - run: bun run build
