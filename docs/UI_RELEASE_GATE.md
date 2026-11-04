@@ -40,3 +40,15 @@ A repository administrator can use GitHub Settings → Rules → Rulesets (if el
 to target `main`, require a pull request, require relevant status checks, block force pushes,
 and restrict bypass access. **Do not make the repo public just to obtain protections**:
 book/source-asset redistribution rights need separate review.
+
+## Public try-before-sign-up experience (PR #207)
+- [ ] Open `/try` as a signed-out visitor on a 320px phone, 390px Android phone, tablet and desktop.
+- [ ] The landing hero and footer open the demo without an auth redirect; `/auth` remains available when ready to register.
+- [ ] Switch Հայերեն / English / Русский, dark/light mode, and all three demo tabs; content and focus remain readable.
+- [ ] Answer all three **illustrative** questions and review explanations; retry the demo without an account.
+- [ ] Flip and swipe cards: left = known, right = review; retry missed cards in the current guest session. Vertical scroll does not mark cards.
+- [ ] Complete the mini-challenge and see only labeled **sample XP**.
+- [ ] Reload / leave the page: demo answers, card piles and XP must not persist to real account progress.
+- [ ] Direct visits to real `/dashboard`, `/book/*`, `/exam/*` still require authorization; guest navigation does not bypass protected routes.
+- [ ] Confirm reduced-motion and keyboard interaction, and check browser console for errors.
+- [ ] Confirm the intended maintenance-mode behavior before making the guest experience publicly available.
