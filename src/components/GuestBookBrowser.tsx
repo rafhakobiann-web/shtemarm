@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronRight, KeyRound, Loader2, LockKeyhole, RefreshCw, Sparkles, X } from "lucide-react";
 import { BookCover } from "@/components/BookCover";
@@ -151,11 +151,12 @@ function MathBookSample({bookId}:{bookId:"matem-1"|"matem-2"}){
   return <BookSamples questions={questions}/>;
 }
 
-export function GuestBookBrowser() {
+export function GuestBookBrowser({initialCategory="all"}:{initialCategory?:PreviewCategory}) {
   const lang=useLang();
   const t=GUEST_BOOK_TEXT[lang];
-  const [category,setCategory]=useState<PreviewCategory>("all");
+  const [category,setCategory]=useState<PreviewCategory>(initialCategory);
   const [selected,setSelected]=useState<string|null>(null);
+  useEffect(()=>{setCategory(initialCategory);setSelected(null);},[initialCategory]);
   const filtered=useMemo(()=>GUEST_BOOKS.filter(b=>category==="all"||b.category===category),[category]);
   const book=GUEST_BOOKS.find(b=>b.id===selected)||null;
   return <section className="sht-try-book-browser">
