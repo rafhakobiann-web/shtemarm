@@ -15,6 +15,11 @@ It is not a branch-protection rule and cannot itself prevent a merge.
 - [ ] Accent selector remains visible in **Classic, Academy and Liquid Glass**, including opaque/reduced-transparency preferences.
 - [ ] Signed-in header: subject shortcuts actually open `/dashboard?subject=...`, not the public `/`.
 - [ ] Mobile: tapping each of five tabs opens the correct route; swiping horizontally changes selection; vertical swipes over the dock scroll normally.
+- [ ] Mobile: after a horizontal tab drag to an already-open tab, the temporary highlight returns to the actual current tab; the dock never remains stuck.
+- [ ] Flashcards: **left = I know**, **right = review later**; the current question must not flip when the swipe is released.
+- [ ] Flashcards: a short tap flips the card, a vertical swipe scrolls the page, and diagonal drags do not silently grade an answer.
+- [ ] Switching flashcard subject, filter or topics during a swipe cancels the previous timer; no stale answer is saved.
+- [ ] At reduced-motion settings, flashcard grading is instant while all buttons remain usable; test long question text on 320px and 390px phones.
 - [ ] Navigation and keyboard focus have **44px or larger** usable targets where practical, and all controls have meaningful accessible names.
 - [ ] Dashboard: book cards, user metrics and real progress are preserved; no placeholder data is presented as real.
 - [ ] Exam setup: question source, count, timing and grading remain unchanged; no question-bank edits in this UI PR.

@@ -209,3 +209,65 @@ html.user-high-contrast[data-surface="liquid"] [data-motion-pressed="true"] {
   scale: 1 !important;
   transform: none !important;
 }
+
+/* Shtemarm mobile flashcard interaction polish: direction is written on the
+   chip, not communicated by color alone. Touch gestures never lock scrolling. */
+.sht-flashcard-card {
+  touch-action: pan-y;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center center;
+}
+.sht-flashcard-card:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.sht-flashcard-choices > span {
+  min-width: 0;
+  border: 1px solid transparent;
+  transition: transform 150ms ease, border-color 150ms ease,
+              background-color 150ms ease;
+}
+.sht-flashcard-session[data-swipe-intent="known"] .sht-flashcard-choice-known {
+  transform: translateY(-2px);
+  border-color: rgb(4 120 87 / 42%);
+  background: rgb(16 185 129 / 20%);
+}
+.sht-flashcard-session[data-swipe-intent="review"] .sht-flashcard-choice-review {
+  transform: translateY(-2px);
+  border-color: rgb(180 83 9 / 42%);
+  background: rgb(245 158 11 / 20%);
+}
+.sht-flashcard-session[data-swipe-intent="known"] .sht-flashcard-card {
+  border-color: rgb(5 150 105 / 62%);
+}
+.sht-flashcard-session[data-swipe-intent="review"] .sht-flashcard-card {
+  border-color: rgb(217 119 6 / 62%);
+}
+.sht-flashcard-actions > button {
+  min-width: 0;
+  min-height: 3rem;
+  white-space: normal;
+  line-height: 1.3;
+}
+@media (max-width: 480px) {
+  .sht-flashcard-card {
+    padding: clamp(1rem, 4vw, 1.5rem);
+    min-height: 15.5rem;
+    gap: 1rem;
+  }
+  .sht-flashcard-choices > span { padding: .7rem .35rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-flashcard-card, .sht-flashcard-choices > span {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html.user-reduced-motion .sht-flashcard-card,
+html.user-reduced-motion .sht-flashcard-choices > span {
+  transition: none !important;
+  animation: none !important;
+}
