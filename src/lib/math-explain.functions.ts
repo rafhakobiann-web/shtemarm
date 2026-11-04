@@ -84,6 +84,12 @@ export const explainMathAnswer = createServerFn({ method: "POST" })
     const usingImages = data.pages.length > 0 && !!geminiKey;
     const textAvailable = !!data.question.trim();
     // A text-only Groq model must not be asked to hallucinate from unseen scans.
+    const { reserveAiRequest } = await import("./ai-quota.server");
+    const canCall = (usingImages || textAvailable) && !!(geminiKey || groqKey);
+    const budget = canCall ? await reserveAiRequest() : null;
+    if (budget && !budget.allowed) {
+      return { ...offlineMathExplanation(data), aiUnavailable: budget.reason };
+    }
     const ai = usingImages || textAvailable
       ? await generateExplanation(
         buildPrompt({ ...data, pages: usingImages ? data.pages : [] }),
