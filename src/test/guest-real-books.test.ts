@@ -87,6 +87,8 @@ describe("Book previews before registration",()=>{
     const root=source("src/routes/__root.tsx");
     expect(browser).toContain("pickGuestBookQuestions(data)");
     expect(browser).toContain("pickGuestMathQuestions(data,bookId)");
+    expect(browser).toContain("disabled={!canAdvance}");
+    expect(browser).toContain("onAnswered={()=>setCanAdvance(true)}");
     expect(browser).toContain("GUEST_BOOK_LIMIT+1");
     expect(browser).toContain('to="/auth"');
     expect(browser).toContain('to="/book/$bookId"');
@@ -94,6 +96,9 @@ describe("Book previews before registration",()=>{
     expect(browser).toContain("aria-pressed={category===filter}");
     expect(route).toContain("mode===\"practice\" && <GuestBookBrowser");
     expect(root).toContain('"/try"');
+    expect(route).toContain('initialCategory={guestSubject ?? "all"}');
+    expect(route).toContain("validateSearch: z.object({subject:");
+    expect(source("src/routes/index.tsx")).toContain('to="/try" search={{subject:key}}');
     expect(root).not.toContain('"/dashboard", "/try"');
   });
 
