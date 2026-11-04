@@ -162,3 +162,32 @@
 html.user-reduced-motion .sht-try :is(*,*::before,*::after){
   animation:none!important;transition:none!important;scroll-behavior:auto!important
 }
+
+
+/* Discovery CTAs on the public landing link to the full no-signup preview. */
+.sht-landing .sht-nav-demo {
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:.4rem;
+  min-height:2.65rem;
+  padding:.55rem .72rem;
+  border:1px solid var(--sht-outline,var(--border));
+  border-radius:.8rem;
+  background:var(--card);
+  color:var(--foreground);
+  font-size:.73rem;
+  font-weight:850;
+  white-space:nowrap;
+  text-decoration:none;
+}
+.sht-landing .sht-nav-demo:hover {border-color:var(--primary);background:var(--sht-soft,var(--card));}
+.sht-landing .sht-cta-actions {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.75rem;position:relative;z-index:1}
+.sht-landing .sht-cta-actions .sht-button-secondary {background:rgb(255 255 255 / 95%);color:#22315b;border-color:rgb(255 255 255 / 50%)}
+.sht-landing .sht-hero-caption {flex-wrap:wrap}
+.sht-landing .sht-hero-caption a {font-weight:850;color:var(--primary);text-underline-offset:3px}
+@media (min-width:1400px) { .sht-landing .sht-nav-demo {display:inline-flex} }
+@media (max-width:767px) {
+  .sht-landing .sht-cta-actions {width:100%;justify-content:stretch}
+  .sht-landing .sht-cta-actions > * {flex:1 1 12rem;min-height:3rem}
+}
