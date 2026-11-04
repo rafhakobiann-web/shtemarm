@@ -3,7 +3,7 @@ import { aiQuotaLimit } from "./ai-quota-policy";
 export { quotaMessage } from "./ai-quota-policy";
 
 /**
- * Fail-closed shared AI budget. No client-provided IDs or IP addresses can
+ * Fail-closed authenticated AI budget. No client-provided IDs or IP addresses can
  * choose a higher quota. User identity is verified by Supabase Auth and only
  * a one-way digest is written to the service-role-only usage table.
  *
@@ -12,7 +12,7 @@ export { quotaMessage } from "./ai-quota-policy";
  */
 export type AiQuotaResult =
   | { allowed: true; subject: "user" | "guest" | "admin" }
-  | { allowed: false; reason: "quota" | "unavailable" };
+  | { allowed: false; reason: "signin" | "quota" | "unavailable" };
 
 /** Use only on the server, immediately before a remote model request. */
 export async function reserveAiRequest({ admin = false }: { admin?: boolean } = {}): Promise<AiQuotaResult> {
@@ -40,6 +40,10 @@ export async function reserveAiRequest({ admin = false }: { admin?: boolean } = 
             .map(b=>b.toString(16).padStart(2,"0")).join("");
         }
       }
+      // The visitor-controlled browser cannot decide that they are signed in.
+      // In the absence of a valid Supabase Auth user, never reserve a model
+      // request or allow a paid API call. Local/cached explanations remain free.
+      if (subject !== "user") return { allowed: false, reason: "signin" };
     }
 
     const perDay = aiQuotaLimit(
