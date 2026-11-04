@@ -226,7 +226,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
     if(status==="signed-out"&&!isPublic){void navigate({to:"/auth",replace:true});return;}
     if(status==="signed-in"&&userId){
       const onboarded=!!readOnboarding(userId);
-      if(!onboarded&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
+      if(!onboarded&&!isPublic&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
       if(onboarded&&pathname==="/onboarding"){void navigate({to:"/dashboard",replace:true});return;}
     }
   },[status,userId,isPublic,pathname,navigate,onboardingVersion]);
