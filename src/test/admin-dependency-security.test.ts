@@ -32,7 +32,7 @@ describe("Shtemarm admin + dependency security",()=>{
     expect(source).toContain('1.168.60');
     expect(source).toContain('1.169.39');
     expect(source).toContain('1.167.38');
-    expect(source).toContain('router_init.js')===false;
+    expect(source).toContain('github:tanstack/router#79ac49eedf774dd4b0cfa308722bc463cfe5885c');
     expect(source).toContain('Known malicious TanStack setup dependency');
     expect(lock).toContain('"@tanstack/react-start@1.168.60"');
     expect(lock).toContain('"@tanstack/start-server-core@1.169.39"');
