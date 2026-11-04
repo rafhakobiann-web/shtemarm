@@ -18,6 +18,7 @@ describe("Shtemarm shared AI safeguards",()=>{
 
   it("provides honest and localized quota/unavailable messaging",()=>{
     for(const lang of ["hy","en","ru"] as const){
+      expect(quotaMessage("signin",lang).length).toBeGreaterThan(35);
       expect(quotaMessage("quota",lang).length).toBeGreaterThan(25);
       expect(quotaMessage("unavailable",lang).length).toBeGreaterThan(25);
       expect(quotaMessage("unavailable",lang)).not.toBe(quotaMessage("quota",lang));
@@ -49,6 +50,9 @@ describe("Shtemarm shared AI safeguards",()=>{
     expect(src).toContain('= admin ? "admin" : "guest"');
     expect(src).toContain('reason: "unavailable"');
     expect(src).toContain('reason: "quota"');
+    expect(src).toContain('if (subject !== "user") return { allowed: false, reason: "signin" }');
+    expect(src.indexOf('supabaseAdmin.auth.getUser(token)')).toBeLessThan(src.indexOf('if (subject !== "user")'));
+    expect(src.indexOf('if (subject !== "user")')).toBeLessThan(src.indexOf('supabaseAdmin.rpc("reserve_ai_request"'));
     expect(src).not.toContain("x-forwarded-for");
     expect(src).not.toContain("localStorage");
   });
@@ -69,6 +73,26 @@ describe("Shtemarm shared AI safeguards",()=>{
     expect(translation).toContain("const budget = await ensureBudget()");
     expect(admin).toContain("reserveAiRequest({ admin: true })");
     expect(subject).toContain("if (!quota.allowed)");
+    expect(chat).toContain("if (!budget.allowed)");
+  });
+
+  it("keeps all metered AI providers behind a verified account but allows free cached content",()=>{
+    const translation=read("src/lib/translate.functions.ts");
+    const english=read("src/lib/explain.functions.ts");
+    const math=read("src/lib/math-explain.functions.ts");
+    const calculator=read("src/lib/calc.functions.ts");
+    const chat=read("src/lib/chat.functions.ts");
+    const budget=read("src/lib/ai-quota.server.ts");
+    expect(budget).toContain('if (subject !== "user") return { allowed: false, reason: "signin" }');
+    expect(translation.indexOf("getDictionaryTranslation(")).toBeLessThan(translation.indexOf("reserveAiRequest()"));
+    expect(translation.indexOf("getSavedExplanation(key)")).toBeLessThan(translation.indexOf("reserveAiRequest()"));
+    expect(english.indexOf("getSavedExplanation(cacheKey)")).toBeLessThan(english.indexOf("reserveAiRequest()"));
+    expect(math.indexOf("getSavedExplanation(cacheKey)")).toBeLessThan(math.indexOf("reserveAiRequest()"));
+    expect(calculator.indexOf("reserveAiRequest()")).toBeLessThan(calculator.indexOf("callGemini(key, parts)"));
+    expect(chat.indexOf("reserveAiRequest()")).toBeLessThan(chat.indexOf("for (const provider of providers)"));
+    expect(translation).toContain("if (!budget.allowed)");
+    expect(math).toContain("if (budget && !budget.allowed)");
+    expect(calculator).toContain("if (!budget.allowed)");
     expect(chat).toContain("if (!budget.allowed)");
   });
 
