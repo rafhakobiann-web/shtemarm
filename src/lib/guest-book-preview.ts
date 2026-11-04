@@ -35,12 +35,12 @@ export function pickGuestBookQuestions(book:Book, limit:number=GUEST_BOOK_LIMIT)
     const sectionName=section.label||section.title||`Բաժին ${section.n}`;
     for(const unit of section.units){
       if(unit.kind!=="mc"&&unit.kind!=="num")continue;
-      const passage=unit.passage?.trim()||undefined;
+      const passage=typeof unit.passage==="string"?unit.passage.trim()||undefined:undefined;
       for(let i=0;i<unit.questions.length;i++){
         const q=unit.questions[i]!;
-        if(!q.stem?.trim()||!q.answer?.trim())continue;
+        if(typeof q.stem!=="string"||typeof q.answer!=="string"||!q.stem.trim()||!q.answer.trim()||/still being processed|question text unavailable|հարցի տեքստը դեռ/i.test(q.stem))continue;
         const options=unit.kind==="mc"
-          ? Object.entries(q.options||{}).filter(([key,value])=>key.trim()&&value.trim()).map(([key,value])=>({key,value}))
+          ? Object.entries(q.options||{}).filter(([key,value])=>key.trim()&&typeof value==="string"&&value.trim()).map(([key,value])=>({key,value}))
           : [];
         if(unit.kind==="mc"&&(!options.length||!options.some(x=>x.key===q.answer)))continue;
         out.push({
@@ -68,7 +68,7 @@ export function pickGuestMathQuestions(index:MathBookIndex,bookId:"matem-1"|"mat
       for(let i=0;i<task.sub_count;i++){
         const q=task.questions?.[i];
         const answer=task.answers?.[i]?.trim();
-        if(!q?.prompt?.trim()||!answer)continue;
+        if(typeof q?.prompt!=="string"||!q.prompt.trim()||!answer||/still being processed|question text unavailable|հարցի տեքստը դեռ/i.test(q.prompt))continue;
         const optionTexts=(q.options||[]).filter(Boolean);
         const isChoice=/^[1-4]$/.test(answer)&&optionTexts.length>=Number(answer);
         out.push({
