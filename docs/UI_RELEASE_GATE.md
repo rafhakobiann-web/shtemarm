@@ -57,9 +57,18 @@ book/source-asset redistribution rights need separate review.
 ### Real book previews (guest library upgrade)
 - [ ] From landing, each subject card opens `/try?subject=<category>` with the matching book covers visible.
 - [ ] English, mathematics, history, biology, Armenian language and physics books can be selected from the guest catalog.
-- [ ] A selected book exposes **at most two answerable questions** from its current Shtemarm source data, with original text, choices and feedback; no fabricated fallback question is shown if a book is missing usable items.
-- [ ] Finishing the two questions shows the visible lock on questions 3+ and next sections. Proceeding requires answering the current question.
+- [ ] A selected book exposes **at most two answerable questions PER SECTION** from its current Shtemarm source data, with original text, choices and feedback; no fabricated fallback question is shown if a book is missing usable items.
+- [ ] Each section lists its own two unlocked questions and visibly locks questions 3+ in that section. Proceeding requires answering the current question.
 - [ ] Signed-out visitors who tap **Open full book** are routed through sign-in. After completing sign-in and onboarding, registered users can access the existing full book pages.
 - [ ] Full mathematics books remain on `/math/books`; guest preview uses two text-based source items rather than PDF crops.
 - [ ] Check that no guest responses are written to student progress or mistake storage.
 - [ ] **Access control limitation:** Existing `/public/data/*.json` files are served publicly. This release gates the app interface, NOT raw JSON downloads. A truly restricted question bank requires moving full data behind authenticated server endpoints and removing public static copies. Do not represent this frontend gate as secure content protection.
+
+### Guest section-level previews — 2026-11-04
+- [ ] Every book section has a selectable tab, showing up to **two questions in that section** (not just two for the whole book).
+- [ ] In English reading/cloze sections, reveal the first **two complete source texts/exercises**, with every original subquestion for each text. The third source text remains behind sign-in.
+- [ ] In English grammar, sentence correction, ordering and matching sections that have no reading text, reveal two full source units (exercises), not invented passages.
+- [ ] Changing sections resets transient guest answers and offers two new section-scoped exercises without leaking progress to registered accounts.
+- [ ] Mathematics uses chapter+section identity; test two separate math sections and two text-transcribed answerable questions in each.
+- [ ] Other subject banks reveal at most two answerable questions per section; non-MC task formats are exposed as complete tasks where relevant.
+- [ ] The next three locked slots reflect the remainder of the **currently selected section**, and original full books still require sign-in.
