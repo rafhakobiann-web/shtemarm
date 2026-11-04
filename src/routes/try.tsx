@@ -26,6 +26,10 @@ function GuestExperience() {
   const [cardIndex, setCardIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [reviewIds, setReviewIds] = useState<string[]>([]);
+  // Snapshot the missed pile when reviewing; don't lose a card mid-session
+  // as the user marks it known. No storage or account write is involved.
+  const [reviewQueue, setReviewQueue] = useState<string[] | null>(null);
+  const currentCards = reviewQueue === null ? cards : cards.filter(c=>reviewQueue.includes(c.id));
   const [dragOffset, setDragOffset] = useState(0);
   const swipeStart = useRef<{ pointerId:number; x:number; y:number; dragging:boolean } | null>(null);
   const suppressClick = useRef(false);
@@ -48,6 +52,7 @@ function GuestExperience() {
     setCardIndex(0);
     setRevealed(false);
     setReviewIds([]);
+    setReviewQueue(null);
     setDragOffset(0);
     swipeStart.current = null;
   };
@@ -67,11 +72,21 @@ function GuestExperience() {
     setSelected(null);
   };
   const markCard = (outcome:"known"|"review") => {
-    if (cardIndex >= cards.length) return;
-    if (outcome === "review") setReviewIds(prev => [...prev, cards[cardIndex]!.id]);
+    if (cardIndex >= currentCards.length) return;
+    const cardId = currentCards[cardIndex]!.id;
+    setReviewIds(prev => outcome === "review"
+      ? prev.includes(cardId) ? prev : [...prev, cardId]
+      : prev.filter(id=>id!==cardId));
     setCardIndex(n => n + 1);
     setRevealed(false);
     setDragOffset(0);
+  };
+  const replayMissed = () => {
+    setReviewQueue([...reviewIds]);
+    setCardIndex(0);
+    setRevealed(false);
+    setDragOffset(0);
+    swipeStart.current = null;
   };
   const onCardDown = (event:ReactPointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0) return;
@@ -115,7 +130,7 @@ function GuestExperience() {
   };
 
   const practiceDone=questionIndex>=questions.length;
-  const cardsDone=cardIndex>=cards.length;
+  const cardsDone=cardIndex>=currentCards.length;
   const challengeDone=challengeIndex>=questions.length;
   const question=practiceDone?null:questions[questionIndex]!;
   const challengeQuestion=challengeDone?null:questions[(challengeIndex+1)%questions.length]!;
@@ -232,12 +247,13 @@ function GuestExperience() {
               <CheckCircle2 size={42} aria-hidden="true"/>
               <h3>{w.cardFinished}</h3>
               <p>{w.reviewCount}: <strong>{reviewIds.length} / {cards.length}</strong></p>
-              <button type="button" className="sht-try-primary" onClick={resetCards}><RotateCcw size={17} aria-hidden="true"/>{w.cardAgain}</button>
+              {reviewIds.length > 0 && <button type="button" className="sht-try-primary" onClick={replayMissed}><RotateCcw size={17} aria-hidden="true"/>{w.repeatMissed}</button>}
+              <button type="button" className="sht-try-return" onClick={resetCards}><RotateCcw size={17} aria-hidden="true"/>{w.cardAgain}</button>
             </div>
           ) : (
             <div className="sht-try-task">
-              <div className="sht-try-progress-row"><span>{cardIndex+1} / {cards.length}</span><span>{w.reviewCount}: {reviewIds.length}</span></div>
-              <progress max={cards.length} value={cardIndex} aria-label={w.progress}/>
+              <div className="sht-try-progress-row"><span>{cardIndex+1} / {currentCards.length}</span><span>{w.reviewCount}: {reviewIds.length}</span></div>
+              <progress max={currentCards.length} value={cardIndex} aria-label={w.progress}/>
               <p className="sht-try-swipe-hint">{w.leftRight}</p>
               <button type="button" className="sht-try-flashcard" aria-pressed={revealed} aria-label={w.turnCard}
                 data-drag={dragOffset<-38?"known":dragOffset>38?"review":"none"}
@@ -246,8 +262,8 @@ function GuestExperience() {
                 onPointerCancel={()=>{swipeStart.current=null;setDragOffset(0);}}
                 onClick={()=>{if(!suppressClick.current)setRevealed(v=>!v);}}>
                 <span className="sht-try-card-hint">{revealed?w.turnCard:w.flipHint}</span>
-                <strong>{revealed?cards[cardIndex]!.back:cards[cardIndex]!.front}</strong>
-                <span>{revealed?cards[cardIndex]!.context:w.turnCard}</span>
+                <strong>{revealed?currentCards[cardIndex]!.back:currentCards[cardIndex]!.front}</strong>
+                <span>{revealed?currentCards[cardIndex]!.context:w.turnCard}</span>
               </button>
               <div className="sht-try-card-actions">
                 <button type="button" className="sht-try-known" onClick={()=>markCard("known")}><Check size={18} aria-hidden="true"/>{w.know}</button>
