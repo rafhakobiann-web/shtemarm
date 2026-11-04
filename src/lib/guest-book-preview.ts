@@ -1,4 +1,4 @@
-import { ALL_BOOKS, type Book } from "@/lib/books";
+import { ALL_BOOKS, type Book, type Unit, type Section } from "@/lib/books";
 import type { MathBookIndex } from "@/lib/math-bank";
 import type { GuestLang } from "@/lib/guest-demo";
 
@@ -83,6 +83,114 @@ export function pickGuestMathQuestions(index:MathBookIndex,bookId:"matem-1"|"mat
     }
   }
   return out;
+}
+
+
+/** Guest preview is scoped to a SECTION, not a whole book.
+ * English source units are complete exercises ("Text 1", "Text 2" ...):
+ * a reading passage may contain five separate questions and must never be
+ * truncated to two isolated MC questions. Non-English books give two
+ * individual answerable questions per section; set/seq/match units count
+ * as a single complete exercise where a section has no MC/NUM questions.
+ */
+export type GuestPreviewItem =
+  | {type:"question";id:string;question:GuestBookQuestion}
+  | {type:"unit";id:string;unit:Unit; label:string};
+export type GuestPreviewSection = {
+  id:string; label:string; instruction:string; instructionEn:string;
+  items:GuestPreviewItem[]; totalExercises:number; textBased:boolean;
+};
+
+function usableQuestion(kind:"mc"|"num",q:{stem:string;answer:string;options?:Record<string,string>}):boolean {
+  if(typeof q.answer!=="string"||!q.answer.trim())return false;
+  if(typeof q.stem!=="string"||/still being processed|question text unavailable|հարցի տեքստը դեռ/i.test(q.stem))return false;
+  if(kind==="num")return !!q.stem.trim();
+  const options=Object.entries(q.options||{}).filter(([k,v])=>!!k&&typeof v==="string"&&!!v.trim());
+  return !!q.stem.trim()||options.length>0; // English cloze questions may have an empty printed stem.
+}
+function validExercise(u:Unit):boolean {
+  if(u.kind==="mc"||u.kind==="num")return u.questions.some(q=>usableQuestion(u.kind,q));
+  if(!u.passage.trim())return false;
+  return u.kind==="match"?Object.keys(u.answer).length>0:u.answer.length>0||u.kind==="set";
+}
+function questionItem(bookId:number,section:Section,u:Extract<Unit,{kind:"mc"|"num"}>,i:number):GuestPreviewItem|null {
+  const q=u.questions[i]!;
+  if(!usableQuestion(u.kind,q))return null;
+  const options=u.kind==="mc"?
+    Object.entries(q.options||{}).filter(([k,v])=>k.trim()&&typeof v==="string"&&v.trim()).map(([key,value])=>({key,value})):[];
+  if(u.kind==="mc"&&!options.some(x=>x.key===q.answer))return null;
+  const question:GuestBookQuestion={
+    id:`${bookId}:${section.n}:${u.id}:${i}`,section:section.label||section.title||`Բաժին ${section.n}`,
+    printedNo:q.n, passage:typeof u.passage==="string"?u.passage.trim()||undefined:undefined,
+    stem:q.stem,options,answer:q.answer,kind:u.kind==="mc"?"choice":"number",explanation:q.explanation,
+  };
+  return {type:"question",id:question.id,question};
+}
+
+export function pickGuestBookSections(book:Book,limit:number=GUEST_BOOK_LIMIT):GuestPreviewSection[] {
+  return book.sections.map((section)=>{
+    const english=book.id>=1&&book.id<=3;
+    const textBased=english && section.units.some(u=>u.passage?.trim()&&/(?:text\s*\d+|\d+-\d+-text)/i.test(u.label+" "+u.id));
+    const items:GuestPreviewItem[]=[];
+    // English: two complete source exercises/texts, including ALL their
+    // subquestions; not two individual MC answers inside one text.
+    if(english){
+      for(const u of section.units){
+        if(!validExercise(u))continue;
+        items.push({type:"unit",id:`${book.id}:${section.n}:${u.id}`,unit:u,label:u.label||u.id});
+        if(items.length>=limit)break;
+      }
+    }else{
+      for(const u of section.units){
+        if(u.kind==="mc"||u.kind==="num"){
+          for(let i=0;i<u.questions.length;i++){
+            const item=questionItem(book.id,section,u,i);
+            if(item)items.push(item);
+            if(items.length>=limit)break;
+          }
+        }else if(validExercise(u))items.push({type:"unit",id:`${book.id}:${section.n}:${u.id}`,unit:u,label:u.label||u.id});
+        if(items.length>=limit)break;
+      }
+    }
+    return {
+      id:String(section.n),label:section.label||section.title||`Բաժին ${section.n}`,
+      instruction:section.instr_hy,instructionEn:section.instr_en,items,
+      totalExercises:english?section.units.length:section.units.reduce((n,u)=>n+(u.kind==="mc"||u.kind==="num"?u.questions.length:1),0),
+      textBased,
+    };
+  });
+}
+
+export function pickGuestMathSections(index:MathBookIndex,bookId:"matem-1"|"matem-2",limit:number=GUEST_BOOK_LIMIT):GuestPreviewSection[] {
+  const book=index.books[bookId];
+  if(!book)return [];
+  return book.sections.map(section=>{
+    const items:GuestPreviewItem[]=[];
+    for(const task of section.tasks){
+      for(let i=0;i<task.sub_count;i++){
+        const q=task.questions?.[i];
+        const answer=task.answers?.[i]?.trim();
+        if(typeof q?.prompt!=="string"||!q.prompt.trim()||!answer||/still being processed|question text unavailable|հարցի տեքստը դեռ/i.test(q.prompt))continue;
+        const options=(q.options||[]).filter(v=>typeof v==="string"&&v.trim()).map((value,j)=>({key:String(j+1),value}));
+        const isChoice=/^[1-4]$/.test(answer)&&options.some(x=>x.key===answer);
+        const question:GuestBookQuestion={
+          id:`${bookId}:${section.chapter}:${section.section}:${task.task}:${i}`,
+          section:section.title||`Գլուխ ${section.chapter} · Բաժին ${section.section}`,
+          printedNo:`${task.task}.${i+1}`,stem:q.prompt,
+          options:isChoice?options:[],answer,kind:isChoice?"choice":"number",
+        };
+        items.push({type:"question",id:question.id,question});
+        if(items.length>=limit)break;
+      }
+      if(items.length>=limit)break;
+    }
+    return {
+      id:`${section.chapter}-${section.section}`,
+      label:section.title||`Գլուխ ${section.chapter} · Բաժին ${section.section}`,
+      instruction:"",instructionEn:"",items,
+      totalExercises:section.tasks.reduce((n,task)=>n+task.sub_count,0),textBased:false,
+    };
+  });
 }
 
 export const GUEST_BOOK_TEXT: Record<GuestLang,{
