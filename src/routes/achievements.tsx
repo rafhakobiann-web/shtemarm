@@ -5,7 +5,18 @@ import { useProgress, level, levelFloor } from "@/lib/progress";
 import { achievements, dailyQuests, getQuestHistory, QUESTS_CHANGED, type QuestHistory } from "@/lib/gamification";
 import { useLang } from "@/lib/lang";
 
-export const Route = createFileRoute("/achievements")({ component: AchievementsPage });
+export const Route = createFileRoute("/achievements")({
+  staticData: { sitemap: false },
+  head: () => ({ meta: [
+    { title: "Նվաճումներ և նպատակներ · Shtemarm" },
+    { name: "description", content: "Քո ուսումնական նվաճումները, օրական նպատակները և առաջընթացը Shtemarm-ում։" },
+    { property: "og:title", content: "Նվաճումներ և նպատակներ · Shtemarm" },
+    { property: "og:description", content: "Հետևիր քո ուսումնական առաջընթացին և օրական նպատակներին։" },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: AchievementsPage,
+});
 const QUEST_LABELS = {
   "answer-5": ["Լուծիր 5 հարց","Answer 5 questions","Ответь на 5 вопросов"],
   "answer-15": ["Լուծիր 15 հարց","Answer 15 questions","Ответь на 15 вопросов"],

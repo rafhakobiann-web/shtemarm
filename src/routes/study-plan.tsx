@@ -8,7 +8,18 @@ import { getUnitMistakes } from "@/lib/unitMistakes";
 import { buildStudyPlan, STUDY_PLAN_SUBJECTS, type PlanMistake, type StudyPlanSubject } from "@/lib/studyPlan";
 import { useLang } from "@/lib/lang";
 
-export const Route = createFileRoute("/study-plan")({ component: StudyPlanPage });
+export const Route = createFileRoute("/study-plan")({
+  staticData: { sitemap: false },
+  head: () => ({ meta: [
+    { title: "Իմ ուսումնական պլանը · Shtemarm" },
+    { name: "description", content: "Անհատական ուսումնական պլան՝ պահպանված սխալների և առաջընթացի հիման վրա։" },
+    { property: "og:title", content: "Իմ ուսումնական պլանը · Shtemarm" },
+    { property: "og:description", content: "Քո ամենօրյա վարժանքներն ու կրկնության առաջադրանքները։" },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: StudyPlanPage,
+});
 const KEY = "shtemarm:study-plan-settings:v1";
 const DONE_KEY = "shtemarm:study-plan-completed:v1";
 const NAMES: Record<StudyPlanSubject, [string,string,string]> = {

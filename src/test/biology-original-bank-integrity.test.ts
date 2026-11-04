@@ -44,8 +44,11 @@ describe("Biology III/IV original-book text and source-answer integrity", () => 
           sectionCount++;
           count++;
         }
-        expect(sectionCount).toBe(coverage.chapters.find(c => c.id === section.n).imported);
-        const excluded = new Set(coverage.chapters.find(c => c.id === section.n).excluded.map(x => x.n));
+        const chapter = coverage.chapters.find((c: { id: number }) => c.id === section.n) as
+          { imported: number; excluded: { n: number }[] } | undefined;
+        if (!chapter) throw new Error(`Missing coverage chapter ${section.n}`);
+        expect(sectionCount).toBe(chapter.imported);
+        const excluded = new Set(chapter.excluded.map(x => x.n));
         for (const identity of seen) {
           const [ch, n] = identity.split(":").map(Number);
           if (ch === section.n) expect(excluded.has(n), identity).toBe(false);

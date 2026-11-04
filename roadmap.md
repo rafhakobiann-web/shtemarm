@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Repair current preview typing errors and verify affected tests and pages
+- [ ] Enable Paddle payments after workspace upgrade to Pro or higher (blocked by current plan)
 - [x] Configurable English level tests (1–8 available questions per level), clickable English-to-Armenian words, reveal Armenian passage translations; verified live lookup and scoring
 - [x] Extract all 3 books + answer keys
 - [x] Study (gamified/classic), tests, 80-question exam, AI explanations, accounts + offline progress
