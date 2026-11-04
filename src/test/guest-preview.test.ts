@@ -44,6 +44,7 @@ describe("Try-before-sign-up guest demo",()=>{
     expect(root).toContain('const publicView=location.pathname==="/" || location.pathname==="/try"');
     expect(root).toContain('href: guestExperienceCss');
     expect(root).toContain('if(isPublic)return <>{children}</>');
+    expect(root).toContain('if(!onboarded&&!isPublic&&pathname!=="/onboarding"');
     expect(root).not.toContain('"/dashboard", "/try"');
   });
 
@@ -60,6 +61,9 @@ describe("Try-before-sign-up guest demo",()=>{
     expect(route).toContain('GUEST_DEMO[lang]');
     expect(route).toContain("setChallengeStarted(true)");
     expect(route).toContain("onPointerCancel");
+    expect(route).toContain("replayMissed");
+    expect(route).toContain("setReviewQueue([...reviewIds])");
+    expect(route).toContain("reviewQueue === null ? cards : cards.filter");
   });
 
   it("keeps guest answers session-only and does not reach protected resources",()=>{
