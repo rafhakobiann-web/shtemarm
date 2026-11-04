@@ -41,6 +41,7 @@ export type Database = {
           message: string
           replied_at: string | null
           reply: string | null
+          user_id: string | null
         }
         Insert: {
           client_id: string
@@ -50,6 +51,7 @@ export type Database = {
           message: string
           replied_at?: string | null
           reply?: string | null
+          user_id?: string | null
         }
         Update: {
           client_id?: string
@@ -59,6 +61,7 @@ export type Database = {
           message?: string
           replied_at?: string | null
           reply?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

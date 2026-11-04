@@ -1,0 +1,37 @@
+name: Verify private feedback and AI conversation security
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/feedback.functions.ts'
+      - 'src/routes/feedback.tsx'
+      - 'src/lib/chat.functions.ts'
+      - 'src/lib/chat-context.server.ts'
+      - 'src/routes/chat.tsx'
+      - 'src/test/security-feedback-chat.test.ts'
+      - 'src/test/ai-learning.test.ts'
+      - 'src/integrations/supabase/types.ts'
+      - 'supabase/migrations/20261104113500_private_feedback_grants.sql'
+      - 'supabase/migrations/20261104114500_feedback_owner_and_limits.sql'
+      - '.github/workflows/verify-feedback-chat-security.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Regression tests for data privacy and role forgery
+        run: bunx vitest run src/test/security-feedback-chat.test.ts src/test/ai-learning.test.ts src/test/ai-runtime.test.ts
+      - name: Check secret exposure
+        run: node scripts/check-repo-secrets.mjs
+      - name: Typecheck
+        run: bunx tsc --noEmit
+      - name: Production web build
+        run: bun run build

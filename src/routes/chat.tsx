@@ -36,6 +36,9 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  // Opaque HMAC-signed context supplied by the server. No prior assistant
+  // messages or browser-claimed roles are sent as trusted conversation history.
+  const contextTokenRef = useRef<string | undefined>(undefined);
   const katex = useKatex();
 
   // The conversation lives only in this page's memory: nothing is stored in the browser or the database.
@@ -48,7 +51,12 @@ function ChatPage() {
     setInput("");
     setLoading(true);
     try {
-      const res = await chatReply({ data: { messages: next.filter(m => !m.failed).slice(-20).map(m => ({ role: m.role, content: m.content })), mode, locale:lang } });
+      const res = await chatReply({ data: {
+        question:content, contextToken:contextTokenRef.current,
+        mode, locale:lang,
+      } });
+      if ("contextToken" in res && typeof res.contextToken === "string")
+        contextTokenRef.current = res.contextToken;
       setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error, offline: !!res.offline }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
