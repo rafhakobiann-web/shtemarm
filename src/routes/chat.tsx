@@ -26,12 +26,28 @@ import { useKatex, RichText } from "@/components/MathText";
 
 
 const STARTERS = ["Ինչպե՞ս պատրաստվեմ անգլերենի քննությանը", "Բացատրիր Հայոց պատմության թեստի ձևաչափը", "Ի՞նչ է միտոքոնդրիումը"];
+const MODE_KEY = "shtemarm:tutor-mode:v1";
+function readPreferredMode(): StudyMode {
+  try {
+    const saved = localStorage.getItem(MODE_KEY);
+    return saved === "hint" || saved === "explain" || saved === "quiz"
+      ? saved : STUDY_MODE_DEFAULT;
+  } catch { return STUDY_MODE_DEFAULT; }
+}
+
 
 function ChatPage() {
   const tx = useTx();
   const lang = useLang();
   const labels = studyLabels[lang];
   const [mode,setMode] = useState<StudyMode>(STUDY_MODE_DEFAULT);
+  // Save only the learning preference, never conversation text or signed tokens.
+  useEffect(() => { setMode(readPreferredMode()); }, []);
+  const selectMode = (next:StudyMode) => {
+    setMode(next);
+    try { localStorage.setItem(MODE_KEY, next); } catch { /* private browsing */ }
+  };
+
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,7 +78,10 @@ function ChatPage() {
       setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
     } finally {
       setLoading(false);
-      setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+      setTimeout(() => {
+        const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        endRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      }, 50);
     }
   };
 
@@ -80,7 +99,7 @@ function ChatPage() {
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={labels.title}>
           {(["hint","explain","quiz"] as const).map(key=>(
             <button type="button" key={key} aria-pressed={mode===key}
-              onClick={()=>setMode(key)}
+              onClick={()=>selectMode(key)}
               className={cn("min-h-14 rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary",
                 mode===key?"border-primary bg-primary/10 text-foreground":"border-border bg-card/75 hover:border-primary/40")}>
               <span className="block text-sm font-bold">{labels[key]}</span>
