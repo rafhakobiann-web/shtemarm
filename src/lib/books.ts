@@ -246,13 +246,22 @@ export function normalizeBiologySecondBook(book: Book): Book {
             questions:unit.questions.map(q=>({...q,stem:normalizeBiologyText(q.stem),
               options:Object.fromEntries(Object.entries(q.options).map(([k,v])=>[k,normalizeBiologyText(v)]))}))}];
         }
+        if (unit.kind === "mc") {
+          return unit.questions.map((question, index) => ({
+            ...unit,
+            id: `${unit.id}:q${index + 1}`,
+            label: question.n,
+            passage: normalizeBiologyText(unit.passage),
+            questions: [{ ...question, stem: normalizeBiologyText(question.stem),
+              options: Object.fromEntries(Object.entries(question.options).map(([k, v]) => [k, normalizeBiologyText(v)])) }],
+          }));
+        }
         return unit.questions.map((question, index) => ({
           ...unit,
           id: `${unit.id}:q${index + 1}`,
           label: question.n,
           passage: normalizeBiologyText(unit.passage),
-          questions: [unit.kind==="mc" ? {...question, stem:normalizeBiologyText(question.stem),
-            options:Object.fromEntries(Object.entries((question as MCQuestion).options).map(([k,v])=>[k,normalizeBiologyText(v)]))} : question],
+          questions: [question],
         }));
       }),
     })),

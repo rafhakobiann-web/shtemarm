@@ -9,6 +9,7 @@ import { isPublicAuthConfig } from "@/lib/public-auth-config";
  * private tokens and arbitrary credentials are never returned.
  */
 export const Route = createFileRoute("/api/public-auth-config")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       GET: async () => {

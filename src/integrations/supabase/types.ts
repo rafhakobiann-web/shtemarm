@@ -62,6 +62,36 @@ export type Database = {
         }
         Relationships: []
       }
+      question_explanations: {
+        Row: {
+          bank: string
+          correct: string
+          explanation: string
+          generated_at: string
+          provider: string
+          question_id: string
+          reviewed: boolean
+        }
+        Insert: {
+          bank: string
+          correct: string
+          explanation: string
+          generated_at?: string
+          provider: string
+          question_id: string
+          reviewed?: boolean
+        }
+        Update: {
+          bank?: string
+          correct?: string
+          explanation?: string
+          generated_at?: string
+          provider?: string
+          question_id?: string
+          reviewed?: boolean
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           data: Json

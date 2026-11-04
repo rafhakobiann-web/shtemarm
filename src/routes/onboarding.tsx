@@ -4,7 +4,18 @@ import { ArrowRight, BookOpen, GraduationCap, ListChecks, Target } from "lucide-
 import { useLang } from "@/lib/lang";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 import { ONBOARDING_SUBJECTS, saveOnboarding, type OnboardingSubject, type OnboardingProfile } from "@/lib/onboarding";
-export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
+export const Route = createFileRoute("/onboarding")({
+  staticData: { sitemap: false },
+  head: () => ({ meta: [
+    { title: "Ուսումնական միջավայրի ընտրություն · Shtemarm" },
+    { name: "description", content: "Ընտրիր քո առարկաները և ուսման նպատակը Shtemarm-ում։" },
+    { property: "og:title", content: "Ուսումնական միջավայրի ընտրություն · Shtemarm" },
+    { property: "og:description", content: "Անհատականացրու քո ուսումնական միջավայրը։" },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: OnboardingPage,
+});
 const NAMES: Record<OnboardingSubject,[string,string,string]> = {
   english:["Անգլերեն","English","Английский"],math:["Մաթեմատիկա","Math","Математика"],
   armenian:["Հայոց լեզու","Armenian","Армянский"],history:["Հայոց պատմություն","Armenian history","История Армении"],

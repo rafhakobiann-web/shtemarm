@@ -92,10 +92,18 @@ export function matchHistoricalBookMistakes(
       for (const unit of section.units) {
         if (unit.kind === "mc" || unit.kind === "num") {
           for (let i = 0; i < unit.questions.length; i++) {
-            const q = unit.questions[i]!;
+            const q = unit.questions[i];
+            if (!q) continue;
             const qKey = questionAnswerKey(unit, i);
             const id = unit.id + ":" + qKey;
-            const one: Unit = { ...unit, id, questions: [q] };
+            let one: Unit;
+            if (unit.kind === "mc") {
+              const question = unit.questions[i];
+              if (!question) continue;
+              one = { ...unit, id, questions: [question] };
+            } else {
+              one = { ...unit, id, questions: [q] };
+            }
             const entry: RecoveredMistake = {
               key: fingerprint(bookId, id), id, subject, section: sectionTitle,
               unit: one, chosen: unanswered(one), mastered: false, updatedAt: 0,
