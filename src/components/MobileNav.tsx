@@ -48,16 +48,22 @@ export function MobileNav() {
   const [compact, setCompact] = useState(false);
   const lastY = useRef(0);
   const dockRef = useRef<HTMLElement>(null);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const drag = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
   const [hoverTab, setHoverTab] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
   const previewTab = hoverTab ?? selected;
   const pointerTab = (x: number) => {
-    const rect = dockRef.current?.getBoundingClientRect();
+    const rect = dockRef.current?.querySelector(".mobile-liquid-track")?.getBoundingClientRect();
     return rect ? Math.max(0, Math.min(4, Math.floor((x - rect.left) / (rect.width / 5)))) : 0;
   };
   const dockDown = (e: PointerEvent<HTMLElement>) => {
     if (e.pointerType === "mouse") return;
+    if (settleTimer.current) {
+      clearTimeout(settleTimer.current);
+      settleTimer.current = null;
+    }
+    setHoverTab(null);
     // Do not capture simple taps: native Link clicks must remain intact.
     // Only a proven horizontal drag takes pointer ownership.
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
@@ -95,6 +101,11 @@ export function MobileNav() {
     setHoverTab(index);
     const link = dockRef.current?.querySelectorAll<HTMLAnchorElement>("a")[index];
     link?.click();
+    // Same-route taps and interrupted navigation must never leave a stuck pill.
+    settleTimer.current = setTimeout(() => {
+      setHoverTab(null);
+      settleTimer.current = null;
+    }, 480);
     if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate?.(8);
   };
 
@@ -156,11 +167,18 @@ export function MobileNav() {
 
   // Opening a different tab restores full labels for orientation.
   useEffect(() => {
+    if (settleTimer.current) {
+      clearTimeout(settleTimer.current);
+      settleTimer.current = null;
+    }
     setCompact(false);
     setHomeVisible(null);
     setHoverTab(null);
     setDragging(false);
   }, [pathname, hash]);
+  useEffect(() => () => {
+    if (settleTimer.current) clearTimeout(settleTimer.current);
+  }, []);
 
   // Home-page hash targets always scroll to the actual catalogue/exams section.
   useEffect(() => {
