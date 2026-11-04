@@ -55,8 +55,8 @@ async function getVerifiedFeedbackUserId():Promise<string|null> {
   let token:string;
   try {
     const authorization = getRequest().headers.get("authorization") ?? "";
-    if (!/^Bearer\\s+\\S{20,8192}$/i.test(authorization)) return null;
-    token = authorization.replace(/^Bearer\\s+/i,"");
+    if (!/^Bearer\s+\S{20,8192}$/i.test(authorization)) return null;
+    token = authorization.replace(/^Bearer\s+/i,"");
   } catch { return null; }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.auth.getUser(token);
