@@ -59,6 +59,9 @@ export const solveProblem = createServerFn({ method: "POST" })
     if (data.image && !key) {
       return { text: errorToUser("requires_vision"), error: true };
     }
+    const { reserveAiRequest, quotaMessage } = await import("./ai-quota.server");
+    const budget = await reserveAiRequest();
+    if (!budget.allowed) return { text: quotaMessage(budget.reason), error: true, limited: budget.reason === "quota" };
     const parts: Part[] = [];
     if (data.image) parts.push({ inlineData: { mimeType: data.image.mime, data: data.image.data } });
     parts.push({ text: data.text?.trim() ? "Խնդիրը՝\n" + data.text.trim() : "Լուծիր նկարում պատկերված խնդիրը։" });

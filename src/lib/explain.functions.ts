@@ -34,10 +34,21 @@ ${data.passage ? `Տեքստ:\n${data.passage}\n` : ""}Հարց:\n${data.questio
 Ճիշտ պատասխան: ${data.correct}
 ${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշակերտը չի պատասխանել։"}`;
 
-    const ai = await generateExplanation(prompt, {
+    const keys = {
       gemini: process.env["GEMINI_API_KEY"],
       groq: process.env["GROQ_API_KEY"],
-    });
+    };
+    if (!keys.gemini && !keys.groq) {
+      return { text: reliableEnglishFallback(data, data.locale ?? "hy"),
+        cached: false, error: false, offline: true, aiUnavailable: "no_provider" };
+    }
+    const { reserveAiRequest } = await import("./ai-quota.server");
+    const quota = await reserveAiRequest();
+    if (!quota.allowed) {
+      return { text: reliableEnglishFallback(data, data.locale ?? "hy"),
+        cached: false, error: false, offline: true, aiUnavailable: quota.reason };
+    }
+    const ai = await generateExplanation(prompt, keys);
     if (ai.ok) {
       await saveExplanation(cacheKey, ai.text);
       return { text: ai.text, cached: false, error: false, offline: false };

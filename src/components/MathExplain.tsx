@@ -47,9 +47,9 @@ export function MathExplain(props: Props) {
   const lang = useLang();
   const fn = useServerFn(explainMathAnswer);
   const key = cacheKey(props,lang);
-  const [result, setResult] = useState<{ key: string; text: string; error: boolean } | null>(() => {
+  const [result, setResult] = useState<{ key: string; text: string; error: boolean; offline?:boolean; cached?:boolean } | null>(() => {
     const previous = explanationCache.get(key);
-    return previous ? { key, text: previous, error: false } : null;
+    return previous ? { key, text: previous, error: false, cached: true } : null;
   });
   const [loading, setLoading] = useState(false);
   const active = result?.key === key ? result : null;
@@ -72,8 +72,8 @@ export function MathExplain(props: Props) {
           options: props.options?.slice(0, 6) ?? [], pages,
         },
       });
-      setResult({ key, text: r.text, error: !!r.error });
-      if (!r.error) explanationCache.set(key, r.text);
+      setResult({ key, text: r.text, error: !!r.error, offline:!!r.offline, cached:!!r.cached });
+      if (!r.error && !r.offline) explanationCache.set(key, r.text);
     } catch {
       setResult({ key, text: tx("Չհաջողվեց ստանալ բացատրությունը։ Ստուգիր կապը և կրկին փորձիր։"), error: true });
     } finally {
@@ -91,7 +91,14 @@ export function MathExplain(props: Props) {
       className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
       {lang==="en"?"Study methods and worked examples (no AI)":lang==="ru"?"Правила и примеры решений (без ИИ)":"Սովորել բանաձևերը և լուծված օրինակները (առանց AI-ի)"}
     </a>}
-    {active && <RichExplanation text={active.text} error={active.error}/>}
+    {active && !active.error && <p role="status" className="my-2 text-xs font-semibold text-muted-foreground">
+      {active.offline
+        ? lang==="en"?"Local explanation (no AI)":lang==="ru"?"Локальное объяснение (без ИИ)":"Տեղային բացատրություն (առանց AI-ի)"
+        : active.cached
+          ? lang==="en"?"Saved AI explanation":lang==="ru"?"Сохранённое объяснение ИИ":"Պահպանված AI բացատրություն"
+          : lang==="en"?"AI explanation":lang==="ru"?"Объяснение ИИ":"AI բացատրություն"}
+    </p>}
+    {active && <RichExplanation text={active.text} error={active.error}/>
     {(!active || active.error) && <Button
       variant="secondary" type="button" disabled={loading} onClick={() => void run()}
       className="mt-3 h-auto min-h-11 w-full whitespace-normal text-left sm:w-auto">

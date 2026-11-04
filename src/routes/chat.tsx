@@ -19,7 +19,7 @@ export const Route = createFileRoute("/chat")({
   component: ChatPage,
 });
 
-type Msg = { role: "user" | "assistant"; content: string; failed?: boolean };
+type Msg = { role: "user" | "assistant"; content: string; failed?: boolean; offline?: boolean };
 
 import { useKatex, RichText } from "@/components/MathText";
 
@@ -45,7 +45,7 @@ function ChatPage() {
     setLoading(true);
     try {
       const res = await chatReply({ data: { messages: next.filter(m => m.role === "user").slice(-20).map(m => ({ role: "user" as const, content: m.content })) } });
-      setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error }]);
+      setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error, offline: !!res.offline }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
     } finally {
@@ -83,6 +83,9 @@ function ChatPage() {
           <div key={i} className={cn("flex gap-2", m.role === "user" && "justify-end")}>
             {m.role === "assistant" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Bot className="size-4" /></span>}
             <p className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.95rem] leading-relaxed", m.role === "user" ? "bg-secondary text-secondary-foreground" : m.failed ? "border border-destructive/40 bg-destructive/5 text-foreground" : "bg-card border")}>
+              {m.role==="assistant"&&m.offline&&<span className="mb-1 block text-xs font-semibold text-muted-foreground" role="status">
+                {tx("Տեղային պատասխան (առանց AI-ի)")}
+              </span>}
               <RichText text={m.content} katex={katex} />
             </p>
             {m.role === "user" && <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted"><User className="size-4" /></span>}
