@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import type { Book } from "@/lib/books";
 import type { MathBookIndex } from "@/lib/math-bank";
-import { GUEST_BOOKS, GUEST_BOOK_LIMIT, GUEST_BOOK_TEXT, pickGuestBookQuestions, pickGuestMathQuestions } from "@/lib/guest-book-preview";
+import { GUEST_BOOKS, GUEST_BOOK_LIMIT, GUEST_BOOK_TEXT, pickGuestBookQuestions, pickGuestMathQuestions, pickGuestBookSections, pickGuestMathSections } from "@/lib/guest-book-preview";
 
 const source=(path:string)=>readFileSync(path,"utf8");
 
@@ -65,6 +65,65 @@ describe("Book previews before registration",()=>{
     expect(pickGuestMathQuestions(mathFixture,"matem-2")).toEqual([]);
   });
 
+
+  it("unlocks two exercises in EACH section, not merely the first two in the book",()=>{
+    const sections=pickGuestBookSections(sampleBook);
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[1]!.items).toHaveLength(1);
+    expect(sections[1]!.items[0]!.type).toBe("question");
+    expect(JSON.stringify(sections[0]!.items)).not.toContain("Hidden third question");
+    expect(sections[0]!.totalExercises).toBe(4); // seq is an exercise, plus 3 MC questions
+    expect(sections[0]!.items[0]!.type).toBe("unit"); // source 'seq' is preserved intact
+  });
+
+  it("English reading texts unlock as complete units with all subquestions",()=>{
+    const sourceBook:Book={id:1,sections:[
+      {n:1,instr_en:"Read the text",instr_hy:"Կարդացեք",units:[
+        {kind:"mc",id:"1-1-Text1",label:"Text 1",passage:"First complete reading passage.",
+         questions:[1,2,3,4,5].map(n=>({n:String(n),stem:"Question "+n,options:{a:"Option A",b:"Option B"},answer:"a"}))},
+        {kind:"mc",id:"1-1-Text2",label:"Text 2",passage:"Second complete reading passage.",
+         questions:[1,2,3,4,5].map(n=>({n:String(n),stem:"Question "+n,options:{a:"Option A",b:"Option B"},answer:"b"}))},
+        {kind:"mc",id:"1-1-Text3",label:"Text 3",passage:"Third passage must stay locked.",
+         questions:[{n:"1",stem:"Hidden task",options:{a:"A",b:"B"},answer:"a"}]},
+      ]},
+      {n:3,instr_en:"Grammar",instr_hy:"Քերականություն",units:[
+        {kind:"mc",id:"1-3-1",label:"1",passage:"",questions:[{n:"1",stem:"Grammar task 1",options:{a:"A",b:"B"},answer:"a"}]},
+        {kind:"mc",id:"1-3-2",label:"2",passage:"",questions:[{n:"2",stem:"Grammar task 2",options:{a:"A",b:"B"},answer:"a"}]},
+        {kind:"mc",id:"1-3-3",label:"3",passage:"",questions:[{n:"3",stem:"Grammar task 3",options:{a:"A",b:"B"},answer:"a"}]},
+      ]},
+    ]};
+    const sections=pickGuestBookSections(sourceBook);
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[0]!.textBased).toBe(true);
+    expect(sections[0]!.items[0]).toMatchObject({type:"unit",unit:{id:"1-1-Text1"}});
+    const first=sections[0]!.items[0]!;
+    if(first.type!=="unit")throw Error("Expected full source unit");
+    expect(first.unit.kind).toBe("mc");
+    if(first.unit.kind==="mc")expect(first.unit.questions).toHaveLength(5);
+    expect(JSON.stringify(sections[0]!.items)).not.toContain("Third passage");
+    expect(sections[1]!.items.map(x=>x.id)).toEqual(["1:3:1-3-1","1:3:1-3-2"]);
+  });
+
+  it("the first two answerable math questions are available in every distinct section",()=>{
+    const fixture:MathBookIndex=structuredClone(mathFixture);
+    fixture.books["matem-1"]!.sections.push({
+      chapter:2,section:1,title:"Geometry",pages:[3,4],tasks:[
+        {task:1,segments:[],sub_count:3,answers:["4","5","6"],questions:[
+          {prompt:"Geometry 1",options:["A","B","C","D"]},
+          {prompt:"Geometry 2",options:["A","B","C","D"]},
+          {prompt:"Geometry 3",options:["A","B","C","D"]},
+        ]},
+      ],
+    });
+    const sections=pickGuestMathSections(fixture,"matem-1");
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[1]!.items).toHaveLength(2);
+    expect(JSON.stringify(sections[1]!.items)).not.toContain("Geometry 3");
+  });
+
   it("lists all existing playable question books plus both math volumes without replacing signed-in book pages",()=>{
     expect(GUEST_BOOKS.length).toBeGreaterThan(15);
     expect(GUEST_BOOKS.map(b=>b.id)).toContain("matem-1");
@@ -85,11 +144,12 @@ describe("Book previews before registration",()=>{
     const browser=source("src/components/GuestBookBrowser.tsx");
     const route=source("src/routes/try.tsx");
     const root=source("src/routes/__root.tsx");
-    expect(browser).toContain("pickGuestBookQuestions(data)");
-    expect(browser).toContain("pickGuestMathQuestions(data,bookId)");
-    expect(browser).toContain("disabled={!canAdvance}");
-    expect(browser).toContain("onAnswered={()=>setCanAdvance(true)}");
-    expect(browser).toContain("GUEST_BOOK_LIMIT+1");
+    expect(browser).toContain("pickGuestBookSections(data)");
+    expect(browser).toContain("pickGuestMathSections(data,bookId)");
+    expect(browser).toContain("sections.map(section=>");
+    expect(browser).toContain("items.map((item,i)=>");
+    expect(browser).toContain("UnitCard unit={unit}");
+    expect(browser).toContain("active.items.length+i+1");
     expect(browser).toContain('to="/auth"');
     expect(browser).toContain('to="/book/$bookId"');
     expect(browser).toContain('to="/math/books"');
@@ -110,8 +170,8 @@ describe("Book previews before registration",()=>{
     expect(browser).not.toContain("pullAndMerge");
     expect(browser).not.toContain("supabase.auth");
     expect(browser).not.toContain("book.sections.map");
-    expect(browser).toContain("BookSamples questions={questions}");
-    expect(browser).toContain('key={questions[position]!.id}');
+    expect(browser).toContain("SectionSamples sections={sections}");
+    expect(browser).toContain("onCheck={key=>setRevealed");
   });
 
   it("keeps the book grid mobile-responsive with controls accessible to touch and keyboard",()=>{
