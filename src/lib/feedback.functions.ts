@@ -36,6 +36,24 @@ export const getMyFeedback = createServerFn({ method: "POST" })
     return [] as { id: string; message: string; reply: string | null; created_at: string; replied_at: string | null }[];
   });
 
+/**
+ * The password alone isn't enough to invoke a privileged service-role
+ * feedback endpoint. The caller also needs a verified Supabase session.
+ * Guest feedback submission remains intentionally write-only.
+ */
+async function requireVerifiedFeedbackAdminSession() {
+  const { getRequest } = await import("@tanstack/react-start/server");
+  let token: string | undefined;
+  try {
+    const bearer = getRequest().headers.get("authorization") ?? "";
+    if (/^Bearer\\s+\\S{20,8192}$/i.test(bearer)) token = bearer.replace(/^Bearer\\s+/i, "");
+  } catch { /* No request -> no authenticated session. */ }
+  if (!token) throw new Error("unauthorized");
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !data.user?.id) throw new Error("unauthorized");
+}
+
 function checkAdmin(password: string) {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) throw new Error("admin not configured");
@@ -49,6 +67,7 @@ function checkAdmin(password: string) {
 export const adminListFeedback = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200) }).parse(input))
   .handler(async ({ data }) => {
+    await requireVerifiedFeedbackAdminSession();
     checkAdmin(data.password);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
@@ -65,6 +84,7 @@ export const adminReplyFeedback = createServerFn({ method: "POST" })
     z.object({ password: z.string().min(1).max(200), id: z.string().min(8).max(100).regex(/^[a-zA-Z0-9-]+$/), reply: z.string().trim().min(1).max(4000) }).parse(input),
   )
   .handler(async ({ data }) => {
+    await requireVerifiedFeedbackAdminSession();
     checkAdmin(data.password);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
