@@ -81,8 +81,8 @@ export const chatReply = createServerFn({ method: "POST" })
     // This is trusted only after HMAC verification. Unsigned role claims are
     // never accepted from the browser.
     const previous = await readChatContext(data.contextToken);
-    const messages: Msg[] = [...previous, {role:"user",content:data.question}].slice(-13);
-    const makeResult = async (text:string, extra:Record<string,unknown>={})=>({
+    const messages: Msg[] = [...previous, {role:"user" as const,content:data.question}].slice(-13);
+    const makeResult = async (text:string, extra:{error?:boolean;offline?:boolean;provider?:string}={})=>({
       text,
       ...extra,
       contextToken: await sealChatContext([
@@ -152,3 +152,4 @@ export const chatReply = createServerFn({ method: "POST" })
     // Do not expose provider credentials or deployment configuration to visitors.
     return makeResult(offlineStudyReply(messages,data.locale), {error:false,offline:true});
   });
+

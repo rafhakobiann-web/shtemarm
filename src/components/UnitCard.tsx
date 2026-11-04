@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -141,7 +141,7 @@ function Explain(props: { instruction: string; passage: string; question: string
   return (
     <div>
     {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
-    {text && <RichExplanation text={text} error={failed}/>
+    {text && <RichExplanation text={text} error={failed}/>}
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
@@ -235,6 +235,22 @@ export function UnitCard(props: {
   const { unit: u, value: a, onChange, revealed } = props;
   const tx = useTx();
   const language = useLang();
+  const cardId = useId();
+  const [passageOpen, setPassageOpen] = useState(true);
+  const words = language === "en" ? {
+    passage: "Reading text", hide: "Collapse text", expand: "Expand text", questions: "Go to questions", back: "Back to text",
+    answered: "answered", checked: "checked", group: "Questions", wrong: "Review the correct answer:", correct: "Well done! Correct answer.",
+  } : language === "ru" ? {
+    passage: "Текст задания", hide: "Свернуть текст", expand: "Развернуть текст", questions: "К вопросам", back: "К тексту",
+    answered: "отвечено", checked: "проверено", group: "Вопросы", wrong: "Правильный ответ:", correct: "Отлично! Правильный ответ.",
+  } : {
+    passage: "Առաջադրանքի տեքստը", hide: "Ծալել տեքստը", expand: "Բացել տեքստը", questions: "Անցնել հարցերին", back: "Վերադառնալ տեքստին",
+    answered: "պատասխանված", checked: "ստուգված", group: "Հարցեր", wrong: "Ճիշտ պատասխանը՝", correct: "Կեցցե՜ս։ Ճիշտ պատասխան է։",
+  };
+  const keys = u.kind === "mc" || u.kind === "num" ? u.questions.map((_, i) => questionAnswerKey(u, i)) : ["unit"];
+  const answeredCount = keys.filter(key => isAnswered(u, a, key === "unit" ? undefined : key)).length;
+  const checkedCount = keys.filter(key => revealed(key)).length;
+  const questionId = (index: number) => `${cardId}-question-${index}`;
 
   const mcBlock = (q: MCQuestion, index: number) => {
     const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
@@ -242,15 +258,15 @@ export function UnitCard(props: {
     const chosen = a?.mc?.[answerKey];
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
+      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></p>
+          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></h3>
         </div>
         {q.diagram && <figure className="mb-4 rounded-xl border bg-white p-3"><img src={q.diagram.src} alt={q.diagram.alt} width={350} height={250} loading="lazy" className="mx-auto h-auto w-full max-w-sm" /></figure>}
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div role="group" aria-labelledby={questionId(index)} className="study-answer-grid grid gap-2">
           {Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options).map(([k, v]) => {
             const isC = k === q.answer;
             const isSel = chosen === k;
@@ -281,13 +297,14 @@ export function UnitCard(props: {
                   disabled={show}
                   onChange={() => onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } })}
                   aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })}
+                  aria-describedby={`${questionId(index)}-option-${k}`}
                   className="mt-1 size-4 shrink-0 accent-primary"
                 />
                 <span aria-hidden="true" className={cn(
                   "grid size-7 shrink-0 place-items-center rounded-lg border text-sm font-bold",
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
-                <span className="min-w-0 flex-1 leading-relaxed">
+                <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 leading-relaxed">
                   {v.trim() ? <EnglishText text={v} context={`${q.stem} ${v}`} />
                     : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
                 </span>
@@ -298,10 +315,13 @@ export function UnitCard(props: {
           })}
         </div>
         {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
             {tx("Ստուգել →")}
           </button>
         )}
+        {show && chosen !== q.answer && <p role="status" className="mt-3 rounded-xl bg-muted px-3 py-3 text-sm font-semibold">
+          {words.wrong} {q.answer}) {q.options[q.answer]}
+        </p>}
         {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
@@ -312,7 +332,7 @@ export function UnitCard(props: {
         </Link>}
         {show && chosen === q.answer && (
           <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
-            <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
+            <Sparkles className="size-4" /> {words.correct}
           </div>
         )}
         {show && !getOfflineEnglishExplanation(u.id, q.n, language) && (
@@ -324,7 +344,7 @@ export function UnitCard(props: {
             chosen={chosen ? `${chosen}) ${q.options[chosen]}` : null}
           />
         )}
-      </div>
+      </section>
     );
   };
 
@@ -334,17 +354,17 @@ export function UnitCard(props: {
     const val = a?.mc?.[answerKey] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <div key={answerKey} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
+      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <p className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem} /></p>
+          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem} /></h3>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             disabled={show}
             value={val}
             aria-label={tx("Պատասխան {n}", { n: q.n })}
@@ -356,10 +376,10 @@ export function UnitCard(props: {
               show && !ok && "border-destructive bg-destructive/10",
             )}
           />
-          {show && <span className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
+          {show && <span role="status" className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
         {props.onCheck && !show && val.trim() && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="mt-3 text-sm font-bold text-primary hover:underline">
+          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -368,7 +388,7 @@ export function UnitCard(props: {
         </div>}
         {show && ok && (
           <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
-            <Sparkles className="size-4" /> {tx("Կեցցե՜ս։ Ճիշտ պատասխան է։")}
+            <Sparkles className="size-4" /> {words.correct}
           </div>
         )}
         {show && (
@@ -380,7 +400,7 @@ export function UnitCard(props: {
             chosen={val.trim() ? val : null}
           />
         )}
-      </div>
+      </section>
     );
   };
 
@@ -407,6 +427,8 @@ export function UnitCard(props: {
                         arr[i] = n;
                         onChange({ ...a, nums: arr });
                       }}
+                      aria-pressed={v === n}
+                      aria-label={`${tx("Բաց {n}", { n: i + 1 })}: ${n}`}
                       className={numCls(v === n, show, n === ans)}
                     >
                       {n}
@@ -430,8 +452,12 @@ export function UnitCard(props: {
       : (a?.nums ?? []).map((x) => x ?? "_").join(", ");
 
   return (
-    <article className="question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
+    <article aria-label={`${words.group} · ${u.label}`} className="study-unit question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
       {props.header}
+      {keys.length > 1 && <div className="study-unit-status flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground">
+        <span>{answeredCount} / {keys.length} {words.answered}</span>
+        <span role="status">{checkedCount} / {keys.length} {words.checked}</span>
+      </div>}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
         {props.instructionEn && <p className="text-xs italic text-muted-foreground"><EnglishText text={props.instructionEn} /></p>}
@@ -439,7 +465,8 @@ export function UnitCard(props: {
       {(() => {
         const split = !!u.passage.trim() && (u.kind === "mc" || u.kind === "num" || u.kind === "seq");
         const qs = (
-          <div className="min-w-0 space-y-4">
+          <div id={`${cardId}-answers`} tabIndex={-1} className="study-question-list min-w-0 space-y-4">
+            {split && <a href={`#${cardId}-passage`} onClick={() => setPassageOpen(true)} className="study-context-link">{words.back} ↑</a>}
             {u.kind === "mc" && <div className="space-y-3">{u.questions.map(mcBlock)}</div>}
             {u.kind === "num" && (
               <div role={u.questions.length > 1 ? "group" : undefined}
@@ -466,9 +493,17 @@ export function UnitCard(props: {
           );
         return (
           <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
-            <div className="sticky top-[var(--sticky-top,4.5rem)] z-10 max-h-[34vh] overflow-y-auto rounded-xl bg-card shadow-card ring-1 ring-border lg:max-h-[calc(100vh-var(--sticky-top,4.5rem)-1.5rem)]">
-              <Passage text={u.passage} kind={u.kind} />
-            </div>
+            <section id={`${cardId}-passage`} aria-label={words.passage} className="study-passage min-w-0 rounded-xl border bg-card">
+              <div className="study-passage-toolbar flex flex-wrap items-center justify-between gap-2 p-3">
+                <button type="button" aria-expanded={passageOpen} aria-controls={`${cardId}-text`} onClick={() => setPassageOpen(open => !open)} className="min-h-11 rounded-lg px-2 text-left text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary">
+                  {words.passage} · {passageOpen ? words.hide : words.expand}
+                </button>
+                <a href={`#${cardId}-answers`} className="study-context-link">{words.questions} ↓</a>
+              </div>
+              <div id={`${cardId}-text`} hidden={!passageOpen} className="study-passage-body">
+                <Passage text={u.passage} kind={u.kind} />
+              </div>
+            </section>
             {qs}
           </div>
         );
@@ -503,6 +538,8 @@ export function UnitCard(props: {
                     type="button"
                     disabled={show}
                     onClick={() => onChange({ ...a, match: { ...a?.match, [L]: n } })}
+                    aria-pressed={a?.match?.[L] === n}
+                    aria-label={`${L}: ${n}`}
                     className={numCls(a?.match?.[L] === n, show, u.answer[L] === n)}
                   >
                     {n}
@@ -515,12 +552,12 @@ export function UnitCard(props: {
       )}
 
       {u.kind !== "mc" && u.kind !== "num" && props.onCheck && !show && isAnswered(u, a) && (
-        <button type="button" onClick={() => props.onCheck?.("unit")} className="text-sm font-bold text-primary hover:underline">
+        <button type="button" onClick={() => props.onCheck?.("unit")} className="study-check inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
           {tx("Ստուգել →")}
         </button>
       )}
       {u.kind !== "mc" && u.kind !== "num" && show && (
-        <div className={cn("rounded-xl p-4", res.got ? "bg-success/10" : "bg-destructive/10")}>
+        <div role="status" className={cn("rounded-xl p-4", res.got ? "bg-success/10" : "bg-destructive/10")}>
           <p className="font-bold">{res.got ? tx("Ճիշտ է 🎉") : tx("Սխալ է")}</p>
           <p className="text-sm">
             {tx("Ճիշտ պատասխանը՝")} <b>{correctText}</b>
@@ -557,7 +594,7 @@ function NumPicker(p: { label: string; count: number; selected: number[]; noneSe
       <p className="mb-2 text-sm font-semibold">{p.label}</p>
       <div className="flex flex-wrap gap-2">
         {Array.from({ length: p.count }, (_, i) => i + 1).map((n) => (
-          <button key={n} type="button" disabled={p.disabled} onClick={() => p.onToggle(n)} className={numCls(p.selected.includes(n), !!p.correct, !!p.correct?.includes(n))}>
+          <button key={n} type="button" aria-pressed={p.selected.includes(n)} disabled={p.disabled} onClick={() => p.onToggle(n)} className={numCls(p.selected.includes(n), !!p.correct, !!p.correct?.includes(n))}>
             {n}
           </button>
         ))}
@@ -567,7 +604,7 @@ function NumPicker(p: { label: string; count: number; selected: number[]; noneSe
           aria-pressed={p.noneSelected}
           onClick={p.onNone}
           className={cn(
-            "min-h-10 rounded-lg border-2 px-3 text-sm font-bold transition-colors",
+            "min-h-11 rounded-lg border-2 px-3 text-sm font-bold transition-colors",
             p.noneSelected ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/50",
           )}
         >
@@ -604,4 +641,5 @@ function splitColumns(lines: string[]) {
   if (left.length < 3 || right.length < 3) return null;
   return { left, right };
 }
+
 

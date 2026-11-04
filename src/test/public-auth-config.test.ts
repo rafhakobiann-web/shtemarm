@@ -15,7 +15,7 @@ describe("Shtemarm runtime browser authentication settings", () => {
     expect(isPublicSupabaseKey(publishable)).toBe(true);
     expect(isPublicSupabaseKey(jwt("anon"))).toBe(true);
     expect(isPublicSupabaseKey(jwt("service_role"))).toBe(false);
-    expect(isPublicSupabaseKey("sb_secret_12345678901234567890")).toBe(false);
+    expect(isPublicSupabaseKey("sb_secret_" + "test-only-invalid-key")).toBe(false);
     expect(isPublicSupabaseKey("your-supabase-publishable-key")).toBe(false);
     expect(isPublicSupabaseKey("")).toBe(false);
   });
@@ -56,3 +56,4 @@ describe("Shtemarm runtime browser authentication settings", () => {
     expect(auth).toContain('supabase.auth.signInWithPassword');
   });
 });
+

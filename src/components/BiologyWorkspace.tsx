@@ -228,7 +228,7 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
                 {tx("Շտեմարան {n} · բոլոր բաժինները", { n })}
               </Link>
             ))}
-            <Link to="/biology/original" className="block rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
+            <Link to="/biology/original" search={{volume:3}} className="block rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
               {tx("3-րդ մաս · բնօրինակ տեքստային հարցեր")}
             </Link>
             <p className="text-xs text-muted-foreground">{tx("3-րդ և 4-րդ մասերի տեքստային հարցերը ստուգվում են տպագիր պատասխանների բանալիներով։ Նկար պահանջող և դեռ չստուգված բարդ առաջադրանքները չեն ներառվում թեստերում։")}</p>
@@ -241,4 +241,5 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
     </div>
   );
 }
+
 

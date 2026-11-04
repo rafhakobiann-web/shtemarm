@@ -1,0 +1,19 @@
+# Secure, responsive study experience — 4 November 2026
+
+Practice now separates reading context from answers with a collapsible, complete passage, links between text and questions, individual question headings, answered/checked counts and explicit answer feedback. On phones, reading uses the normal page scroll. Desktop retains a sticky text column. Classic practice renders 12 source units per page; selections and checked answers survive paging within the mounted session. It does not persist unfinished drafts across reloads.
+
+The mobile dock moves its active indicator by one tab width, stays fixed despite the Liquid Glass surface positioning rule, and hides while an editable field has an open software keyboard. Continue/check action bars clear the dock and device safe area. Settings/accessibility actions appear in a compact row on practice routes. Math choices stack on phones. Question order, answer keys and existing routes are retained.
+
+Server responses gain nosniff, referrer and permissions policies, HTTPS HSTS and a baseline CSP for objects, base URLs, forms and framing. Lovable editor framing remains allowed. This CSP deliberately does not claim script-level XSS isolation: Start's streamed inline scripts need a separate nonce-based design. Bearer responses, cookies, account/API pages and errors are not shared-cacheable. Static assets served outside the application server remain subject to hosting configuration.
+
+The three explanation-administration functions reuse the server-verified Supabase session helper from PR #212 before checking the existing admin password. Optional ADMIN_ALLOWED_USER_IDS restricts these functions to configured account UUIDs. No secret values are added. The other dependency-policy work in #212 remains independent.
+
+The initial locked audit reported 15 high/critical advisories. Compatible lockfile fixes update brace-expansion, js-yaml, launch-editor, nanoid, seroval, shell-quote, source-map-js and Vite (8.1.6). Zod moves to 4.6.6 with two explicit navigation search defaults and validation regression checks. The final high-level audit reports no high/critical vulnerabilities and four lower-severity advisories. No advisory is ignored or allowlisted.
+
+Two malformed explanation JSX expressions and existing chat result/crypto typing errors were fixed to restore build/type validation. No credentials or backend data were used in local UI checks. A synthetic secret-key fixture was made visibly synthetic so the repository scanner does not flag it as an exposed key.
+
+Validation: 76 passing tests across 14 focused security, question-flow, scoring, exam, AI and OAuth regression suites; TypeScript; production build; locked dependency audit; source secret scan. Browser checks used temporary synthetic question fixtures at 320px and 390px phone widths and a 1060px desktop width. At 320px the scrollable body width equalled the available width and the fixed dock stayed within it. Passage collapsing and selecting/checking an answer worked. All fixture routes and temporary authentication exceptions were removed before the final build.
+
+Release remains a draft PR. Live authenticated administration, hosted response headers and real-device software-keyboard behavior require deployment verification. Raw public question-bank JSON remains downloadable; guest UI previews are not server authorization for those assets. No claim of a complete security audit or enforced content paywall is made.
+
+PR #213 preview status: Netlify and Vercel builds succeeded. All 27 initial GitHub Actions runs reported failure; the inspected security job contained zero executed steps and no downloadable logs. The connector cannot read check-run annotations, so the runner-start failure reason is unconfirmed. Local validation does not imply GitHub CI passed. Keep the PR in draft until these checks can actually execute.

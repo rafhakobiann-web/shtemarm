@@ -308,7 +308,7 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
             }
           />
           {style === "game" && !finished && (
-            <div className="sticky bottom-4 z-20 flex justify-end">
+            <div className="study-action-bar sticky z-20 flex justify-end">
               {!isChecked ? (
                 <Button
                   variant="game"
@@ -339,3 +339,4 @@ function Runner({ book, items, kind, bookId, style, onExit }: { book: { id: numb
     </div>
   );
 }
+

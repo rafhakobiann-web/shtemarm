@@ -157,7 +157,7 @@ function AnswerBlock({ item, value, locked, onAnswer, editableUntilLocked = fals
           {tx("Տարբերակների տեքստը կարդա վերևի գրքի նկարից, ապա ընտրիր համապատասխան համարը։")}
         </p>
       )}
-      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+      <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
       {choices.map(([c, label]) => {
         const isCorrectBtn = revealed && correct === c;
         const isWrongBtn = revealed && value === c && correct !== c;
@@ -417,4 +417,5 @@ function PlayPage() {
     </div>
   );
 }
+
 

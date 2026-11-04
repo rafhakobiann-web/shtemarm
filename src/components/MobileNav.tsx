@@ -46,6 +46,25 @@ export function MobileNav() {
   const selected = (pathname === "/" || pathname === "/dashboard") && homeVisible !== null
     ? homeVisible : getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const update = () => {
+      const element = document.activeElement;
+      const editing = element instanceof HTMLElement &&
+        (element.matches("input,textarea") || element.isContentEditable);
+      setKeyboardOpen(editing && window.innerHeight - viewport.height > 150);
+    };
+    viewport.addEventListener("resize", update);
+    document.addEventListener("focusin", update);
+    document.addEventListener("focusout", update);
+    return () => {
+      viewport.removeEventListener("resize", update);
+      document.removeEventListener("focusin", update);
+      document.removeEventListener("focusout", update);
+    };
+  }, []);
   const lastY = useRef(0);
   const dockRef = useRef<HTMLElement>(null);
   const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -231,6 +250,7 @@ export function MobileNav() {
   return (
     <nav
       ref={dockRef}
+      hidden={keyboardOpen}
       onPointerDown={dockDown}
       onPointerMove={dockMove}
       onPointerUp={dockEnd}
@@ -244,7 +264,7 @@ export function MobileNav() {
         <span
           aria-hidden="true"
           className="mobile-liquid-indicator pointer-events-none absolute inset-y-0 left-0 w-1/5 rounded-[1.3rem]"
-          style={{ transform: "translate3d(" + previewTab * 500 + "%, 0, 0)" }}
+          style={{ transform: "translate3d(" + previewTab * 100 + "%, 0, 0)" }}
         />
         {tabs.map(({ id, to, hash: tabHash, label, icon: Icon }, index) => (
           <Link
@@ -268,3 +288,4 @@ export function MobileNav() {
     </nav>
   );
 }
+

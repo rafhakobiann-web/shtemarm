@@ -16,6 +16,7 @@ import appCss from "../styles.css?url";
 import liquidGlassCss from "../liquid-glass-2026.css?url";
 import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
+import studyComfortCss from "../study-comfort.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -113,7 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#141e42" },
       { name: "application-name", content: "Shtemarm" },
       { name: "google-site-verification", content: "InvqhMBgY6g8r9G17BLWthQsPSKpetfpNqSguZ_km6E" },
@@ -139,6 +140,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: interactionMotionCss,
       },
+      { rel: "stylesheet", href: studyComfortCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -240,6 +242,7 @@ function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   const location=useLocation();
   const publicView=location.pathname==="/";
+  const practiceView = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname === "/math/play";
   useEffect(() => {
     return initAppearance();
   }, []);
@@ -265,7 +268,7 @@ function ActiveApp() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <TouchGlassEffects />
       {!publicView && <AppHeader />}
-      {!publicView && <PersonalizationControls />}
+      {!publicView && <PersonalizationControls inline={practiceView} />}
       <main id="main-content" tabIndex={-1} className="mx-auto box-border w-full min-w-0 max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <TranslationProvider><AuthBoundary><Outlet /></AuthBoundary></TranslationProvider>
       </main>
@@ -274,3 +277,4 @@ function ActiveApp() {
     </QueryClientProvider>
   );
 }
+

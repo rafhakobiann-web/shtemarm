@@ -134,7 +134,7 @@ function EnglishTestsPage() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>
-          <Link to="/english-grammar" className={CARD}>
+          <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} className={CARD}>
             <CardIcon>
               <ClipboardCheck className="size-5" />
             </CardIcon>
@@ -181,3 +181,4 @@ function EnglishTestsPage() {
     </div>
   );
 }
+
