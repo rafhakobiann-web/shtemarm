@@ -17,11 +17,10 @@ export const explainAnswer = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { getSavedExplanation, saveExplanation } = await import("./explanation-cache.server");
     const { generateExplanation } = await import("./explanation-providers.server");
-    const cacheKey = await explanationKey({ ...data, instruction: `${data.locale??"hy"}|${data.instruction}` });
+    const cacheKey = await explanationKey({ ...data, chosen: null, instruction: `shared-teaching-v1|${data.locale??"hy"}|${data.instruction}` });
     const cached = await getSavedExplanation(cacheKey);
     if (cached) return { text: cached, cached: true, error: false, offline: false };
 
-    const wrong = data.chosen && data.chosen !== data.correct;
     const prompt = `Դու փորձառու ուսուցիչ ես, որը հայ աշակերտներին օգնում է անգլերենից, կենսաբանությունից, հայոց պատմությունից, հայոց լեզվից և այլ առարկաներից։ Որոշիր հարցի առարկան և բացատրիր հենց այդ առարկայի կանոններով։
 Տրված ճիշտ պատասխանը վերցված է հարցաշարի բանալուց։ Հիմնավորիր այն՝ ոչ թե պարզապես կրկնիր բանալին։ Եթե պայմանը հակասական է, նշիր դա։
 Գրիր ԳՐԱԿԱՆ ՀԱՅԵՐԵՆՈՎ՝ 120–260 բառ։ Օգտագործիր կարճ, համարակալված քայլեր՝ 1. Հարցի իմաստը, 2. Կանոնը կամ փաստը, 3. Լուծման հիմնավորումը, 4. Եզրակացություն և տարածված սխալ։
@@ -32,7 +31,7 @@ export const explainAnswer = createServerFn({ method: "POST" })
 Առաջադրանք: ${data.instruction}
 ${data.passage ? `Տեքստ:\n${data.passage}\n` : ""}Հարց:\n${data.question}
 Ճիշտ պատասխան: ${data.correct}
-${data.chosen ? `Աշակերտի պատասխանը: ${data.chosen}` : "Աշակերտը չի պատասխանել։"}`;
+Այս բացատրությունը կիրառվելու է նույն հարցը լուծող տարբեր սովորողների համար։ Ներկայացրու ընդհանուր լուծման հիմնավորումը՝ առանց անհատական ընտրությունը հիշատակելու։`;
 
     const keys = {
       gemini: process.env["GEMINI_API_KEY"],
