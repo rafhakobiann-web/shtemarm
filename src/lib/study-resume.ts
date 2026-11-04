@@ -22,7 +22,8 @@ export function parseStudyResume(value:unknown, now=Date.now()):StudyResume|null
   if(v.mode!=="game" && v.mode!=="classic")return null;
   if(typeof v.visitedAt!=="number" || !Number.isFinite(v.visitedAt) ||
      v.visitedAt>now+60_000 || v.visitedAt<now-180*24*60*60_000)return null;
-  return v as StudyResume;
+  return {bookId:v.bookId as number,sectionId:v.sectionId as number,
+    mode:v.mode as "game" | "classic",visitedAt:v.visitedAt as number};
 }
 function storageKey(userId:string){return ID_RE.test(userId)?prefix+userId:null;}
 
