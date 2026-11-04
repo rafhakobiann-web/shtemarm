@@ -11,7 +11,7 @@ const FILTERS:readonly PreviewCategory[]=["all","english","math","armenian","his
 
 const normal = (s:string) => s.normalize("NFKC").replace(/\s+/g,"").replace(/,/g,".").toLowerCase();
 
-function BookQuestionCard({ question, order, total }: { question:GuestBookQuestion;order:number;total:number }) {
+function BookQuestionCard({ question, order, total, onAnswered }: { question:GuestBookQuestion;order:number;total:number;onAnswered:()=>void }) {
   const lang=useLang();
   const t=GUEST_BOOK_TEXT[lang];
   const [choice,setChoice]=useState<string|null>(null);
@@ -22,6 +22,7 @@ function BookQuestionCard({ question, order, total }: { question:GuestBookQuesti
   const submit=()=>{
     if(question.kind!=="number"||checked||!draft.trim())return;
     setChecked(true);
+    onAnswered();
   };
   return (
     <article className="sht-try-book-question">
@@ -35,7 +36,7 @@ function BookQuestionCard({ question, order, total }: { question:GuestBookQuesti
         <div className="sht-try-options" role="group" aria-label={t.question+" "+order}>
           {question.options.map(({key,value})=>(
             <button type="button" key={key} aria-pressed={choice===key} disabled={revealed}
-              onClick={()=>setChoice(key)}
+              onClick={()=>{setChoice(key);onAnswered();}}
               className={revealed&&key===question.answer?"is-correct":choice===key?"is-incorrect":""}>
               <span className="sht-try-option-letter">{key}</span><span>{value}</span>
               {revealed&&key===question.answer?<Check size={17} aria-hidden="true"/>:choice===key?<X size={17} aria-hidden="true"/>:null}
@@ -106,6 +107,7 @@ function BookContent({ meta, onBack }: { meta:GuestBookMeta;onBack:()=>void }) {
 
 function BookSamples({questions}:{questions:GuestBookQuestion[]}) {
   const [position,setPosition]=useState(0);
+  const [canAdvance,setCanAdvance]=useState(false);
   const t=GUEST_BOOK_TEXT[useLang()];
   if(questions.length===0)return <p className="sht-try-book-empty">{t.missing}</p>;
   const done=position>=questions.length;
@@ -117,12 +119,12 @@ function BookSamples({questions}:{questions:GuestBookQuestion[]}) {
         <div className="sht-try-book-end" role="status">
           <LockKeyhole size={28} aria-hidden="true"/>
           <strong>{t.ready}</strong><p>{t.rest}</p>
-          <button type="button" className="sht-try-book-back" onClick={()=>setPosition(0)}><RefreshCw size={17} aria-hidden="true"/>{t.restart}</button>
+          <button type="button" className="sht-try-book-back" onClick={()=>{setPosition(0);setCanAdvance(false);}}><RefreshCw size={17} aria-hidden="true"/>{t.restart}</button>
         </div>
       ):(
         <div>
-          <BookQuestionCard key={questions[position]!.id} question={questions[position]!} order={position+1} total={questions.length}/>
-          <button type="button" className="sht-try-next-book" onClick={()=>setPosition(i=>i+1)}>
+          <BookQuestionCard key={questions[position]!.id} question={questions[position]!} order={position+1} total={questions.length} onAnswered={()=>setCanAdvance(true)}/>
+          <button type="button" className="sht-try-next-book" disabled={!canAdvance} onClick={()=>{setPosition(i=>i+1);setCanAdvance(false);}}>
             {position+1===questions.length?t.locked:t.next}<ChevronRight size={18} aria-hidden="true"/>
           </button>
         </div>
