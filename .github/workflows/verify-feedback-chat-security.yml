@@ -10,6 +10,13 @@ on:
       - 'src/lib/admin-session.server.ts'
       - 'src/lib/question-explanations.functions.ts'
       - 'src/test/admin-dependency-security.test.ts'
+      - 'src/test/security-admin-session.test.ts'
+      - 'src/test/personal-dashboard-learning.test.ts'
+      - 'src/lib/study-resume.ts'
+      - 'src/routes/dashboard.tsx'
+      - 'src/routes/study.$bookId.$sectionId.tsx'
+      - 'src/components/UnitCard.tsx'
+      - 'src/lib/ai-study-modes.ts'
       - 'scripts/check-dependency-security.mjs'
       - 'bun.lock'
       - 'package.json'
@@ -34,7 +41,7 @@ jobs:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
       - name: Regression tests for data privacy and role forgery
-        run: bunx vitest run src/test/security-feedback-chat.test.ts src/test/ai-learning.test.ts src/test/ai-runtime.test.ts src/test/admin-dependency-security.test.ts
+        run: bunx vitest run src/test/security-feedback-chat.test.ts src/test/ai-learning.test.ts src/test/ai-runtime.test.ts src/test/admin-dependency-security.test.ts src/test/security-admin-session.test.ts src/test/personal-dashboard-learning.test.ts
       - name: Verify framework patches and no known poisoned package versions
         run: node scripts/check-dependency-security.mjs
       - name: Audit locked dependencies for high/critical advisories
