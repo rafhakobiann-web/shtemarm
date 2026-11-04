@@ -38,6 +38,8 @@ describe("Mobile flashcards: deliberate, safe touch gestures", () => {
     expect(route).toContain("if(reduceMotion){answer(success);setDragX(0);return;}");
     expect(route).toContain("if(animationTimer.current)clearTimeout(animationTimer.current)");
     expect(route).toContain("if(clickResetTimer.current)clearTimeout(clickResetTimer.current)");
+    expect(route).toContain("setOnlyMissed(e.target.checked);restart()");
+    expect(route).toContain("setSelected(old=>e.target.checked?[...old,section]:old.filter(x=>x!==section));restart();");
   });
 
   it("provides visible swipe direction and phone-sized actions", () => {
