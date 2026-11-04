@@ -156,7 +156,7 @@ function FlashcardsPage(){
         <p className="text-sm font-bold">{tx("Կրկնություն")}</p>
         <p className="text-xs text-muted-foreground">{tx("Հիշված քարտեր")}՝ {knownCount}</p>
         <label className="flex items-center gap-2 rounded-xl border p-3 text-sm"><input type="checkbox" checked={onlyMissed}
-          onChange={e=>{setOnlyMissed(e.target.checked);setIndex(0);setRevealed(false)}}/>
+          onChange={e=>{setOnlyMissed(e.target.checked);restart()}}/>
           {tx("Միայն չիմացած քարտերը")}</label>
       </div>
       {sections.length>0 && <details className="space-y-2 sm:col-span-2">
@@ -164,7 +164,7 @@ function FlashcardsPage(){
         <div className="grid max-h-48 gap-2 overflow-auto rounded-xl border p-3 sm:grid-cols-2">
           {sections.map(section=><label className="flex items-start gap-2 text-sm" key={section}>
             <input type="checkbox" className="mt-1" checked={selected.includes(section)}
-              onChange={e=>{setSelected(old=>e.target.checked?[...old,section]:old.filter(x=>x!==section));setIndex(0);setRevealed(false);}}/>
+              onChange={e=>{setSelected(old=>e.target.checked?[...old,section]:old.filter(x=>x!==section));restart();}}/>
             <span>{section}</span>
           </label>)}
         </div>
