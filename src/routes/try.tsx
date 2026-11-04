@@ -4,14 +4,16 @@ import { ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, CircleHelp, Gradu
 import { useLang, setLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
 import { GUEST_DEMO, guestCardSwipe, type GuestMode } from "@/lib/guest-demo";
+import { GuestBookBrowser } from "@/components/GuestBookBrowser";
+import { GUEST_BOOKS, GUEST_BOOK_TEXT } from "@/lib/guest-book-preview";
 
 export const Route = createFileRoute("/try")({
   staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "Try Shtemarm | Փորձիր առանց գրանցման" },
-    { name: "description", content: "Անվճար փորձիր Shtemarm-ի ինտերակտիվ հարցերը, բառաքարտերը և խաղային առաջադրանքները՝ առանց հաշիվ ստեղծելու։" },
+    { name: "description", content: "Իրական Shtemarm շտեմարաններ. փորձիր յուրաքանչյուր գրքից առաջին երկու հարցը և գրանցվիր՝ մնացածը բացելու համար։" },
     { property: "og:title", content: "Try Shtemarm — No account needed" },
-    { property: "og:description", content: "Explore an interactive Shtemarm demo before creating an account." },
+    { property: "og:description", content: "Browse real Shtemarm question books, answer two guest questions per book, and unlock the rest after signing in." },
   ] }),
   component: GuestExperience,
 });
@@ -19,10 +21,8 @@ export const Route = createFileRoute("/try")({
 function GuestExperience() {
   const lang = useLang();
   const { words: w, questions, cards } = GUEST_DEMO[lang];
+  const bookWords = GUEST_BOOK_TEXT[lang];
   const [mode, setMode] = useState<GuestMode>("practice");
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [practiceScore, setPracticeScore] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [reviewIds, setReviewIds] = useState<string[]>([]);
@@ -43,11 +43,6 @@ function GuestExperience() {
     if (clickTimer.current) clearTimeout(clickTimer.current);
   }, []);
 
-  const resetPractice = () => {
-    setQuestionIndex(0);
-    setSelected(null);
-    setPracticeScore(0);
-  };
   const resetCards = () => {
     setCardIndex(0);
     setRevealed(false);
@@ -61,15 +56,6 @@ function GuestExperience() {
     setChallengeSelected(null);
     setSampleXP(0);
     setChallengeStarted(false);
-  };
-  const selectAnswer = (choice:number) => {
-    if (selected !== null || questionIndex >= questions.length) return;
-    setSelected(choice);
-    if (choice === questions[questionIndex]!.correct) setPracticeScore(x => x + 1);
-  };
-  const nextQuestion = () => {
-    setQuestionIndex(x => x + 1);
-    setSelected(null);
   };
   const markCard = (outcome:"known"|"review") => {
     if (cardIndex >= currentCards.length) return;
@@ -129,17 +115,12 @@ function GuestExperience() {
     if (choice === questions[(challengeIndex+1)%questions.length]!.correct) setSampleXP(x => x + 20);
   };
 
-  const practiceDone=questionIndex>=questions.length;
   const cardsDone=cardIndex>=currentCards.length;
   const challengeDone=challengeIndex>=questions.length;
-  const question=practiceDone?null:questions[questionIndex]!;
   const challengeQuestion=challengeDone?null:questions[(challengeIndex+1)%questions.length]!;
-  const activeQuestion=mode==="challenge"?challengeQuestion:question;
-  const activeSelected=mode==="challenge"?challengeSelected:selected;
-  const choose=mode==="challenge"?selectChallenge:selectAnswer;
-  const next=mode==="challenge"
-    ? ()=>{setChallengeIndex(i=>i+1);setChallengeSelected(null);}
-    : nextQuestion;
+  const activeQuestion=challengeQuestion;
+  const activeSelected=challengeSelected;
+  const next=()=>{setChallengeIndex(i=>i+1);setChallengeSelected(null);};
 
   return (
     <div className="sht-try">
@@ -171,7 +152,7 @@ function GuestExperience() {
         </div>
         <div className="sht-try-overview" aria-label={w.example}>
           <span className="sht-try-overview-icon"><GraduationCap size={26} aria-hidden="true"/></span>
-          <div><strong>3</strong><span>{w.practice}</span></div>
+          <div><strong>{GUEST_BOOKS.length}</strong><span>{bookWords.count}</span></div>
           <div><strong>3</strong><span>{w.cards}</span></div>
           <div><strong>+20</strong><span>{w.xp}</span></div>
         </div>
@@ -182,7 +163,7 @@ function GuestExperience() {
           <p className="sht-try-sidebar-title">{w.startExploring}</p>
           <nav className="sht-try-modes" aria-label={w.navigation}>
             {([
-              {id:"practice" as const, Icon:BookOpen,label:w.practice},
+              {id:"practice" as const, Icon:BookOpen,label:bookWords.title},
               {id:"cards" as const, Icon:Layers3,label:w.cards},
               {id:"challenge" as const, Icon:Trophy,label:w.challenge},
             ]).map(({id,Icon,label})=>(
@@ -191,7 +172,7 @@ function GuestExperience() {
               </button>
             ))}
           </nav>
-          <div className="sht-try-sample-warning"><CircleHelp size={18} aria-hidden="true"/><p>{w.note}</p></div>
+          <div className="sht-try-sample-warning"><CircleHelp size={18} aria-hidden="true"/><p>{mode==="practice"?bookWords.disclaimer:w.note}</p></div>
         </aside>
 
         <section className="sht-try-panel" aria-labelledby="sht-try-panel-title">
@@ -200,47 +181,13 @@ function GuestExperience() {
               {mode==="practice"?<BookOpen aria-hidden="true"/>:mode==="cards"?<Layers3 aria-hidden="true"/>:<Trophy aria-hidden="true"/>}
             </span>
             <div>
-              <span className="sht-try-subtitle">{w.example}</span>
-              <h2 id="sht-try-panel-title">{mode==="practice"?w.practice:mode==="cards"?w.cards:w.challenge}</h2>
+              <span className="sht-try-subtitle">{mode==="practice"?bookWords.firstTwo:w.example}</span>
+              <h2 id="sht-try-panel-title">{mode==="practice"?bookWords.title:mode==="cards"?w.cards:w.challenge}</h2>
             </div>
             <span className="sht-try-live-label">{w.guest}</span>
           </div>
 
-          {mode==="practice" && (practiceDone ? (
-            <div className="sht-try-completion" role="status">
-              <CheckCircle2 size={42} aria-hidden="true"/>
-              <h3>{w.complete}</h3>
-              <p>{w.score}: <strong>{practiceScore} / {questions.length}</strong></p>
-              <button type="button" className="sht-try-primary" onClick={resetPractice}><RotateCcw size={17} aria-hidden="true"/>{w.restart}</button>
-            </div>
-          ) : (
-            <div className="sht-try-task" key={"practice-"+questionIndex}>
-              <div className="sht-try-progress-row"><span>{w.question} {questionIndex+1} / {questions.length}</span><span>{question!.subject}</span></div>
-              <progress max={questions.length} value={questionIndex+(selected===null?0:1)} aria-label={w.progress}/>
-              <h3>{question!.stem}</h3>
-              <p className="sht-try-instruction">{w.choose}</p>
-              <div className="sht-try-options" role="group" aria-label={w.choose}>
-                {question!.options.map((option,i)=>(
-                  <button key={i} type="button" disabled={selected!==null} aria-pressed={selected===i}
-                    className={selected!==null && i===question!.correct?"is-correct":selected===i?"is-incorrect":""}
-                    onClick={()=>selectAnswer(i)}>
-                    <span className="sht-try-option-letter">{String.fromCharCode(65+i)}</span>
-                    <span>{option}</span>
-                    {selected!==null && i===question!.correct ? <Check size={18} aria-hidden="true"/> : selected===i ? <X size={18} aria-hidden="true"/>:null}
-                  </button>
-                ))}
-              </div>
-              {selected!==null && <div className="sht-try-feedback" role="status">
-                <strong>{selected===question!.correct?w.correct:w.incorrect}</strong>
-                <p><Lightbulb size={16} aria-hidden="true"/>{w.why}: {question!.why}</p>
-              </div>}
-              <div className="sht-try-task-actions">
-                <button type="button" className="sht-try-primary" disabled={selected===null} onClick={nextQuestion}>
-                  {questionIndex===questions.length-1?w.finish:w.next}<ArrowRight size={17} aria-hidden="true"/>
-                </button>
-              </div>
-            </div>
-          ))}
+          {mode==="practice" && <GuestBookBrowser />}
 
           {mode==="cards" && (cardsDone ? (
             <div className="sht-try-completion" role="status">
@@ -298,7 +245,7 @@ function GuestExperience() {
                 {challengeQuestion!.options.map((option,i)=>(
                   <button key={i} type="button" disabled={challengeSelected!==null} aria-pressed={challengeSelected===i}
                     className={challengeSelected!==null&&i===challengeQuestion!.correct?"is-correct":challengeSelected===i?"is-incorrect":""}
-                    onClick={()=>choose(i)}>
+                    onClick={()=>selectChallenge(i)}>
                     <span className="sht-try-option-letter">{String.fromCharCode(65+i)}</span><span>{option}</span>
                     {challengeSelected!==null&&i===challengeQuestion!.correct?<Check size={18} aria-hidden="true"/>:null}
                   </button>
