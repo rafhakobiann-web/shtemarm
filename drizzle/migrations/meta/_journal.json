@@ -15,6 +15,13 @@
       "when": 1792464527376,
       "tag": "0001_explanation_cache",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793767084113,
+      "tag": "0002_question_explanations",
+      "breakpoints": true
     }
   ]
 }
