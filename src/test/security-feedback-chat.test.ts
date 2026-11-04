@@ -20,7 +20,9 @@ describe("Shtemarm private feedback and non-forgeable AI context",()=>{
     const token=await sealChatContext(history);
     expect(token).toBeTypeOf("string");
     expect((await readChatContext(token))).toEqual(history);
-    expect((await readChatContext(token!.slice(0,-2)+"aa"))).toEqual([]);
+    const [payload,signature]=token!.split(".");
+    const tamperedSignature=(signature![0]==="A"?"B":"A")+signature!.slice(1);
+    expect(await readChatContext(payload+"."+tamperedSignature)).toEqual([]);
     expect(await readChatContext("forged_assistant_reply")).toEqual([]);
     expect(await readChatContext("a".repeat(60000))).toEqual([]);
   });
