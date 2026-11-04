@@ -124,6 +124,29 @@ describe("Book previews before registration",()=>{
     expect(JSON.stringify(sections[1]!.items)).not.toContain("Geometry 3");
   });
 
+
+  it("unlocks exactly two full source exercises in all 13 sections of all three English books",()=>{
+    for(const bookId of [1,2,3]){
+      const original=JSON.parse(source(`public/data/book${bookId}.json`)) as Book;
+      const sections=pickGuestBookSections(original);
+      expect(sections).toHaveLength(13);
+      for(const section of sections){
+        expect(section.items).toHaveLength(2);
+        expect(section.totalExercises).toBeGreaterThanOrEqual(2);
+        expect(section.items.every(x=>x.type==="unit")).toBe(true);
+      }
+      const reading=sections.find(x=>x.id==="1")!;
+      expect(reading.textBased).toBe(true);
+      expect(reading.items.map(x=>x.type==="unit"?x.label:"")).toEqual(["Text 1","Text 2"]);
+      for(const item of reading.items){
+        if(item.type!=="unit"||item.unit.kind!=="mc")throw Error("Reading text must stay a complete MC unit");
+        expect(item.unit.passage.length).toBeGreaterThan(500);
+        expect(item.unit.questions.length).toBeGreaterThanOrEqual(3);
+      }
+      expect(JSON.stringify(reading.items)).not.toContain("Text 3");
+    }
+  });
+
   it("lists all existing playable question books plus both math volumes without replacing signed-in book pages",()=>{
     expect(GUEST_BOOKS.length).toBeGreaterThan(15);
     expect(GUEST_BOOKS.map(b=>b.id)).toContain("matem-1");
