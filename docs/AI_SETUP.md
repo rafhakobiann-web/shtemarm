@@ -60,11 +60,11 @@ Shtemarm uses one set of **server-side** provider credentials for the whole webs
 
 | Variable | Default | Meaning |
 | --- | ---: | --- |
-| `AI_USER_DAILY_LIMIT` | 15 | Remote requests per verified signed-in account per UTC day |
-| `AI_GUEST_SHARED_DAILY_LIMIT` | 20 | One **shared** quota across all anonymous visitors per UTC day (NOT 20 per guest) |
+| `AI_USER_DAILY_LIMIT` | 60 | Remote requests per verified signed-in account per UTC day |
+| `AI_GUEST_SHARED_DAILY_LIMIT` | 30 | One **shared** quota across all anonymous visitors per UTC day (NOT 30 per guest) |
 | `AI_ADMIN_DAILY_LIMIT` | 80 | Daily admin bulk generation budget |
-| `AI_GLOBAL_DAILY_LIMIT` | 200 | Total daily model requests across students, guests and admin |
-| `AI_GLOBAL_MINUTE_LIMIT` | 15 | Total model requests per UTC minute |
+| `AI_GLOBAL_DAILY_LIMIT` | 800 | Total daily model requests across students, guests and admin |
+| `AI_GLOBAL_MINUTE_LIMIT` | 25 | Total model requests per UTC minute |
 | `AI_QUOTA_SALT` | default pepper | Optional secret salt for one-way pseudonymous account keys |
 
 Rate limits count **attempts**, including remote provider failures. Gemini → Groq fallback under a single request consumes one reservation. Cached responses and local dictionary lookups don't consume new model reservations. Quotas reset at UTC day/minute boundaries, and the reservation is atomic across concurrent Nitro server instances.
@@ -85,3 +85,30 @@ The service-role RPC cannot be invoked by anonymous or authenticated browser cli
 ### Guest-specific note
 
 The current guest limit is a **single shared daily pool**, not a robust per-guest identity. It avoids trusting spoofable IP/X-Forwarded-For headers. If public AI needs an individual per-guest allocation at scale, implement verified anonymous identities and anti-automation measures before increasing this limit.
+
+
+## Learning-first AI tutor — expanded access
+
+Students need more than a short fixed allowance to learn effectively. The Shtemarm AI tutor offers **three modes**, selected in the chat:
+
+- **Hint** (default): gives a concrete first step and guiding question; if the student requests a full answer, it explains completely.
+- **Full explanation**: a worked answer, mathematical steps, why the method works, and an optional check question.
+- **Practice**: gives one exercise, waits for the student's attempt, checks it and explains the mistake.
+
+The AI tutor follows the selected Armenian, English, or Russian UI language, allows school topics beyond the original narrow list, and now receives the conversation's previous assistant replies as well as student messages. It still cannot guarantee factual correctness; students should verify exam answer keys.
+
+### Quota defaults and realistic cost limits
+
+The updated default policy gives **60 live calls per authenticated student per UTC day**, **30 guest calls shared across all guests**, **800 live calls per UTC day across the whole site**, and **25 per UTC minute**. This is intentionally not "unlimited" paid-model access. Admins may choose *lower* values based on actual provider billing and demand. Existing hosting secrets such as `AI_USER_DAILY_LIMIT=15` override the new defaults until updated.
+
+With cache-first shared question explanations, students can replay a previously generated explanation **without another paid model call**. The cache no longer distinguishes a different student's selected answer when the underlying source question and official correct answer are the same; in that case the AI creates a general study explanation, not individualized feedback.
+
+Because cached explanations are reused, don't put a learner's name, personal details, or private notes into the shared question-explanation prompt. Chat conversation text is **not** placed in the shared cache.
+
+### Validation before production
+
+1. Try the three tutoring modes on a real algebra or English grammar task, including switching modes mid-conversation.
+2. Verify one full-solution request really includes the answer and logical steps, not only hints.
+3. Verify the same source question yields a saved cached explanation across different selected answers, including math, without a second generation call.
+4. Check actual AI provider billing and rate-limit dashboards; set the `AI_GLOBAL_DAILY_LIMIT` lower if needed.
+5. Ensure code build, authentication, and multilingual mobile UI pass before merging the Draft PR.
