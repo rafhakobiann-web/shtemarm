@@ -304,7 +304,10 @@ function BooksPage() {
   // One accessible, visible title across loading, error, chooser and sections.
   const title = section && book
     ? tx("{book} · Բաժին {n}", {book:tx(book.title),n:section.section})
-    : book ? tx(book.title) : tx("Մաթեմատիկայի շտեմարաններ");
+    : book ? tx(book.title)
+      : lang === "en" ? "Mathematics question books"
+      : lang === "ru" ? "Сборники по математике"
+      : "Մաթեմատիկայի շտեմարաններ";
   const pageHeading = <h1 className="text-balance text-2xl font-black tracking-tight sm:text-4xl">{title}</h1>;
 
   if (q.isLoading) return <main className="mx-auto max-w-5xl space-y-4 px-3 pb-12 pt-4">
