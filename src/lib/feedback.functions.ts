@@ -81,7 +81,9 @@ export const getMyFeedback = createServerFn({ method: "POST" })
 
 /** The administrative password is not an unauthenticated API token. */
 async function requireVerifiedFeedbackAdminSession() {
-  if (!await getVerifiedFeedbackUserId()) throw new Error("unauthorized");
+  // Same verified-session + optional UID allowlist as the explanation admin.
+  const { requireVerifiedAdminSession } = await import("./admin-session.server");
+  await requireVerifiedAdminSession();
 }
 
 function checkAdmin(password: string) {
