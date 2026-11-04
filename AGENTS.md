@@ -20,3 +20,4 @@
 - English translation controls use a shared provider; word actions do not select answers, and full passages retain their original English. Why: lookup must not alter test responses or source content.
 - Public translation results use a versioned, namespaced content/context hash in the server-only learning-content cache; cache only complete successful responses. Why: reuse provider quota without mixing meanings or account data.
 - Level-test counts are bounded by unique available questions and displayed in bank order. Why: never inflate a test by repeating questions.
+- Reviewed question explanations use a dedicated table with public reviewed-only reads and service-role writes; apply schema through tracked migrations so generated client types match the deployed database.

@@ -73,4 +73,10 @@ describe("Shared mistake notebook for subject practice and exams", () => {
     expect(subjectForBookId(41)).toBe("armenian");
     expect(subjectForBookId(61)).toBe("physics");
   });
+
+  it("does not accept a sequence containing an unanswered slot", () => {
+    const sequence: Unit = { id: "sequence", kind: "seq", label: "1", passage: "", answer: [1, 2] };
+    expect(isUnitRetryCorrect(sequence, { nums: [1, null, 2] })).toBe(false);
+    expect(isUnitRetryCorrect(sequence, { nums: [1, 2] })).toBe(true);
+  });
 });
