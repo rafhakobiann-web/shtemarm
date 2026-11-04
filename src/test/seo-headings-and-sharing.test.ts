@@ -24,6 +24,42 @@ describe("SEO and accessible page headings", () => {
     expect(math.match(/<h1\b/g)?.length).toBe(1);
   });
 
+  it("shows exactly one meaningful H1 on the math-books chooser, section and error/loading states", () => {
+    const math = source("src/routes/math.books.tsx");
+    expect(math).toContain('const pageHeading = <h1');
+    expect(math.match(/<h1\\b/g)?.length).toBe(1);
+    expect(math).toContain('title = section && book');
+    expect(math).toContain('role="status"');
+    expect(math).toContain('role="alert"');
+    expect(math).toContain("if (q.isLoading) return <main");
+    expect(math).toContain("if (q.error || !q.data) return <main");
+    expect(math).toContain('{pageHeading}');
+    expect(math).toContain('lang === "en" ? "Mathematics question books"');
+    expect(math).toContain('lang === "ru" ? "Сборники по математике"');
+    expect(math).toContain('<h2 className="text-xl font-black sm:text-2xl">');
+  });
+
+  it("keeps one primary H1 through shared components for subject builders and running tests", () => {
+    for (const route of [
+      "src/routes/biology.tsx",
+      "src/routes/history.tsx",
+      "src/routes/exam.$subject.tsx",
+      "src/routes/subject.$subject.tsx",
+    ]) {
+      expect(source(route)).toContain("component:");
+    }
+    const hero = source("src/components/ExamDesign.tsx");
+    const active = source("src/components/HistorySession.tsx");
+    expect(hero.match(/<h1\\b/g)?.length).toBe(1);
+    expect(active.match(/<h1\\b/g)?.length).toBe(1);
+    for(const component of ["BiologyWorkspace","HistoryWorkspace","WorkbookExamWorkspace","PhysicsWorkspace"]) {
+      const content=source(`src/components/${component}.tsx`);
+      expect(content).toContain("<ExamHero");
+      expect(content).not.toContain("<h1");
+    }
+    expect(source("src/routes/subject.$subject.tsx")).toContain("<HistorySession");
+  });
+
   it("uses an accessible H1 for a study section even before book data loads", () => {
     const study = source("src/routes/study.$bookId.$sectionId.tsx");
     expect(study).toContain("<h1");
