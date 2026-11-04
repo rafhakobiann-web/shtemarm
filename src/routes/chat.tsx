@@ -4,7 +4,8 @@ import { Loader2, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { chatReply } from "@/lib/chat.functions";
 import { cn } from "@/lib/utils";
-import { useTx } from "@/lib/lang";
+import { useLang, useTx } from "@/lib/lang";
+import { studyLabels, STUDY_MODE_DEFAULT, type StudyMode } from "@/lib/ai-study-modes";
 
 export const Route = createFileRoute("/chat")({
   staticData: { sitemap: false },
@@ -28,6 +29,9 @@ const STARTERS = ["Ինչպե՞ս պատրաստվեմ անգլերենի քնն
 
 function ChatPage() {
   const tx = useTx();
+  const lang = useLang();
+  const labels = studyLabels[lang];
+  const [mode,setMode] = useState<StudyMode>(STUDY_MODE_DEFAULT);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +48,7 @@ function ChatPage() {
     setInput("");
     setLoading(true);
     try {
-      const res = await chatReply({ data: { messages: next.filter(m => m.role === "user").slice(-20).map(m => ({ role: "user" as const, content: m.content })) } });
+      const res = await chatReply({ data: { messages: next.filter(m => !m.failed).slice(-20).map(m => ({ role: m.role, content: m.content })), mode, locale:lang } });
       setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error, offline: !!res.offline }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: tx("Չհաջողվեց պատասխանել։ Փորձեք կրկին։"), failed: true }]);
