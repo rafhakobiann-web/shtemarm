@@ -141,7 +141,7 @@ function Explain(props: { instruction: string; passage: string; question: string
   return (
     <div>
     {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
-    {text && <RichExplanation text={text} error={failed}/>
+    {text && <RichExplanation text={text} error={failed}/>}
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
