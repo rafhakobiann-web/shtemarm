@@ -45,7 +45,7 @@ const DEMO_DETAILS = {
 
 const FAQ_ITEMS = {
   "hy": [
-    ["Կարո՞ղ եմ փորձել Shtemarm-ը՝ առանց հաշիվ ստեղծելու։", "Այո՛։ Բացիր «Փորձել առանց գրանցվելու» բաժինը, լուծիր ցուցադրական հարցեր, շրջիր քարտերը և փորձիր փոքր մարտահրավերը։ Սրանք օրինակներ են. իրական շտեմարանների և առաջընթացի պահպանման համար անհրաժեշտ է հաշիվ։"],
+    ["Կարո՞ղ եմ փորձել Shtemarm-ը՝ առանց հաշիվ ստեղծելու։", "Այո՛։ Բացիր «Փորձել առանց գրանցվելու» բաժինը, լուծիր ցուցադրական հարցեր, շրջիր քարտերը և փորձիր փոքր մարտահրավերը։ Իրական շտեմարաններից յուրաքանչյուրի առաջին երկու լուծելի հարցերը հասանելի են նախադիտման համար։ Մնացած հարցերն ու առաջընթացի պահպանումը հասանելի են մուտքից հետո։"],
     [
       "Ի՞նչ է Shtemarm-ը և ո՞ւմ համար է նախատեսված։",
       "Shtemarm-ը ուսումնական հարթակ է դպրոցականների և դիմորդների համար։ Այստեղ կարող ես աշխատել առարկայական շտեմարաններով, ստուգել պատասխաններդ և հետևել քո առաջընթացին։"
@@ -80,7 +80,7 @@ const FAQ_ITEMS = {
     ]
   ],
   "en": [
-    ["Can I try Shtemarm without creating an account?", "Yes. Choose Try without signing up to answer sample questions, flip flashcards, and play a mini challenge. These are demonstrations; real question books and saved progress require an account."],
+    ["Can I try Shtemarm without creating an account?", "Yes. Choose Try without signing up to answer sample questions, flip flashcards, and play a mini challenge. The first two answerable questions of each real book are available to try; the rest of the books and saved progress require an account."],
     [
       "What is Shtemarm, and who is it for?",
       "Shtemarm is a learning platform for school students and exam applicants. Practice subject questions, check answers and track your learning progress in one place."
@@ -115,7 +115,7 @@ const FAQ_ITEMS = {
     ]
   ],
   "ru": [
-    ["Можно ли попробовать Shtemarm без регистрации?", "Да. Открой демонстрацию, чтобы решить примеры, переворачивать карточки и пройти мини-задания. Это ознакомительные материалы; для настоящих сборников и сохранения прогресса нужен аккаунт."],
+    ["Можно ли попробовать Shtemarm без регистрации?", "Да. Открой демонстрацию, чтобы решить примеры, переворачивать карточки и пройти мини-задания. Из каждого настоящего сборника можно попробовать первые два доступных вопроса. Остальные задания и сохранение прогресса требуют входа."],
     [
       "Что такое Shtemarm и для кого он создан?",
       "Shtemarm — учебная платформа для школьников и абитуриентов. Здесь можно решать задания по предметам, проверять ответы и отслеживать прогресс."
@@ -362,7 +362,7 @@ function LandingPage() {
         </div>
         <div className="sht-subject-grid">
           {SUBJECTS.map(({ key, names, Icon }) => (
-            <Link key={key} to="/auth" data-subject={key} className="sht-subject-card" aria-label={names[lang] + " · " + ui.openSubject}>
+            <Link key={key} to="/try" search={{subject:key}} data-subject={key} className="sht-subject-card" aria-label={names[lang] + " · " + ui.tryNow}>
               <span className="sht-subject-icon"><Icon className="size-6" aria-hidden="true" /></span>
               <strong>{names[lang]}</strong>
               <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
