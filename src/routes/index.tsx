@@ -45,6 +45,7 @@ const DEMO_DETAILS = {
 
 const FAQ_ITEMS = {
   "hy": [
+    ["Կարո՞ղ եմ փորձել Shtemarm-ը՝ առանց հաշիվ ստեղծելու։", "Այո՛։ Բացիր «Փորձել առանց գրանցվելու» բաժինը, լուծիր ցուցադրական հարցեր, շրջիր քարտերը և փորձիր փոքր մարտահրավերը։ Սրանք օրինակներ են. իրական շտեմարանների և առաջընթացի պահպանման համար անհրաժեշտ է հաշիվ։"],
     [
       "Ի՞նչ է Shtemarm-ը և ո՞ւմ համար է նախատեսված։",
       "Shtemarm-ը ուսումնական հարթակ է դպրոցականների և դիմորդների համար։ Այստեղ կարող ես աշխատել առարկայական շտեմարաններով, ստուգել պատասխաններդ և հետևել քո առաջընթացին։"
@@ -79,6 +80,7 @@ const FAQ_ITEMS = {
     ]
   ],
   "en": [
+    ["Can I try Shtemarm without creating an account?", "Yes. Choose Try without signing up to answer sample questions, flip flashcards, and play a mini challenge. These are demonstrations; real question books and saved progress require an account."],
     [
       "What is Shtemarm, and who is it for?",
       "Shtemarm is a learning platform for school students and exam applicants. Practice subject questions, check answers and track your learning progress in one place."
@@ -113,6 +115,7 @@ const FAQ_ITEMS = {
     ]
   ],
   "ru": [
+    ["Можно ли попробовать Shtemarm без регистрации?", "Да. Открой демонстрацию, чтобы решить примеры, переворачивать карточки и пройти мини-задания. Это ознакомительные материалы; для настоящих сборников и сохранения прогресса нужен аккаунт."],
     [
       "Что такое Shtemarm и для кого он создан?",
       "Shtemarm — учебная платформа для школьников и абитуриентов. Здесь можно решать задания по предметам, проверять ответы и отслеживать прогресс."
@@ -157,9 +160,9 @@ const SUBJECTS = [
 ] as const;
 
 const LANDING_UI = {
-  hy: { navBenefits: "Առավելություններ", navSteps: "Ինչպես սկսել", sample: "Ինտերակտիվ նախադիտում", example: "Ցուցադրական օրինակ", focus: "Այսօրվա ուղղությունը", focused: "Ընտրված առաջադրանք", practice: "Ուսումնական գործիքներ", review: "Կրկնիր և ամրապնդիր", progress: "Քո տեմպով, առանց շտապելու", viewSubjects: "Դիտել առարկաները", subjectsIntro: "Ընտրիր քեզ անհրաժեշտ առարկան և սկսիր պատրաստվել մեկ հարմար տարածքում։", openSubject: "Սկսել պարապել", stepsIntro: "Քո պատրաստությունն սկսվում է ընդամենը երեք պարզ քայլից։", faqIntro: "Կարճ ու հստակ պատասխաններ՝ սովորելը հեշտ սկսելու համար։", footer: "Ստեղծված է դպրոցականների և դիմորդների համար։", explore: "Հարցաշարեր, կրկնություն, առաջընթաց", signIn: "Մուտք", account: "Ուսման տարածք", demoNote: "Սա հնարավորությունների նախադիտում է, ոչ թե քո իրական առաջընթացը։", swipeHint: "Սահեցրու աջ կամ ձախ" },
-  en: { navBenefits: "Benefits", navSteps: "How it works", sample: "Interactive preview", example: "Sample experience", focus: "Today's focus", focused: "Selected activity", practice: "Study tools", review: "Review and improve", progress: "At your own pace", viewSubjects: "Explore subjects", subjectsIntro: "Choose a subject and start preparing in one convenient place.", openSubject: "Start practicing", stepsIntro: "Your learning journey starts with three simple steps.", faqIntro: "Clear answers to help you get started.", footer: "Built for students and exam applicants.", explore: "Practice, review, progress", signIn: "Sign in", account: "Study space", demoNote: "This is a feature preview, not your actual learning progress.", swipeHint: "Swipe left or right" },
-  ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс.", swipeHint: "Листай вправо или влево" },
+  hy: { navBenefits: "Առավելություններ", navSteps: "Ինչպես սկսել", sample: "Ինտերակտիվ նախադիտում", example: "Ցուցադրական օրինակ", focus: "Այսօրվա ուղղությունը", focused: "Ընտրված առաջադրանք", practice: "Ուսումնական գործիքներ", review: "Կրկնիր և ամրապնդիր", progress: "Քո տեմպով, առանց շտապելու", viewSubjects: "Դիտել առարկաները", subjectsIntro: "Ընտրիր քեզ անհրաժեշտ առարկան և սկսիր պատրաստվել մեկ հարմար տարածքում։", openSubject: "Սկսել պարապել", stepsIntro: "Քո պատրաստությունն սկսվում է ընդամենը երեք պարզ քայլից։", faqIntro: "Կարճ ու հստակ պատասխաններ՝ սովորելը հեշտ սկսելու համար։", footer: "Ստեղծված է դպրոցականների և դիմորդների համար։", explore: "Հարցաշարեր, կրկնություն, առաջընթաց", signIn: "Մուտք", tryNow: "Փորձել առանց գրանցվելու", account: "Ուսման տարածք", demoNote: "Սա հնարավորությունների նախադիտում է, ոչ թե քո իրական առաջընթացը։", swipeHint: "Սահեցրու աջ կամ ձախ" },
+  en: { navBenefits: "Benefits", navSteps: "How it works", sample: "Interactive preview", example: "Sample experience", focus: "Today's focus", focused: "Selected activity", practice: "Study tools", review: "Review and improve", progress: "At your own pace", viewSubjects: "Explore subjects", subjectsIntro: "Choose a subject and start preparing in one convenient place.", openSubject: "Start practicing", stepsIntro: "Your learning journey starts with three simple steps.", faqIntro: "Clear answers to help you get started.", footer: "Built for students and exam applicants.", explore: "Practice, review, progress", signIn: "Sign in", tryNow: "Try without signing up", account: "Study space", demoNote: "This is a feature preview, not your actual learning progress.", swipeHint: "Swipe left or right" },
+  ru: { navBenefits: "Преимущества", navSteps: "Как начать", sample: "Интерактивный пример", example: "Демонстрация", focus: "Задача на сегодня", focused: "Выбранное задание", practice: "Учебные инструменты", review: "Повторяй и закрепляй", progress: "В своём темпе", viewSubjects: "Выбрать предмет", subjectsIntro: "Выбери нужный предмет и готовься в одном удобном месте.", openSubject: "Начать занятия", stepsIntro: "Начни подготовку всего за три простых шага.", faqIntro: "Короткие ответы на вопросы перед началом занятий.", footer: "Для школьников и абитуриентов.", explore: "Задания, повторение, прогресс", signIn: "Войти", tryNow: "Попробовать без регистрации", account: "Учебное пространство", demoNote: "Это демонстрация возможностей, а не твой реальный прогресс.", swipeHint: "Листай вправо или влево" },
 } as const;
 
 const ACCENT_LABELS: Record<"hy" | "en" | "ru", Record<Accent, string>> = {
@@ -236,6 +239,7 @@ function LandingPage() {
           <details className="sht-mobile-links">
             <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
             <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
+              <Link to="/try" onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{ui.tryNow}<Sparkles className="size-4" aria-hidden="true" /></Link>
               {[["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
                 <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
               ))}
@@ -266,6 +270,7 @@ function LandingPage() {
               </button>
             </div>
           </details>
+          <Link to="/try" className="sht-nav-demo"><Sparkles className="size-4" aria-hidden="true" />{ui.tryNow}</Link>
           <Link to="/auth" aria-label={ui.signIn} className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>
@@ -276,10 +281,10 @@ function LandingPage() {
           <h1 id="sht-hero-title">{t.hero}<span className="sht-hero-period">.</span></h1>
           <p className="sht-hero-description">{t.intro}</p>
           <div className="sht-hero-actions">
-            <Link to="/auth" className="sht-button-primary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
-            <a href="#subjects" className="sht-button-secondary">{ui.viewSubjects}<ArrowDown className="size-4" aria-hidden="true" /></a>
+            <Link to="/try" className="sht-button-primary">{ui.tryNow}<Sparkles className="size-5" aria-hidden="true" /></Link>
+            <Link to="/auth" className="sht-button-secondary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
           </div>
-          <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{ui.explore}</span></div>
+          <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><a href="#subjects">{ui.viewSubjects}</a><span aria-hidden="true">·</span><span>{ui.explore}</span></div>
         </div>
 
         <div className="sht-hero-visual" role="region" aria-label={ui.sample}>
@@ -401,7 +406,7 @@ function LandingPage() {
       <section className="sht-bottom-cta" aria-labelledby="sht-cta-title">
         <span className="sht-cta-decoration" aria-hidden="true"><GraduationCap /></span>
         <div><span className="sht-cta-overline">SHTEMARM</span><h2 id="sht-cta-title">{t.ready}</h2><p>{t.readyDesc}</p></div>
-        <Link to="/auth" className="sht-button-primary sht-cta-button">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+        <div className="sht-cta-actions"><Link to="/try" className="sht-button-primary sht-cta-button">{ui.tryNow}<Sparkles className="size-5" aria-hidden="true" /></Link><Link to="/auth" className="sht-button-secondary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link></div>
       </section>
 
       <footer className="sht-landing-footer">
