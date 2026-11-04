@@ -99,6 +99,9 @@ export const adminGenerateExplanation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ password: z.string().min(1).max(200), bank: Bank, question: Question }).parse(input))
   .handler(async ({ data }) => {
     checkAdmin(data.password);
+    const { reserveAiRequest } = await import("./ai-quota.server");
+    const budget = await reserveAiRequest({ admin: true });
+    if (!budget.allowed) throw new Error("ai_quota_unavailable");
     const prompt = buildPrompt(data.question);
     const result = (await askGemini(prompt)) ?? (await askGroq(prompt));
     if (!result) throw new Error("no_provider_available");
