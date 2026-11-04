@@ -43,7 +43,7 @@ describe("Shtemarm shared AI safeguards",()=>{
     const src=read("src/lib/ai-quota.server.ts");
     expect(src).toContain('getRequest().headers.get("authorization")');
     expect(src).toContain("supabaseAdmin.auth.getUser(token)");
-    expect(src).toContain('createHash("sha256")');
+    expect(src).toContain('crypto.subtle.digest("SHA-256", bytes)');
     expect(src).toContain('subjectKey = "user:"');
     expect(src).toContain('subject = "user"');
     expect(src).toContain('= admin ? "admin" : "guest"');
