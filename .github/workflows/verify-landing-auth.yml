@@ -3,6 +3,13 @@ on:
   pull_request:
     paths:
       - 'src/routes/index.tsx'
+      - 'src/routes/try.tsx'
+      - 'src/lib/guest-demo.ts'
+      - 'src/lib/guest-book-preview.ts'
+      - 'src/components/GuestBookBrowser.tsx'
+      - 'src/test/guest-real-books.test.ts'
+      - 'src/guest-experience-2026.css'
+      - 'src/test/guest-preview.test.ts'
       - 'src/routes/dashboard.tsx'
       - 'src/routes/onboarding.tsx'
       - 'src/routes/auth.tsx'
@@ -19,6 +26,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Regression tests
-        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts
+        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts src/test/guest-preview.test.ts src/test/guest-real-books.test.ts
       - name: Website production build
         run: bun run build

@@ -16,6 +16,7 @@ import appCss from "../styles.css?url";
 import liquidGlassCss from "../liquid-glass-2026.css?url";
 import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
+import guestExperienceCss from "../guest-experience-2026.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -139,6 +140,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: interactionMotionCss,
       },
+      {
+        rel: "stylesheet",
+        href: guestExperienceCss,
+      },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -178,7 +183,7 @@ function RootComponent() {
   return <ActiveApp />;
 }
 
-const PUBLIC_PATHS = new Set(["/", "/auth", "/about", "/privacy", "/terms", "/download"]);
+const PUBLIC_PATHS = new Set(["/", "/try", "/auth", "/about", "/privacy", "/terms", "/download"]);
 function AuthBoundary({children}:{children:ReactNode}) {
   const location=useLocation();
   const navigate=useNavigate();
@@ -221,11 +226,11 @@ function AuthBoundary({children}:{children:ReactNode}) {
     if(status==="signed-out"&&!isPublic){void navigate({to:"/auth",replace:true});return;}
     if(status==="signed-in"&&userId){
       const onboarded=!!readOnboarding(userId);
-      if(!onboarded&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
+      if(!onboarded&&!isPublic&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
       if(onboarded&&pathname==="/onboarding"){void navigate({to:"/dashboard",replace:true});return;}
     }
   },[status,userId,isPublic,pathname,navigate,onboardingVersion]);
-  // The landing page and auth are public. All study pages fail closed while
+  // Landing, isolated demo and auth are public. All study pages fail closed while
   // the auth service is loading or unavailable. Never render protected content first.
   if(isPublic)return <>{children}</>;
   if(status==="loading"||status==="unavailable")return <div role="status" className="mx-auto max-w-lg rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
@@ -239,7 +244,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
 function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   const location=useLocation();
-  const publicView=location.pathname==="/";
+  const publicView=location.pathname==="/" || location.pathname==="/try";
   useEffect(() => {
     return initAppearance();
   }, []);

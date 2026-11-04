@@ -40,3 +40,35 @@ A repository administrator can use GitHub Settings → Rules → Rulesets (if el
 to target `main`, require a pull request, require relevant status checks, block force pushes,
 and restrict bypass access. **Do not make the repo public just to obtain protections**:
 book/source-asset redistribution rights need separate review.
+
+## Public try-before-sign-up experience (PR #207)
+- [ ] Open `/try` as a signed-out visitor on a 320px phone, 390px Android phone, tablet and desktop.
+- [ ] The landing hero and footer open the demo without an auth redirect; `/auth` remains available when ready to register.
+- [ ] Switch Հայերեն / English / Русский, dark/light mode, and all three demo tabs; content and focus remain readable.
+- [ ] Answer all three **illustrative** questions and review explanations; retry the demo without an account.
+- [ ] Flip and swipe cards: left = known, right = review; retry missed cards in the current guest session. Vertical scroll does not mark cards.
+- [ ] Complete the mini-challenge and see only labeled **sample XP**.
+- [ ] Reload / leave the page: demo answers, card piles and XP must not persist to real account progress.
+- [ ] Direct visits to real `/dashboard`, `/book/*`, `/exam/*` still require authorization; guest navigation does not bypass protected routes.
+- [ ] Confirm reduced-motion and keyboard interaction, and check browser console for errors.
+- [ ] Confirm the intended maintenance-mode behavior before making the guest experience publicly available.
+
+
+### Real book previews (guest library upgrade)
+- [ ] From landing, each subject card opens `/try?subject=<category>` with the matching book covers visible.
+- [ ] English, mathematics, history, biology, Armenian language and physics books can be selected from the guest catalog.
+- [ ] A selected book exposes **at most two answerable questions PER SECTION** from its current Shtemarm source data, with original text, choices and feedback; no fabricated fallback question is shown if a book is missing usable items.
+- [ ] Each section lists its own two unlocked questions and visibly locks questions 3+ in that section. Proceeding requires answering the current question.
+- [ ] Signed-out visitors who tap **Open full book** are routed through sign-in. After completing sign-in and onboarding, registered users can access the existing full book pages.
+- [ ] Full mathematics books remain on `/math/books`; guest preview uses two text-based source items rather than PDF crops.
+- [ ] Check that no guest responses are written to student progress or mistake storage.
+- [ ] **Access control limitation:** Existing `/public/data/*.json` files are served publicly. This release gates the app interface, NOT raw JSON downloads. A truly restricted question bank requires moving full data behind authenticated server endpoints and removing public static copies. Do not represent this frontend gate as secure content protection.
+
+### Guest section-level previews — 2026-11-04
+- [ ] Every book section has a selectable tab, showing up to **two questions in that section** (not just two for the whole book).
+- [ ] In English reading/cloze sections, reveal the first **two complete source texts/exercises**, with every original subquestion for each text. The third source text remains behind sign-in.
+- [ ] In English grammar, sentence correction, ordering and matching sections that have no reading text, reveal two full source units (exercises), not invented passages.
+- [ ] Changing sections resets transient guest answers and offers two new section-scoped exercises without leaking progress to registered accounts.
+- [ ] Mathematics uses chapter+section identity; test two separate math sections and two text-transcribed answerable questions in each.
+- [ ] Other subject banks reveal at most two answerable questions per section; non-MC task formats are exposed as complete tasks where relevant.
+- [ ] The next three locked slots reflect the remainder of the **currently selected section**, and original full books still require sign-in.

@@ -1,0 +1,208 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import type { Book } from "@/lib/books";
+import type { MathBookIndex } from "@/lib/math-bank";
+import { GUEST_BOOKS, GUEST_BOOK_LIMIT, GUEST_BOOK_TEXT, pickGuestBookQuestions, pickGuestMathQuestions, pickGuestBookSections, pickGuestMathSections } from "@/lib/guest-book-preview";
+
+const source=(path:string)=>readFileSync(path,"utf8");
+
+const sampleBook:Book = {
+  id: 21,sections:[
+    {n:1,title:"First section",instr_hy:"",instr_en:"",units:[
+      {id:"sequence",label:"",kind:"seq",passage:"",answer:[1,2,3]},
+      {id:"first",label:"",kind:"mc",passage:"Example passage",questions:[
+        {n:"1",stem:"Which option is correct?",options:{"1":"A","2":"B","3":"C","4":"D"},answer:"2",explanation:"Correct because B."},
+        {n:"2",stem:"Which choice is next?",options:{"1":"Yes","2":"No"},answer:"1"},
+        {n:"3",stem:"Hidden third question",options:{"1":"True","2":"False"},answer:"1"},
+      ]},
+    ]},
+    {n:2,title:"Locked section",instr_hy:"",instr_en:"",units:[
+      {id:"later",label:"",kind:"num",passage:"",questions:[{n:"4",stem:"Last numeric problem",answer:"8"}]},
+    ]},
+  ],
+};
+
+const mathFixture:MathBookIndex = {
+  books:{"matem-1":{title:"Math",sections:[{
+    chapter:1,section:1,title:"Equations",pages:[1,2],tasks:[
+      {task:1,segments:[],sub_count:3,answers:["2","3","4"],questions:[
+        {prompt:"First real math text",options:["One","Two","Three","Four"]},
+        {prompt:"Second real math text",options:["One","Two","Three","Four"]},
+        {prompt:"Third locked math text",options:["One","Two","Three","Four"]},
+      ]},
+    ],
+  }]}, "matem-2":{title:"Math II",sections:[]}},
+};
+
+describe("Book previews before registration",()=>{
+  it("shows first two original answerable questions without inventing or editing their content",()=>{
+    const preview=pickGuestBookQuestions(sampleBook);
+    expect(preview).toHaveLength(GUEST_BOOK_LIMIT);
+    expect(preview[0]).toMatchObject({stem:"Which option is correct?",answer:"2",printedNo:"1",section:"First section",passage:"Example passage"});
+    expect(preview[1]).toMatchObject({stem:"Which choice is next?",answer:"1",printedNo:"2"});
+    expect(JSON.stringify(preview)).not.toContain("Hidden third question");
+    expect(JSON.stringify(preview)).not.toContain("Last numeric problem");
+    expect(sampleBook.sections[0]!.units).toHaveLength(2); // no mutation
+  });
+
+  it("supports numeric books and skips malformed, unanswerable MC items",()=>{
+    const book:Book={id:52,sections:[{n:1,instr_en:"",instr_hy:"",units:[
+      {id:"invalid",label:"",kind:"mc",passage:"",questions:[{n:"1",stem:"Incomplete",options:{A:"A"},answer:"B"}]},
+      {id:"num",label:"",kind:"num",passage:"",questions:[{n:"2",stem:"What is 4 + 4?",answer:"8"}]},
+    ]}]};
+    const result=pickGuestBookQuestions(book);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({kind:"number",stem:"What is 4 + 4?",answer:"8"});
+    expect(pickGuestBookQuestions(book,0)).toEqual([]);
+  });
+
+  it("limits the separate two-volume math bank to two source-transcribed items",()=>{
+    const v=pickGuestMathQuestions(mathFixture,"matem-1");
+    expect(v).toHaveLength(2);
+    expect(v[0]).toMatchObject({kind:"choice",answer:"2",stem:"First real math text"});
+    expect(v[1]!.stem).toBe("Second real math text");
+    expect(JSON.stringify(v)).not.toContain("Third locked math text");
+    expect(pickGuestMathQuestions(mathFixture,"matem-2")).toEqual([]);
+  });
+
+
+  it("unlocks two exercises in EACH section, not merely the first two in the book",()=>{
+    const sections=pickGuestBookSections(sampleBook);
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[1]!.items).toHaveLength(1);
+    expect(sections[1]!.items[0]!.type).toBe("question");
+    expect(JSON.stringify(sections[0]!.items)).not.toContain("Hidden third question");
+    expect(sections[0]!.totalExercises).toBe(4); // seq is an exercise, plus 3 MC questions
+    expect(sections[0]!.items[0]!.type).toBe("unit"); // source 'seq' is preserved intact
+  });
+
+  it("English reading texts unlock as complete units with all subquestions",()=>{
+    const sourceBook:Book={id:1,sections:[
+      {n:1,instr_en:"Read the text",instr_hy:"Կարդացեք",units:[
+        {kind:"mc",id:"1-1-Text1",label:"Text 1",passage:"First complete reading passage.",
+         questions:[1,2,3,4,5].map(n=>({n:String(n),stem:"Question "+n,options:{a:"Option A",b:"Option B"},answer:"a"}))},
+        {kind:"mc",id:"1-1-Text2",label:"Text 2",passage:"Second complete reading passage.",
+         questions:[1,2,3,4,5].map(n=>({n:String(n),stem:"Question "+n,options:{a:"Option A",b:"Option B"},answer:"b"}))},
+        {kind:"mc",id:"1-1-Text3",label:"Text 3",passage:"Third passage must stay locked.",
+         questions:[{n:"1",stem:"Hidden task",options:{a:"A",b:"B"},answer:"a"}]},
+      ]},
+      {n:3,instr_en:"Grammar",instr_hy:"Քերականություն",units:[
+        {kind:"mc",id:"1-3-1",label:"1",passage:"",questions:[{n:"1",stem:"Grammar task 1",options:{a:"A",b:"B"},answer:"a"}]},
+        {kind:"mc",id:"1-3-2",label:"2",passage:"",questions:[{n:"2",stem:"Grammar task 2",options:{a:"A",b:"B"},answer:"a"}]},
+        {kind:"mc",id:"1-3-3",label:"3",passage:"",questions:[{n:"3",stem:"Grammar task 3",options:{a:"A",b:"B"},answer:"a"}]},
+      ]},
+    ]};
+    const sections=pickGuestBookSections(sourceBook);
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[0]!.textBased).toBe(true);
+    expect(sections[0]!.items[0]).toMatchObject({type:"unit",unit:{id:"1-1-Text1"}});
+    const first=sections[0]!.items[0]!;
+    if(first.type!=="unit")throw Error("Expected full source unit");
+    expect(first.unit.kind).toBe("mc");
+    if(first.unit.kind==="mc")expect(first.unit.questions).toHaveLength(5);
+    expect(JSON.stringify(sections[0]!.items)).not.toContain("Third passage");
+    expect(sections[1]!.items.map(x=>x.id)).toEqual(["1:3:1-3-1","1:3:1-3-2"]);
+  });
+
+  it("the first two answerable math questions are available in every distinct section",()=>{
+    const fixture:MathBookIndex=structuredClone(mathFixture);
+    fixture.books["matem-1"]!.sections.push({
+      chapter:2,section:1,title:"Geometry",pages:[3,4],tasks:[
+        {task:1,segments:[],sub_count:3,answers:["4","5","6"],questions:[
+          {prompt:"Geometry 1",options:["A","B","C","D"]},
+          {prompt:"Geometry 2",options:["A","B","C","D"]},
+          {prompt:"Geometry 3",options:["A","B","C","D"]},
+        ]},
+      ],
+    });
+    const sections=pickGuestMathSections(fixture,"matem-1");
+    expect(sections).toHaveLength(2);
+    expect(sections[0]!.items).toHaveLength(2);
+    expect(sections[1]!.items).toHaveLength(2);
+    expect(JSON.stringify(sections[1]!.items)).not.toContain("Geometry 3");
+  });
+
+
+  it("unlocks exactly two full source exercises in all 13 sections of all three English books",()=>{
+    for(const bookId of [1,2,3]){
+      const original=JSON.parse(source(`public/data/book${bookId}.json`)) as Book;
+      const sections=pickGuestBookSections(original);
+      expect(sections).toHaveLength(13);
+      for(const section of sections){
+        expect(section.items).toHaveLength(2);
+        expect(section.totalExercises).toBeGreaterThanOrEqual(2);
+        expect(section.items.every(x=>x.type==="unit")).toBe(true);
+      }
+      const reading=sections.find(x=>x.id==="1")!;
+      expect(reading.textBased).toBe(true);
+      expect(reading.items.map(x=>x.type==="unit"?x.label:"")).toEqual(["Text 1","Text 2"]);
+      for(const item of reading.items){
+        if(item.type!=="unit"||item.unit.kind!=="mc")throw Error("Reading text must stay a complete MC unit");
+        expect(item.unit.passage.length).toBeGreaterThan(500);
+        expect(item.unit.questions.length).toBeGreaterThanOrEqual(3);
+      }
+      expect(JSON.stringify(reading.items)).not.toContain("Text 3");
+    }
+  });
+
+  it("lists all existing playable question books plus both math volumes without replacing signed-in book pages",()=>{
+    expect(GUEST_BOOKS.length).toBeGreaterThan(15);
+    expect(GUEST_BOOKS.map(b=>b.id)).toContain("matem-1");
+    expect(GUEST_BOOKS.map(b=>b.id)).toContain("matem-2");
+    expect(GUEST_BOOKS.map(b=>b.id)).toContain("31");
+    expect(GUEST_BOOKS.map(b=>b.id)).toContain("41");
+    expect(new Set(GUEST_BOOKS.map(b=>b.id)).size).toBe(GUEST_BOOKS.length);
+  });
+
+  it("provides guest/locked/continue affordances in all UI languages",()=>{
+    for(const lang of ["hy","en","ru"] as const){
+      const t=GUEST_BOOK_TEXT[lang];
+      expect(t.firstTwo.length).toBeGreaterThan(4);
+      expect(t.rest.length).toBeGreaterThan(30);
+      expect(t.locked.length).toBeGreaterThan(3);
+      expect(t.login.length).toBeGreaterThan(4);
+    }
+    const browser=source("src/components/GuestBookBrowser.tsx");
+    const route=source("src/routes/try.tsx");
+    const root=source("src/routes/__root.tsx");
+    expect(browser).toContain("pickGuestBookSections(data)");
+    expect(browser).toContain("pickGuestMathSections(data,bookId)");
+    expect(browser).toContain("sections.map(section=>");
+    expect(browser).toContain("items.map((item,i)=>");
+    expect(browser).toContain("UnitCard unit={unit}");
+    expect(browser).toContain("active.items.length+i+1");
+    expect(browser).toContain('to="/auth"');
+    expect(browser).toContain('to="/book/$bookId"');
+    expect(browser).toContain('to="/math/books"');
+    expect(browser).toContain("aria-pressed={category===filter}");
+    expect(route).toContain("mode===\"practice\" && <GuestBookBrowser");
+    expect(root).toContain('"/try"');
+    expect(route).toContain('initialCategory={guestSubject ?? "all"}');
+    expect(route).toContain("validateSearch: z.object({subject:");
+    expect(source("src/routes/index.tsx")).toContain('to="/try" search={{subject:key}}');
+    expect(root).not.toContain('"/dashboard", "/try"');
+  });
+
+  it("never renders full book units in the unlocked guest question UI and keeps guest answers ephemeral",()=>{
+    const browser=source("src/components/GuestBookBrowser.tsx");
+    expect(browser).not.toContain("recordAnswer(");
+    expect(browser).not.toContain("localStorage");
+    expect(browser).not.toContain("sessionStorage");
+    expect(browser).not.toContain("pullAndMerge");
+    expect(browser).not.toContain("supabase.auth");
+    expect(browser).not.toContain("book.sections.map");
+    expect(browser).toContain("SectionSamples sections={sections}");
+    expect(browser).toContain("onCheck={key=>setRevealed");
+  });
+
+  it("keeps the book grid mobile-responsive with controls accessible to touch and keyboard",()=>{
+    const css=source("src/guest-experience-2026.css");
+    expect(css).toContain(".sht-try-book-grid");
+    expect(css).toContain(".sht-try-locked-content");
+    expect(css).toContain("@media (max-width:650px)");
+    expect(css).toContain("@media (prefers-reduced-motion:reduce)");
+    expect(css).toContain(":focus-visible");
+  });
+});
