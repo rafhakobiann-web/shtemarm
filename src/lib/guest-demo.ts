@@ -35,7 +35,7 @@ export const GUEST_DEMO: Record<GuestLang, {
   hy: {
     words: {
       title: "Փորձիր Shtemarm-ը՝ առանց գրանցվելու",
-      subtitle: "Զգա, թե ինչպես են աշխատում առաջադրանքները, քարտերը և փոքր մարտահրավերները։",
+      subtitle: "Բացիր իրական շտեմարանները, լուծիր յուրաքանչյուր գրքի առաջին երկու հարցերը և ծանոթացիր Shtemarm-ի աշխատանքին։ Մնացածը կբացվի մուտքից հետո։",
       guest: "Հյուրի ռեժիմ", noSignup: "Առանց հաշվի · Անվճար փորձարկում",
       example: "Ցուցադրական բովանդակություն", note: "Սրանք ցուցադրական օրինակներ են, ոչ պաշտոնական շտեմարանի հարցեր։ Քո արդյունքները չեն պահվում։",
       practice: "Հարցերի լուծում", cards: "Հիշողության քարտեր", challenge: "Փոքր մարտահրավեր",
@@ -67,7 +67,7 @@ export const GUEST_DEMO: Record<GuestLang, {
   },
   en: {
     words: {
-      title:"Try Shtemarm before signing up",subtitle:"Experience practice questions, swipeable flashcards, and quick challenges.",
+      title:"Try Shtemarm before signing up",subtitle:"Explore real question books and try the first two questions from each. Sign in to unlock the rest, and try flashcards or mini-challenges too.",
       guest:"Guest mode",noSignup:"No account · Free preview",example:"Sample content",
       note:"These are illustrative examples, not official question-bank items. Your results are not saved.",
       practice:"Practice questions",cards:"Flashcards",challenge:"Mini challenge",
@@ -99,7 +99,7 @@ export const GUEST_DEMO: Record<GuestLang, {
   },
   ru: {
     words: {
-      title:"Попробуй Shtemarm до регистрации",subtitle:"Решай примеры, листай карточки и участвуй в мини-заданиях.",
+      title:"Попробуй Shtemarm до регистрации",subtitle:"Открой настоящие сборники и попробуй первые два вопроса из каждого. Остальные задания станут доступны после входа.",
       guest:"Гостевой режим",noSignup:"Без аккаунта · Бесплатно",example:"Пример возможностей",
       note:"Это примеры для демонстрации, а не официальные вопросы сборников. Результаты не сохраняются.",
       practice:"Решение заданий",cards:"Карточки",challenge:"Мини-вызов",
