@@ -286,6 +286,33 @@ function Index() {
 
   return (
     <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
+      <section aria-label={tx("Իմ ուսումնական ուղին")} className="academy-bento space-y-4 p-4 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-wider text-primary">{tx("Քո անհատական ուսուցումը")}</p>
+            <h2 className="mt-1 text-xl font-black sm:text-2xl">{name ? tx("Բարի վերադարձ, {name}",{name}) : tx("Շարունակիր սովորել քո ձևով")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{tx("Սկսիր այսօրվա պլանից, կրկնիր սխալները և առաջ շարժվիր քո արագությամբ։")}</p>
+          </div>
+          <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-black text-primary">{progress.xp} XP</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Link to="/study-plan" className="group flex min-h-24 items-center gap-3 rounded-2xl border border-primary/25 bg-primary/10 p-4 text-foreground transition-colors hover:bg-primary/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"><Target className="size-5" aria-hidden="true"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շարունակել ուսուցումը")}</strong><span className="block text-xs text-muted-foreground">{tx("Այսօրվա անհատական պլանը")}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-1" aria-hidden="true"/>
+          </Link>
+          <Link to="/mistakes" className="group flex min-h-24 items-center gap-3 rounded-2xl border bg-card p-4 text-foreground transition-colors hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300"><RotateCcw className="size-5" aria-hidden="true"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Իմ սխալները")}</strong><span className="block text-xs text-muted-foreground">{tx("Կրկնիր դժվար հարցերը")}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true"/>
+          </Link>
+          <Link to="/chat" className="group flex min-h-24 items-center gap-3 rounded-2xl border bg-card p-4 text-foreground transition-colors hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Brain className="size-5" aria-hidden="true"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("AI ուսուցիչ")}</strong><span className="block text-xs text-muted-foreground">{tx("Հուշումներ, բացատրություններ և վարժանքներ")}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true"/>
+          </Link>
+        </div>
+      </section>
       <section className="academy-hero relative isolate grid overflow-hidden rounded-[1.65rem] px-5 py-8 text-white sm:px-9 sm:py-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(240px,.7fr)] lg:items-center lg:gap-10 lg:px-11">
         <div className="relative z-10 max-w-2xl space-y-5">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold tracking-widest text-emerald-50">
@@ -391,7 +418,7 @@ function Index() {
                 <p className="font-bold">{tx("Առաջարկ քեզ համար")}</p>
                 <p className="text-sm text-muted-foreground">{tx("Կրկնիր նախկինում սխալ պատասխանած հարցերը, հետո նորից ստուգիր առաջընթացդ։")}</p>
               </div>
-              <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Տեսնել առաջընթացը")}</Link>
+              <Link to="/mistakes" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Կրկնել սխալները")}</Link>
             </div>
           )}
           <details className="group/progress rounded-[1.35rem] border bg-card shadow-card">
