@@ -8,6 +8,7 @@ import { loadBook, type Unit } from "@/lib/books";
 import { historyBookEntries } from "@/lib/history";
 import { ASSESSMENT_SOURCES, type AssessmentSubject } from "@/lib/assessment-builder";
 import { useTx } from "@/lib/lang";
+import { flashcardSwipeOutcome } from "@/lib/flashcard-swipe";
 
 export const Route=createFileRoute("/flashcards")({
   staticData: { sitemap: true },
@@ -131,7 +132,8 @@ function FlashcardsPage(){
       suppressFlipClick.current=true;
       if(clickResetTimer.current)clearTimeout(clickResetTimer.current);
       clickResetTimer.current=setTimeout(()=>{suppressFlipClick.current=false;clickResetTimer.current=null;},0);
-      if(Math.abs(dx)>=85&&Math.abs(dx)>Math.abs(dy)*1.25)finishSwipe(dx<0);
+      const outcome=flashcardSwipeOutcome(dx,dy,s.dragged);
+      if(outcome)finishSwipe(outcome==="known");
       else setDragX(0);
     } else setDragX(0);
   };
