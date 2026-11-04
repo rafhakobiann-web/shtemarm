@@ -61,7 +61,9 @@ export function isUnitRetryCorrect(unit: Unit, answer: UnitAnswer | undefined): 
     return Object.entries(unit.answer).every(([key, value]) => answer.match?.[key] === value);
   }
   if (unit.kind === "seq") {
-    return sameNumbers(answer.nums ?? [], unit.answer);
+    const given = answer.nums ?? [];
+    return given.every((value): value is number => value !== null)
+      && sameNumbers(given, unit.answer);
   }
   const given = (answer.nums ?? []).filter((v): v is number => v != null).sort((a, b) => a - b);
   return (answer.none === true && given.length === 0 || given.length > 0 && answer.none !== true)
