@@ -50,7 +50,7 @@ function FeedbackPage() {
 
   const loadMine = async (id: string) => {
     try {
-      const feedback = await getMyFeedback({ data: { clientId: id } });
+      const feedback = await getMyFeedback({ data: {} });
       setMine(Array.isArray(feedback) ? (feedback as Mine[]) : []);
       setLoadFailed(false);
     } catch {
@@ -103,7 +103,7 @@ function FeedbackPage() {
           <MessageSquare className="size-7 text-primary" /> {tx("Գրել մշակողին")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {tx("Գրեք ձեր հարցը կամ առաջարկը։ Հաղորդագրությունները ուղարկվում են մշակողին։ Անձնական պատասխանների դիտումը ժամանակավորապես անջատված է՝ գաղտնիությունը պաշտպանելու համար։")}
+          {tx("Գրեք ձեր հարցը կամ առաջարկը։ Հաղորդագրությունները ուղարկվում են մշակողին։ Մուտք գործած աշակերտները կարող են տեսնել իրենց հաշվով ուղարկված հաղորդագրություններն ու պատասխանները։ Հյուրերի հաղորդագրությունները հասանելի են միայն մշակողին։")}
         </p>
       </header>
 
@@ -118,7 +118,7 @@ function FeedbackPage() {
       ) : (
         <section className="shadow-card glass space-y-4 rounded-3xl p-5 sm:p-6">
           <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">
-            {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Անձնական պատասխանների ցուցադրումը ժամանակավորապես անջատված է անվտանգության պատճառով։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
+            {tx("Գաղտնիություն․ հաղորդագրությունները հրապարակային չեն։ Միայն հաշվի միջոցով ուղարկված հաղորդագրություններն ու պատասխանները տեսանելի կլինեն այդ հաշվի տիրոջը։ Հյուրերի ուղարկած հին հաղորդագրությունները չեն կապվում հաշվի հետ։ Մի ուղարկեք գաղտնաբառեր կամ զգայուն անձնական տվյալներ։")}
           </p>
           {sendError && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{sendError}</p>}
           <Textarea
@@ -146,7 +146,7 @@ function FeedbackPage() {
         <h2 className="font-bold">{tx("Ձեր հաղորդագրությունները և պատասխանները")}</h2>
         {loadFailed && clientId && <Button variant="outline" onClick={() => void loadMine(clientId)}>{tx("Կրկին փորձել")}</Button>}
         {mine === null && <p className="text-sm text-muted-foreground">{tx("Բեռնվում է…")}</p>}
-        {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Անձնական հաղորդագրությունների պատմությունը ժամանակավորապես թաքցված է՝ գաղտնիությունը պաշտպանելու համար։ Նախկին հաղորդագրությունները չեն ջնջվել։")}</p>}
+        {mine !== null && mine.length === 0 && <p className="text-sm text-muted-foreground">{tx("Այս հաշվով ուղարկված հաղորդագրություններ դեռ չկան։ Մուտք գործելուց հետո կտեսնես հենց այդ հաշվով ուղարկված նոր հաղորդագրություններն ու պատասխանները։ Հյուրերի նախկին հաղորդագրությունները պահպանված են, բայց գաղտնիության պատճառով այստեղ չեն ցուցադրվում։")}</p>}
         {mine?.map((m) => (
           <div key={m.id} className="space-y-2 rounded-2xl border bg-white/60 p-4">
             <p className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString()}</p>
