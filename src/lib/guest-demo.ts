@@ -22,7 +22,7 @@ type GuestWords = {
   question: string; choose: string; correct: string; incorrect: string; why: string;
   next: string; finish: string; restart: string; score: string; complete: string;
   turnCard: string; flipHint: string; know: string; review: string; reviewCount: string;
-  cardFinished: string; cardAgain: string; leftRight: string; challengeIntro: string;
+  cardFinished: string; cardAgain: string; repeatMissed: string; leftRight: string; challengeIntro: string;
   begin: string; xp: string; progress: string; startExploring: string; nextFeature: string;
   theme: string; language: string; sampleOnly: string;
 };
@@ -45,7 +45,7 @@ export const GUEST_DEMO: Record<GuestLang, {
       why: "Բացատրություն", next: "Հաջորդ հարցը", finish: "Ավարտել", restart: "Կրկին փորձել",
       score: "Ճիշտ պատասխաններ", complete: "Ավարտեցիր այս փորձարկումը",
       turnCard: "Շրջել քարտը", flipHint: "Հպիր քարտին՝ պատասխանը տեսնելու համար", know: "Գիտեմ", review: "Կկրկնեմ",
-      reviewCount: "Կրկնելու քարտեր", cardFinished: "Քարտերի փորձարկումն ավարտվեց", cardAgain: "Կրկնել քարտերը",
+      reviewCount: "Կրկնելու քարտեր", cardFinished: "Քարտերի փորձարկումն ավարտվեց", cardAgain: "Կրկնել քարտերը", repeatMissed: "Կրկնել բաց թողած քարտերը",
       leftRight: "Ձախ՝ գիտեմ · աջ՝ կկրկնեմ", challengeIntro: "Պատասխանիր երեք կարճ հարցի և հավաքիր փորձնական XP միավորներ։",
       begin: "Սկսել մարտահրավերը", xp: "Փորձնական XP", progress: "Առաջընթաց",
       startExploring: "Ընտրիր, թե ինչ ես ուզում փորձել", nextFeature: "Փորձիր մյուս բաժինը",
@@ -77,7 +77,7 @@ export const GUEST_DEMO: Record<GuestLang, {
       why:"Explanation",next:"Next question",finish:"Finish",restart:"Try again",
       score:"Correct answers",complete:"You've completed this preview",
       turnCard:"Flip card",flipHint:"Tap to reveal the answer",know:"I know",review:"Review later",
-      reviewCount:"Cards to review",cardFinished:"Flashcard preview complete",cardAgain:"Review the cards again",
+      reviewCount:"Cards to review",cardFinished:"Flashcard preview complete",cardAgain:"Review the cards again",repeatMissed:"Review missed cards",
       leftRight:"Swipe left: I know · right: review later",challengeIntro:"Answer three quick questions and collect sample XP.",
       begin:"Start challenge",xp:"Sample XP",progress:"Progress",
       startExploring:"Choose what you'd like to try",nextFeature:"Explore another feature",
@@ -109,7 +109,7 @@ export const GUEST_DEMO: Record<GuestLang, {
       why:"Объяснение",next:"Следующий вопрос",finish:"Завершить",restart:"Попробовать снова",
       score:"Правильных ответов",complete:"Ты прошёл демонстрацию",
       turnCard:"Перевернуть карточку",flipHint:"Нажми, чтобы увидеть ответ",know:"Знаю",review:"Повторить позже",
-      reviewCount:"Для повторения",cardFinished:"Демонстрация карточек завершена",cardAgain:"Попробовать снова",
+      reviewCount:"Для повторения",cardFinished:"Демонстрация карточек завершена",cardAgain:"Попробовать снова",repeatMissed:"Повторить сложные карточки",
       leftRight:"Влево — знаю · вправо — повторить",challengeIntro:"Ответь на три коротких вопроса и заработай демонстрационные XP.",
       begin:"Начать",xp:"Демо XP",progress:"Прогресс",
       startExploring:"Выбери, что хочешь попробовать",nextFeature:"Попробуй другой раздел",
