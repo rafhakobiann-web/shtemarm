@@ -132,9 +132,16 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [mode, setMode] = useState<"offline"|"cached"|"live"|null>(null);
+  const label = mode==="offline"
+    ? lang==="ru"?"Локальное объяснение (без ИИ)":lang==="en"?"Local explanation (no AI)":"Տեղային բացատրություն (առանց AI-ի)"
+    : mode==="cached"
+      ?lang==="ru"?"Сохранённое объяснение ИИ":lang==="en"?"Saved AI explanation":"Պահպանված AI բացատրություն"
+      :lang==="ru"?"Объяснение ИИ":lang==="en"?"AI explanation":"AI բացատրություն";
   return (
     <div>
-    {text && <RichExplanation text={text} error={failed}/>}
+    {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
+    {text && <RichExplanation text={text} error={failed}/>
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
@@ -145,8 +152,10 @@ function Explain(props: { instruction: string; passage: string; question: string
           const r = await fn({ data: { ...props, locale: lang, passage: props.passage.slice(0, 5800) } });
           setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
+          setMode(r.offline ? "offline" : r.cached ? "cached" : "live");
         } catch {
           setText(tx("Չհաջողվեց ստանալ բացատրությունը։"));
+          setMode(null);
           setFailed(true);
         } finally {
           setLoading(false);
