@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, CircleHelp, GraduationCap, Layers3, Lightbulb, RotateCcw, Sparkles, Trophy, X } from "lucide-react";
 import { useLang, setLang } from "@/lib/lang";
 import { setAppearance } from "@/lib/theme";
@@ -9,6 +10,7 @@ import { GUEST_BOOKS, GUEST_BOOK_TEXT } from "@/lib/guest-book-preview";
 
 export const Route = createFileRoute("/try")({
   staticData: { sitemap: true },
+  validateSearch: z.object({subject: z.enum(["english","math","history","biology","armenian","physics","other"]).optional()}),
   head: () => ({ meta: [
     { title: "Try Shtemarm | Փորձիր առանց գրանցման" },
     { name: "description", content: "Իրական Shtemarm շտեմարաններ. փորձիր յուրաքանչյուր գրքից առաջին երկու հարցը և գրանցվիր՝ մնացածը բացելու համար։" },
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/try")({
 
 function GuestExperience() {
   const lang = useLang();
+  const {subject: guestSubject} = Route.useSearch();
   const { words: w, questions, cards } = GUEST_DEMO[lang];
   const bookWords = GUEST_BOOK_TEXT[lang];
   const [mode, setMode] = useState<GuestMode>("practice");
@@ -187,7 +190,7 @@ function GuestExperience() {
             <span className="sht-try-live-label">{w.guest}</span>
           </div>
 
-          {mode==="practice" && <GuestBookBrowser />}
+          {mode==="practice" && <GuestBookBrowser initialCategory={guestSubject ?? "all"} />}
 
           {mode==="cards" && (cardsDone ? (
             <div className="sht-try-completion" role="status">
