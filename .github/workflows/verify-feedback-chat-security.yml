@@ -37,6 +37,8 @@ jobs:
         run: bunx vitest run src/test/security-feedback-chat.test.ts src/test/ai-learning.test.ts src/test/ai-runtime.test.ts src/test/admin-dependency-security.test.ts
       - name: Verify framework patches and no known poisoned package versions
         run: node scripts/check-dependency-security.mjs
+      - name: Audit locked dependencies for high/critical advisories
+        run: bun audit --audit-level=high
       - name: Check secret exposure
         run: node scripts/check-repo-secrets.mjs
       - name: Typecheck
