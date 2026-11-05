@@ -32,6 +32,7 @@ function LearningHub() {
       <h1 className="max-w-3xl text-balance text-3xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
       <p className="max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">{t.intro}</p>
     </header>
+    <Link to="/search" className="inline-flex min-h-11 items-center rounded-xl border border-primary/30 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10">{lang === "hy" ? "Որոնել գրքեր և առաջադրանքներ" : lang === "ru" ? "Поиск сборников и заданий" : "Search books and questions"} <ArrowRight className="ml-2 size-4" /></Link>
     <div className="grid gap-4 sm:grid-cols-2">
       {cards.map(({label,description,to,icon:Icon}) => <Link key={label} to={to} className="group relative flex min-h-52 flex-col justify-between gap-5 overflow-hidden rounded-[1.75rem] border border-primary/10 bg-gradient-to-br from-card via-card to-primary/5 p-5 shadow-sm transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transform-none sm:p-6">
         <span className="grid size-12 place-items-center rounded-2xl border border-primary/10 bg-primary/10 text-primary shadow-sm transition-transform duration-200 group-hover:scale-105 motion-reduce:transform-none"><Icon className="size-6" aria-hidden="true" /></span>
