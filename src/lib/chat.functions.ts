@@ -7,7 +7,7 @@ import { STUDY_MODE_DEFAULT, tutorModeInstructions, type StudyMode, type StudyLa
 const Input = z.object({
   question: z.string().trim().min(1).max(2000),
   contextToken: z.string().max(56000).optional(),
-  mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
+  mode: z.enum(["hint","explain","quiz","adaptive"]).default(STUDY_MODE_DEFAULT),
   locale: z.enum(["hy","en","ru"]).default("hy"),
   focusTopic: z.string().trim().min(1).max(60).optional(),
   studySummary: z.object({ reviewed: z.number().int().min(0).max(25000), incorrect: z.number().int().min(0).max(25000) }).strict().optional(),
@@ -15,7 +15,7 @@ const Input = z.object({
 
 const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
 
-const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
+const clean = (t: string) => t.trim();
 type Msg = { role: "user" | "assistant"; content: string };
 
 function promptForConversation(messages: Msg[], mode: StudyMode, locale: StudyLanguage) {
