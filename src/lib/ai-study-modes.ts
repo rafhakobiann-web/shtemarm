@@ -1,35 +1,35 @@
 /** Study modes are structured choices, not arbitrary user-provided instructions. */
-export type StudyMode = "hint" | "explain" | "quiz";
+export type StudyMode = "hint" | "explain" | "quiz" | "adaptive";
 export type StudyLanguage = "hy" | "en" | "ru";
 export const STUDY_MODE_DEFAULT: StudyMode = "hint";
 
 export const studyLabels: Record<StudyLanguage, {
-  title:string; instruction:string; hint:string; explain:string; quiz:string;
-  hintDescription:string; explainDescription:string; quizDescription:string;
+  title:string; instruction:string; hint:string; explain:string; quiz:string; adaptive:string;
+  hintDescription:string; explainDescription:string; quizDescription:string; adaptiveDescription:string;
 }> = {
   hy: {
     title:"Ինչպե՞ս օգնի AI ուսուցիչը",
     instruction:"Ընտրիր ուսուցման ձևը․ ցանկացած պահին կարող ես փոխել այն։",
-    hint:"Հուշում",explain:"Բացատրել ամբողջությամբ",quiz:"Ինքնաստուգում",
+    hint:"Հուշում",explain:"Բացատրել ամբողջությամբ",quiz:"Ինքնաստուգում",adaptive:"Հարմարվող ուսուցում",
     hintDescription:"Առաջին քայլը և ուղղորդող հարցը",
     explainDescription:"Ամբողջական լուծում՝ պատճառաբանությամբ",
-    quizDescription:"Փոքր վարժություն և պատասխանիդ ստուգում",
+    quizDescription:"Փոքր վարժություն և պատասխանիդ ստուգում",adaptiveDescription:"Հուշումներ, բացատրություններ և վարժություններ՝ ըստ կարիքի",
   },
   en: {
     title:"How should your AI tutor help?",
     instruction:"Choose how you learn. You can switch anytime.",
-    hint:"Hint",explain:"Full explanation",quiz:"Practice",
+    hint:"Hint",explain:"Full explanation",quiz:"Practice",adaptive:"Adaptive learning",
     hintDescription:"A starting step and guiding question",
     explainDescription:"Complete solution with reasoning",
-    quizDescription:"Try a short question and receive feedback",
+    quizDescription:"Try a short question and receive feedback",adaptiveDescription:"Hints, explanations and practice as needed",
   },
   ru: {
     title:"Как ИИ должен помочь с учёбой?",
     instruction:"Выбери способ обучения. Его можно менять в любой момент.",
-    hint:"Подсказка",explain:"Полное объяснение",quiz:"Самопроверка",
+    hint:"Подсказка",explain:"Полное объяснение",quiz:"Самопроверка",adaptive:"Адаптивное обучение",
     hintDescription:"Первый шаг и наводящий вопрос",
     explainDescription:"Полное решение с обоснованием",
-    quizDescription:"Короткое задание с проверкой ответа",
+    quizDescription:"Короткое задание с проверкой ответа",adaptiveDescription:"Подсказки, объяснения и практика по необходимости",
   },
 };
 
@@ -64,6 +64,13 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
       "Mode: COMPLETE EXPLANATION. Give the answer and show the full reasoning step-by-step.",
       "Use an example or quick verification when it helps. Avoid vague refusals such as 'I can only give hints'.",
       "End with one optional short check question, without hiding essential information.",
+    ],
+    adaptive:[
+      "Mode: ADAPTIVE LEARNING. Blend a brief explanation, a concrete worked step, and one optional practice check based on the current question.",
+      "Use the student’s explicitly provided learning preferences and optional aggregate progress only as unverified hints. Never claim to know their mastery or infer diagnoses.",
+      "When the student appears stuck, start with a guided hint; when they ask for the answer, explain fully without withholding it.",
+      "If the student submits an answer, check it clearly, explain the mistake if any, and offer one appropriately sized next practice question.",
+      "Avoid overloading the student: one clear learning action at a time and no invented official exam answer keys.",
     ],
     quiz:[
       "Mode: ACTIVE PRACTICE. When the student asks about a topic, offer one short relevant question and wait for their attempt.",
