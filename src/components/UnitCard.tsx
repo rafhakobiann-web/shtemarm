@@ -125,7 +125,13 @@ function Passage({ text, kind }: { text: string; kind: Unit["kind"] }) {
 }
 
 /* ---------- explanation ---------- */
-function Explain(props: { instruction: string; passage: string; question: string; correct: string; chosen: string | null }) {
+type ExplainProps = { instruction: string; passage: string; question: string; correct: string; chosen: string | null };
+export function Explain(props: ExplainProps) {
+  const lang = useLang();
+  // Do not keep an old question's or old language's explanation on screen.
+  return <CurrentExplanation key={JSON.stringify([lang,props.instruction,props.passage,props.question,props.correct,props.chosen])} {...props}/>;
+}
+function CurrentExplanation(props: ExplainProps) {
   const tx = useTx();
   const lang = useLang();
   const fn = useServerFn(explainAnswer);

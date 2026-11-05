@@ -60,11 +60,11 @@ describe("Learning-first AI in Shtemarm",()=>{
   it("makes saved answer-key explanations reusable across student answer choices",()=>{
     const subject=read("src/lib/explain.functions.ts");
     const math=read("src/lib/math-explain.functions.ts");
-    expect(subject).toContain("shared-teaching-v1");
+    expect(subject).toContain("shared-teaching-v2");
     expect(subject).toContain("chosen: null");
     expect(subject).toContain("getSavedExplanation(cacheKey)");
     expect(subject).not.toContain('Աշակերտի պատասխանը: ${data.chosen}');
-    expect(math).toContain("math-shared-v5");
+    expect(read("src/lib/teaching-prompts.ts")).toContain("math-shared-v6");
     expect(math).toContain("getSavedExplanation(cacheKey)");
     expect(math).not.toContain('data.correct, data.chosen ?? ""');
     expect(math).not.toContain('Աշակերտի պատասխանը: ${valueLabel(d.kind, d.chosen)}');

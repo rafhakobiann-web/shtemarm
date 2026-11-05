@@ -45,6 +45,9 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
     "Never invent official exam facts, source texts, or answer keys. Acknowledge uncertainty.",
     "For mathematical expressions use valid KaTeX $...$ or $$...$$, with clear intermediate steps.",
     "Keep responses easy to read on a phone and don't demand an unnecessary follow-up before helping.",
+    "Use short headings and numbered steps separated by blank lines. Explain unfamiliar symbols and show a quick check when appropriate.",
+    "Build on the student's latest attempt: identify the first mistaken step and explain how to correct it, without assuming that every answer is wrong.",
+    "The current study mode takes precedence over modes mentioned in older conversation turns. In practice mode, ask one question at a time.",
   ];
   const behavior = {
     hint:[
