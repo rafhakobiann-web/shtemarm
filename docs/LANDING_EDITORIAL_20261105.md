@@ -1,35 +1,35 @@
-# Shtemarm landing refresh — video reference (2026-11-05)
+# Shtemarm landing refresh — responsive guest experience (2026-11-05)
 
-## Brief
-The owner supplied a short vertical video showing a warm Armenian exam-preparation landing experience with a dark teal hero, vivid amber sections, light paper/grid backgrounds, oversized typography and phone-style study screen previews.
-
-This redesign **uses those general presentation patterns** with Shtemarm's own branding, original localized copy, real study routes, and original CSS mockups rather than copying a competitor's artwork, screenshots, product names, app badges or copy.
+## Scope and design
+The user's reference informed the editorial treatment: teal hero, amber accents, paper/grid panels, readable Armenian typography and a phone-style preview. Original Shtemarm branding and copy only. All work stays in Draft PR #216; Production, Lovable and the existing exam routes are unchanged.
 
 ## Implemented
-- Dark-teal hero with contrasting amber sign-up CTA, a visible Android APK route and interactive phone-size learning preview.
-- Paper/grid section with a real client-side sample equation and feedback. Explicitly labeled as *illustrative, not an official bank question*.
-- Gold study-journey section showing illustrative progress, and a dark-teal AI tutor illustration that sends **no live AI requests** and cannot exhaust provider credits.
-- Website vs Android download comparison: the Android beta links directly to a **published, public GitHub Release**, not a Google Play store badge. The download page uses the same fallback source if no administrator-configured public APK is present.
-- The app is labeled a **debug beta (v0.3.0-beta.4)**, with installation/update-signature caution. Existing user routes and study features are unchanged.
-- Reuses current Armenian, English and Russian interface controls; the new showcase is fully translated.
-- New scoped stylesheet loaded *last* on the public root. It does not restyle logged-in study screens or the separate download route.
-- Reduced-motion rules, mobile breakpoints down to 320px, touch-size controls, explicit keyboard focus, and a working, non-persistent sample interaction.
+- Interactive **dynamic-island-inspired** phone notch: accessible expanded state, disclosure and a clear link to the practice sample. Phone preview retains swipe/keyboard buttons and native vertical scrolling.
+- **Three answerable, original illustrative guest questions** (math, English grammar, Armenian language), localized HY/EN/RU. Users get answer feedback, next/previous navigation, score and reset without sign-in or persistence. These are NOT verbatim official textbook exercises.
+- Dedicated **Try 3 questions** anchor in hero and desktop/mobile menus so guests discover the sample quickly.
+- Scoped **dark-mode typography/contrast** fix: Noto Sans Armenian glyph support, less cramped headline letter spacing, legible dark navigation, FAQ and neutral cards while paper/amber sections intentionally retain dark ink.
+- Compositor-friendly intro and hover motion, responsive touch feedback, native swipe behavior, optional scroll-based reveals, reduced-motion/high-contrast safeguards, and no new animation libraries or network dependencies.
+- Netlify TanStack/Nitro build routing configuration remains in this PR and needs deployment-route smoke checks.
 
-## Public Android source verification
-At design time, the GitHub REST releases listing identified the non-draft, published public release:
-- Release: `https://github.com/rafhakobiann-web/shtemarm/releases/tag/v0.3.0-beta.4`
-- APK: `https://github.com/rafhakobiann-web/shtemarm/releases/download/v0.3.0-beta.4/Shtemarm-Android-0.3.0-beta.4-Debug-Test.apk`
+## Android APK — public-vs-private correction
+**Important:** The GitHub repository is private. A GitHub release can be *published and non-draft* while still requiring repository access. Therefore it is not a reliable public download link.
 
-Do not describe this as Play Store-listed or production-signed. The version links are snapshots and should be updated on subsequent approved public releases. An administrator can provide `VITE_ANDROID_APK_URL` or the signed-off `/downloads/android-release.json` for the separate download route.
+The repository already contains the same-origin website APK `public/downloads/shtemarm-android.apk` and metadata `public/downloads/android-release.json` (version **0.1.1-beta.1**, 19,331,250 bytes). The redesigned landing **now links to `/downloads/shtemarm-android.apk`**, and /download loads the manifest and falls back to that on-site asset. The Android download is labeled a **debug beta**, not a signed release or Play Store listing. The website's asset version is older than the private GitHub v0.3.0-beta.4 release; do not misrepresent versions.
 
-## Manual QA / safety
-- [ ] Public hero, navigation, account CTA and Github APK CTA all work at 320px, 390px, tablet and desktop widths.
-- [ ] The sample 3x + 5 = 14 answer has feedback for choices 2, 3, 4 and resets without authentication.
-- [ ] The original swipeable phone preview can still be operated by touch/keyboard; vertical page scroll is not intercepted.
-- [ ] Text is readable on dark teal and gold panels, in light, dark, high-contrast and reduced-motion themes.
-- [ ] All HY/EN/RU translations in the new showcase are legible at 320px.
-- [ ] Site users can sign in; beta APK opens GitHub, not Google Play; link target has a published public APK.
-- [ ] `/download` still supports installable website/PWA and has no false private-invitation claim.
-- [ ] Header and footer links, metadata, FAQ and book routes are unchanged.
-- [ ] `bunx vitest run src/test/landing-editorial-2026.test.ts src/test/download-scroll.test.ts src/test/seo-headings-and-sharing.test.ts`, `bunx tsc --noEmit`, and `bun run build` pass before release.
-- [ ] No merge or production publication until review and responsive QA.
+The developer can approve and publish a newer properly signed APK to a truly public static host later. Until then, do not rely on `github.com/rafhakobiann-web/shtemarm/releases` for unauthenticated student downloads.
+
+## Guest book previews are separate
+The requested **two original questions per section and two complete English text/exercise units per section** are implemented separately in **Draft PR #207**, not this PR. That larger guest-access PR has routing/auth implications and must be reviewed and tested before any merge. The landing's three questions are only an illustrated teaser and do not claim to complete PR #207.
+
+## Verification and release checklist
+- [x] GitHub connector confirmed the PR branch remains separate from `main`.
+- [x] Website APK and metadata file exist in the repository; automated checksum and size regression added.
+- [x] New source-level regressions and jsdom interaction tests committed; GitHub workflow updated to include them.
+- [x] Netlify and Vercel posted successful deployment status contexts for the PR head as of the initial check.
+- [ ] **GitHub Actions unavailable:** workflow runs show `failure` with **zero runner steps**, before executing tests. This cannot be treated as passing tests. Inspect account runner availability/billing/settings and rerun.
+- [ ] Run `bunx vitest run src/test/landing-editorial-2026.test.ts src/test/landing-sample-interaction.test.tsx src/test/download-scroll.test.ts`.
+- [ ] Run `bunx tsc --noEmit` and `bun run build`, then inspect logs.
+- [ ] Mobile (320px, 390px), tablet and desktop checks: dark/light typography, expanded notch, quiz, navigation, vertical scroll, reduced motion.
+- [ ] Verify public deployed `/downloads/shtemarm-android.apk` and manifest both return correct bytes (not SPA HTML/404), match SHA-256, and install on a test Android device.
+- [ ] Verify Netlify / and /download runtime routes. A deploy success status alone does not prove the pages function.
+- [ ] No merge or Production/Lovable publish until actual QA is complete.
