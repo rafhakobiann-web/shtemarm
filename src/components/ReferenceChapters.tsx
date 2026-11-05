@@ -210,8 +210,11 @@ export function ReferenceChapters({ lang, part }: { lang: Lang; part: Chapter })
         <DeviceFrame title={t.cardsTag}>
           <div className="sht-ref-card-progress"><span>{Math.min(cardIndex + 1, FLASH_WORDS.length)} / {FLASH_WORDS.length}</span><span><BookMarked size={14} aria-hidden="true" />{t.cardsSaved}: {review.length}</span></div>
           {cardIndex < FLASH_WORDS.length ? (
-            <div className="sht-ref-flashcard" onPointerDown={event => {
-              if (event.pointerType === "touch" || event.pointerType === "pen") start.current = { x: event.clientX, y: event.clientY };
+            <div key={cardIndex} className="sht-ref-flashcard" onPointerDown={event => {
+              if (event.pointerType === "touch" || event.pointerType === "pen") {
+                start.current = { x: event.clientX, y: event.clientY };
+                event.currentTarget.setPointerCapture?.(event.pointerId);
+              }
             }} onPointerUp={onCardUp} onPointerCancel={() => { start.current = null; }}>
               <span>ENGLISH · VOCABULARY</span>
               <h3>{FLASH_WORDS[cardIndex].word}</h3>
