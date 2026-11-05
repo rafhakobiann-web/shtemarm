@@ -32,6 +32,16 @@ describe("daily learning quests", () => {
     expect(result[0]).toMatchObject({ count: 3, selected: true });
     expect(result[2]).toMatchObject({ count: 1, selected: false });
   });
+  it("keeps achievement animation subtle, conditional and accessible", () => {
+    const dashboard = readFileSync("src/components/DashboardFocus.tsx", "utf8");
+    const stylesheet = readFileSync("src/styles.css", "utf8");
+    expect(dashboard).toContain('data-achievement={item.id}');
+    expect(dashboard).toContain('item.unlocked?"border-primary/30');
+    expect(dashboard).toContain('motion-safe:animate-[achievement-reveal_450ms_ease-out_both]');
+    expect(stylesheet).toContain("@keyframes achievement-reveal");
+    expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(stylesheet).toContain("[data-achievement] { animation: none !important");
+  });
   it("uses existing progress for achievement unlocks without resetting XP", () => {
     const result = achievements({answers:{"a":1},xp:510,streak:7});
     expect(result.find(a=>a.id==="first-steps")?.unlocked).toBe(true);
