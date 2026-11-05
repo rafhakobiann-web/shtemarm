@@ -217,22 +217,22 @@ function LandingPage() {
     if (typeof IntersectionObserver === "undefined" ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
         document.documentElement.classList.contains("user-reduced-motion")) return;
-    const page = document.querySelector<HTMLElement>(".ref-landing");
+    const page = document.querySelector<HTMLElement>(".sht-v3");
     if (!page) return;
-    const targets = page.querySelectorAll<HTMLElement>(".ref-story-copy, .ref-story-visual, .ref-tool, .sht-feature, .sht-subject-card");
+    const targets = page.querySelectorAll<HTMLElement>(".sl-tile, .sl-journey-copy, .sl-journey-visual, .sl-app-panel, .sht-feature, .sht-subject-card");
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("ref-inview");
+          entry.target.classList.add("sl-inview");
           observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.06 });
     targets.forEach(node => {
-      if (node.getBoundingClientRect().top <= window.innerHeight * 0.95) node.classList.add("ref-inview");
+      if (node.getBoundingClientRect().top <= window.innerHeight * 0.95) node.classList.add("sl-inview");
       else observer.observe(node);
     });
-    page.classList.add("ref-motion-ready");
+    page.classList.add("sl-motion-ready");
     return () => observer.disconnect();
   }, []);
 
