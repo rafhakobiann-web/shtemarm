@@ -174,8 +174,8 @@ function LandingPage() {
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
   const androidLabel = "Android APK";
-  const tryLabel = lang === "hy" ? "Փորձել 3 հարց" : lang === "ru" ? "Попробовать 3 вопроса" : "Try 3 questions";
-  const apkTag = lang === "hy" ? "Վեբ կայք + GitHub APK" : lang === "ru" ? "Сайт + APK с GitHub" : "Website + GitHub APK";
+  const tryLabel = lang === "hy" ? "Փորձել հարցերը" : lang === "ru" ? "Попробовать задания" : "Try the questions";
+  const apkTag = lang === "hy" ? "Վեբ կայք + Android APK" : lang === "ru" ? "Сайт + Android APK" : "Website + Android APK";
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [islandExpanded, setIslandExpanded] = useState(false);
@@ -225,7 +225,7 @@ function LandingPage() {
   const demoTasks = [t.demo1, t.demo2, t.demo3];
 
   return (
-    <div className="sht-landing sht-editorial">
+    <div className="sht-landing sht-editorial" data-design="reference">
       <header className="sht-landing-nav" aria-label={lang === "hy" ? "Կայքի նավարկում" : lang === "ru" ? "Навигация сайта" : "Site navigation"}>
         <Link to="/" className="sht-brand" aria-label="Shtemarm">
           <span className="sht-brand-icon"><img src="/shtemarm-logo.svg" alt="" width="34" height="34" /></span>
@@ -279,7 +279,14 @@ function LandingPage() {
       </header>
 
       <section className="sht-hero" aria-labelledby="sht-hero-title">
+        <div className="sht-reference-chapter-index" aria-hidden="true">01 / SHTEMARM</div>
         <div className="sht-hero-copy">
+          <div className="sht-reference-topline" aria-hidden="true">
+            <span className="sht-reference-topline-mark" />
+            <span>{lang === "hy" ? "Սովորիր քո ձևով" : lang === "ru" ? "Учись по-своему" : "Learn your way"}</span>
+            <span className="sht-reference-topline-stroke" />
+            <span>2026</span>
+          </div>
           <span className="sht-eyebrow"><Sparkles className="size-4" aria-hidden="true" />{t.tag}</span>
           <h1 id="sht-hero-title">{t.hero}<span className="sht-hero-period">.</span></h1>
           <p className="sht-hero-description">{t.intro}</p>
@@ -294,6 +301,10 @@ function LandingPage() {
         <div className="sht-hero-visual" role="region" aria-label={ui.sample}>
           <div className="sht-orbit sht-orbit-one" aria-hidden="true" />
           <div className="sht-orbit sht-orbit-two" aria-hidden="true" />
+          <div className="sht-reference-phone-caption" aria-hidden="true">
+            <span className="sht-reference-caption-dot" />
+            {lang === "hy" ? "Ինտերակտիվ ցուցադրություն" : lang === "ru" ? "Интерактивный пример" : "Interactive preview"}
+          </div>
           <div className="sht-editorial-phone">
             <div className="sht-editorial-phone-status" aria-hidden="true"><span>09:41</span><span>● ▰▰ ▣</span></div>
             <div className={"sht-dynamic-island" + (islandExpanded ? " is-expanded" : "")}>
@@ -352,6 +363,7 @@ function LandingPage() {
           <div className="sht-editorial-phone-home" aria-hidden="true" />
           </div>
           <div className="sht-floating-label"><BookOpen className="size-5" aria-hidden="true" /><span>{ui.review}</span></div>
+          <span className="sht-reference-orbit-label" aria-hidden="true">STUDY / GROW / REPEAT</span>
         </div>
       </section>
 
