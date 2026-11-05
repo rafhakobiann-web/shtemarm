@@ -403,13 +403,17 @@ function LandingPage() {
           <p>{ui.subjectsIntro}</p>
         </div>
         <div className="sht-subject-grid">
-          {SUBJECTS.map(({ key, names, Icon }) => (
-            <Link key={key} to={entryTo} data-subject={key} className="sht-subject-card" aria-label={names[lang] + " · " + ui.openSubject}>
+          {SUBJECTS.map(({ key, names, Icon }) => {
+            const body = <>
               <span className="sht-subject-icon"><Icon className="size-6" aria-hidden="true" /></span>
               <strong>{names[lang]}</strong>
               <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
-            </Link>
-          ))}
+            </>;
+            const props = { key, "data-subject": key, className: "sht-subject-card", "aria-label": names[lang] + " · " + ui.openSubject };
+            if (sessionStatus !== "signed-in") return <Link {...props} to="/auth">{body}</Link>;
+            if (key === "physics") return <Link {...props} to="/subject/$subject" params={{ subject: "physics" }}>{body}</Link>;
+            return <Link {...props} to="/dashboard" search={{ subject: key as "english"|"math"|"armenian"|"history"|"biology" }}>{body}</Link>;
+          })}
         </div>
       </section>
 
