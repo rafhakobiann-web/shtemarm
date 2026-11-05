@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { getUnitMistakes, UNIT_MISTAKES_CHANGED } from "@/lib/unitMistakes";
+import { achievements, dailyQuests, getQuestHistory, localDay, QUESTS_CHANGED } from "@/lib/gamification";
 import { summarizeRevision } from "@/lib/revisionSchedule";
 import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sparkles, Target, Trophy } from "lucide-react";
 import { useLang } from "@/lib/lang";
@@ -64,6 +65,21 @@ export function DashboardFocus({ name, progress, subjects }: {
     return () => { window.removeEventListener(UNIT_MISTAKES_CHANGED, refresh); window.removeEventListener("storage", refresh); };
   }, []);
   const revision = useMemo(() => summarizeRevision(unitMistakes, Date.now()), [unitMistakes]);
+  const [questHistory, setQuestHistory] = useState(() => getQuestHistory());
+  useEffect(() => {
+    const refresh = () => setQuestHistory(getQuestHistory());
+    window.addEventListener(QUESTS_CHANGED, refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener(QUESTS_CHANGED, refresh); window.removeEventListener("storage", refresh); };
+  }, []);
+  const quests = dailyQuests(questHistory);
+  const unlocked = achievements(progress).filter(item => item.unlocked);
+  const calendarDays = Array.from({ length: 28 }, (_, i) => {
+    const day = new Date(); day.setHours(12, 0, 0, 0); day.setDate(day.getDate() - (27 - i));
+    const date = localDay(day);
+    const activity = questHistory[date];
+    return { date, count: (activity?.answered.length ?? 0) + (activity?.reviewed.length ?? 0) };
+  });
   const selected = [...new Set(subjects)].slice(0, 6);
   const nextTo = summary.review > 0 ? "/mistakes" : "/study-plan";
   const nextText = summary.review > 0 ? t.retry : t.start;
@@ -100,6 +116,14 @@ export function DashboardFocus({ name, progress, subjects }: {
         <p className="text-sm text-muted-foreground">{revision.due} {lang === "hy" ? "հարց՝ առաջարկվող կրկնության համար" : lang === "ru" ? "вопросов к повторению" : "questions suggested for review"} · {revision.pending} {lang === "hy" ? "չյուրացված գրառում" : lang === "ru" ? "неосвоенных записей" : "unmastered records"}</p>
         {revision.bySubject.length > 0 && <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առավել շատ սխալներ՝" : lang === "ru" ? "Больше всего ошибок:" : "Most saved mistakes:"} {revision.bySubject.slice(0, 3).map(([subject, count]) => `${SUBJECT_NAMES[subject as OnboardingSubject]?.[i] ?? subject} (${count})`).join(" · ")}</p>}
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Հաշվարկված է այս սարքում պահված շտեմարանային սխալներով․ սա ամբողջական գնահատական չէ։" : lang === "ru" ? "На основе ошибок, сохранённых на этом устройстве; не полная оценка знаний." : "Based on question-bank mistakes saved on this device; not a complete mastery assessment."}</p>
+      </section>
+      <section className="academy-bento space-y-4 p-4 sm:p-5" aria-label={lang==="hy"?"Ուսումնական ակտիվության օրացույց":lang==="ru"?"Календарь занятий":"Learning activity calendar"}>
+        <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-black">{lang==="hy"?"Իմ ուսումնական ակտիվությունը":lang==="ru"?"Моя учебная активность":"My learning activity"}</h2><span className="text-xs font-bold text-primary">{progress.xp} XP · {unlocked.length} {lang==="hy"?"նվաճում":lang==="ru"?"достижений":"achievements"}</span></div>
+        <div className="grid grid-cols-7 gap-2" role="img" aria-label={lang==="hy"?"Վերջին 28 օրվա պահպանված ակտիվություն":lang==="ru"?"Сохранённая активность за 28 дней":"Saved activity for the last 28 days"}>
+          {calendarDays.map(day => <span key={day.date} title={day.date+": "+day.count} className={`aspect-square rounded-lg border ${day.count>=15?"bg-primary":day.count>=5?"bg-primary/60":day.count>0?"bg-primary/25":"bg-muted/50"}`} />)}
+        </div>
+        <div className="grid gap-2 sm:grid-cols-3">{quests.map(quest => <div key={quest.id} className="rounded-xl border bg-card p-3"><p className="text-xs font-semibold">{quest.id==="review-3"?(lang==="hy"?"Կրկնել 3 սխալ":lang==="ru"?"Повторить 3 ошибки":"Review 3 mistakes"):quest.id==="answer-15"?(lang==="hy"?"Պատասխանել 15 հարցի":lang==="ru"?"Ответить на 15 вопросов":"Answer 15 questions"):(lang==="hy"?"Պատասխանել 5 հարցի":lang==="ru"?"Ответить на 5 вопросов":"Answer 5 questions")}</p><p className="mt-1 text-sm font-bold tabular-nums">{quest.count}/{quest.goal}</p><div className="mt-2 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{width:`${Math.min(100,quest.count/quest.goal*100)}%`}} /></div></div>)}</div>
+        <p className="text-xs text-muted-foreground">{lang==="hy"?"Օրացույցում երևում է միայն այս սարքում պահպանված վերջին 31 օրվա ակտիվությունը։ Բաց թողած օրերը չեն նվազեցնում միավորները։":lang==="ru"?"Показаны только последние 31 день активности, сохранённой на устройстве. Пропуски не отнимают баллы.":"Only the last 31 days saved on this device are available. Missed days do not deduct points."}</p>
       </section>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map(({ label, value, Icon }) => (
