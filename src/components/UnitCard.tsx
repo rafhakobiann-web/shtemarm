@@ -258,15 +258,15 @@ export function UnitCard(props: {
     const chosen = a?.mc?.[answerKey];
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
-        <div className="mb-3 flex gap-2">
+      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-[1.5rem] border border-border/80 bg-card p-4 shadow-sm sm:p-6 lg:p-7", show && chosen !== q.answer && "motion-safe:animate-shake")}>
+        <div className="mb-5 flex items-start gap-3 sm:gap-4">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></h3>
+          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 text-[1.05rem] font-semibold leading-[1.75] tracking-[0.005em] text-foreground sm:text-lg"><EnglishText text={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} /></h3>
         </div>
         {q.diagram && <figure className="mb-4 rounded-xl border bg-white p-3"><img src={q.diagram.src} alt={q.diagram.alt} width={350} height={250} loading="lazy" className="mx-auto h-auto w-full max-w-sm" /></figure>}
-        <div role="group" aria-labelledby={questionId(index)} className="study-answer-grid grid gap-2">
+        <div role="group" aria-labelledby={questionId(index)} className="study-answer-grid grid gap-3">
           {Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options).map(([k, v]) => {
             const isC = k === q.answer;
             const isSel = chosen === k;
@@ -280,13 +280,13 @@ export function UnitCard(props: {
                   onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } });
                 }}
                 className={cn(
-                  "answer-option flex min-h-14 items-start gap-3 rounded-2xl border-2 px-3 py-3 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 motion-reduce:transition-none",
+                  "answer-option flex min-h-[4.25rem] items-center gap-3 rounded-2xl border-2 px-4 py-4 text-left text-base leading-[1.7] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 sm:px-5 motion-reduce:transition-none",
                   !show && "cursor-pointer active:scale-[0.995] motion-reduce:transform-none",
                   !show && isSel && "border-primary bg-primary/10 shadow-sm",
-                  !show && !isSel && "border-border hover:border-primary/50 hover:bg-muted/60",
+                  !show && !isSel && "border-border bg-background hover:border-primary/60 hover:bg-primary/5",
                   show && isC && "border-success bg-success/10",
                   show && isSel && !isC && "border-destructive bg-destructive/10",
-                  show && !isC && !isSel && "border-border opacity-60",
+                  show && !isC && !isSel && "border-border bg-muted/20 text-muted-foreground",
                 )}
               >
                 <input
@@ -298,13 +298,13 @@ export function UnitCard(props: {
                   onChange={() => onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } })}
                   aria-label={tx("Ընտրել {n} հարցի {k} տարբերակը", { n: q.n, k })}
                   aria-describedby={`${questionId(index)}-option-${k}`}
-                  className="mt-1 size-4 shrink-0 accent-primary"
+                  className="size-5 shrink-0 accent-primary"
                 />
                 <span aria-hidden="true" className={cn(
-                  "grid size-7 shrink-0 place-items-center rounded-lg border text-sm font-bold",
+                  "grid size-9 shrink-0 place-items-center rounded-xl border text-sm font-bold",
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
-                <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 leading-relaxed">
+                <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 break-words leading-[1.7]">
                   {v.trim() ? <EnglishText text={v} context={`${q.stem} ${v}`} />
                     : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
                 </span>
@@ -354,12 +354,12 @@ export function UnitCard(props: {
     const val = a?.mc?.[answerKey] ?? "";
     const ok = normNum(val) === normNum(q.answer);
     return (
-      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && !ok && "motion-safe:animate-shake")}>
-        <div className="mb-3 flex gap-2">
+      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-[1.5rem] border border-border/80 bg-card p-4 shadow-sm sm:p-6 lg:p-7", show && !ok && "motion-safe:animate-shake")}>
+        <div className="mb-5 flex items-start gap-3 sm:gap-4">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
           </span>
-          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 font-medium leading-relaxed"><EnglishText text={q.stem} /></h3>
+          <h3 id={questionId(index)} aria-label={q.stem || tx("Ընտրեք ճիշտ տարբերակը ({n})", { n: q.n })} className="min-w-0 whitespace-pre-line pt-0.5 text-[1.05rem] font-semibold leading-[1.75] tracking-[0.005em] text-foreground sm:text-lg"><EnglishText text={q.stem} /></h3>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <input
