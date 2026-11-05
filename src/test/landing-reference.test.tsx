@@ -52,6 +52,9 @@ describe("Shtemarm-native interactive public landing", () => {
     expect(route).toContain("<LandingShowcase lang={lang} />");
     const showcase = readFileSync("src/components/LandingShowcase.tsx", "utf8");
     expect(showcase).toContain("onPointerMove={handleCardMove}");
+    expect(showcase).toContain("window.requestAnimationFrame");
+    expect(showcase).toContain("if (dx < 0) nextCard();");
+    expect(showcase).toContain("else previousCard();");
     expect(showcase).toContain("Math"); // default phone demo includes math subject
     expect(showcase).toContain("bookCounts");
     expect(root).toContain('href: landingReferenceCss');
