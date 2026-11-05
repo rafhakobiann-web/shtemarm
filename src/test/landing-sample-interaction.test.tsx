@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -11,6 +11,7 @@ vi.mock("@tanstack/react-router", () => ({
 import { LandingShowcase } from "@/components/LandingShowcase";
 
 describe("Interactive landing sample", () => {
+  afterEach(() => cleanup());
   it("lets guests answer multiple questions, navigate between subjects and reset", () => {
     const { container } = render(<LandingShowcase lang="en" />);
     expect(screen.getByText("If 3x + 5 = 14, what is x?")).toBeTruthy();
