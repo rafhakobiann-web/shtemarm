@@ -177,11 +177,11 @@ export function LandingHeroLab({ lang }: { lang: Lang }) {
   );
 }
 
-const DECK = [
-  { front: "curious", back: "wanting to know more" },
-  { front: "improve", back: "to make better" },
-  { front: "achieve", back: "to reach a goal" },
-  { front: "discover", back: "to find out something new" },
+const DECK: { front: string; back: Localized }[] = [
+  { front: "curious", back: { hy: "հետաքրքրասեր", en: "wanting to know more", ru: "любознательный" } },
+  { front: "improve", back: { hy: "բարելավել", en: "to make better", ru: "улучшать" } },
+  { front: "achieve", back: { hy: "հասնել նպատակին", en: "to reach a goal", ru: "достичь цели" } },
+  { front: "discover", back: { hy: "բացահայտել", en: "to find out something new", ru: "открывать новое" } },
 ];
 
 function Flashcard({ lang }: { lang: Lang }) {
@@ -217,11 +217,12 @@ function Flashcard({ lang }: { lang: Lang }) {
     <article className="sl-tile sl-tile-flash" aria-labelledby="sl-flash-title">
       <div className="sl-tile-top"><span className="sl-tile-icon"><BookMarked size={21} /></span><span>01 / 03</span></div>
       <h3 id="sl-flash-title">{t.flashTitle}</h3><p>{t.swipe} · {t.flip}</p>
-      <button type="button" className="sl-flashcard" ref={card} aria-label={t.flip + ": " + DECK[index].front}
+      <button type="button" className="sl-flashcard" ref={card} aria-label={t.flip + ": " + (flipped ? DECK[index].back[lang] : DECK[index].front)}
         onClick={() => { if (blockClick.current) { blockClick.current = false; return; } setFlipped(v => !v); }}
         onPointerDown={down} onPointerMove={move} onPointerUp={up}
-        onPointerCancel={() => { start.current = null; clear(); }}>
-        <small>{flipped ? t.explanation : t.playground}</small><strong key={index + "-" + flipped}>{flipped ? DECK[index].back : DECK[index].front}</strong>
+        onPointerCancel={() => { start.current = null; clear(); }}
+        onKeyDown={e => { if (e.key === "ArrowLeft") { e.preventDefault(); advance(false); } else if (e.key === "ArrowRight") { e.preventDefault(); advance(true); } }}>
+        <small>{flipped ? t.explanation : t.playground}</small><strong key={index + "-" + flipped}>{flipped ? DECK[index].back[lang] : DECK[index].front}</strong>
         <span><RotateCcw size={15} />{index + 1} / {DECK.length}</span>
       </button>
       <div className="sl-flash-actions"><button type="button" onClick={() => advance(true)}><RotateCcw size={17} />{t.repeat}</button><button type="button" onClick={() => advance(false)}><Check size={17} />{t.know}</button></div>
