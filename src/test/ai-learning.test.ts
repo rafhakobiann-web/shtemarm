@@ -31,6 +31,10 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(prompt).toContain("single correctly delimited formula");
     expect(prompt).toContain("Verify all numeric steps");
     expect(prompt).toContain("no more than one worked example");
+    expect(prompt).toContain("ստանալու համար");
+    expect(prompt).toContain("specific misconception");
+    expect(prompt).toContain("actual source question");
+    expect(prompt).toContain("$\\\\overrightarrow{AB}");
   });
 
   it("prevents block KaTeX inside paragraph markup and specifies display delimiters", () => {
