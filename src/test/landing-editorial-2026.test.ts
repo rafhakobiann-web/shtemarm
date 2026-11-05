@@ -12,7 +12,16 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(landing).toContain('className="sht-landing sht-editorial"');
     expect(landing).toContain('id="sht-hero-title"');
     expect(landing.match(/<h1\b/g)?.length).toBe(1);
-    expect(landing).toContain('<LandingShowcase lang={lang} />');
+    for (const part of ["practice","journey","ai","download"]) {
+      expect(landing).toContain(`<LandingShowcase lang={lang} part="${part}" />`);
+    }
+    expect(landing.indexOf('part="practice"')).toBeLessThan(landing.indexOf('id="benefits"'));
+    expect(landing.indexOf('part="journey"')).toBeGreaterThan(landing.indexOf('id="subjects"'));
+    expect(landing.indexOf('part="ai"')).toBeGreaterThan(landing.indexOf('id="how-it-works"'));
+    expect(landing.indexOf('part="download"')).toBeGreaterThan(landing.indexOf('id="faq"'));
+    expect(landing).toContain('className="sht-landing sht-editorial sht-editorial-v3"');
+    expect(landing).toContain("sht-hero-highlight");
+    expect(landing).toContain("sht-hero-proof");
     expect(landing).toContain('className="sht-editorial-phone"');
     expect(landing).toContain('to="/auth"');
     expect(landing).toContain('to="/download"');
@@ -121,6 +130,22 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(css).toContain("background:#ffcf60;");
     expect(css).toContain("color:#13373d;");
     expect(css).toContain("prefers-reduced-motion:reduce");
+  });
+
+  it("isolates the illustrated phone in light and dark mode and stays responsive in Liquid Glass",()=>{
+    const css=read("src/landing-editorial-2026.css");
+    const landing=read("src/routes/index.tsx");
+    expect(css).toContain("SHTEMARM EDITORIAL V3");
+    expect(css).toContain('html.dark[data-surface="liquid"] .sht-editorial-v3 .sht-preview');
+    expect(css).toContain('html.dark[data-surface="liquid"] .sht-editorial-v3 .sht-demo-options .sht-demo-option');
+    expect(css).toContain('html[data-surface="liquid"] .sht-editorial-v3 .sht-demo-options');
+    expect(css).toContain('html[data-surface="liquid"] .sht-editorial-v3 .sht-demo-options .sht-demo-option:first-child');
+    expect(css).toContain("grid-template-columns:minmax(0,1fr)");
+    expect(css).toContain("scroll-timeline animations");
+    expect(css).not.toContain("animation-timeline:view()");
+    expect(css).toContain("@media(max-width:740px)");
+    expect(css).toContain("@media(max-width:420px)");
+    expect(landing).toContain('aria-expanded={islandExpanded}');
   });
 
   it("does not add external tracking, embeds or a nonexistent Play Store listing",()=>{
