@@ -346,3 +346,19 @@ html.dark .ref-landing .sht-palette-panel p,.dark .ref-landing .sht-palette-mode
 html.dark .ref-landing .sht-mobile-links nav { background:#203641; border-color:#496574; }
 html.dark .ref-landing .sht-mobile-links nav a { color:#eff8fc; }
 html.dark .ref-landing .sht-mobile-links > summary { color:#eef8fa; background:#263e49; border-color:#496574; }
+
+/* Low-cost scroll reveals: transforms and opacity only, no perpetual animation. */
+@media (prefers-reduced-motion:no-preference) {
+  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card) {
+    transition: opacity .58s ease,transform .58s cubic-bezier(.16,1,.3,1);
+  }
+  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card):not(.ref-inview) {
+    opacity:0; transform:translateY(24px);
+  }
+  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card).ref-inview {
+    opacity:1; transform:translateY(0);
+  }
+}
+html.user-reduced-motion .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card) {
+  opacity:1!important; transform:none!important;
+}
