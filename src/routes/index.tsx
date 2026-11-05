@@ -174,6 +174,7 @@ function LandingPage() {
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
   const androidLabel = "Android APK";
+  const tryLabel = lang === "hy" ? "Փորձել 3 հարց" : lang === "ru" ? "Попробовать 3 вопроса" : "Try 3 questions";
   const apkTag = lang === "hy" ? "Վեբ կայք + GitHub APK" : lang === "ru" ? "Сайт + APK с GitHub" : "Website + GitHub APK";
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
@@ -231,6 +232,7 @@ function LandingPage() {
           <span>Shtemarm</span>
         </Link>
         <nav className="sht-nav-links" aria-label={lang === "hy" ? "Հիմնական բաժիններ" : lang === "ru" ? "Основные разделы" : "Main sections"}>
+          <a href="#experience">{tryLabel}</a>
           <a href="#benefits">{ui.navBenefits}</a>
           <a href="#subjects">{t.subjects}</a>
           <a href="#how-it-works">{ui.navSteps}</a>
@@ -241,7 +243,7 @@ function LandingPage() {
           <details className="sht-mobile-links">
             <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
             <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
-              {[["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
+              {[["#experience", tryLabel], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
                 <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
               ))}
               <Link to="/download" onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{androidLabel}<ArrowRight className="size-4" aria-hidden="true" /></Link>
@@ -285,7 +287,7 @@ function LandingPage() {
             <Link to="/auth" className="sht-button-primary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
             <Link to="/download" className="sht-button-secondary">{androidLabel}<ArrowRight className="size-4" aria-hidden="true" /></Link>
           </div>
-          <a href="#subjects" className="sht-hero-inline-link">{ui.viewSubjects}<ArrowDown className="size-4" aria-hidden="true" /></a>
+          <a href="#experience" className="sht-hero-inline-link">{tryLabel}<ArrowDown className="size-4" aria-hidden="true" /></a>
           <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{apkTag}</span></div>
         </div>
 
