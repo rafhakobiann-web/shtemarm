@@ -8,6 +8,7 @@ import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
 import { learningLevel } from "@/lib/learningLevels";
 import { recommendLearningPath } from "@/lib/learningPath";
+import { DAILY_GOAL_CHANGED, dailyGoalProgress, getDailyGoal, setDailyGoal, suggestDailyGoal, weeklyGoalSummary } from "@/lib/dailyStudyGoal";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
 const SUBJECT_NAMES: Record<OnboardingSubject, [string,string,string]> = {
@@ -75,6 +76,17 @@ export function DashboardFocus({ name, progress, subjects }: {
     window.addEventListener("storage", refresh);
     return () => { window.removeEventListener(QUESTS_CHANGED, refresh); window.removeEventListener("storage", refresh); };
   }, []);
+  const [dailyGoal, setGoal] = useState(() => getDailyGoal());
+  useEffect(() => {
+    const refresh = () => setGoal(getDailyGoal());
+    window.addEventListener(DAILY_GOAL_CHANGED, refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener(DAILY_GOAL_CHANGED, refresh); window.removeEventListener("storage", refresh); };
+  }, []);
+  const goalToday = dailyGoalProgress(questHistory, dailyGoal);
+  const goalWeek = weeklyGoalSummary(questHistory, dailyGoal);
+  const goalSuggestion = suggestDailyGoal(questHistory);
+  const changeGoal = (key: "answers" | "reviews", value: number) => setGoal(setDailyGoal({...dailyGoal,[key]:value}));
   const quests = dailyQuests(questHistory);
   const [weeklySelection, setWeeklySelection] = useState<string[]>(() => getWeeklySelections());
   const weekly = weeklyChallenges(questHistory, weeklySelection);
@@ -122,6 +134,22 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Учебная цель на день" : "Daily study goal"}>
+        <h2 className="font-black">{lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Цель на день" : "Daily study goal"}</h2>
+        <p className="text-sm tabular-nums">{goalToday.completed}/{goalToday.total} · {goalToday.percent}%</p>
+        <div role="progressbar" aria-label="Daily study goal progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={goalToday.percent} className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{width:`${goalToday.percent}%`}} /></div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="text-xs font-semibold">{lang === "hy" ? "Օրական հարցեր" : lang === "ru" ? "Вопросов в день" : "Questions per day"}
+            <select className="mt-1 block min-h-11 w-full rounded-lg border bg-background px-3" value={dailyGoal.answers} onChange={e=>changeGoal("answers",Number(e.target.value))}>{[0,5,10,15,20,30,50,100].map(n=><option key={n} value={n}>{n}</option>)}</select>
+          </label>
+          <label className="text-xs font-semibold">{lang === "hy" ? "Օրական կրկնություններ" : lang === "ru" ? "Повторений в день" : "Reviews per day"}
+            <select className="mt-1 block min-h-11 w-full rounded-lg border bg-background px-3" value={dailyGoal.reviews} onChange={e=>changeGoal("reviews",Number(e.target.value))}>{[0,1,2,3,5,10,20,30].map(n=><option key={n} value={n}>{n}</option>)}</select>
+          </label>
+        </div>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկվող նպատակ" : lang === "ru" ? "Рекомендуемая цель" : "Suggested goal"}: {goalSuggestion.answers} + {goalSuggestion.reviews} · <button type="button" className="min-h-10 font-bold text-primary underline-offset-2 hover:underline" onClick={()=>setGoal(setDailyGoal(goalSuggestion))}>{lang === "hy" ? "Կիրառել" : lang === "ru" ? "Применить" : "Apply"}</button></p>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Այս շաբաթ" : lang === "ru" ? "На этой неделе" : "This week"}: {goalWeek.completedDays} {lang === "hy" ? "օր նպատակն իրականացվել է" : lang === "ru" ? "дней цель выполнена" : "days with goal completed"} · {goalWeek.answered} {lang === "hy" ? "հարց" : lang === "ru" ? "вопросов" : "questions"} · {goalWeek.reviewed} {lang === "hy" ? "կրկնություն" : lang === "ru" ? "повторений" : "reviews"}</p>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Նպատակները կամավոր են։ Բաց թողած օրերի համար տուգանք չկա։ Տվյալները պահվում են այս սարքում։" : lang === "ru" ? "Цели добровольны, пропуски без штрафов. Данные на этом устройстве." : "Goals are optional, with no penalty for missed days. Data is saved on this device."}</p>
+      </section>
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}>
         <h2 className="font-black">{lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}</h2>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկները հիմնված են ընտրած առարկաների և պահպանված սխալների վրա, ոչ թե AI-ի գնահատականի։" : lang === "ru" ? "Рекомендации основаны на выбранных предметах и сохранённых ошибках, а не на оценке ИИ." : "Suggestions use your selected subjects and saved mistakes, not an AI assessment."}</p>
