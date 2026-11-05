@@ -6,6 +6,7 @@ import { summarizeRevision } from "@/lib/revisionSchedule";
 import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sparkles, Target, Trophy } from "lucide-react";
 import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
+import { learningLevel } from "@/lib/learningLevels";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
 const SUBJECT_NAMES: Record<OnboardingSubject, [string,string,string]> = {
@@ -57,6 +58,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   const t = WORDS[lang];
   const i = lang === "en" ? 1 : lang === "ru" ? 2 : 0;
   const summary = progressSummary(progress);
+  const combinedLevel = learningLevel(progress);
   const [unitMistakes, setUnitMistakes] = useState(() => getUnitMistakes());
   useEffect(() => {
     const refresh = () => setUnitMistakes(getUnitMistakes());
@@ -118,6 +120,14 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      <section className="academy-bento space-y-2 p-4 sm:p-5" aria-label={lang === "hy" ? "Մակարդակների առաջընթաց" : lang === "ru" ? "Прогресс уровней" : "Level progress"}>
+        <h2 className="font-black">{lang === "hy" ? "Իմ մակարդակը" : lang === "ru" ? "Мой уровень" : "My level"} · {combinedLevel.level}</h2>
+        <p className="text-sm text-muted-foreground">{combinedLevel.xp} XP · {combinedLevel.answered} {lang === "hy" ? "պատասխանված հարց" : lang === "ru" ? "ответов" : "answered questions"}</p>
+        <div role="progressbar" aria-label="XP to next level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={combinedLevel.xpProgress} className="h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-primary" style={{ width: `${combinedLevel.xpProgress}%` }} />
+        </div>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "XP-ն ցույց է տալիս ակտիվությունը։ Առարկայական յուրացումը դեռ առանձին գնահատման կարիք ունի։" : lang === "ru" ? "XP отражает активность. Освоение предметов требует отдельной проверки." : "XP measures activity. Subject mastery requires separate assessment."}</p>
+      </section>
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Այսօրվա ուսումնական առաջարկներ" : lang === "ru" ? "Рекомендации на сегодня" : "Today’s learning suggestions"}>
         <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-black">{lang === "hy" ? "Այսօրվա կրկնությունը" : lang === "ru" ? "Повторение на сегодня" : "Today’s revision"}</h2><Link to="/mistakes" className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">{t.retry}<ArrowRight className="size-4" /></Link></div>
         <p className="text-sm text-muted-foreground">{revision.due} {lang === "hy" ? "հարց՝ առաջարկվող կրկնության համար" : lang === "ru" ? "вопросов к повторению" : "questions suggested for review"} · {revision.pending} {lang === "hy" ? "չյուրացված գրառում" : lang === "ru" ? "неосвоенных записей" : "unmastered records"}</p>
