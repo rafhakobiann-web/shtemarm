@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowRight, BookOpen, Check, CheckCircle2, ChevronRight, Download, ExternalLink,
+  ArrowRight, BookOpen, Check, CheckCircle2, ChevronLeft, ChevronRight, Download, ExternalLink,
   GraduationCap, Lightbulb, LockKeyhole, Monitor, RotateCcw, Smartphone, Sparkles,
 } from "lucide-react";
 import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION } from "@/lib/app-download";
