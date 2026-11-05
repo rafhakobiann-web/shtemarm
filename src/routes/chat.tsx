@@ -32,7 +32,7 @@ const MODE_KEY = "shtemarm:tutor-mode:v1";
 function readPreferredMode(): StudyMode {
   try {
     const saved = localStorage.getItem(MODE_KEY);
-    return saved === "hint" || saved === "explain" || saved === "quiz"
+    return saved === "hint" || saved === "explain" || saved === "quiz" || saved === "adaptive"
       ? saved : STUDY_MODE_DEFAULT;
   } catch { return STUDY_MODE_DEFAULT; }
 }
@@ -115,14 +115,14 @@ function ChatPage() {
       <section aria-label={labels.title} className="glass rounded-2xl border p-3 sm:p-4">
         <h2 className="mb-1 text-sm font-bold">{labels.title}</h2>
         <p className="mb-3 text-xs text-muted-foreground">{labels.instruction}</p>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={labels.title}>
-          {(["hint","explain","quiz"] as const).map(key=>(
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4" role="group" aria-label={labels.title}>
+          {(["hint","explain","quiz","adaptive"] as const).map(key=>(
             <button type="button" key={key} aria-pressed={mode===key}
               onClick={()=>selectMode(key)}
               className={cn("min-h-14 rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary",
                 mode===key?"border-primary bg-primary/10 text-foreground":"border-border bg-card/75 hover:border-primary/40")}>
               <span className="block text-sm font-bold">{labels[key]}</span>
-              <span className="mt-1 block text-xs text-muted-foreground">{labels[key+"Description" as "hintDescription"|"explainDescription"|"quizDescription"]}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">{labels[key+"Description" as "hintDescription"|"explainDescription"|"quizDescription"|"adaptiveDescription"]}</span>
             </button>
           ))}
         </div>
