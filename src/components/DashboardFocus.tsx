@@ -7,6 +7,7 @@ import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sp
 import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
 import { learningLevel } from "@/lib/learningLevels";
+import { recommendLearningPath } from "@/lib/learningPath";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
 const SUBJECT_NAMES: Record<OnboardingSubject, [string,string,string]> = {
@@ -90,6 +91,7 @@ export function DashboardFocus({ name, progress, subjects }: {
     return { date, count: (activity?.answered.length ?? 0) + (activity?.reviewed.length ?? 0) };
   });
   const selected = [...new Set(subjects)].slice(0, 6);
+  const pathSteps = recommendLearningPath(selected, progress, unitMistakes);
   const nextTo = summary.review > 0 ? "/mistakes" : "/study-plan";
   const nextText = summary.review > 0 ? t.retry : t.start;
   const greeting = name ? t.welcome.replace("{name}", name) : t.hello;
@@ -120,6 +122,14 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}>
+        <h2 className="font-black">{lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}</h2>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկները հիմնված են ընտրած առարկաների և պահպանված սխալների վրա, ոչ թե AI-ի գնահատականի։" : lang === "ru" ? "Рекомендации основаны на выбранных предметах и сохранённых ошибках, а не на оценке ИИ." : "Suggestions use your selected subjects and saved mistakes, not an AI assessment."}</p>
+        <ol className="space-y-2">{pathSteps.map((step, index) => <li key={step.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-card p-3">
+          <span className="text-sm font-semibold">{index + 1}. {step.id === "review" ? (lang === "hy" ? "Կրկնել սխալները" : lang === "ru" ? "Повторить ошибки" : "Review mistakes") : step.id === "exam" ? (lang === "hy" ? "Պատրաստվել քննությանը" : lang === "ru" ? "Подготовка к экзамену" : "Prepare for exam") : step.id === "choose" ? t.choose : (lang === "hy" ? "Պարապել ընտրած առարկան" : lang === "ru" ? "Практика по предмету" : "Practice your subject")}{step.subject ? ` · ${SUBJECT_NAMES[step.subject]?.[i] ?? step.subject}` : ""}</span>
+          <Link to={step.id === "review" ? "/mistakes" : step.id === "exam" ? "/study-plan" : "/learn"} className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">{lang === "hy" ? "Բացել" : lang === "ru" ? "Открыть" : "Open"}<ArrowRight className="size-4" /></Link>
+        </li>)}</ol>
+      </section>
       <section className="academy-bento space-y-2 p-4 sm:p-5" aria-label={lang === "hy" ? "Մակարդակների առաջընթաց" : lang === "ru" ? "Прогресс уровней" : "Level progress"}>
         <h2 className="font-black">{lang === "hy" ? "Իմ մակարդակը" : lang === "ru" ? "Мой уровень" : "My level"} · {combinedLevel.level}</h2>
         <p className="text-sm text-muted-foreground">{combinedLevel.xp} XP · {combinedLevel.answered} {lang === "hy" ? "պատասխանված հարց" : lang === "ru" ? "ответов" : "answered questions"}</p>
