@@ -13,7 +13,7 @@ const Input = z.object({
 
 const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
 
-const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
+// Preserve Markdown, multiplication symbols and TeX delimiters for the rich renderer.\nconst clean = (t: string) => t.trim();
 type Msg = { role: "user" | "assistant"; content: string };
 
 function promptForConversation(messages: Msg[], mode: StudyMode, locale: StudyLanguage) {
