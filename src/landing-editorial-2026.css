@@ -392,6 +392,11 @@ html.dark .sht-editorial {
   font-family:"Noto Sans Armenian","Noto Sans",system-ui,sans-serif;
   --sht-story-shadow:0 20px 50px -39px rgba(0,0,0,.6);
 }
+/* The paper, amber and installation panels remain visually light in both
+   modes. Give their inherited content explicit dark ink for contrast. */
+html.dark .sht-editorial :is(.sht-story-paper,.sht-story-gold,.sht-story-download) {
+  color:#173941;
+}
 html.dark .sht-editorial .sht-landing-nav {
   background:#172f37; border-color:#33515a; color:#edf7f4;
 }
