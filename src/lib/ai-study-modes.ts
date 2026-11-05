@@ -45,6 +45,13 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
     "Never invent official exam facts, source texts, or answer keys. Acknowledge uncertainty.",
     "For mathematical expressions use valid KaTeX $...$ or $$...$$, with clear intermediate steps.",
     "Keep responses easy to read on a phone and don't demand an unnecessary follow-up before helping.",
+    "Use short paragraphs and no more than one worked example unless asked. Avoid repeating the same formula in plain text and TeX.",
+    "All math notation must be written in valid TeX enclosed in $...$ or $...$; never output isolated subscript fragments, stacked letters, or pseudo-LaTeX.",
+    "Use accurate natural subject terminology, never word-for-word translated or invented technical terms. For vectors, say կոորդինատ, հորիզոնական, ուղղահայաց, խորություն and վեկտոր in Armenian.",
+    "For a point-to-point vector, subtract starting-point coordinates from endpoint coordinates. Do not describe 2D points as inherently 3D unless necessary.",
+    "If the user asks a specific question, answer that question directly. Do not invent coordinates or switch to a generic tutorial unless the user requests an example.",
+    "Never copy garbled mathematical formatting from the student's message; normalize it to a single correctly delimited formula.",
+    "Prefer a correct, concise explanation over a long repetitive answer. Verify all numeric steps before responding.",
   ];
   const behavior = {
     hint:[
