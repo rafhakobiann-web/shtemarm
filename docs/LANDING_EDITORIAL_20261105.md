@@ -37,3 +37,14 @@ The requested **two original questions per section and two complete English text
 - [ ] Verify public deployed `/downloads/shtemarm-android.apk` and manifest both return correct bytes (not SPA HTML/404), match SHA-256, and install on a test Android device.
 - [ ] Verify Netlify / and /download runtime routes. A deploy success status alone does not prove the pages function.
 - [ ] No merge or Production/Lovable publish until actual QA is complete.
+
+## Nov 5 — full-page Android screenshot feedback and fix
+The user-provided dark-mode Android screenshots demonstrated that the old Liquid Glass styles still dominated the lower landing chapters, and the dark phone preview had unreadable navy cards with dark text. A previous dark-mode fix only covered top-level colors and did not win the nested `html[data-surface="liquid"]` selectors.
+
+**Changes in `src/landing-editorial-2026.css`:**
+- Component-specific, dark-mode Liquid Glass overrides for the phone's screen, heading, progress, navigation arrows, option cards, selected state, icons, and caption. Approximate text contrast ratios against final backgrounds: option 8.26:1, selected option 8.74:1, focus text 9.61:1.
+- Full landing-only editorial redesign, not just hero: cream graph-paper benefits with alternating gold/mint/white/teal cards; deep teal chapter with light subject tiles; amber three-step chapter; pale FAQ with clear disclosure contrast; deep teal CTA with amber button; readable footer.
+- Extra narrow-device rules (767px and 350px), plus keyboard focus and reduced motion support. Core signed-in styles remain untouched.
+- Source-level regression checks in `landing-editorial-2026.test.ts` cover every redesigned chapter and the nested dark phone controls.
+
+**Verification status:** CSS source was checked for balanced braces and validated for the above sampled color contrasts. A successful Netlify/Vercel deployment is not a browser/screenshot test. Physical Android light/dark walkthrough and GitHub CI execution are still mandatory before merge or publication.
