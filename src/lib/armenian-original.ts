@@ -134,7 +134,7 @@ export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[], as
         !Array.isArray(assertions.groups) || assertions.groups.length !== 48) {
       throw new Error("«Պնդումների փունջ» բնօրինակ 48 խմբերը թերի են։");
     }
-    const units: Unit[] = assertions.groups.map((group, i) => {
+    const units: Unit[] = assertions.groups.map((group, i): Unit => {
       if (group.n !== String(i + 1) || group.questions.length !== 6 ||
           group.questions.some((q, index) =>
             q.n !== String(index + 1) ||
