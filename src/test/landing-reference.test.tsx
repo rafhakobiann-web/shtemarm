@@ -11,7 +11,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 import { LandingHeroPhone, LandingShowcase } from "@/components/LandingShowcase";
 
-describe("video-inspired public landing", () => {
+describe("Shtemarm-native interactive public landing", () => {
   it("shows a real tappable phone preview, not a static phone image", () => {
     render(<LandingHeroPhone lang="en" />);
     const english = screen.getByRole("button", { name: "English" });
@@ -19,7 +19,9 @@ describe("video-inspired public landing", () => {
     expect(english.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(math);
     expect(math.getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getAllByRole("link", { name: /Mathematics.*Open/ })).toHaveLength(3);
+    expect(screen.getAllByRole("link", { name: /Mathematics.*Open/ })).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "Armenian" }));
+    expect(screen.getAllByRole("link", { name: /Armenian.*Open/ })).toHaveLength(4);
   });
 
   it("lets anonymous visitors solve a local sample without touching real results", () => {
@@ -48,9 +50,19 @@ describe("video-inspired public landing", () => {
     const root = readFileSync("src/routes/__root.tsx", "utf8");
     expect(route).toContain('className="sht-landing ref-landing"');
     expect(route).toContain("<LandingShowcase lang={lang} />");
+    const showcase = readFileSync("src/components/LandingShowcase.tsx", "utf8");
+    expect(showcase).toContain("onPointerMove={handleCardMove}");
+    expect(showcase).toContain("Math"); // default phone demo includes math subject
+    expect(showcase).toContain("bookCounts");
     expect(root).toContain('href: landingReferenceCss');
     expect(css).toContain("html.dark .sht-landing.ref-landing");
     expect(css).toContain("prefers-reduced-motion:reduce");
     expect(css).toContain(".ref-island");
+    expect(css).toContain("var(--primary)");
+    expect(css).toContain("var(--foreground)");
+    expect(css).toContain("var(--card)");
+    expect(css).toContain("ref-motion-ready");
+    expect(css).toContain('data-dragging="true"');
+    expect(css).toContain("prefers-reduced-transparency:reduce");
   });
 });
