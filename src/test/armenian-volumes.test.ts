@@ -23,4 +23,30 @@ describe("Four Armenian language study volumes", () => {
       expect(count).toBeGreaterThanOrEqual(10);
     });
   }
+  it("matches the supplied four-volume PDF tables of contents, without inventing headings", () => {
+    const index = JSON.parse(readFileSync("public/data/armenian-source-index.json", "utf8"));
+    const titles = [
+      "Հնչյունաբանություն", "Բառագիտություն", "Ձևաբանություն", "Շարահյուսություն",
+      "Կապակցված խոսք", "Ընդհանուր գիտելիքներ հայոց լեզվի մասին", "Ոճագիտություն", "Գրականություն",
+    ];
+    const pages = [
+      [5, 27, 49, 98, 173, 187, 189, 194],
+      [5, 30, 52, 74, 170, 184, 188, 202],
+      [5, 35, 61, 97, 169, 176, 182, 190],
+      [6, 38, 69, 111, 186, 198, 203, 210],
+    ];
+    expect(index.volumes).toHaveLength(4);
+    for (const [i, volume] of index.volumes.entries()) {
+      expect(volume.volume).toBe(i + 1);
+      expect(volume.totalPages).toBe(256);
+      expect(volume.sections.map((section: { title: string }) => section.title)).toEqual(titles);
+      expect(volume.sections.map((section: { pdfPage: number }) => section.pdfPage)).toEqual(pages[i]);
+      expect(volume.sections.every((section: { verifiedTitle: boolean }) => section.verifiedTitle)).toBe(true);
+    }
+  });
+
+  it("does not misrepresent Shtemarm-authored practice as official PDF transcriptions", () => {
+    expect(ARMENIAN_BOOKS.every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
+  });
+
 });
