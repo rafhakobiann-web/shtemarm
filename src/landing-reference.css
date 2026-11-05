@@ -83,12 +83,12 @@
 /* The phone is composed of real HTML; the notch, buttons and study cards are not a screenshot. */
 .ref-device { position:relative; width:min(100%,22rem); margin-inline:auto; flex-shrink:0; color:#152333; filter:drop-shadow(0 24px 30px rgba(16,36,44,.19)); transition:transform .4s cubic-bezier(.2,.8,.2,1); }
 .ref-device-frame { position:relative; padding: .6rem; background:linear-gradient(115deg,#0c151e,#45505b 33%,#10171f 53%,#27303a); border:2px solid #83909b; border-radius:3.6rem; box-shadow:inset 0 0 0 1px #0b131b,0 0 0 2px rgba(255,255,255,.35); overflow:hidden; }
-.ref-device-status { position:absolute; z-index:2; top:1.05rem; left:1.9rem; right:1.9rem; height:1.55rem; display:flex; align-items:center; justify-content:space-between; color:#fff; font-size:.7rem; font-weight:850; pointer-events:none; }
+.ref-device-status { position:absolute; z-index:2; top:1.05rem; left:1.9rem; right:1.9rem; height:1.55rem; display:flex; align-items:center; justify-content:space-between; color:#162b36; font-size:.7rem; font-weight:850; pointer-events:none; }
 .ref-device-status .ref-island { position:absolute; width:32%; height:1.5rem; left:34%; top:-.14rem; background:#060809; border-radius:99px; box-shadow:0 0 0 1px rgba(130,140,150,.25); }
 .ref-device-status .ref-signal { white-space:nowrap; letter-spacing:-.12em; }
 .ref-device-screen { min-height:32rem; max-height:33rem; overflow:hidden; background:#f5f7fa; border-radius:3rem; padding:3.7rem .65rem 2.4rem; }
 .ref-home-indicator { position:absolute; bottom:.9rem; left:50%; transform:translateX(-50%); width:33%; height:.23rem; border-radius:999px; background:#111a20; pointer-events:none; }
-.ref-hero-phone .ref-device-screen { background:#f6f8fc; padding-inline:0; padding-bottom:0; }
+.ref-hero-phone .ref-device-screen { background:linear-gradient(to bottom,#4b6b7a 0 12rem,#f6f8fc 12rem); padding-inline:0; padding-bottom:0; }
 .ref-hero-phone .ref-device-status { color:white; }
 .ref-hero-phone .ref-device-status .ref-signal { color:white; }
 .ref-phone-top { display:flex; align-items:center; justify-content:space-between; padding: .5rem 1.2rem .75rem; background:#4b6b7a; color:#fff; }
