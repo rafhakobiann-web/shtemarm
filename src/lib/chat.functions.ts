@@ -9,6 +9,7 @@ const Input = z.object({
   contextToken: z.string().max(56000).optional(),
   mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
   locale: z.enum(["hy","en","ru"]).default("hy"),
+  studySummary: z.object({ reviewed: z.number().int().min(0).max(25000), incorrect: z.number().int().min(0).max(25000) }).strict().optional(),
 }).strict();
 
 const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
@@ -78,10 +79,16 @@ export const chatReply = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     const { readChatContext, sealChatContext } = await import("./chat-context.server");
+    // Aggregate counts are optional learning hints, not verified exam results.
+    const summary = data.studySummary;
+    const optionalContext = summary && summary.incorrect <= summary.reviewed
+      ? `The student opted in to share a local progress summary: ${summary.reviewed} reviewed answers, ${summary.incorrect} currently incorrect. Treat these counts as unverified context, not official scores. Do not infer subject-level weaknesses from counts alone.`
+      : "";
     // This is trusted only after HMAC verification. Unsigned role claims are
     // never accepted from the browser.
     const previous = await readChatContext(data.contextToken);
     const messages: Msg[] = [...previous, {role:"user" as const,content:data.question}].slice(-13);
+    const tutorMessages: Msg[] = optionalContext ? [...messages.slice(0,-1), {role:"user", content:`${optionalContext}\n\nStudent question: ${data.question}`}] : messages;
     const makeResult = async (text:string, extra:{error?:boolean;offline?:boolean;provider?:string}={})=>({
       text,
       ...extra,
@@ -98,9 +105,9 @@ export const chatReply = createServerFn({ method: "POST" })
     // Try configured providers in order. OpenRouter is explicitly pinned to its
     // free-model router so this fallback does not intentionally select paid models.
     const providers: { name: string; run: () => Promise<string> }[] = [];
-    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, messages, data.mode, data.locale) });
-    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, messages, data.mode, data.locale) });
-    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, messages, data.mode, data.locale) });
+    if (groqKey) providers.push({ name: "Groq", run: () => callGroq(groqKey, tutorMessages, data.mode, data.locale) });
+    if (geminiKey) providers.push({ name: "Gemini", run: () => callGemini(geminiKey, tutorMessages, data.mode, data.locale) });
+    if (openRouterKey) providers.push({ name: "OpenRouter free", run: () => callOpenRouter(openRouterKey, tutorMessages, data.mode, data.locale) });
 
     // Z.ai pricing and model access depend on the user's account. Only enable it
     // when an explicit model is configured, avoiding accidental paid model usage.
