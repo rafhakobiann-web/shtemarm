@@ -1,0 +1,980 @@
+[
+ {
+  "id": 1,
+  "subject": "English",
+  "title": "Շտեմարան 1",
+  "sub": "Մաս I · 2017",
+  "dataFile": "/data/book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "",
+    "units": 50,
+    "questions": 375
+   },
+   {
+    "n": 2,
+    "title": "",
+    "units": 70,
+    "questions": 250
+   },
+   {
+    "n": 3,
+    "title": "",
+    "units": 300,
+    "questions": 300
+   },
+   {
+    "n": 4,
+    "title": "",
+    "units": 30,
+    "questions": 146
+   },
+   {
+    "n": 5,
+    "title": "",
+    "units": 160,
+    "questions": 160
+   },
+   {
+    "n": 6,
+    "title": "",
+    "units": 30,
+    "questions": 30
+   },
+   {
+    "n": 7,
+    "title": "",
+    "units": 35,
+    "questions": 35
+   },
+   {
+    "n": 8,
+    "title": "",
+    "units": 80,
+    "questions": 80
+   },
+   {
+    "n": 9,
+    "title": "",
+    "units": 15,
+    "questions": 15
+   },
+   {
+    "n": 10,
+    "title": "",
+    "units": 30,
+    "questions": 30
+   },
+   {
+    "n": 11,
+    "title": "",
+    "units": 60,
+    "questions": 60
+   },
+   {
+    "n": 12,
+    "title": "",
+    "units": 40,
+    "questions": 40
+   },
+   {
+    "n": 13,
+    "title": "",
+    "units": 80,
+    "questions": 80
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "subject": "English",
+  "title": "Շտեմարան 2",
+  "sub": "Մաս II · 2017",
+  "dataFile": "/data/book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "",
+    "units": 40,
+    "questions": 297
+   },
+   {
+    "n": 2,
+    "title": "",
+    "units": 70,
+    "questions": 266
+   },
+   {
+    "n": 3,
+    "title": "",
+    "units": 296,
+    "questions": 296
+   },
+   {
+    "n": 4,
+    "title": "",
+    "units": 30,
+    "questions": 143
+   },
+   {
+    "n": 5,
+    "title": "",
+    "units": 158,
+    "questions": 158
+   },
+   {
+    "n": 6,
+    "title": "",
+    "units": 29,
+    "questions": 29
+   },
+   {
+    "n": 7,
+    "title": "",
+    "units": 49,
+    "questions": 49
+   },
+   {
+    "n": 8,
+    "title": "",
+    "units": 60,
+    "questions": 60
+   },
+   {
+    "n": 9,
+    "title": "",
+    "units": 15,
+    "questions": 15
+   },
+   {
+    "n": 10,
+    "title": "",
+    "units": 30,
+    "questions": 30
+   },
+   {
+    "n": 11,
+    "title": "",
+    "units": 69,
+    "questions": 69
+   },
+   {
+    "n": 12,
+    "title": "",
+    "units": 37,
+    "questions": 37
+   },
+   {
+    "n": 13,
+    "title": "",
+    "units": 60,
+    "questions": 60
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "subject": "English",
+  "title": "Շտեմարան 3",
+  "sub": "Մաս III · 2018",
+  "dataFile": "/data/book3.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "",
+    "units": 35,
+    "questions": 250
+   },
+   {
+    "n": 2,
+    "title": "",
+    "units": 40,
+    "questions": 140
+   },
+   {
+    "n": 3,
+    "title": "",
+    "units": 293,
+    "questions": 293
+   },
+   {
+    "n": 4,
+    "title": "",
+    "units": 19,
+    "questions": 91
+   },
+   {
+    "n": 5,
+    "title": "",
+    "units": 151,
+    "questions": 151
+   },
+   {
+    "n": 6,
+    "title": "",
+    "units": 20,
+    "questions": 20
+   },
+   {
+    "n": 7,
+    "title": "",
+    "units": 46,
+    "questions": 46
+   },
+   {
+    "n": 8,
+    "title": "",
+    "units": 60,
+    "questions": 60
+   },
+   {
+    "n": 9,
+    "title": "",
+    "units": 20,
+    "questions": 20
+   },
+   {
+    "n": 10,
+    "title": "",
+    "units": 40,
+    "questions": 40
+   },
+   {
+    "n": 11,
+    "title": "",
+    "units": 70,
+    "questions": 70
+   },
+   {
+    "n": 12,
+    "title": "",
+    "units": 40,
+    "questions": 40
+   },
+   {
+    "n": 13,
+    "title": "",
+    "units": 60,
+    "questions": 60
+   }
+  ]
+ },
+ {
+  "id": 21,
+  "subject": "Armenian History",
+  "title": "Հայոց պատմություն",
+  "sub": "Գիրք առաջին",
+  "dataFile": "/data/history-book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "1. Տարեթվեր",
+    "units": 4,
+    "questions": 445
+   },
+   {
+    "n": 2,
+    "title": "2. Փաստեր և երևույթներ",
+    "units": 4,
+    "questions": 523
+   },
+   {
+    "n": 3,
+    "title": "3. Աշխատանք սկզբնաղբյուրների հետ",
+    "units": 4,
+    "questions": 42
+   },
+   {
+    "n": 4,
+    "title": "4. Պատմական տերմիններ և հասկացություններ",
+    "units": 4,
+    "questions": 78
+   },
+   {
+    "n": 5,
+    "title": "5. Իրադարձությունների պատճառներ և հետևանքներ",
+    "units": 6,
+    "questions": 56
+   },
+   {
+    "n": 6,
+    "title": "6. Իրադարձությունների ժամանակագրություն",
+    "units": 72,
+    "questions": 192
+   },
+   {
+    "n": 7,
+    "title": "7. Համապատասխանեցում",
+    "units": 15,
+    "questions": 121
+   },
+   {
+    "n": 8,
+    "title": "8. Փաստարկներ և պնդումներ",
+    "units": 124,
+    "questions": 200
+   }
+  ]
+ },
+ {
+  "id": 22,
+  "subject": "Armenian History",
+  "title": "Հայոց պատմություն",
+  "sub": "Գիրք երկրորդ",
+  "dataFile": "/data/history-book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "1. Տարեթվեր",
+    "units": 4,
+    "questions": 259
+   },
+   {
+    "n": 2,
+    "title": "2. Փաստեր և երևույթներ",
+    "units": 4,
+    "questions": 328
+   },
+   {
+    "n": 3,
+    "title": "3. Աշխատանք սկզբնաղբյուրների հետ",
+    "units": 4,
+    "questions": 61
+   },
+   {
+    "n": 4,
+    "title": "4. Պատմական տերմիններ և հասկացություններ",
+    "units": 4,
+    "questions": 83
+   },
+   {
+    "n": 5,
+    "title": "5. Իրադարձությունների պատճառներ և հետևանքներ",
+    "units": 9,
+    "questions": 88
+   },
+   {
+    "n": 6,
+    "title": "6. Իրադարձությունների ժամանակագրություն",
+    "units": 21,
+    "questions": 144
+   },
+   {
+    "n": 7,
+    "title": "7. Համապատասխանեցում",
+    "units": 10,
+    "questions": 94
+   },
+   {
+    "n": 8,
+    "title": "8. Փաստարկներ և պնդումներ",
+    "units": 19,
+    "questions": 130
+   }
+  ]
+ },
+ {
+  "id": 23,
+  "subject": "Armenian History",
+  "title": "Հայոց պատմություն",
+  "sub": "Գիրք երրորդ",
+  "dataFile": "/data/history-book3.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "1. Տարեթվեր",
+    "units": 4,
+    "questions": 98
+   },
+   {
+    "n": 2,
+    "title": "2. Փաստեր և երևույթներ",
+    "units": 4,
+    "questions": 104
+   },
+   {
+    "n": 3,
+    "title": "3. Աշխատանք սկզբնաղբյուրների հետ",
+    "units": 4,
+    "questions": 20
+   },
+   {
+    "n": 4,
+    "title": "4. Պատմական տերմիններ և հասկացություններ",
+    "units": 8,
+    "questions": 39
+   },
+   {
+    "n": 5,
+    "title": "5. Իրադարձությունների պատճառներ և հետևանքներ",
+    "units": 6,
+    "questions": 34
+   },
+   {
+    "n": 6,
+    "title": "6. Իրադարձությունների ժամանակագրություն",
+    "units": 92,
+    "questions": 103
+   },
+   {
+    "n": 7,
+    "title": "7. Համապատասխանեցում",
+    "units": 14,
+    "questions": 58
+   },
+   {
+    "n": 8,
+    "title": "8. Փաստարկներ և պնդումներ",
+    "units": 137,
+    "questions": 149
+   }
+  ]
+ },
+ {
+  "id": 31,
+  "subject": "Biology",
+  "title": "Կենսաբանություն",
+  "sub": "Մաս առաջին",
+  "dataFile": "/data/bio-book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Կենդանի օրգանիզմների բազմազանությունը",
+    "units": 153,
+    "questions": 153
+   },
+   {
+    "n": 2,
+    "title": "Մարդ",
+    "units": 379,
+    "questions": 379
+   },
+   {
+    "n": 3,
+    "title": "Կենդանի նյութի քիմիական կազմավորվածությունը",
+    "units": 299,
+    "questions": 299
+   },
+   {
+    "n": 4,
+    "title": "Բջջի կենսական փուլերը",
+    "units": 313,
+    "questions": 313
+   },
+   {
+    "n": 5,
+    "title": "Էվոլյուցիոն տեսություն",
+    "units": 172,
+    "questions": 172
+   },
+   {
+    "n": 6,
+    "title": "Խնդիրներ",
+    "units": 205,
+    "questions": 281
+   }
+  ]
+ },
+ {
+  "id": 32,
+  "subject": "Biology",
+  "title": "Կենսաբանություն",
+  "sub": "Մաս երկրորդ",
+  "dataFile": "/data/bio-book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "1",
+    "units": 1,
+    "questions": 177
+   },
+   {
+    "n": 2,
+    "title": "2",
+    "units": 1,
+    "questions": 282
+   },
+   {
+    "n": 3,
+    "title": "3",
+    "units": 1,
+    "questions": 208
+   },
+   {
+    "n": 4,
+    "title": "4",
+    "units": 1,
+    "questions": 229
+   },
+   {
+    "n": 5,
+    "title": "5",
+    "units": 1,
+    "questions": 174
+   }
+  ]
+ },
+ {
+  "id": 33,
+  "subject": "Biology",
+  "title": "Կենսաբանություն",
+  "sub": "Մաս III",
+  "dataFile": "/data/bio-book3.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Կենդանի օրգանիզմների բազմազանությունը",
+    "units": 182,
+    "questions": 182
+   },
+   {
+    "n": 2,
+    "title": "Մարդ",
+    "units": 210,
+    "questions": 210
+   },
+   {
+    "n": 3,
+    "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
+    "units": 227,
+    "questions": 227
+   },
+   {
+    "n": 4,
+    "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
+    "units": 218,
+    "questions": 218
+   },
+   {
+    "n": 5,
+    "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+    "units": 108,
+    "questions": 108
+   }
+  ]
+ },
+ {
+  "id": 34,
+  "subject": "Biology",
+  "title": "Կենսաբանություն",
+  "sub": "Մաս IV",
+  "dataFile": "/data/bio-book4.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Կենդանի օրգանիզմների բազմազանությունը",
+    "units": 176,
+    "questions": 176
+   },
+   {
+    "n": 2,
+    "title": "Մարդ",
+    "units": 133,
+    "questions": 133
+   },
+   {
+    "n": 3,
+    "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
+    "units": 182,
+    "questions": 182
+   },
+   {
+    "n": 4,
+    "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
+    "units": 158,
+    "questions": 158
+   },
+   {
+    "n": 5,
+    "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+    "units": 128,
+    "questions": 128
+   }
+  ]
+ },
+ {
+  "id": 41,
+  "subject": "Armenian Language",
+  "title": "Հայոց լեզու և հայ գրականություն",
+  "sub": "Մաս I",
+  "dataFile": "/data/armenian-book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Հնչյունաբանություն և բառագիտություն",
+    "units": 1,
+    "questions": 16
+   },
+   {
+    "n": 2,
+    "title": "Ձևաբանություն",
+    "units": 1,
+    "questions": 16
+   },
+   {
+    "n": 3,
+    "title": "Շարահյուսություն և կետադրություն",
+    "units": 1,
+    "questions": 16
+   },
+   {
+    "n": 4,
+    "title": "Հայ գրականություն",
+    "units": 1,
+    "questions": 16
+   },
+   {
+    "n": 5,
+    "title": "Կապակցված խոսք",
+    "units": 1,
+    "questions": 8
+   },
+   {
+    "n": 6,
+    "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
+    "units": 1,
+    "questions": 8
+   },
+   {
+    "n": 7,
+    "title": "Ոճագիտություն",
+    "units": 1,
+    "questions": 8
+   },
+   {
+    "n": 8,
+    "title": "Գրականություն",
+    "units": 1,
+    "questions": 8
+   }
+  ]
+ },
+ {
+  "id": 42,
+  "subject": "Armenian Language",
+  "title": "Հայոց լեզու և հայ գրականություն",
+  "sub": "Մաս II",
+  "dataFile": "/data/armenian-book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Ուղղագրություն և կետադրություն",
+    "units": 1,
+    "questions": 10
+   }
+  ]
+ },
+ {
+  "id": 43,
+  "subject": "Armenian Language",
+  "title": "Հայոց լեզու և հայ գրականություն",
+  "sub": "Մաս III",
+  "dataFile": "/data/armenian-book3.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Ձևաբանություն և շարահյուսություն",
+    "units": 1,
+    "questions": 10
+   }
+  ]
+ },
+ {
+  "id": 44,
+  "subject": "Armenian Language",
+  "title": "Հայոց լեզու և հայ գրականություն",
+  "sub": "Մաս IV",
+  "dataFile": "/data/armenian-book4.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Բառագիտություն և ոճաբանություն",
+    "units": 1,
+    "questions": 10
+   }
+  ]
+ },
+ {
+  "id": 51,
+  "subject": "Physics",
+  "title": "Ֆիզիկա",
+  "sub": "Ուսումնական ինքնաստուգում",
+  "dataFile": "/data/original-physics.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Մեխանիկա",
+    "units": 4,
+    "questions": 4
+   },
+   {
+    "n": 2,
+    "title": "Էներգիա",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 3,
+    "title": "Ջերմային երևույթներ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 4,
+    "title": "Էլեկտրականություն",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 5,
+    "title": "Օպտիկա",
+    "units": 2,
+    "questions": 2
+   }
+  ]
+ },
+ {
+  "id": 52,
+  "subject": "Chemistry",
+  "title": "Քիմիա",
+  "sub": "Ուսումնական ինքնաստուգում",
+  "dataFile": "/data/original-chemistry.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Ատոմի կառուցվածք",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 2,
+    "title": "Պարբերական համակարգ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 3,
+    "title": "Քիմիական կապ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 4,
+    "title": "Թթուներ և հիմքեր",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 5,
+    "title": "Ռեակցիաներ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 6,
+    "title": "Օրգանական քիմիա",
+    "units": 2,
+    "questions": 2
+   }
+  ]
+ },
+ {
+  "id": 53,
+  "subject": "Geography",
+  "title": "Աշխարհագրություն",
+  "sub": "Ուսումնական ինքնաստուգում",
+  "dataFile": "/data/original-geography.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Աշխարհագրական կոորդինատներ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 2,
+    "title": "Քարտեզագրություն",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 3,
+    "title": "Երկրի կառուցվածք",
+    "units": 1,
+    "questions": 1
+   },
+   {
+    "n": 4,
+    "title": "Մթնոլորտ",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 5,
+    "title": "Ջրոլորտ",
+    "units": 1,
+    "questions": 1
+   },
+   {
+    "n": 6,
+    "title": "Հայաստանի աշխարհագրություն",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 7,
+    "title": "Բնակչություն",
+    "units": 1,
+    "questions": 1
+   },
+   {
+    "n": 8,
+    "title": "Տնտեսական աշխարհագրություն",
+    "units": 1,
+    "questions": 1
+   }
+  ]
+ },
+ {
+  "id": 54,
+  "subject": "Russian",
+  "title": "Ռուսաց լեզու",
+  "sub": "Ուսումնական ինքնաստուգում",
+  "dataFile": "/data/original-russian.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Орфография",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 2,
+    "title": "Лексика",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 3,
+    "title": "Морфология",
+    "units": 3,
+    "questions": 3
+   },
+   {
+    "n": 4,
+    "title": "Синтаксис",
+    "units": 2,
+    "questions": 2
+   },
+   {
+    "n": 5,
+    "title": "Пунктуация",
+    "units": 1,
+    "questions": 1
+   },
+   {
+    "n": 6,
+    "title": "Грамматика",
+    "units": 2,
+    "questions": 2
+   }
+  ]
+ },
+ {
+  "id": 61,
+  "subject": "Physics",
+  "title": "Ֆիզիկա",
+  "sub": "Մաս I",
+  "dataFile": "/data/physics-book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Կինեմատիկա",
+    "units": 13,
+    "questions": 17
+   },
+   {
+    "n": 2,
+    "title": "Դինամիկա և ուժեր",
+    "units": 14,
+    "questions": 23
+   },
+   {
+    "n": 3,
+    "title": "Աշխատանք, էներգիա և հզորություն",
+    "units": 13,
+    "questions": 17
+   },
+   {
+    "n": 4,
+    "title": "Հեղուկներ և ջերմային երևույթներ",
+    "units": 15,
+    "questions": 23
+   }
+  ]
+ },
+ {
+  "id": 62,
+  "subject": "Physics",
+  "title": "Ֆիզիկա",
+  "sub": "Մաս II",
+  "dataFile": "/data/physics-book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Մոլեկուլային ֆիզիկա և ջերմադինամիկա",
+    "units": 13,
+    "questions": 17
+   },
+   {
+    "n": 2,
+    "title": "Էլեկտրականություն և շղթաներ",
+    "units": 14,
+    "questions": 23
+   },
+   {
+    "n": 3,
+    "title": "Մագնիսական դաշտ, տատանումներ և ալիքներ",
+    "units": 13,
+    "questions": 17
+   },
+   {
+    "n": 4,
+    "title": "Երկրաչափական օպտիկա և ատոմի ֆիզիկա",
+    "units": 15,
+    "questions": 23
+   }
+  ]
+ },
+ {
+  "id": 63,
+  "subject": "Physics",
+  "title": "Ֆիզիկա · Բնօրինակ շտեմարան",
+  "sub": "Մաս I",
+  "dataFile": "/data/physics-original-book1.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Մեխանիկա · Կինեմատիկա",
+    "units": 26,
+    "questions": 26
+   }
+  ]
+ },
+ {
+  "id": 64,
+  "subject": "Physics",
+  "title": "Ֆիզիկա · Բնօրինակ շտեմարան",
+  "sub": "Մաս II",
+  "dataFile": "/data/physics-original-book2.json",
+  "sections": [
+   {
+    "n": 1,
+    "title": "Մեխանիկա · Կինեմատիկա",
+    "units": 25,
+    "questions": 25
+   }
+  ]
+ }
+]
