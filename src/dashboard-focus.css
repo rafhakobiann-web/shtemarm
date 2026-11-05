@@ -1,0 +1,67 @@
+/* Dashboard completion: restrained Shtemarm Academy surfaces and accessible navigation.
+   Scoped to the signed-in dashboard. No external assets or per-frame effects. */
+.dashboard-focus {
+  --dashboard-glow: color-mix(in srgb, var(--primary) 13%, transparent);
+  min-width: 0;
+}
+.dashboard-focus-glow {
+  position: absolute;
+  width: min(35rem, 65vw);
+  aspect-ratio: 1;
+  right: -12%;
+  top: -170%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--dashboard-glow), transparent 69%);
+}
+.dashboard-focus .academy-bento {
+  min-width: 0;
+  border-color: color-mix(in srgb, var(--primary) 14%, var(--border));
+}
+.dashboard-focus a:focus-visible,
+.dashboard-library-filters button:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.dashboard-library-filters {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 35%, transparent) transparent;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+.dashboard-library-filters button {
+  scroll-snap-align: start;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+.dashboard-library-filters button[aria-pressed="true"] {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .dashboard-focus a {
+    transition: transform .22s cubic-bezier(.2,.85,.2,1), border-color .2s ease, background-color .2s ease;
+  }
+  .dashboard-focus a:hover {
+    transform: translateY(-2px);
+  }
+}
+@media (max-width: 640px) {
+  .dashboard-focus-glow { top: -15%; right: -45%; }
+  .dashboard-focus .academy-bento { border-radius: 1.15rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-focus a, .dashboard-library-filters button {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+html.user-reduced-motion .dashboard-focus a,
+html.user-reduced-motion .dashboard-library-filters button {
+  animation: none !important;
+  transition: none !important;
+}
+html.user-high-contrast .dashboard-focus .academy-bento,
+html.user-high-contrast .dashboard-library-filters button {
+  border-color: var(--foreground);
+}

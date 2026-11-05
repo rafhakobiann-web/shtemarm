@@ -18,6 +18,7 @@ import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
 import studyComfortCss from "../study-comfort.css?url";
 import landingV3Css from "../landing-v3.css?url";
+import dashboardFocusCss from "../dashboard-focus.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -142,7 +143,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: interactionMotionCss,
       },
       { rel: "stylesheet", href: studyComfortCss },
-      { rel: "stylesheet", href: landingV3Css },
+      { rel: "stylesheet", href: landingV3Css }
+      { rel: "stylesheet", href: dashboardFocusCss },,
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -225,7 +227,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
     if(status==="signed-out"&&!isPublic){void navigate({to:"/auth",replace:true});return;}
     if(status==="signed-in"&&userId){
       const onboarded=!!readOnboarding(userId);
-      if(!onboarded&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
+      if(!onboarded&&!isPublic&&pathname!=="/onboarding"){void navigate({to:"/onboarding",replace:true});return;}
       if(onboarded&&pathname==="/onboarding"){void navigate({to:"/dashboard",replace:true});return;}
     }
   },[status,userId,isPublic,pathname,navigate,onboardingVersion]);

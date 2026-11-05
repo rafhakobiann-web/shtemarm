@@ -1,0 +1,31 @@
+name: Verify signed-in landing and dashboard
+on:
+  pull_request:
+    paths:
+      - 'src/routes/index.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/routes/dashboard.tsx'
+      - 'src/components/DashboardFocus.tsx'
+      - 'src/components/LandingLabV3.tsx'
+      - 'src/components/AppHeader.tsx'
+      - 'src/dashboard-focus.css'
+      - 'src/lib/landing-session.ts'
+      - 'src/test/landing-session.test.ts'
+      - 'src/test/dashboard-focus.test.tsx'
+      - '.github/workflows/verify-landing-dashboard.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Test auth boundaries, navigation, dashboard and learning UI
+        run: bunx vitest run src/test/landing-session.test.ts src/test/dashboard-focus.test.tsx src/test/onboarding.test.ts src/test/academy-design.test.ts src/test/adaptive-design.test.ts src/test/responsive-shell-regression.test.ts src/test/landing-reference.test.tsx
+      - name: Typecheck
+        run: bunx tsc --noEmit
+      - name: Build website
+        run: bun run build
