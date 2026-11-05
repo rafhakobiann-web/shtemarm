@@ -87,7 +87,8 @@ function StudyPlanPage() {
     setSettings(next);
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* no storage */ }
   }
-  const tasks = useMemo(() => buildStudyPlan(progress, mistakes, settings.subjects, settings.minutes), [progress,mistakes,settings]);
+  const recommendedTasks = useMemo(() => buildStudyPlan(progress, mistakes, settings.subjects, settings.minutes), [progress,mistakes,settings]);
+  const tasks = settings.activeDays.includes(new Date().getDay()) ? recommendedTasks : [];
   const week = weeklyPersonalPlan(progress,mistakes,settings,done);
   const day = todayLocal();
   const completed = done[day] ?? [];
@@ -130,6 +131,7 @@ function StudyPlanPage() {
         <h2 className="flex items-center gap-2 text-xl font-black"><CalendarCheck className="size-5 text-primary"/>{tr("Այսօրվա պլանը","Today's plan","План на сегодня")}</h2>
         <span className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold">{finished}/{tasks.length}</span>
       </div>
+      {hydrated && !settings.activeDays.includes(new Date().getDay()) && <p className="rounded-xl border bg-muted/30 p-4 text-sm">{tr("Այսօր հանգստի օր է։ Կարող ես փոխել ուսման օրերը՝ առանց տուգանքի։","Today is a rest day. Change your study days anytime without penalties.","Сегодня день отдыха. Учебные дни можно менять без штрафов.")}</p>}
       {!hydrated ? <p role="status">{tr("Բեռնվում է…","Loading…","Загрузка…")}</p> : tasks.length === 0
         ? <div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground">{tr("Ընտրիր առնվազն մեկ առարկա՝ պլանը կազմելու համար։","Select at least one subject to create your plan.","Выберите хотя бы один предмет.")}</div>
         : <div className="grid gap-3 md:grid-cols-2">{tasks.map((task,i) => {
