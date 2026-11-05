@@ -128,6 +128,7 @@ export function LandingHeroPhone({ lang }: { lang: Lang }) {
   const w = WORDS[lang];
   const [subject, setSubject] = useState<"english" | "math" | "armenian">("english");
   const names = { english: w.english, math: w.math, armenian: w.armenian };
+  const bookCounts = { english: 3, math: 2, armenian: 4 } as const;
   return (
     <PhoneShell className="ref-hero-phone">
       <div className="ref-phone-top">
@@ -142,11 +143,11 @@ export function LandingHeroPhone({ lang }: { lang: Lang }) {
       <div className="ref-phone-content">
         <h3>{w.books}</h3>
         <div className="ref-book-row">
-          {[1, 2, 3].map(n => (
+          {Array.from({ length: bookCounts[subject] }, (_, i) => i + 1).map(n => (
             <Link to="/auth" className={"ref-book ref-book-" + n} key={n} aria-label={names[subject] + " " + n + " · " + w.open}>
               <span className="ref-book-name">{names[subject]}</span>
               <span className="ref-book-type">{lang === "hy" ? "ՄԱՍ" : lang === "ru" ? "ЧАСТЬ" : "PART"}</span>
-              <strong>{["I", "II", "III"][n - 1]}</strong>
+              <strong>{["I", "II", "III", "IV"][n - 1]}</strong>
               <span className="ref-book-open">{w.open} ›</span>
             </Link>
           ))}
@@ -234,14 +235,42 @@ function ReadingPhone({ lang }: { lang: Lang }) {
 export function LandingShowcase({ lang }: { lang: Lang }) {
   const w = WORDS[lang];
   const [card, setCard] = useState(0);
-  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const swipeStart = useRef<{ pointerId: number; x: number; y: number } | null>(null);
   const words = [{ front: "curious", back: "eager to learn" }, { front: "improve", back: "to make better" }, { front: "achieve", back: "to reach a goal" }];
   const nextCard = () => setCard(current => (current + 1) % words.length);
   const previousCard = () => setCard(current => (current + words.length - 1) % words.length);
-  const handleCardDown = (event: PointerEvent<HTMLDivElement>) => { if (event.pointerType === "touch") swipeStart.current = { x: event.clientX, y: event.clientY }; };
+  const resetDrag = (node: HTMLDivElement) => {
+    node.style.setProperty("--drag-x", "0px");
+    node.style.setProperty("--drag-angle", "0deg");
+    node.removeAttribute("data-dragging");
+  };
+  const handleCardDown = (event: PointerEvent<HTMLDivElement>) => {
+    if ((event.pointerType !== "touch" && event.pointerType !== "pen") ||
+        (event.target instanceof Element && event.target.closest("button"))) return;
+    swipeStart.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+  const handleCardMove = (event: PointerEvent<HTMLDivElement>) => {
+    const start = swipeStart.current;
+    if (!start || event.pointerId !== start.pointerId) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    // Respect native vertical page scrolling. No forced pointer capture.
+    if (Math.abs(dx) < 7 || Math.abs(dx) <= Math.abs(dy) * 1.25) return;
+    const limited = Math.max(-75, Math.min(75, dx));
+    event.currentTarget.setAttribute("data-dragging", "true");
+    event.currentTarget.style.setProperty("--drag-x", limited + "px");
+    event.currentTarget.style.setProperty("--drag-angle", (limited / 24).toFixed(2) + "deg");
+  };
   const handleCardUp = (event: PointerEvent<HTMLDivElement>) => {
-    const start = swipeStart.current; swipeStart.current = null;
-    if (start && Math.abs(event.clientX - start.x) > 48 && Math.abs(event.clientY - start.y) < 80) nextCard();
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    resetDrag(event.currentTarget);
+    if (!start || event.pointerId !== start.pointerId) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+    if (dx < 0) nextCard();
+    else previousCard();
   };
   return (
     <>
@@ -294,10 +323,10 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
               ].map(({ Icon, title, desc }) => <div className="ref-tool" key={title}><Icon size={20} /><strong>{title}</strong><p>{desc}</p></div>)}
             </div>
           </div>
-          <div className="ref-story-visual ref-flashcard-stage" onPointerDown={handleCardDown} onPointerUp={handleCardUp} onPointerCancel={() => { swipeStart.current = null; }}>
+          <div className="ref-story-visual ref-flashcard-stage" onPointerDown={handleCardDown} onPointerMove={handleCardMove} onPointerUp={handleCardUp} onPointerCancel={event => { swipeStart.current = null; resetDrag(event.currentTarget); }}>
             <div className="ref-flashcard">
               <span><BookMarked size={17} />{w.flashcards}</span>
-              <strong key={card}>{words[card].front}</strong>
+              <strong key={card} aria-live="polite">{words[card].front}</strong>
               <p>{words[card].back}</p>
               <div className="ref-flashcard-nav"><button type="button" onClick={previousCard} aria-label="Previous flashcard"><ChevronLeft size={20} /></button><span>{card + 1} / 3</span><button type="button" onClick={nextCard} aria-label="Next flashcard"><ChevronRight size={20} /></button></div>
             </div>
