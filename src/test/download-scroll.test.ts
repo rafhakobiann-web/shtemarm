@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { PRIVATE_BETA_URL, safePublicApkUrl } from "@/lib/app-download";
+import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_RELEASE_URL, GITHUB_ANDROID_BETA_VERSION, safePublicApkUrl } from "@/lib/app-download";
 
 const source = (name: string) => readFileSync(name, "utf8");
 
@@ -30,17 +30,22 @@ describe("Shtemarm app download", () => {
     expect(download).toContain('appinstalled');
     expect(download).toContain("VITE_ANDROID_APK_URL");
   });
-  it("does not misrepresent the repository's private APK as a public file", () => {
+  it("uses a real published GitHub beta, never a Google Play store badge", () => {
     const download = source("src/routes/download.tsx");
-    // The private beta may be linked through Actions instead of an old tag.
-    // Never treat a workflow URL as a publicly downloadable APK.
-    expect(PRIVATE_BETA_URL).toMatch(
-      /^https:\/\/github\.com\/rafhakobiann-web\/shtemarm\/(?:actions\/workflows\/[a-z0-9-]+\.yml|releases\/tag\/v[\w.-]+)$/,
+    const landing = source("src/routes/index.tsx");
+    const showcase = source("src/components/LandingShowcase.tsx");
+    expect(GITHUB_ANDROID_BETA_VERSION).toBe("0.3.0-beta.4");
+    expect(GITHUB_ANDROID_APK_URL).toMatch(
+      /^https:\/\/github\.com\/rafhakobiann-web\/shtemarm\/releases\/download\/v0\.3\.0-beta\.4\/.+\.apk$/,
     );
-    expect(PRIVATE_BETA_URL).not.toMatch(/\.apk(?:[?#]|$)/);
-    expect(download).toContain("privateNote");
-    expect(download).toContain("invited");
-    expect(download).not.toContain('const GITHUB_TOKEN');
+    expect(safePublicApkUrl(GITHUB_ANDROID_APK_URL)).toBe(GITHUB_ANDROID_APK_URL);
+    expect(GITHUB_ANDROID_RELEASE_URL).toContain("/releases/tag/v0.3.0-beta.4");
+    expect(download).toContain("?? GITHUB_ANDROID_APK_URL");
+    expect(download).toContain('href={GITHUB_ANDROID_RELEASE_URL}');
+    expect(landing).toContain('to="/download"');
+    expect(showcase).toContain("href={GITHUB_ANDROID_APK_URL}");
+    expect(showcase).toContain("href={GITHUB_ANDROID_RELEASE_URL}");
+    expect([landing,showcase,download].join("\n")).not.toContain("play.google.com/store/apps");
     expect(source(".env.example")).toContain("VITE_ANDROID_APK_URL=");
   });
 });
