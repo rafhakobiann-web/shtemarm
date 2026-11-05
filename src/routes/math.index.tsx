@@ -477,8 +477,9 @@ function MathPage() {
   const maxCount = Math.max(1, Math.min(100, available));
   const shownCount = Math.min(count, maxCount);
 
-  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել թեստը։")}</p>;
+  const pageHeading = <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">{tx("Մաթեմատիկա · Քննությունների կազմիչ")}</h1>;
+  if (q.isLoading) return <div className="space-y-4 p-6">{pageHeading}<p role="status" className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p></div>;
+  if (q.error || !q.data) return <div className="space-y-4 p-6">{pageHeading}<p role="alert" className="text-destructive">{tx("Չհաջողվեց բեռնել թեստը։")}</p></div>;
   const index = q.data;
 
   function begin(items: Item[]) {
@@ -535,6 +536,7 @@ function MathPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-3xl">
+      {exam && <h1 className="sr-only">{tx("Մաթեմատիկա · Քննություն")}</h1>}
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> {tx("Գլխավոր էջ")}

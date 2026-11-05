@@ -32,6 +32,15 @@ describe("SEO and accessible page headings", () => {
     expect(study.match(/<h1\b/g)?.length).toBe(1);
   });
 
+  it("gives the math exam page an H1 during loading, errors, and an active exam", () => {
+    const math = source("src/routes/math.index.tsx");
+    expect(math).toContain('const pageHeading = <h1');
+    expect(math).toContain('role="status"');
+    expect(math).toContain('role="alert"');
+    expect(math).toContain('{exam && <h1 className="sr-only">');
+    expect(math).not.toContain("if (q.isLoading) return <p");
+  });
+
   it("reuses existing semantic H1 headings instead of introducing duplicates", () => {
     const examHero = source("src/components/ExamDesign.tsx");
     const historySession = source("src/components/HistorySession.tsx");
