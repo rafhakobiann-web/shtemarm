@@ -169,18 +169,38 @@ const ACCENT_LABELS: Record<"hy" | "en" | "ru", Record<Accent, string>> = {
   ru: { blue:"Синий", violet:"Фиолетовый", emerald:"Изумрудный", rose:"Розовый", amber:"Янтарный", teal:"Бирюзовый" },
 };
 
-function LandingPage() {
+export function LandingPage() {
   const lang = useLang();
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
   const androidLabel = "Android APK";
   const tryLabel = lang === "hy" ? "Փորձել 3 հարց" : lang === "ru" ? "Попробовать 3 вопроса" : "Try 3 questions";
-  const apkTag = lang === "hy" ? "Վեբ կայք + GitHub APK" : lang === "ru" ? "Сайт + APK с GitHub" : "Website + GitHub APK";
+  const apkTag = lang === "hy" ? "Հեռախոսով, պլանշետով և համակարգչով" : lang === "ru" ? "На телефоне, планшете и компьютере" : "On your phone, tablet and computer";
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [islandExpanded, setIslandExpanded] = useState(false);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
   const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
+  const landingRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const closeMenus = (event: globalThis.PointerEvent | KeyboardEvent) => {
+      const menus = landingRef.current?.querySelectorAll<HTMLDetailsElement>(".sht-landing-nav details[open]");
+      menus?.forEach(menu => {
+        if (event.type === "keydown") {
+          if ((event as KeyboardEvent).key !== "Escape") return;
+          menu.removeAttribute("open");
+          menu.querySelector("summary")?.focus();
+        } else if (event.target instanceof Node && !menu.contains(event.target)) menu.removeAttribute("open");
+      });
+      if (event.type === "keydown" && (event as KeyboardEvent).key === "Escape") setIslandExpanded(false);
+    };
+    document.addEventListener("pointerdown", closeMenus);
+    document.addEventListener("keydown", closeMenus);
+    return () => {
+      document.removeEventListener("pointerdown", closeMenus);
+      document.removeEventListener("keydown", closeMenus);
+    };
+  }, []);
   const changeActivity = (direction: PreviewDirection) =>
     setActive((current) => previewIndex(current, direction, 3));
   const startPreviewSwipe = (event: PointerEvent<HTMLDivElement>) => {
@@ -225,7 +245,7 @@ function LandingPage() {
   const demoTasks = [t.demo1, t.demo2, t.demo3];
 
   return (
-    <div className="sht-landing sht-editorial">
+    <div ref={landingRef} className="sht-landing sht-editorial">
       <header className="sht-landing-nav" aria-label={lang === "hy" ? "Կայքի նավարկում" : lang === "ru" ? "Навигация сайта" : "Site navigation"}>
         <Link to="/" className="sht-brand" aria-label="Shtemarm">
           <span className="sht-brand-icon"><img src="/shtemarm-logo.svg" alt="" width="34" height="34" /></span>
@@ -233,9 +253,7 @@ function LandingPage() {
         </Link>
         <nav className="sht-nav-links" aria-label={lang === "hy" ? "Հիմնական բաժիններ" : lang === "ru" ? "Основные разделы" : "Main sections"}>
           <a href="#experience">{tryLabel}</a>
-          <a href="#benefits">{ui.navBenefits}</a>
-          <a href="#subjects">{t.subjects}</a>
-          <a href="#how-it-works">{ui.navSteps}</a>
+          <a href="#subjects">{ui.viewSubjects}</a>
           <a href="#faq">{t.faq}</a>
           <Link to="/download">{androidLabel}</Link>
         </nav>
@@ -422,7 +440,7 @@ function LandingPage() {
         </div>
         <div className="sht-faq-list">
           {FAQ_ITEMS[lang].map(([q, a], i) => (
-            <details key={q} className="sht-faq-item">
+            <details key={q} name="landing-faq" className="sht-faq-item">
               <summary><span className="sht-faq-index">{String(i + 1).padStart(2, "0")}</span><span>{q}</span><ChevronDown className="sht-faq-chevron size-5" aria-hidden="true" /></summary>
               <p>{a}</p>
             </details>
@@ -450,3 +468,4 @@ function LandingPage() {
     </div>
   );
 }
+

@@ -951,3 +951,62 @@ html:not(.dark)[data-surface="liquid"] .sht-editorial .sht-demo-option :is(span,
     animation:none!important;transition:none!important;
   }
 }
+
+
+/* Interaction polish: retain the original teal / paper / amber design. */
+html .sht-editorial :is(a,button,summary) { -webkit-tap-highlight-color:transparent; }
+html .sht-editorial :is(button,summary) { touch-action:manipulation; }
+html .sht-editorial :is(a,button,summary):focus-visible { outline:3px solid #d39b25; outline-offset:4px; }
+html .sht-editorial :is(section[id],.sht-story[id]) { scroll-margin-top:7rem; }
+html .sht-editorial .sht-landing-nav {
+  position:sticky; top:max(.55rem,env(safe-area-inset-top)); z-index:40;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+html .sht-editorial .sht-nav-login { min-height:44px; }
+html .sht-editorial .sht-lang-switch button { min-height:44px; min-width:34px; }
+html .sht-editorial :is(.sht-mobile-links>summary,.sht-palette-picker>summary) { min-height:44px; min-width:44px; }
+html .sht-editorial .sht-palette-mode { min-height:44px; }
+html .sht-editorial .sht-mobile-links nav a { min-height:48px; }
+html .sht-editorial .sht-editorial-phone-status { padding-bottom:1.15rem; }
+html .sht-editorial .sht-dynamic-island { top:.35rem; }
+html .sht-editorial .sht-dynamic-island-toggle { min-height:44px; }
+html .sht-editorial .sht-dynamic-island-content a { min-height:44px; }
+html .sht-editorial .sht-preview-controls button { min-height:44px; min-width:44px; }
+html .sht-editorial .sht-story-demo { touch-action:pan-y pinch-zoom; }
+html .sht-editorial .sht-story-feedback-slot { min-height:5.4rem; display:grid; align-items:start; }
+html .sht-editorial .sht-story-feedback[data-empty="true"] { padding:0; background:transparent; }
+html .sht-editorial .sht-story-demo h3 { min-height:3.2em; }
+html .sht-editorial .sht-story-answers button { min-height:52px; }
+html .sht-editorial .sht-story-answers button>span { flex-shrink:0; }
+html .sht-editorial :is(.sht-story-quiz-arrow,.sht-story-quiz-next,.sht-story-reset) { min-height:44px; }
+html .sht-editorial .sht-story-quiz-arrow { min-width:44px; }
+/* Scroll reveals made long sections fade repeatedly on Android. Keep content
+   continuously visible; motion now follows deliberate taps and hover only. */
+html .sht-editorial .sht-story { animation:none; opacity:1; translate:none; }
+@media (min-width:768px) and (max-width:1199px) {
+  html .sht-editorial .sht-nav-links { display:none; }
+  html .sht-editorial .sht-mobile-links { display:block; }
+  html .sht-editorial .sht-mobile-links nav {
+    inset:calc(100% + .65rem) 0 auto; width:100%; max-width:none; min-width:0; transform:none;
+    background:#fbfaf4; color:#173941; -webkit-backdrop-filter:none; backdrop-filter:none;
+  }
+  html .sht-editorial .sht-mobile-links nav a { color:#173941; }
+  html.dark .sht-editorial .sht-mobile-links nav { background:#172f37; color:#edf7f4; }
+  html.dark .sht-editorial .sht-mobile-links nav a { color:#edf7f4; }
+}
+@media (max-width:767px) {
+  html .sht-editorial .sht-landing-nav { flex-wrap:wrap; gap:.5rem; }
+  html .sht-editorial .sht-nav-actions { gap:.3rem; }
+  html .sht-editorial .sht-mobile-links nav { -webkit-backdrop-filter:none; backdrop-filter:none; }
+  html .sht-editorial .sht-story-demo-body { padding:1rem; }
+  html .sht-editorial .sht-story-quiz-bottom { gap:.45rem; }
+}
+@media (max-width:390px) {
+  html .sht-editorial .sht-landing-nav>.sht-brand>span:last-child { display:none; }
+  html .sht-editorial .sht-brand-icon { width:2.2rem; height:2.2rem; }
+  html .sht-editorial .sht-lang-switch button { min-width:30px; padding:.2rem; }
+  html .sht-editorial .sht-nav-login { padding:.4rem .6rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html .sht-editorial :is(*,*::before,*::after) { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+}

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight, BookOpen, Check, CheckCircle2, ChevronLeft, ChevronRight, Download, ExternalLink,
   GraduationCap, Lightbulb, LockKeyhole, Monitor, RotateCcw, Smartphone, Sparkles,
 } from "lucide-react";
 import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION } from "@/lib/app-download";
+import { previewSwipeDirection } from "@/lib/preview-interaction";
 
 type Lang = "hy" | "en" | "ru";
 
@@ -133,6 +134,19 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
   const t = WORDS[lang];
   const [questionIndex,setQuestionIndex] = useState(0);
   const [answers,setAnswers] = useState<Record<number,number>>({});
+  const swipe = useRef<{id:number;x:number;y:number}|null>(null);
+  const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+    if (event.target instanceof Element && event.target.closest("button,a")) return;
+    swipe.current = {id:event.pointerId,x:event.clientX,y:event.clientY};
+  };
+  const finishSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start || start.id !== event.pointerId) return;
+    const direction = previewSwipeDirection(event.clientX-start.x,event.clientY-start.y);
+    if (direction) changeQuestion(direction);
+  };
   const question = SAMPLE_QUESTIONS[lang][questionIndex];
   const answer = answers[questionIndex] ?? null;
   const correctCount = SAMPLE_QUESTIONS[lang].reduce((count, sample, index) =>
@@ -152,7 +166,8 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
             {[t.one,t.two,t.three].map((step,i)=><span key={step}><b>{i+1}</b>{step}</span>)}
           </div>
         </div>
-        <div className="sht-story-demo" aria-label={t.demo}>
+        <div className="sht-story-demo" aria-label={t.demo}
+          onPointerDown={startSwipe} onPointerUp={finishSwipe} onPointerCancel={()=>{swipe.current=null;}}>
           <div className="sht-story-demo-head">
             <span><BookOpen size={16} aria-hidden="true" />{question.subject}</span>
             <span className="sht-story-demo-count">{String(questionIndex + 1).padStart(2,"0")} / {String(SAMPLE_QUESTIONS[lang].length).padStart(2,"0")}</span>
@@ -170,12 +185,15 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
                 </button>
               ))}
             </div>
-            {answer!==null && (
-              <p className={"sht-story-feedback " + (answer===question.correct ? "is-correct" : "")} role="status">
+            <div className="sht-story-feedback-slot">
+              <p className={"sht-story-feedback " + (answer===question.correct ? "is-correct" : "")}
+                role="status" aria-atomic="true" data-empty={answer===null}>
+                {answer!==null && <>
                 {answer===question.correct?<CheckCircle2 size={18} aria-hidden="true" />:<Lightbulb size={18} aria-hidden="true" />}
                 {answer===question.correct ? question.explanation : question.hint}
+                </>}
               </p>
-            )}
+            </div>
             <div className="sht-story-quiz-bottom">
               <button type="button" className="sht-story-quiz-arrow" onClick={()=>changeQuestion(-1)}
                 aria-label={lang==="hy"?"Նախորդ հարցը":lang==="ru"?"Предыдущий вопрос":"Previous question"}>
@@ -261,3 +279,4 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
     </>
   );
 }
+
