@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Accessibility, Check, Droplets, Laptop, MonitorCog, Moon, Settings2, Sun, Type } from "lucide-react";
+import { Accessibility, Check, Laptop, MonitorCog, Moon, Settings2, Sun, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { resetAppearance, setAppearance, useAppearance, type ColorMode, type SurfaceTheme, type GlassIntensity } from "@/lib/theme";
+import { resetAppearance, setAppearance, useAppearance, type ColorMode, type SurfaceTheme } from "@/lib/theme";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, DISPLAY_PREFERENCES_KEY, applyAccent, normalizeAccent, type Accent } from "@/lib/accent";
 import { setLang, useLang, type Lang } from "@/lib/lang";
 
@@ -138,7 +138,7 @@ export function PersonalizationControls({ inline = false }: { inline?: boolean }
             <fieldset className="space-y-2">
               <legend className="text-sm font-semibold">{t.themes}</legend>
               <div className="grid grid-cols-3 gap-2">
-                {(["classic", "soft", "liquid"] as SurfaceTheme[]).map((surface) => (
+                {(["classic", "soft"] as SurfaceTheme[]).map((surface) => (
                   <button key={surface} type="button" aria-pressed={appearance.surface === surface}
                     onClick={() => setAppearance({ surface })}
                     className={"group rounded-2xl border-2 p-1.5 text-left transition-colors " +
@@ -178,27 +178,6 @@ export function PersonalizationControls({ inline = false }: { inline?: boolean }
                 ))}
               </div>
             </fieldset>
-            {appearance.surface === "liquid" && (
-              <section className="space-y-3 rounded-2xl border bg-muted/40 p-3">
-                <h4 className="flex items-center gap-2 text-sm font-bold">
-                  <Droplets className="size-4 text-primary" />{t.glassStrength}
-                </h4>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {(["adaptive", "subtle", "balanced", "vivid"] as GlassIntensity[]).map((glass) => (
-                    <Button type="button" key={glass} size="sm"
-                      className="min-h-11 min-w-0 px-1 text-[11px]"
-                      variant={appearance.glass === glass ? "default" : "outline"}
-                      aria-pressed={appearance.glass === glass}
-                      onClick={() => setAppearance({ glass })}>{t[glass]}</Button>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="theme-blur" className="text-sm font-semibold">{t.blur}</label>
-                  <Switch id="theme-blur" checked={appearance.blur} onCheckedChange={(blur) => setAppearance({ blur })} />
-                </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">{t.glassHelp}</p>
-              </section>
-            )}
             <div className="rounded-xl border p-3">
               <p className="mb-3 text-sm font-semibold">{t.accent}</p>
               <div className="grid grid-cols-6 gap-2">
