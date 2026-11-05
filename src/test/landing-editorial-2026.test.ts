@@ -91,6 +91,38 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(landing).toContain("onPointerCancel");
   });
 
+  it("fully redesigns every lower landing chapter instead of leaving legacy Liquid Glass dark tiles",()=>{
+    const css=read("src/landing-editorial-2026.css");
+    const source=read("src/routes/index.tsx");
+    for (const section of ["#benefits","#subjects","#how-it-works","#faq"]) {
+      expect(css).toContain(`html[data-surface="liquid"] .sht-editorial ${section}`);
+      expect(source).toContain(`id="${section.slice(1)}"`);
+    }
+    expect(css).toContain("Editorial v2 — FULL-PAGE");
+    expect(css).toContain("#benefits .sht-feature:first-child");
+    expect(css).toContain("#subjects .sht-subject-card");
+    expect(css).toContain("#how-it-works .sht-step");
+    expect(css).toContain("#faq .sht-faq-item");
+    expect(css).toContain("html[data-surface=\"liquid\"] .sht-editorial .sht-bottom-cta");
+    expect(css).toContain("grid-template-columns:repeat(2,minmax(0,1fr))");
+    expect(css).toContain("@media (max-width:767px)");
+    expect(css).toContain("@media (max-width:350px)");
+  });
+
+  it("protects phone preview and nested text from invisible dark-on-dark Liquid Glass styles",()=>{
+    const css=read("src/landing-editorial-2026.css");
+    for (const part of [".sht-editorial-phone",".sht-preview",".sht-preview-focus",".sht-preview-controls button",".sht-demo-option"]) {
+      expect(css).toContain(`html.dark[data-surface="liquid"] .sht-editorial ${part}`);
+    }
+    expect(css).toContain('html.dark[data-surface="liquid"] .sht-editorial .sht-demo-option :is(span,svg)');
+    expect(css).toContain('html.dark[data-surface="liquid"] .sht-editorial .sht-demo-option:is(.is-active,[aria-pressed="true"])');
+    expect(css).toContain("background:#2b515b;");
+    expect(css).toContain("color:#f6fbf9;");
+    expect(css).toContain("background:#ffcf60;");
+    expect(css).toContain("color:#13373d;");
+    expect(css).toContain("prefers-reduced-motion:reduce");
+  });
+
   it("does not add external tracking, embeds or a nonexistent Play Store listing",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
     expect(sample).not.toContain("iframe");
