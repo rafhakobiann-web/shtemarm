@@ -42,6 +42,17 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(instructions).toContain("Never repeat it as broken plain text");
   });
 
+  it("uses Armenian-native teaching instructions only for Armenian replies", () => {
+    const hy = tutorModeInstructions("explain", "hy");
+    const en = tutorModeInstructions("explain", "en");
+    const ru = tutorModeInstructions("explain", "ru");
+    expect(hy).toContain("գրական արևելահայերենով");
+    expect(hy).toContain("AB վեկտորի կոորդինատները գտնելու համար");
+    expect(hy).toContain("դպրոցական դասագրքերի ճիշտ տերմինները");
+    expect(en).not.toContain("գրական արևելահայերենով");
+    expect(ru).not.toContain("գրական արևելահայերենով");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
