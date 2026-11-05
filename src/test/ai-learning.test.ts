@@ -54,6 +54,18 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain("Do not infer subject-level weaknesses");
   });
 
+  it("supports adaptive learning across tutor prompts, API, preferences and UI", () => {
+    for (const lang of ["hy", "en", "ru"] as const) {
+      const prompt = tutorModeInstructions("adaptive", lang);
+      expect(prompt).toContain("ADAPTIVE LEARNING");
+      expect(prompt).toContain("unverified hints");
+      expect(studyLabels[lang].adaptiveDescription.length).toBeGreaterThan(9);
+    }
+    expect(read("src/lib/chat.functions.ts")).toContain('z.enum(["hint","explain","quiz","adaptive"])');
+    expect(read("src/lib/tutor-memory.ts")).toContain('item.preferredMode === "adaptive"');
+    expect(read("src/routes/chat.tsx")).toContain('(["hint","explain","quiz","adaptive"] as const)');
+  });
+
   it("keeps learning memory opt-in, browser-only and erasable", () => {
     const memory = read("src/lib/tutor-memory.ts");
     const chat = read("src/routes/chat.tsx");
