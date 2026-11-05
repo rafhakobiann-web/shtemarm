@@ -24,6 +24,24 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(tutorModeInstructions("hint","ru")).toContain("Russian");
   });
 
+  it("keeps Armenian tutoring terminology natural and mathematical notation renderable", () => {
+    const prompt = tutorModeInstructions("explain", "hy");
+    expect(prompt).toContain("natural subject terminology");
+    expect(prompt).toContain("կոորդինատ");
+    expect(prompt).toContain("single correctly delimited formula");
+    expect(prompt).toContain("Verify all numeric steps");
+    expect(prompt).toContain("no more than one worked example");
+  });
+
+  it("prevents block KaTeX inside paragraph markup and specifies display delimiters", () => {
+    const page = read("src/routes/chat.tsx");
+    const instructions = tutorModeInstructions("explain", "hy");
+    expect(page).toContain('<div className={cn("whitespace-pre-line rounded-2xl');
+    expect(page).toContain('<RichText text={m.content} katex={katex} />');
+    expect(instructions).toContain("$...$");
+    expect(instructions).toContain("Never repeat it as broken plain text");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
@@ -43,6 +61,18 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(page).toContain("contextToken:contextTokenRef.current");
     expect(page).not.toContain("messages: next.filter");
     expect(page).toContain("aria-pressed={mode===key}");
+  });
+
+  it("supports actionable student feedback without silently storing chat content", () => {
+    const page = read("src/routes/chat.tsx");
+    expect(page).toContain("Սխալ պատասխան");
+    expect(page).toContain("Ավելի պարզ");
+    expect(page).toContain("Այլ օրինակ");
+    expect(page).toContain('aria-pressed={feedback[i] === "bad"}');
+    expect(page).toContain('disabled={loading}');
+    expect(page).toContain('break-words');
+    expect(page).toContain('setFeedback(previous =>');
+    expect(page).not.toContain("localStorage.setItem(\"shtemarm:chat");
   });
 
   it("increases the useful individual budget without removing total provider protections",()=>{
