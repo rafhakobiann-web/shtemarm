@@ -4,6 +4,7 @@ import {
   buildArmenianOriginalBook,
   cleanPdfArtifacts,
   type ArmenianOriginalSection,
+  type ArmenianOriginalAssertions,
 } from "@/lib/armenian-original";
 import { sectionAnswerIds } from "@/lib/books";
 
@@ -20,6 +21,8 @@ const counts = [
 const originals: ArmenianOriginalSection[] = counts.map((_, i) =>
   JSON.parse(readFileSync(`public/data/armenian-official-1-section${i + 1}.json`, "utf8")),
 );
+
+const assertions: ArmenianOriginalAssertions = JSON.parse(readFileSync("public/data/armenian-official-1-assertions.json", "utf8"));
 
 describe("2018 GTC Armenian Volume I original transcription", () => {
   it("has all eight sections and the original printed question and key indices", () => {
@@ -48,10 +51,10 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
     expect(totals).toEqual([883, 511, 60]);
   });
 
-  it("converts 1,334 unflagged tasks into playable MC and short-answer units", () => {
-    const book = buildArmenianOriginalBook(originals);
+  it("converts 1,334 source tasks and 288 assertions into playable exercises", () => {
+    const book = buildArmenianOriginalBook(originals, assertions);
     expect(book.id).toBe(41);
-    expect(book.sections).toHaveLength(8);
+    expect(book.sections).toHaveLength(9);
     let playableMC = 0;
     let playableShort = 0;
     for (const section of book.sections) {
@@ -75,13 +78,26 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
         }
       }
     }
-    expect(playableMC).toBe(823);
+    expect(playableMC).toBe(1111);
     expect(playableShort).toBe(511);
   });
 
   it("retains the printed keys for the opening exercises and strips only PDF watermarks", () => {
     expect(originals[0].mc.slice(0, 6).map(q => q.answer)).toEqual(["4","4","3","4","4","3"]);
-    expect(cleanPdfArtifacts("Տեքստ\nm\n\ntc\nՀարց")).toBe("Տեքստ\nՀարց");
+    expect(cleanPdfArtifacts("Տեքստ\nm\n\ntc\nՀարց")).not.toContain("tc");
+  });
+
+  it("contains all 48 PDF appendix bundles with six truth judgments each", () => {
+    expect(assertions.groups).toHaveLength(48);
+    expect(assertions.groups.map(g => g.n)).toEqual(
+      Array.from({ length: 48 }, (_, n) => String(n + 1)),
+    );
+    for (const group of assertions.groups) {
+      expect(group.questions).toHaveLength(6);
+      expect(group.questions.every(q => q.stem.length > 8)).toBe(true);
+      expect(group.questions.every(q => ["1", "2"].includes(q.answer))).toBe(true);
+      expect(group.questions.every(q => q.options["3"] === "Չգիտեմ")).toBe(true);
+    }
   });
 
   it("does not accept a missing chapter or a malformed source as a playable bank", () => {
