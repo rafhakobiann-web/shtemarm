@@ -191,6 +191,7 @@ html .sht-v3 .sl-plan-preview .sht-preview {transform:none;max-width:100%;border
   box-shadow:0 11px 28px -22px var(--primary);touch-action:pan-y;user-select:none;
   transition:transform .28s var(--sl-ease),box-shadow .25s ease;
 }
+.sht-v3 .sl-flashcard {touch-action:pan-y;}
 .sl-flashcard[data-dragging="true"] {transition:none!important;}
 .sl-flashcard small {color:var(--primary);font-size:.7rem;font-weight:850;}
 .sl-flashcard strong {font-size:clamp(1.35rem,2.3vw,2.15rem);letter-spacing:-.04em;line-height:1.4;overflow-wrap:anywhere;}
