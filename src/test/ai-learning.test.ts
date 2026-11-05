@@ -54,6 +54,18 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain("Do not infer subject-level weaknesses");
   });
 
+  it("keeps the practice AI drawer dismissible and does not auto-share exercise text", () => {
+    const drawer = read("src/components/StudyTutorDrawer.tsx");
+    const study = read("src/routes/study.$bookId.$sectionId.tsx");
+    expect(drawer).toContain('role="dialog"');
+    expect(drawer).toContain('aria-modal="true"');
+    expect(drawer).toContain('event.key === "Escape"');
+    expect(drawer).toContain('mode: "adaptive"');
+    expect(drawer).toContain('question, contextToken: contextToken.current');
+    expect(drawer).not.toContain('unit.passage');
+    expect(study).toContain('<StudyTutorDrawer key={');
+  });
+
   it("offers contextual teaching styles under checked questions without mixing cached answers", () => {
     const card = read("src/components/UnitCard.tsx");
     const explanation = read("src/lib/explain.functions.ts");
