@@ -4,6 +4,15 @@ on:
   pull_request:
     paths:
       - 'src/lib/chat.functions.ts'
+      - 'src/lib/teaching-prompts.ts'
+      - 'src/lib/tutor-ui.ts'
+      - 'src/lib/tutor-offline.ts'
+      - 'src/components/RichExplanation.tsx'
+      - 'src/test/teaching-prompts.test.ts'
+      - 'src/test/tutor-rendering.test.tsx'
+      - 'src/test/tutor-conversation.test.tsx'
+      - 'src/test/teaching-runtime.test.ts'
+      - 'src/test/explanation-context.test.tsx'
       - 'src/lib/calc.functions.ts'
       - 'src/lib/translate.functions.ts'
       - 'src/lib/explanation-providers.server.ts'
@@ -36,5 +45,6 @@ jobs:
         with:
           bun-version: '1.3.14'
       - run: bun install --frozen-lockfile
-      - run: bunx vitest run src/test/ai-runtime.test.ts src/test/explanation-providers.test.ts src/test/ai-budget.test.ts src/test/ai-learning.test.ts src/test/translation.test.ts src/test/rich-explanations.test.tsx
+      - run: bunx vitest run src/test/ai-runtime.test.ts src/test/explanation-providers.test.ts src/test/ai-budget.test.ts src/test/ai-learning.test.ts src/test/translation.test.ts src/test/rich-explanations.test.tsx src/test/teaching-prompts.test.ts src/test/tutor-rendering.test.tsx src/test/tutor-conversation.test.tsx src/test/teaching-runtime.test.ts src/test/explanation-context.test.tsx
       - run: bun run build
+

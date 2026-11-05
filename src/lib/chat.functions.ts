@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { tutorOfflineReply } from "./tutor-offline";
 import { STUDY_MODE_DEFAULT, tutorModeInstructions, type StudyMode, type StudyLanguage } from "./ai-study-modes";
 
 // The visitor can submit only a question; they never choose prior assistant
@@ -13,7 +14,8 @@ const Input = z.object({
 
 const SYSTEM = "Shtemarm learning tutor — clear and patient explanations across school subjects.";
 
-const clean = (t: string) => t.replace(/\*+/g, "").replace(/^#+\s*/gm, "").replace(/`+/g, "").trim();
+// Preserve multiplication, Markdown emphasis and fenced diagrams for the safe renderer.
+const clean = (t: string) => t.trim();
 type Msg = { role: "user" | "assistant"; content: string };
 
 function promptForConversation(messages: Msg[], mode: StudyMode, locale: StudyLanguage) {
@@ -56,22 +58,7 @@ async function callGemini(key: string, messages: Msg[], mode:StudyMode, locale:S
 
 /** Bounded offline helper: useful for common study intents, honest about its limits. */
 function offlineStudyReply(messages: Msg[], locale:StudyLanguage="hy") {
-  const question = messages[messages.length - 1]?.content.trim() ?? "";
-  const q = question.toLowerCase();
-  if (/^(hi|hello|hey|բարև|բարեւ|ողջույն)[!.? ]*$/i.test(question)) {
-    return "Բարև։ Ես Shtemarm-ի ուսումնական օգնականն եմ։ Կարող եմ օգնել անգլերենի, մաթեմատիկայի և քննություններին պատրաստվելու հարցերում։ Գրիր կոնկրետ հարցդ։";
-  }
-  if (/\b(since|for)\b/.test(q) && /tense|ժամանակ|grammar|քերական/.test(q)) {
-    return "Անգլերենում since-ը սովորաբար ցույց է տալիս գործողության սկզբնակետը, իսկ for-ը՝ տևողությունը։ Օրինակ՝ I have lived here since 2020 և I have lived here for three years։ Սա ընդհանուր կանոն է․ ուղարկիր ամբողջ նախադասությունը՝ համատեքստով ստուգելու համար։";
-  }
-  if (/\b(a\s*\+\s*b|equation|հավասարում|solve|լուծել)\b/.test(q)) {
-    return "Կօգնեմ քայլ առ քայլ, բայց այս պահին հասանելի է միայն սահմանափակ տեղային ռեժիմը։ Ուղարկիր հավասարումը պարզ տեսքով, և նախ կփորձենք նույնականացնել անհայտը, ապա կատարել հակադարձ գործողությունները։ Այս ռեժիմը չի կարող երաշխավորել բոլոր խնդիրների լուծումը։";
-  }
-  return locale==="en"
-    ? "The AI service is unavailable. I can still help with saved explanations and study materials; this offline reply isn't a generated answer."
-    : locale==="ru"
-      ? "Сервис ИИ сейчас недоступен. Используй сохранённые объяснения и учебные материалы; этот ответ не создан ИИ."
-      : "Այս պահին ԱԲ մոդելները հասանելի չեն, ուստի չեմ ուզում հորինել պատասխան։ Օգտվիր Shtemarm-ի պահպանված բացատրություններից և շտեմարաններից։ Տեղային ռեժիմը չի փոխարինում լիարժեք ԱԲ ուսուցչին։";
+  return tutorOfflineReply(messages[messages.length - 1]?.content ?? "", locale);
 }
 
 export const chatReply = createServerFn({ method: "POST" })

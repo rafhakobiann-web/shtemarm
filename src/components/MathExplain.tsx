@@ -36,7 +36,7 @@ async function pageDataUrl(bookId: string, page: number) {
 }
 const explanationCache = new Map<string,string>();
 function cacheKey(p: Props,lang:string) {
-  return JSON.stringify([lang,p.item, p.correct, p.chosen, p.question, p.options]);
+  return JSON.stringify([lang,p.bookId,p.item,p.kind,p.task,p.correct,p.chosen,p.question,p.options,p.pages,p.nativeSource]);
 }
 
 /** Prefer searchable text over uploading full pages on every click.
