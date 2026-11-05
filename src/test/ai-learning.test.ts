@@ -61,7 +61,9 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(drawer).toContain('aria-modal="true"');
     expect(drawer).toContain('event.key === "Escape"');
     expect(drawer).toContain('mode: "adaptive"');
-    expect(drawer).toContain('question, contextToken: contextToken.current');
+    expect(drawer).toContain('question: submittedQuestion, contextToken: contextToken.current');
+    expect(drawer).toContain('checked={includeQuestion}');
+    expect(drawer).toContain('includeQuestion && selectedQuestion');
     expect(drawer).not.toContain('unit.passage');
     expect(study).toContain('<StudyTutorDrawer key={');
   });
@@ -109,7 +111,7 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain('contextToken: z.string().max(56000).optional()');
     expect(server).toContain('readChatContext(data.contextToken)');
     expect(server).not.toContain('role: z.enum(["user","assistant"])');
-    expect(server).toContain('mode: z.enum(["hint","explain","quiz"])');
+    expect(server).toContain('mode: z.enum(["hint","explain","quiz","adaptive"])');
     expect(server).toContain('locale: z.enum(["hy","en","ru"])');
     expect(server).toContain('tutorModeInstructions(data.mode,data.locale)');
     expect(server).toContain('promptForConversation(messages,mode,locale)');
