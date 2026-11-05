@@ -207,7 +207,11 @@ function Flashcard({ lang }: { lang: Lang }) {
   const up = (e: PointerEvent<HTMLButtonElement>) => {
     const origin = start.current; start.current = null; clear(); if (!origin || origin.id !== e.pointerId) return;
     const dx = e.clientX - origin.x, dy = e.clientY - origin.y;
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) { blockClick.current = true; advance(dx > 0); }
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      blockClick.current = true;
+      window.setTimeout(() => { blockClick.current = false; }, 120);
+      advance(dx > 0);
+    }
   };
   return (
     <article className="sl-tile sl-tile-flash" aria-labelledby="sl-flash-title">
