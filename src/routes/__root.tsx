@@ -17,7 +17,7 @@ import liquidGlassCss from "../liquid-glass-2026.css?url";
 import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
 import studyComfortCss from "../study-comfort.css?url";
-import landingReferenceCss from "../landing-reference.css?url";
+import landingV3Css from "../landing-v3.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -142,7 +142,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: interactionMotionCss,
       },
       { rel: "stylesheet", href: studyComfortCss },
-      { rel: "stylesheet", href: landingReferenceCss },
+      { rel: "stylesheet", href: landingV3Css },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
