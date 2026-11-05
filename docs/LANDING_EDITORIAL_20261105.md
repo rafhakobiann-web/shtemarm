@@ -48,3 +48,23 @@ The user-provided dark-mode Android screenshots demonstrated that the old Liquid
 - Source-level regression checks in `landing-editorial-2026.test.ts` cover every redesigned chapter and the nested dark phone controls.
 
 **Verification status:** CSS source was checked for balanced braces and validated for the above sampled color contrasts. A successful Netlify/Vercel deployment is not a browser/screenshot test. Physical Android light/dark walkthrough and GitHub CI execution are still mandatory before merge or publication.
+
+## November 5 — editorial V3 (reference-aligned page composition)
+
+The standalone earlier Shtemarm HTML design reference suggested a clearer split hero, multiple contrasting reading surfaces, and compact interactive dashboard preview. Combined with the owner-supplied teal/amber mobile design direction, V3 changes both **composition and visual skin**, not just colors.
+
+- Hero now has a two-line localized highlighted headline (HY/EN/RU), gold-underlined emphasis, primary **Try 3 questions** action, sign-in action, Android download link, and concise truthful subject/sample indicators.
+- The device preview remains a genuine interactive pointer/swipe accessible component but has a **compact one-column activity list**. The mobile first-child legacy `grid-column:span 2` problem is explicitly reset, preventing enormous cards.
+- The mock phone is **deliberately light in both global themes**, with explicit component-level ink, button and selection colors that outrank the Liquid Glass dark selector. This addresses unreadable dark-mode text reported in Android screenshots without relying on inherited theme variables.
+- The four showcase chapters are now **composed across the page**, not stacked all before benefits: hero → highlight strip → playable three-question guest sample → benefits → subjects → sample learning journey → onboarding steps → AI tutor illustration → FAQ → website/Android download → final CTA.
+- Every original working route is preserved. The AI conversation remains a labeled illustrative display that makes **no paid AI request**. Android APK remains same-origin beta, not Google Play.
+- Removed the `animation-timeline:view()` dependency which could leave long sections visually delayed and cause scroll jank; transitions are CSS transform/opacity with reduced-motion accessibility.
+- Dedicated `sht-editorial-v3` scope improves specificity without changing signed-in study pages, older books, auth, routing, or Production.
+
+### QA follow-up
+- [x] JSX/CSS committed to existing Draft PR #216; Netlify and Vercel build/deployment status reported **success** on updated head.
+- [x] CSS brace/string/comment balance and previous theme contrast rules independently reviewed at source level.
+- [ ] Physical Android browser light/dark screenshots at 360–430px and desktop at 1280px; ensure sticky menu does not cover anchor targets, and no horizontal scrolling.
+- [ ] GitHub Actions and Vitest/type/build verification. Workflow runners still fail before steps (issue #217).
+- [ ] APK MIME, size, hash, installation and no private GitHub redirects.
+- [ ] Approve visual output and merge only after checks. Production remains untouched.
