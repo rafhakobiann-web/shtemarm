@@ -320,49 +320,6 @@
 html.user-reduced-motion .ref-landing *,html.user-reduced-motion .ref-landing *::before,html.user-reduced-motion .ref-landing *::after { animation:none!important; transition:none!important; }
 html.user-high-contrast .ref-landing :is(.ref-device-screen,.ref-question-card,.ref-tool,.ref-progress-panel,.sht-feature,.sht-subject-card) { border:2px solid currentColor; }
 @media (prefers-reduced-transparency:reduce) { .ref-landing .sht-landing-nav { background:#faf9f5; backdrop-filter:none!important; } }
-/* Dark appearance: unlike the old landing, every heading, CTA and caption has explicit contrast. */
-html.dark .sht-landing.ref-landing { background:#15232d; color:#eff6f9; }
-html.dark .ref-landing .sht-landing-nav { background:#1a2c36; border-bottom-color:#3b5360; }
-html.dark .ref-landing .sht-brand,.dark .ref-landing .sht-nav-links a { color:#e8f6f9; }
-html.dark .ref-landing .sht-lang-switch { background:#2c4250; border-color:#49616b; }
-html.dark .ref-landing .sht-lang-switch button { color:#d4e3ea; }
-html.dark .ref-landing .sht-lang-switch button[aria-pressed="true"] { color:#16303d; background:#fff4d3; }
-html.dark .ref-landing .ref-nav-download { background:#3b505a; color:#f8f9fa; }
-html.dark .ref-landing > .sht-section { background:#192a34; color:#eef7fa; }
-html.dark .ref-landing > .sht-section:nth-of-type(even) { background:#1f3640; }
-html.dark .ref-landing .sht-section-heading h2 { color:#f4f9fb; }
-html.dark .ref-landing .sht-section-heading p,.dark .ref-landing .sht-feature p,.dark .ref-landing .sht-faq-item p { color:#b8ccd7; }
-html.dark .ref-landing .sht-section-kicker { color:#ffcf64; }
-html.dark .ref-landing :is(.sht-feature,.sht-subject-card,.sht-faq-item,.sht-step) { background:#29424f; border-color:#4a6571; color:#f4f9fb; }
-html.dark .ref-landing .sht-feature-featured { background:linear-gradient(145deg,#42515a,#29424f); }
-html.dark .ref-landing .sht-steps-section { background:#263c48; }
-html.dark .ref-landing .sht-feature-icon,.dark .ref-landing .sht-subject-icon { background:#365866; color:#f9d071; }
-html.dark .ref-landing .sht-step-number,.dark .ref-landing .sht-subject-arrow,.dark .ref-landing .sht-faq-index { color:#ffc653; }
-html.dark .ref-landing .sht-faq-item summary { color:#f5fafb; }
-html.dark .ref-landing .sht-bottom-cta { background:linear-gradient(120deg,#305767,#183440); }
-html.dark .ref-landing .sht-landing-footer { background:#10242d; }
-html.dark .ref-landing .sht-palette-panel { background:#223743; color:#eff8fc; border-color:#47616c; }
-html.dark .ref-landing .sht-palette-panel p,.dark .ref-landing .sht-palette-mode { color:#eef8fa; }
-html.dark .ref-landing .sht-mobile-links nav { background:#203641; border-color:#496574; }
-html.dark .ref-landing .sht-mobile-links nav a { color:#eff8fc; }
-html.dark .ref-landing .sht-mobile-links > summary { color:#eef8fa; background:#263e49; border-color:#496574; }
-
-/* Low-cost scroll reveals: transforms and opacity only, no perpetual animation. */
-@media (prefers-reduced-motion:no-preference) {
-  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card) {
-    transition: opacity .58s ease,transform .58s cubic-bezier(.16,1,.3,1);
-  }
-  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card):not(.ref-inview) {
-    opacity:0; transform:translateY(24px);
-  }
-  .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card).ref-inview {
-    opacity:1; transform:translateY(0);
-  }
-}
-html.user-reduced-motion .ref-landing.ref-motion-ready :is(.ref-story-copy,.ref-story-visual,.ref-tool,.sht-feature,.sht-subject-card) {
-  opacity:1!important; transform:none!important;
-}
-
 /* Shtemarm-native redesign: visual inspiration, not a replica of the reference.
    Use existing semantic theme/accent tokens for light, dark, soft and liquid.
    All effects are scoped to the public landing; no study routes are restyled. */
@@ -524,7 +481,7 @@ html .ref-landing .ref-story-progress { background:linear-gradient(145deg,var(--
 .ref-landing .ref-flashcard {
   background:linear-gradient(145deg,var(--native-tint),var(--card)); border-color:var(--native-line-highlight);
   color:var(--foreground); box-shadow:0 15px 34px -26px var(--primary);
-  border-radius:1.6rem; transform:translate3d(var(--drag-x,0px),0,0) rotate(calc(var(--drag-x,0px) * .008deg));
+  border-radius:1.6rem; transform:translate3d(var(--drag-x,0px),0,0) rotate(var(--drag-angle,0deg));
   transition:transform .32s var(--native-ease), box-shadow .25s ease;
 }
 .ref-landing .ref-flashcard > span:first-child { color:var(--primary); }
@@ -667,3 +624,13 @@ html.dark .ref-landing :is(.sht-hero h1,.ref-story-copy h2,.ref-download-band h2
 html.dark .ref-landing .sht-palette-panel { background:var(--popover); color:var(--popover-foreground); }
 html.dark .ref-landing .sht-palette-panel p { color:var(--popover-foreground); }
 html.dark .ref-landing .sht-mobile-links nav { background:var(--popover);color:var(--popover-foreground); }
+
+/* Short glide follows a swipe instantly, then springs to the next card. */
+.ref-landing .ref-flashcard-stage[data-dragging="true"] .ref-flashcard { transition:none!important; }
+.ref-landing .ref-flashcard-stage .ref-flashcard { touch-action:pan-y; }
+.ref-landing .ref-book-row { display:flex; overflow-x:auto; scrollbar-width:none; scroll-snap-type:x proximity; padding-bottom:.5rem; }
+.ref-landing .ref-book-row::-webkit-scrollbar { display:none; }
+.ref-landing .ref-book { flex:0 0 32%; scroll-snap-align:start; }
+@media (max-width:767px) {
+  .ref-landing .ref-book { flex-basis:32%; }
+}
