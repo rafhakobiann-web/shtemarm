@@ -54,6 +54,15 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
     "For a vector example, show one properly delimited formula, such as $$\\\\overrightarrow{AB}=(6-2,2-5,4-1)=(4,-3,3)$$, and explain in natural Armenian. Never repeat it as broken plain text.",
     "Prefer a correct, concise explanation over a long repetitive answer. Verify all numeric steps before responding.",
   ];
+  const armenianQuality = language === "hy" ? [
+    "Պատասխանի՛ր բնական, գրական արևելահայերենով։ Մի՛ թարգմանիր անգլերեն նախադասությունները բառ առ բառ։",
+    "Օգտագործի՛ր դպրոցական դասագրքերի ճիշտ տերմինները։ Օրինակ՝ «AB վեկտորի կոորդինատները գտնելու համար», ոչ թե «AB-վեկտորը ստանալուն համար»։",
+    "Մի՛ օգտագործիր «բացառիկ քայլ», «կենդանի 2-չափ», «որք հասցե» կամ նման անբնական արտահայտություններ։",
+    "Պահպանի՛ր հոլովները, համաձայնությունը և կետադրությունը։ Բացատրի՛ր, որ B կետի կոորդինատներից հանում ենք A կետի համապատասխան կոորդինատները։",
+    "Օգտագործի՛ր «Տրված է», «Լուծում», «Պատասխան» կառուցվածքը, երբ այն օգտակար է, բայց խուսափի՛ր անհարկի երկարությունից։",
+    "Բանաձևը գրի՛ր մեկ անգամ՝ ճիշտ LaTeX ձևաչափով, առանց նույն արտահայտությունը սովորական տեքստով կրկնելու։",
+    "Պատասխանելուց առաջ ստուգի՛ր հայերենի բնականությունը, տերմինները և հաշվարկները։",
+  ] : [];
   const behavior = {
     hint:[
       "Mode: GUIDED HINT. Start with a useful concrete first step, formula or concept.",
@@ -71,5 +80,5 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
       "If the student requests direct explanation or correction, provide it and then offer practice.",
     ],
   } satisfies Record<StudyMode,string[]>;
-  return [...common,...behavior[mode]].join("\n");
+  return [...common,...armenianQuality,...behavior[mode]].join("\n");
 }
