@@ -6,6 +6,7 @@ on:
       - 'src/routes/download.tsx'
       - 'src/components/LandingShowcase.tsx'
       - 'src/landing-editorial-2026.css'
+      - 'netlify.toml'
       - 'src/lib/app-download.ts'
       - 'src/test/landing-editorial-2026.test.ts'
       - 'src/test/download-scroll.test.ts'
