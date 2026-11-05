@@ -57,7 +57,7 @@ describe("comfortable question practice", () => {
     expect(choices[1]).toBeChecked();
     expect(choices[1]).toHaveAccessibleDescription("Second choice");
     fireEvent.click(within(first).getByRole("button", {name:"Ստուգել →"}));
-    expect(within(first).getByRole("status")).toHaveTextContent("Review the correct answer: A) First choice");
+    expect(within(first).getByRole("status")).toHaveTextContent("Your answer: B) Second choice");\n    expect(within(first).getByRole("status")).toHaveTextContent("Review the correct answer:");\n    expect(within(first).getByRole("status")).toHaveTextContent("A) First choice");
     expect(choices[0]).toBeDisabled();
     expect(screen.getByText("1 / 2 checked")).toBeInTheDocument();
     expect(within(screen.getByRole("region", {name:"Second question"})).getAllByRole("radio")[0]).not.toBeDisabled();
