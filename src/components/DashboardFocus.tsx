@@ -123,6 +123,26 @@ export function DashboardFocus({ name, progress, subjects }: {
           {calendarDays.map(day => <span key={day.date} title={day.date+": "+day.count} className={`aspect-square rounded-lg border ${day.count>=15?"bg-primary":day.count>=5?"bg-primary/60":day.count>0?"bg-primary/25":"bg-muted/50"}`} />)}
         </div>
         <div className="grid gap-2 sm:grid-cols-3">{quests.map(quest => <div key={quest.id} className="rounded-xl border bg-card p-3"><p className="text-xs font-semibold">{quest.id==="review-3"?(lang==="hy"?"Կրկնել 3 սխալ":lang==="ru"?"Повторить 3 ошибки":"Review 3 mistakes"):quest.id==="answer-15"?(lang==="hy"?"Պատասխանել 15 հարցի":lang==="ru"?"Ответить на 15 вопросов":"Answer 15 questions"):(lang==="hy"?"Պատասխանել 5 հարցի":lang==="ru"?"Ответить на 5 вопросов":"Answer 5 questions")}</p><p className="mt-1 text-sm font-bold tabular-nums">{quest.count}/{quest.goal}</p><div className="mt-2 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{width:`${Math.min(100,quest.count/quest.goal*100)}%`}} /></div></div>)}</div>
+        <div className="space-y-2">
+          <h3 className="text-sm font-black">{lang==="hy"?"Իմ նվաճումները":lang==="ru"?"Мои достижения":"My achievements"}</h3>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {achievements(progress).map(item => {
+              const names: Record<string, [string,string,string]> = {
+                "first-steps":["Առաջին քայլ","First step","Первый шаг"],
+                "fifty-questions":["50 հարց","50 questions","50 вопросов"],
+                "hundred-questions":["100 հարց","100 questions","100 вопросов"],
+                "five-hundred-xp":["500 XP","500 XP","500 XP"],
+                "week-streak":["7-օրյա շարք","7-day streak","Серия 7 дней"],
+              };
+              return <div key={item.id} className={`flex min-h-12 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${item.unlocked?"border-primary/30 bg-primary/10 text-foreground":"bg-muted/30 text-muted-foreground"}`}>
+                <Trophy aria-hidden="true" className={`size-4 shrink-0 ${item.unlocked?"text-primary":"opacity-40"}`}/>
+                <span>{names[item.id]?.[i] ?? item.id}</span>
+                <span className="ml-auto text-[10px]">{item.unlocked?(lang==="hy"?"Ստացված":lang==="ru"?"Получено":"Earned"):(lang==="hy"?"Դեռ փակ":lang==="ru"?"Закрыто":"Locked")}</span>
+              </div>;
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground">{lang==="hy"?"Նվաճումները հիմնված են իրական պահպանված արդյունքների վրա։ Շաբաթական մարտահրավերները կամ նոր պարգևները դեռ մշակման փուլում են։":lang==="ru"?"Награды основаны на сохранённых результатах. Недельные испытания ещё в разработке.":"Achievements use saved results. Weekly challenges and new rewards are still in development."}</p>
+        </div>
         <p className="text-xs text-muted-foreground">{lang==="hy"?"Օրացույցում երևում է միայն այս սարքում պահպանված վերջին 31 օրվա ակտիվությունը։ Բաց թողած օրերը չեն նվազեցնում միավորները։":lang==="ru"?"Показаны только последние 31 день активности, сохранённой на устройстве. Пропуски не отнимают баллы.":"Only the last 31 days saved on this device are available. Missed days do not deduct points."}</p>
       </section>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
