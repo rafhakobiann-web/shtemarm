@@ -4,7 +4,6 @@ import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
-const DEFAULT_SUBJECTS: OnboardingSubject[] = ["english", "math", "armenian", "history", "biology"];
 const SUBJECT_NAMES: Record<OnboardingSubject, [string,string,string]> = {
   english: ["Անգլերեն", "English", "Английский"],
   math: ["Մաթեմատիկա", "Mathematics", "Математика"],
@@ -19,17 +18,17 @@ const SUBJECT_NAMES: Record<OnboardingSubject, [string,string,string]> = {
 const WORDS = {
   hy: { title:"Իմ ուսումնական տարածքը", hello:"Շարունակիր այնտեղից, որտեղ կանգ էիր առել", welcome:"Բարի վերադարձ, {name}",
     intro:"Առաջընթաց, սխալների կրկնություն և քեզ հետաքրքրող առարկաներ՝ մեկ էջում։", start:"Շարունակել ուսուցումը",
-    retry:"Կրկնել սխալները", choose:"Ընտրել առարկա", selected:"Քո ընտրած առարկաները", selectedHint:"Անմիջապես բացիր գրքերն ու թեստերը։",
+    retry:"Կրկնել սխալները", choose:"Ընտրել առարկա", selected:"Քո ընտրած առարկաները", selectedHint:"Անմիջապես բացիր գրքերն ու թեստերը։", noSubjects:"Ընտրված առարկաներ դեռ չկան։ Բացիր գրադարանը և ընտրիր քեզ անհրաժեշտը։",
     home:"Դիտել գլխավոր էջը", answered:"Պատասխանված", correct:"Ճիշտ", review:"Սխալ", rate:"Ճշտություն",
     recent:"Վերջին քննությունը", noRecent:"Քննության արդյունք դեռ չկա", first:"Դեռ պատասխաններ չկան․ սկսիր առաջին պարապմունքից։", level:"Մակարդակ" },
   en: { title:"My learning space", hello:"Pick up where you left off", welcome:"Welcome back, {name}",
     intro:"Progress, mistake reviews and your chosen subjects in one place.", start:"Continue learning",
-    retry:"Review mistakes", choose:"Choose a subject", selected:"Your subjects", selectedHint:"Open books and practice tests directly.",
+    retry:"Review mistakes", choose:"Choose a subject", selected:"Your subjects", selectedHint:"Open books and practice tests directly.", noSubjects:"No subjects selected yet. Browse the library and pick one to begin.",
     home:"View landing page", answered:"Answered", correct:"Correct", review:"To review", rate:"Accuracy",
     recent:"Latest exam", noRecent:"No exam results yet", first:"No answers recorded yet. Try your first practice session.", level:"Level" },
   ru: { title:"Моё учебное пространство", hello:"Продолжай с того места, где остановился", welcome:"С возвращением, {name}",
     intro:"Прогресс, работа над ошибками и выбранные предметы на одной странице.", start:"Продолжить обучение",
-    retry:"Повторить ошибки", choose:"Выбрать предмет", selected:"Твои предметы", selectedHint:"Открой сборники и тесты сразу.",
+    retry:"Повторить ошибки", choose:"Выбрать предмет", selected:"Твои предметы", selectedHint:"Открой сборники и тесты сразу.", noSubjects:"Предметы пока не выбраны. Открой библиотеку и начни обучение.",
     home:"Главная страница", answered:"Ответов", correct:"Верно", review:"Повторить", rate:"Точность",
     recent:"Последний экзамен", noRecent:"Результатов пока нет", first:"Ответов ещё нет. Начни первую тренировку.", level:"Уровень" },
 } as const;
@@ -54,7 +53,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   const t = WORDS[lang];
   const i = lang === "en" ? 1 : lang === "ru" ? 2 : 0;
   const summary = progressSummary(progress);
-  const selected = [...new Set(subjects.length ? subjects : DEFAULT_SUBJECTS)].slice(0, 6);
+  const selected = [...new Set(subjects)].slice(0, 6);
   const nextTo = summary.review > 0 ? "/mistakes" : "/study-plan";
   const nextText = summary.review > 0 ? t.retry : t.start;
   const greeting = name ? t.welcome.replace("{name}", name) : t.hello;
@@ -72,7 +71,7 @@ export function DashboardFocus({ name, progress, subjects }: {
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 max-w-2xl space-y-2">
             <p className="flex items-center gap-2 text-xs font-black text-primary"><Sparkles className="size-4" />{t.title}</p>
-            <h1 className="text-pretty text-2xl font-black leading-tight text-foreground sm:text-3xl">{greeting}</h1>
+            <h1 className="break-words text-pretty text-2xl font-black leading-tight text-foreground sm:text-3xl">{greeting}</h1>
             <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{t.intro}</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -110,6 +109,7 @@ export function DashboardFocus({ name, progress, subjects }: {
                   {SUBJECT_NAMES[subject][i]}<ArrowRight className="ml-2 size-3.5 text-primary" />
                 </Link>)}
           </div>
+          {selected.length === 0 && <p className="text-xs text-muted-foreground">{t.noSubjects}</p>}
           {summary.answered === 0 && <p className="text-xs text-muted-foreground">{t.first}</p>}
         </div>
         <div className="academy-bento flex min-w-0 items-center gap-4 p-4 sm:p-5">
