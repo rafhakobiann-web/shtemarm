@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
 import { LandingShowcase } from "@/components/LandingShowcase";
+import { ReferenceChapters } from "@/components/ReferenceChapters";
 import { setAppearance } from "@/lib/theme";
 import { previewIndex, previewSwipeDirection, type PreviewDirection } from "@/lib/preview-interaction";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
@@ -233,6 +234,7 @@ function LandingPage() {
         </Link>
         <nav className="sht-nav-links" aria-label={lang === "hy" ? "Հիմնական բաժիններ" : lang === "ru" ? "Основные разделы" : "Main sections"}>
           <a href="#experience">{tryLabel}</a>
+          <a href="#book-preview">{t.b1}</a>
           <a href="#benefits">{ui.navBenefits}</a>
           <a href="#subjects">{t.subjects}</a>
           <a href="#how-it-works">{ui.navSteps}</a>
@@ -243,7 +245,7 @@ function LandingPage() {
           <details className="sht-mobile-links">
             <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
             <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
-              {[["#experience", tryLabel], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
+              {[["#experience", tryLabel], ["#book-preview", t.b1], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq]].map(([hash, label]) => (
                 <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
               ))}
               <Link to="/download" onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{androidLabel}<ArrowRight className="size-4" aria-hidden="true" /></Link>
@@ -371,7 +373,9 @@ function LandingPage() {
         <span><Trophy className="size-5" aria-hidden="true" />{t.b4}</span>
       </div>
 
+      <ReferenceChapters lang={lang} part="books" />
       <LandingShowcase lang={lang} part="practice" />
+      <ReferenceChapters lang={lang} part="reading" />
 
       <section id="benefits" className="sht-section sht-section-benefits" aria-labelledby="sht-benefits-title">
         <span className="sht-chapter-id" aria-hidden="true">01 / SHTEMARM</span>
@@ -409,7 +413,9 @@ function LandingPage() {
         </div>
       </section>
 
+      <ReferenceChapters lang={lang} part="cards" />
       <LandingShowcase lang={lang} part="journey" />
+      <ReferenceChapters lang={lang} part="mistakes" />
 
       <section id="how-it-works" className="sht-section sht-steps-section" aria-labelledby="sht-steps-title">
         <span className="sht-chapter-id" aria-hidden="true">03 / THE PATH</span>
@@ -429,6 +435,7 @@ function LandingPage() {
       </section>
 
       <LandingShowcase lang={lang} part="ai" />
+      <ReferenceChapters lang={lang} part="exam" />
 
       <section id="faq" className="sht-section sht-faq-section" aria-labelledby="sht-faq-title">
         <span className="sht-chapter-id" aria-hidden="true">04 / QUESTIONS</span>
@@ -447,7 +454,9 @@ function LandingPage() {
         </div>
       </section>
 
+      <ReferenceChapters lang={lang} part="community" />
       <LandingShowcase lang={lang} part="download" />
+      <ReferenceChapters lang={lang} part="access" />
 
       <section className="sht-bottom-cta" aria-labelledby="sht-cta-title">
         <span className="sht-cta-decoration" aria-hidden="true"><GraduationCap /></span>
