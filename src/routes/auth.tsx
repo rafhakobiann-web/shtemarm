@@ -198,6 +198,10 @@ function AuthPage() {
         if (!hasAuthenticatedSession(data.session)) {
           throw new Error("No active session after Google sign-in");
         }
+        if (returnPath !== "/") {
+          window.location.assign(returnPath);
+          return;
+        }
         await nav({ to: "/" });
         return;
       }
