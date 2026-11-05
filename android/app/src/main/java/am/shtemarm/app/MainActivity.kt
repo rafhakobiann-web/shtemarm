@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -232,6 +232,7 @@ private fun NativeShtemarm() {
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
             Page.HANDBOOK -> Page.HOME
+            Page.POMODORO -> Page.TOOLS
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
         }
@@ -384,7 +385,7 @@ private fun NativeShtemarm() {
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
-                            Page.TOOLS -> 4
+                            Page.TOOLS, Page.POMODORO -> 4
                             Page.STUDY, Page.RESULT -> when (sessionOrigin) {
                                 Page.EXAMS -> 2
                                 Page.GAMES -> 3
@@ -486,10 +487,19 @@ private fun NativeShtemarm() {
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
-                    Page.TOOLS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeTools(repository) { selectedSubject, pool, count, name ->
-                        subject = selectedSubject
-                        begin(pool, count, name)
-                    } }
+                    Page.TOOLS -> Column(Modifier.fillMaxSize().padding(padding)) {
+                        OutlinedButton(
+                            onClick = { page = Page.POMODORO },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
+                        ) { Text(NativeStudyGuide.label(studyLanguage, "Ուսման ժամանակաչափ", "Study timer", "Таймер занятий")) }
+                        Box(Modifier.weight(1f)) { NativeTools(repository) { selectedSubject, pool, count, name ->
+                            subject = selectedSubject
+                            begin(pool, count, name)
+                        } }
+                    }
+                    Page.POMODORO -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        NativePomodoro(studyLanguage)
+                    }
                     Page.HOME -> {
                         val stats = BookCatalog.subjects.map { progress.stats(it) }
                         val correct = stats.sumOf { it.correct }

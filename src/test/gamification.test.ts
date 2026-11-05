@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { achievements, dailyQuests, getQuestHistory, parseQuestHistory, recordQuestActivity } from "@/lib/gamification";
+import { readFileSync } from "node:fs";
+import { achievements, dailyQuests, getQuestHistory, parseQuestHistory, recordQuestActivity, weekStart, weeklyChallenges } from "@/lib/gamification";
 describe("daily learning quests", () => {
   beforeEach(() => { localStorage.clear(); });
   it("counts distinct questions once per day", () => {
@@ -17,6 +18,29 @@ describe("daily learning quests", () => {
   it("handles corrupt and old data safely", () => {
     expect(parseQuestHistory("not-json")).toEqual({});
     expect(parseQuestHistory('{"bad":{"answered":["1"],"reviewed":[]}}')).toEqual({});
+  });
+  it("renders saved achievements in the dashboard without claiming unfinished weekly challenges", () => {
+    const dashboard = readFileSync("src/components/DashboardFocus.tsx", "utf8");
+    expect(dashboard).toContain("achievements(progress).map");
+    expect(dashboard).toContain("item.unlocked");
+    expect(dashboard).toContain("Optional weekly challenges");
+  });
+  it("counts weekly answers once and leaves challenges optional", () => {
+    const history = { "2026-11-02": { answered: ["a","b"], reviewed: [] }, "2026-11-03": { answered: ["a","c"], reviewed: ["x"] } };
+    expect(weekStart(new Date(2026, 10, 5))).toBe("2026-11-02");
+    const result = weeklyChallenges(history, ["answer-20"], new Date(2026, 10, 5));
+    expect(result[0]).toMatchObject({ count: 3, selected: true });
+    expect(result[2]).toMatchObject({ count: 1, selected: false });
+  });
+  it("keeps achievement animation subtle, conditional and accessible", () => {
+    const dashboard = readFileSync("src/components/DashboardFocus.tsx", "utf8");
+    const stylesheet = readFileSync("src/styles.css", "utf8");
+    expect(dashboard).toContain('data-achievement={item.id}');
+    expect(dashboard).toContain('item.unlocked?"border-primary/30');
+    expect(dashboard).toContain('motion-safe:animate-[achievement-reveal_450ms_ease-out_both]');
+    expect(stylesheet).toContain("@keyframes achievement-reveal");
+    expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(stylesheet).toContain("[data-achievement] { animation: none !important");
   });
   it("uses existing progress for achievement unlocks without resetting XP", () => {
     const result = achievements({answers:{"a":1},xp:510,streak:7});
