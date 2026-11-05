@@ -22,6 +22,17 @@ export type ArmenianOriginalSection = {
   reviewRequiredMC: string[];
 };
 
+export type ArmenianOriginalAssertions = {
+  volume: number;
+  name: string;
+  answerKeyPage: number;
+  groups: Array<{
+    n: string;
+    pdfPage: number;
+    questions: Array<{ n: string; stem: string; options: Record<string, string>; answer: string }>;
+  }>;
+};
+
 const sectionNames = [
   "Հնչյունաբանություն",
   "Բառագիտություն",
@@ -63,7 +74,7 @@ function isPlayableMc(q: OfficialMc): q is OfficialMc & { stem: string; options:
  * Fail closed on malformed imports; questions needing visual inspection stay
  * in the source JSON but do not become incorrectly answerable exercises.
  */
-export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[]): Book {
+export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[], assertions?: ArmenianOriginalAssertions): Book {
   if (sources.length !== 8) throw new Error("Հայոց լեզվի I մասի 8 բաժիններից մեկը բացակայում է։");
   const sections: Section[] = sources.map((source, index) => {
     const section = index + 1;
@@ -118,6 +129,41 @@ export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[]): B
       units,
     };
   });
+  if (assertions) {
+    if (assertions.volume !== 1 || assertions.name !== "Պնդումների փունջ" ||
+        !Array.isArray(assertions.groups) || assertions.groups.length !== 48) {
+      throw new Error("«Պնդումների փունջ» բնօրինակ 48 խմբերը թերի են։");
+    }
+    const units: Unit[] = assertions.groups.map((group, i) => {
+      if (group.n !== String(i + 1) || group.questions.length !== 6 ||
+          group.questions.some((q, index) =>
+            q.n !== String(index + 1) ||
+            !q.stem.trim() ||
+            !["1", "2"].includes(q.answer) ||
+            !["1", "2", "3"].every(key => Boolean(q.options[key])))) {
+        throw new Error("«Պնդումների փունջ» խմբի տվյալները սխալ են։");
+      }
+      return {
+        id: "ar1-assertions-" + group.n,
+        label: "Պնդումների փունջ · " + group.n,
+        kind: "mc",
+        passage: "",
+        questions: group.questions.map(q => ({
+          n: q.n,
+          stem: cleanPdfArtifacts(q.stem),
+          options: q.options,
+          answer: q.answer,
+        })),
+      };
+    });
+    sections.push({
+      n: 9,
+      title: "Պնդումների փունջ",
+      instr_en: "Պնդումների փունջ",
+      instr_hy: "Բնօրինակ հավելված · 48 փունջ, յուրաքանչյուրում 6 պնդում։ Ընտրիր՝ ճիշտ է, սխալ է կամ չգիտեմ։",
+      units,
+    });
+  }
   return { id: 41, sections };
 }
 
@@ -132,5 +178,13 @@ export async function loadArmenianOriginalBook(): Promise<Book> {
       return await response.json() as ArmenianOriginalSection;
     })
   ));
-  return buildArmenianOriginalBook(sources);
+  const assertions = await fetchBookResponse("/data/armenian-official-1-assertions.json", async response => {
+    if (!response.ok) throw new Error("Հայոց լեզվի բնօրինակ հավելվածը չի բեռնվել՝ HTTP " + response.status);
+    const mime = response.headers.get("content-type") ?? "";
+    if (mime && !/json|text\\/plain|octet-stream/i.test(mime)) {
+      throw new Error("Բնօրինակ հավելվածի փոխարեն վերադարձվել է ոչ JSON բովանդակություն։");
+    }
+    return await response.json() as ArmenianOriginalAssertions;
+  });
+  return buildArmenianOriginalBook(sources, assertions);
 }
