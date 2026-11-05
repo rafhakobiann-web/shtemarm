@@ -35,5 +35,7 @@ describe("public landing is available for visitors and signed-in students", () =
     expect(landing).toContain('<LandingExperiences lang={lang} entryTo={entryTo} />');
     expect(demo).toContain('to={entryTo}');
     expect(demo).toContain('to="/download"');
+    expect(landing).toContain('to="/dashboard" search={{ subject: key');
+    expect(landing).toContain('to="/subject/$subject" params={{ subject: "physics" }}');
   });
 });
