@@ -65,7 +65,55 @@
         }
       ],
       "sourceEdition": 2017,
-      "examYear": 2018
+      "examYear": 2018,
+      "extractionAudit": {
+        "source": "hayoc-1(2).pdf",
+        "status": "raw PDF text extraction completed locally; not yet integrated into playable question bank",
+        "questionCount": 1370,
+        "answerKeyStatus": "PDF answer pages 249–255 extracted; question-by-question matching not verified",
+        "sections": [
+          {
+            "section": 1,
+            "multipleChoice": 103,
+            "shortAnswer": 89
+          },
+          {
+            "section": 2,
+            "multipleChoice": 111,
+            "shortAnswer": 48
+          },
+          {
+            "section": 3,
+            "multipleChoice": 212,
+            "shortAnswer": 110
+          },
+          {
+            "section": 4,
+            "multipleChoice": 200,
+            "shortAnswer": 194
+          },
+          {
+            "section": 5,
+            "multipleChoice": 27,
+            "shortAnswer": 8
+          },
+          {
+            "section": 6,
+            "multipleChoice": 10,
+            "shortAnswer": 8
+          },
+          {
+            "section": 7,
+            "multipleChoice": 16,
+            "shortAnswer": 6
+          },
+          {
+            "section": 8,
+            "multipleChoice": 204,
+            "shortAnswer": 24
+          }
+        ]
+      }
     },
     {
       "volume": 2,
