@@ -18,6 +18,14 @@ function makeProgress(overrides: Partial<Progress> = {}): Progress {
 }
 
 describe("dashboard focuses on the actual student's work", () => {
+  it("replaces the oversized Biology tile but retains direct access to exams", () => {
+    const dashboard = readFileSync("src/routes/dashboard.tsx", "utf8");
+    expect(dashboard).toContain('<Link to="/biology" className="inline-flex min-h-12');
+    expect(dashboard).toContain('tx("Կենսաբանության քննություններ")');
+    expect(dashboard).not.toContain('tx("Բոլոր կենսաբանության թեստերը")');
+    expect(dashboard).toContain('title={tx("Կենսաբանություն · Փորձնական քննություն")}');
+  });
+
   it("shares landing design tokens without changing student data or route logic", () => {
     const css = readFileSync("src/dashboard-focus.css", "utf8");
     const landing = readFileSync("src/landing-v3.css", "utf8");
