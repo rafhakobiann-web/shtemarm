@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_request_counters: {
+        Row: {
+          bucket: string
+          period_start: string
+          used: number
+        }
+        Insert: {
+          bucket: string
+          period_start: string
+          used?: number
+        }
+        Update: {
+          bucket?: string
+          period_start?: string
+          used?: number
+        }
+        Relationships: []
+      }
       explanation_cache: {
         Row: {
           cache_key: string
@@ -62,6 +80,24 @@ export type Database = {
           replied_at?: string | null
           reply?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      feedback_request_counters: {
+        Row: {
+          bucket: string
+          period_start: string
+          used: number
+        }
+        Insert: {
+          bucket: string
+          period_start: string
+          used?: number
+        }
+        Update: {
+          bucket?: string
+          period_start?: string
+          used?: number
         }
         Relationships: []
       }
@@ -118,7 +154,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reserve_ai_request: {
+        Args: {
+          p_global_daily_limit: number
+          p_global_minute_limit: number
+          p_subject: string
+          p_subject_daily_limit: number
+        }
+        Returns: boolean
+      }
+      reserve_feedback_submission: {
+        Args: { p_client_hash: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -20,7 +20,7 @@ export function googleOAuthMethod(hostname: string): GoogleOAuthMethod {
 }
 
 /** Redirect back to this site's own account route, not an arbitrary URL. */
-export function googleOAuthRedirect(origin: string): string {
+export function googleOAuthRedirect(origin: string, path = "/auth"): string {
   const url = new URL(origin);
   const local = url.hostname === "localhost" || url.hostname === "127.0.0.1" ||
     url.hostname === "[::1]";
@@ -28,7 +28,8 @@ export function googleOAuthRedirect(origin: string): string {
       url.username !== "" || url.password !== "" || url.origin === "null") {
     throw new Error("Unsupported OAuth origin");
   }
-  return new URL("/auth", url.origin).toString();
+  // `path` must already be a validated same-origin path (see oauthReturnPath).
+  return new URL(path, url.origin).toString();
 }
 
 /** A broker returning without a redirect is successful only with a real session. */

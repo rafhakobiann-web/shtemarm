@@ -9,9 +9,14 @@ import { useProgress } from "@/lib/progress";
 import { useLang, useTx } from "@/lib/lang";
 import { authFeedback } from "@/lib/auth-feedback";
 import { googleOAuthMethod, googleOAuthRedirect, hasAuthenticatedSession } from "@/lib/google-oauth-routing";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
+  // OAuth consent sends unauthenticated users here with a return target.
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search["next"] === "string" ? search["next"] : undefined,
+  }),
   head: () => ({
     meta: [
       { property: "og:title", content: "Մուտք և գրանցում · Shtemarm" },
@@ -30,6 +35,9 @@ function AuthPage() {
   const tx = useTx();
   const lang = useLang();
   const nav = useNavigate();
+  const { next } = Route.useSearch();
+  // Validated same-origin return target (e.g. back to the OAuth consent page).
+  const returnPath = oauthReturnPath(next);
   const progress = useProgress();
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [configurationAttempt, setConfigurationAttempt] = useState(0);
@@ -138,6 +146,10 @@ function AuthPage() {
           throw new Error("No active session after sign-in");
         }
         setPassword("");
+        if (returnPath !== "/") {
+          window.location.assign(returnPath);
+          return;
+        }
         await nav({ to: "/dashboard" });
         return;
       }
@@ -145,7 +157,7 @@ function AuthPage() {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: window.location.origin + "/auth",
+          emailRedirectTo: new URL(returnPath, window.location.origin).href,
           data: { username: username.trim().slice(0, 40) },
         },
       });
@@ -170,7 +182,7 @@ function AuthPage() {
     setProblem("");
     setNotice("");
     try {
-      const redirect = googleOAuthRedirect(window.location.origin);
+      const redirect = googleOAuthRedirect(window.location.origin, returnPath);
       if (googleOAuthMethod(window.location.hostname) === "lovable") {
         // Lovable-hosted pages use their broker; do not initiate a competing
         // Supabase OAuth redirect while that broker is handling the callback.
@@ -185,6 +197,10 @@ function AuthPage() {
         if (error) throw error;
         if (!hasAuthenticatedSession(data.session)) {
           throw new Error("No active session after Google sign-in");
+        }
+        if (returnPath !== "/") {
+          window.location.assign(returnPath);
+          return;
         }
         await nav({ to: "/" });
         return;
