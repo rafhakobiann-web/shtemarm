@@ -1,7 +1,7 @@
 # Shtemarm landing refresh — responsive guest experience (2026-11-05)
 
 ## Scope and design
-The user's reference informed the editorial treatment: teal hero, amber accents, paper/grid panels, readable Armenian typography and a phone-style preview. Original Shtemarm branding and copy only. All work stays in Draft PR #216; Production, Lovable and the existing exam routes are unchanged.
+The user's reference informed the editorial treatment: teal hero, amber accents, paper/grid panels, readable Armenian typography and a phone-style preview. Original Shtemarm branding and copy only. All work stays in Draft PR #220; Production, Lovable and the existing exam routes are unchanged.
 
 ## Implemented
 - Interactive **dynamic-island-inspired** phone notch: accessible expanded state, disclosure and a clear link to the practice sample. Phone preview retains swipe/keyboard buttons and native vertical scrolling.
@@ -68,3 +68,24 @@ The standalone earlier Shtemarm HTML design reference suggested a clearer split 
 - [ ] GitHub Actions and Vitest/type/build verification. Workflow runners still fail before steps (issue #217).
 - [ ] APK MIME, size, hash, installation and no private GitHub redirects.
 - [ ] Approve visual output and merge only after checks. Production remains untouched.
+
+## Nov 5 — full reference video expansion (Draft PR #220)
+The provided 30-second reference features a teal-and-gold opening, book-cover shelf, graph-paper practice, AI tutor, reading, lavender vocabulary/mistakes, dark-teal exams, amber progress path and access/download comparison. All new UI remains Shtemarm-branded.
+
+Implemented in src/components/ReferenceChapters.tsx and reference-chapters.css:
+- Subject-switchable book shelf with correct subject volume counts: Armenian IV, English III, Mathematics II, Biology IV; book previews do not claim complete digitization.
+- Original answerable English reading sample with visible feedback.
+- Swipeable vocabulary cards: left=known, right=review, review counter, buttons and reset. No sample writes to user progress.
+- Expandable mistake explanations; exam subject selector with sign-in route rather than invented scores or timers.
+- Toggleable, clearly illustrative progress path; no invented user leaderboard data.
+- Website and Android beta APK comparison without fabricated pricing or a Google Play listing.
+- Responsive teal/amber/paper/lavender treatments, touch targets, dynamic-island phones, contrast, focus and reduced-motion support.
+
+src/routes/index.tsx integrates seven chapters into the story while retaining the original editorial hero, existing interactive guest study sample, AI preview, FAQs and CTA. Signed-in routes and question-bank files were not modified.
+
+### Verification and release guard
+- Source-level checks confirmed all seven route integrations, matched JSX section/device tags, balanced braces, website APK target and reduced-motion guard.
+- src/test/landing-reference-chapters.test.tsx adds interaction tests; GitHub workflow now includes this file.
+- GitHub Actions currently fails with ZERO executed runner steps. TypeScript, Vitest and Vite build remain UNVERIFIED, not passed.
+- External deployment status is not proof of functional QA. Lovable is the requested host; do not deploy this to Netlify or Vercel.
+- Keep PR #220 Draft. Do not merge into main or publish Lovable Production before build and mobile dark/light QA.
