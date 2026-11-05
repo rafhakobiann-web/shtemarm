@@ -147,7 +147,7 @@ export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[], as
         id: "ar1-assertions-" + group.n,
         label: "Պնդումների փունջ · " + group.n,
         kind: "mc",
-        passage: "",
+        passage: "Պնդումների փունջ․ յուրաքանչյուր պնդման համար ընտրիր՝ ճիշտ է, սխալ է կամ չգիտեմ։",
         questions: group.questions.map(q => ({
           n: q.n,
           stem: cleanPdfArtifacts(q.stem),
