@@ -239,14 +239,21 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
   const words = [{ front: "curious", back: "eager to learn" }, { front: "improve", back: "to make better" }, { front: "achieve", back: "to reach a goal" }];
   const nextCard = () => setCard(current => (current + 1) % words.length);
   const previousCard = () => setCard(current => (current + words.length - 1) % words.length);
+  const settleFrame = useRef<number | null>(null);
   const resetDrag = (node: HTMLDivElement) => {
-    node.style.setProperty("--drag-x", "0px");
-    node.style.setProperty("--drag-angle", "0deg");
+    // Enable the spring transition before restoring the drag transform.
     node.removeAttribute("data-dragging");
+    if (settleFrame.current !== null) window.cancelAnimationFrame(settleFrame.current);
+    settleFrame.current = window.requestAnimationFrame(() => {
+      node.style.setProperty("--drag-x", "0px");
+      node.style.setProperty("--drag-angle", "0deg");
+      settleFrame.current = null;
+    });
   };
   const handleCardDown = (event: PointerEvent<HTMLDivElement>) => {
     if ((event.pointerType !== "touch" && event.pointerType !== "pen") ||
         (event.target instanceof Element && event.target.closest("button"))) return;
+    if (settleFrame.current !== null) { window.cancelAnimationFrame(settleFrame.current); settleFrame.current = null; }
     swipeStart.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
   };
   const handleCardMove = (event: PointerEvent<HTMLDivElement>) => {
