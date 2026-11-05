@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LandingHeroPhone, LandingShowcase } from "@/components/LandingShowcase";
+import { LandingHeroLab, LandingExperiences } from "@/components/LandingLabV3";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowRight, Download, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
 import { initLang, setLang, useLang } from "@/lib/lang";
@@ -245,7 +245,7 @@ function LandingPage() {
   const demoTasks = [t.demo1, t.demo2, t.demo3];
 
   return (
-    <div className="sht-landing ref-landing">
+    <div className="sht-landing sht-v3">
       <header className="sht-landing-nav" aria-label={lang === "hy" ? "Կայքի նավարկում" : lang === "ru" ? "Навигация сайта" : "Site navigation"}>
         <Link to="/" className="sht-brand" aria-label="Shtemarm">
           <span className="sht-brand-icon"><img src="/shtemarm-logo.svg" alt="" width="34" height="34" /></span>
@@ -261,7 +261,7 @@ function LandingPage() {
           <details className="sht-mobile-links">
             <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
             <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
-              {[["#practice-demo", lang === "hy" ? "Փորձել հարց" : lang === "ru" ? "Решить вопрос" : "Try a question"], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq], ["/download", lang === "hy" ? "Ներբեռնել հավելվածը" : lang === "ru" ? "Скачать приложение" : "Download app"]].map(([hash, label]) => (
+              {[["#try-it", lang === "hy" ? "Փորձել հարց" : lang === "ru" ? "Решить вопрос" : "Try a question"], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq], ["/download", lang === "hy" ? "Ներբեռնել հավելվածը" : lang === "ru" ? "Скачать приложение" : "Download app"]].map(([hash, label]) => (
                 <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
               ))}
             </nav>
@@ -303,15 +303,16 @@ function LandingPage() {
           <p className="sht-hero-description">{t.intro}</p>
           <div className="sht-hero-actions">
             <Link to="/auth" className="sht-button-primary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
-            <a href="#practice-demo" className="sht-button-secondary">{lang === "hy" ? "Փորձել հիմա" : lang === "ru" ? "Попробовать" : "Try it now"}<ArrowDown className="size-4" aria-hidden="true" /></a>
+            <a href="#try-it" className="sht-button-secondary">{lang === "hy" ? "Փորձել հիմա" : lang === "ru" ? "Попробовать" : "Try it now"}<ArrowDown className="size-4" aria-hidden="true" /></a>
           </div>
           <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{ui.explore}</span></div>
         </div>
 
-        <div className="sht-hero-visual" role="region" aria-label={ui.sample}>
-          <LandingHeroPhone lang={lang} />
-          <div className="sht-orbit sht-orbit-one" aria-hidden="true" />
-          <div className="sht-orbit sht-orbit-two" aria-hidden="true" />
+        <div id="try-it" className="sht-hero-visual" role="region" aria-label={ui.sample}>
+          <LandingHeroLab lang={lang} />
+          <details className="sl-plan-details">
+            <summary><Sparkles className="size-4" aria-hidden="true" />{lang === "hy" ? "Դիտել ուսումնական պլանի օրինակը" : lang === "ru" ? "Посмотреть пример учебного плана" : "Explore a sample study plan"}<ChevronDown className="size-4" aria-hidden="true" /></summary>
+            <div className="sl-plan-preview">
           <div className="sht-preview" data-focus={active}>
             <div className="sht-preview-top">
               <div className="sht-window-dots" aria-hidden="true"><i /><i /><i /></div>
@@ -348,11 +349,12 @@ function LandingPage() {
               <p className="sht-demo-disclaimer">{ui.demoNote}</p>
             </div>
           </div>
-          <div className="sht-floating-label"><BookOpen className="size-5" aria-hidden="true" /><span>{ui.review}</span></div>
+            </div>
+          </details>
         </div>
       </section>
 
-      <LandingShowcase lang={lang} />
+      <LandingExperiences lang={lang} />
 
       <div className="sht-info-band" aria-label={ui.explore}>
         <span><BookOpen className="size-5" aria-hidden="true" />{t.b1}</span>
