@@ -68,14 +68,14 @@
       "examYear": 2018,
       "extractionAudit": {
         "source": "hayoc-1(2).pdf",
-        "status": "all eight original sections transcribed to separate JSON files; playable conversion added; visual proofread still pending",
+        "status": "Eight original chapters and the 48-bundle appendix imported as playable source-based exercises; 60 complex multiple-choice questions withheld for visual proofread",
         "questionCount": 1394,
         "multipleChoice": 883,
         "shortAnswer": 511,
         "playableCandidateCount": 1334,
         "reviewRequiredMultipleChoice": 60,
-        "answerKeyStatus": "all 1394 printed answer-key positions matched against PDF answer tables; source wording and 60 complex layouts require visual proofread",
-        "supplementStatus": "«Պնդումների փունջ» pages 240–248 NOT included in current count; needs separate import and validation",
+        "answerKeyStatus": "1394 main-book answer positions and 288 appendix truth judgments linked to printed answer tables; manual visual proofreading of source wording is not fully completed",
+        "supplementStatus": "Imported 48 bundles and matched 288 statement keys against the printed answer grid on page 253",
         "sections": [
           {
             "section": 1,
@@ -125,7 +125,24 @@
             "shortAnswer": 24,
             "reviewRequiredMultipleChoice": 20
           }
-        ]
+        ],
+        "appendix": {
+          "title": "Պնդումների փունջ",
+          "pdfPageStart": 240,
+          "pdfPageEnd": 248,
+          "answerKeyPage": 253,
+          "bundles": 48,
+          "statements": 288,
+          "playableStatements": 288,
+          "manuallyReconstructedGroups": [
+            25,
+            41,
+            42,
+            47
+          ]
+        },
+        "totalSourceExercisesIncludingAppendix": 1682,
+        "playableExercisesIncludingAppendix": 1622
       }
     },
     {
