@@ -323,6 +323,7 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
+        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("shtemarm:tutor-question", { detail: { question: String(q.stem).slice(0, 1200), chosen: chosen ? String(chosen).slice(0, 100) : "" } }))} className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 text-xs font-semibold text-primary hover:bg-primary/10">{language==="hy"?"Հարցնել AI-ին այս առաջադրանքի մասին":language==="ru"?"Спросить ИИ об этом задании":"Ask AI about this question"}</button>
         {show && chosen !== q.answer && <p role="status" className="mt-3 rounded-xl bg-muted px-3 py-3 text-sm font-semibold">
           {words.wrong} {q.answer}) {q.options[q.answer]}
         </p>}
