@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "sdk_version": "3.4.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ugdkxmzvtjrcpylmpfjd.supabase.co/auth/v1",
+    "require_oauth_client_claim": true,
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "shtemarm",
+      "version": "0.1.0",
+      "title": "Shtemarm"
+    },
+    "tools": [
+      {
+        "name": "list_books",
+        "title": "List question books",
+        "description": "List every playable question book on Shtemarm with its subject, title and section count. Use this to discover book IDs for the other tools.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_sections",
+        "title": "List book sections",
+        "description": "List the sections of one question book with unit and question counts. Use list_books first to find a valid book ID.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "book_id": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Book ID from list_books, e.g. 1 for English Շտեմարան 1."
+            }
+          },
+          "required": [
+            "book_id"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_questions",
+        "title": "Get section questions",
+        "description": "Get the questions of one section of a question book, including passages, options and official answer keys. Use list_books and list_sections to find valid IDs. Large sections are truncated to the first 100 questions.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "book_id": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Book ID from list_books."
+            },
+            "section": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Section number from list_sections."
+            }
+          },
+          "required": [
+            "book_id",
+            "section"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_exam_structure",
+        "title": "Get exam structure",
+        "description": "Get the official 80-question Armenian unified exam structure used by Shtemarm's exam mode: how many tasks come from each section.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_progress",
+        "title": "Get my study progress",
+        "description": "Get the signed-in user's Shtemarm study progress: XP, streak, correct/incorrect answer counts and recent exam results. Requires sign-in; acts only on the caller's own data.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
