@@ -195,7 +195,7 @@ html.dark[data-surface="liquid"] .sht-editorial .sht-ref-intro h2 {font-weight:9
   .sht-editorial .sht-ref-section *,.sht-editorial .sht-ref-access * {animation:none!important;scroll-behavior:auto!important;transition:none!important;}
 }
 
-/* Lightweight, compositor-only response to changing cards and scroll entry. */
+/* Lightweight, compositor-only response to changing flashcards. */
 .sht-editorial .sht-ref-chips button,
 .sht-editorial .sht-ref-card-actions button {min-height:42px;}
 .sht-editorial .sht-ref-answer-list button,
