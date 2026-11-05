@@ -149,7 +149,7 @@ export function DashboardFocus({ name, progress, subjects }: {
                 "five-hundred-xp":["500 XP","500 XP","500 XP"],
                 "week-streak":["7-օրյա շարք","7-day streak","Серия 7 дней"],
               };
-              return <div key={item.id} className={`flex min-h-12 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${item.unlocked?"border-primary/30 bg-primary/10 text-foreground":"bg-muted/30 text-muted-foreground"}`}>
+              return <div key={item.id} data-achievement={item.id} data-unlocked={item.unlocked ? "true" : "false"} className={`flex min-h-12 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors motion-safe:duration-300 motion-reduce:transition-none ${item.unlocked?"border-primary/30 bg-primary/10 text-foreground motion-safe:animate-[achievement-reveal_450ms_ease-out_both]":"bg-muted/30 text-muted-foreground"}`}>
                 <Trophy aria-hidden="true" className={`size-4 shrink-0 ${item.unlocked?"text-primary":"opacity-40"}`}/>
                 <span>{names[item.id]?.[i] ?? item.id}</span>
                 <span className="ml-auto text-[10px]">{item.unlocked?(lang==="hy"?"Ստացված":lang==="ru"?"Получено":"Earned"):(lang==="hy"?"Դեռ փակ":lang==="ru"?"Закрыто":"Locked")}</span>
