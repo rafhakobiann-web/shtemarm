@@ -152,7 +152,7 @@ describe("Learning-first AI in Shtemarm",()=>{
   it("makes saved answer-key explanations reusable across student answer choices",()=>{
     const subject=read("src/lib/explain.functions.ts");
     const math=read("src/lib/math-explain.functions.ts");
-    expect(subject).toContain("shared-teaching-v1");
+    expect(subject).toContain("shared-teaching-v2");
     expect(subject).toContain("chosen: null");
     expect(subject).toContain("getSavedExplanation(cacheKey)");
     expect(subject).not.toContain('Աշակերտի պատասխանը: ${data.chosen}');
