@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight, BookOpen, Check, CheckCircle2, ChevronLeft, ChevronRight, Download, ExternalLink,
-  GraduationCap, Lightbulb, LockKeyhole, Monitor, RotateCcw, Smartphone, Sparkles,
+  GraduationCap, Lightbulb, LockKeyhole, Monitor, RotateCcw, Smartphone, Sparkles, Layers3, MoveHorizontal, BookmarkCheck,
 } from "lucide-react";
 import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION } from "@/lib/app-download";
 
@@ -116,31 +116,69 @@ const SAMPLE_QUESTIONS: Record<Lang, readonly SampleQuestion[]> = {
     { subject: "Մաթեմատիկա · փորձնական հարց", prompt: "Եթե 3x + 5 = 14, ապա որքա՞ն է x-ը։", options: ["2", "3", "4"], correct: 1, hint: "Հանիր 5 երկու կողմից, հետո բաժանիր 3-ի։", explanation: "14 − 5 = 9, իսկ 9 ÷ 3 = 3։" },
     { subject: "Անգլերեն · փորձնական հարց", prompt: "Ո՞րն է Present Simple ժամանակաձևով նախադասությունը։", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Փնտրիր սովորական, կրկնվող գործողությունը։", explanation: "«She reads every day» արտահայտում է կրկնվող գործողություն։" },
     { subject: "Հայոց լեզու · փորձնական հարց", prompt: "«Գեղեցիկ» բառը ո՞ր խոսքի մասն է։", options: ["Ածական", "Գոյական", "Բայ"], correct: 0, hint: "Բառը նկարագրում է առարկայի հատկանիշը։", explanation: "«Գեղեցիկ» բառը ածական է, քանի որ ցույց է տալիս հատկանիշ։" },
+    { subject: "Մաթեմատիկա · փորձնական հարց", prompt: "Եթե 2(x + 3) = 18, ապա որքա՞ն է x-ը։", options: ["6", "9", "12"], correct: 0, hint: "Նախ երկու կողմերը բաժանիր 2-ի։", explanation: "x + 3 = 9, հետևաբար x = 6։" },
+    { subject: "Անգլերեն · փորձնական հարց", prompt: "Choose the correct form: They ___ to school every day.", options: ["goes", "go", "going"], correct: 1, hint: "With «they» use the base form in Present Simple.", explanation: "They go to school every day. «They» takes the base verb." },
+    { subject: "Հայոց լեզու · փորձնական հարց", prompt: "Ո՞ր բառն է գոյական։", options: ["արագ", "գիրք", "գրել"], correct: 1, hint: "Գտիր այն բառը, որը առարկա է անվանում։", explanation: "«Գիրք» բառը գոյական է. անվանում է առարկա։" },
   ],
   en: [
     { subject: "Mathematics · sample", prompt: "If 3x + 5 = 14, what is x?", options: ["2", "3", "4"], correct: 1, hint: "Subtract 5 from both sides, then divide by 3.", explanation: "14 − 5 = 9, then 9 ÷ 3 = 3." },
     { subject: "English · sample", prompt: "Which sentence uses the Present Simple tense?", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Look for a repeated everyday action.", explanation: "“She reads every day” describes a habit in the Present Simple." },
     { subject: "Armenian language · sample", prompt: "Which part of speech is «գեղեցիկ» (beautiful)?", options: ["Adjective", "Noun", "Verb"], correct: 0, hint: "It describes a quality.", explanation: "It is an adjective because it describes a quality." },
+    { subject: "Mathematics · sample", prompt: "If 2(x + 3) = 18, what is x?", options: ["6", "9", "12"], correct: 0, hint: "First divide both sides by 2.", explanation: "x + 3 = 9, so x = 6." },
+    { subject: "English · sample", prompt: "Choose the correct form: They ___ to school every day.", options: ["goes", "go", "going"], correct: 1, hint: "With “they” use the base verb in Present Simple.", explanation: "They go to school every day. “They” takes the base verb." },
+    { subject: "Armenian language · sample", prompt: "Which of these Armenian words is a noun?", options: ["արագ (fast)", "գիրք (book)", "գրել (to write)"], correct: 1, hint: "Look for a word that names an object.", explanation: "«Գիրք» (book) is a noun." },
   ],
   ru: [
     { subject: "Математика · пример", prompt: "Если 3x + 5 = 14, чему равен x?", options: ["2", "3", "4"], correct: 1, hint: "Вычти 5, затем раздели на 3.", explanation: "14 − 5 = 9, затем 9 ÷ 3 = 3." },
     { subject: "Английский · пример", prompt: "Какое предложение написано в Present Simple?", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Найди повторяющееся действие.", explanation: "«She reads every day» описывает привычное действие." },
     { subject: "Армянский язык · пример", prompt: "Какая часть речи — «գեղեցիկ» (красивый)?", options: ["Прилагательное", "Существительное", "Глагол"], correct: 0, hint: "Это слово обозначает признак предмета.", explanation: "Это прилагательное, обозначающее признак." },
+    { subject: "Математика · пример", prompt: "Если 2(x + 3) = 18, чему равен x?", options: ["6", "9", "12"], correct: 0, hint: "Сначала раздели обе части на 2.", explanation: "x + 3 = 9, поэтому x = 6." },
+    { subject: "Английский · пример", prompt: "Выбери правильную форму: They ___ to school every day.", options: ["goes", "go", "going"], correct: 1, hint: "После they в Present Simple используется начальная форма.", explanation: "They go to school every day. После they используется go." },
+    { subject: "Армянский язык · пример", prompt: "Какое армянское слово — существительное?", options: ["արագ (быстро)", "գիրք (книга)", "գրել (писать)"], correct: 1, hint: "Найди название предмета.", explanation: "«Գիրք» (книга) — существительное." },
   ],
+};
+
+const SAMPLE_SUBJECTS: Record<Lang, readonly string[]> = {
+  hy:["Մաթեմատիկա","Անգլերեն","Հայոց լեզու"],
+  en:["Mathematics","English","Armenian"],
+  ru:["Математика","Английский","Армянский"],
 };
 
 export function LandingShowcase({ lang }: { lang: Lang }) {
   const t = WORDS[lang];
   const [questionIndex,setQuestionIndex] = useState(0);
   const [answers,setAnswers] = useState<Record<number,number>>({});
+  const [tutorMode,setTutorMode] = useState<"hint" | "explain" | "practice">("hint");
+  const [cardIndex,setCardIndex] = useState(0);
+  const [reviewWords,setReviewWords] = useState<number[]>([]);
+  const [showReview,setShowReview] = useState(false);
+  const cardSwipe = useRef<{id:number;x:number;y:number}|null>(null);
   const question = SAMPLE_QUESTIONS[lang][questionIndex];
   const answer = answers[questionIndex] ?? null;
   const correctCount = SAMPLE_QUESTIONS[lang].reduce((count, sample, index) =>
     count + Number(answers[index] === sample.correct), 0);
+  const answeredCount = Object.keys(answers).length;
+  const sampleProgress = SAMPLE_QUESTIONS[lang].length;
+  const cardSet = showReview && reviewWords.length ? reviewWords : [0,1,2];
+  const displayCard = cardSet[cardIndex % cardSet.length];
+  const flashcard = FLASHCARDS[lang][displayCard];
+  const nextFlashcard = (needsReview: boolean) => {
+    setReviewWords(previous => needsReview ?
+      (previous.includes(displayCard) ? previous : [...previous,displayCard]) :
+      previous.filter(index => index !== displayCard));
+    setCardIndex(i => i + 1);
+  };
   const resetQuiz = () => { setAnswers({}); setQuestionIndex(0); };
   const changeQuestion = (direction: number) => {
-    setQuestionIndex(current => (current + direction + SAMPLE_QUESTIONS[lang].length) % SAMPLE_QUESTIONS[lang].length);
+    // Stay in the selected subject: two preview questions per subject.
+    setQuestionIndex(current => {
+      const subject = current % 3;
+      const local = Math.floor(current / 3);
+      return subject + (((local + direction + 2) % 2) * 3);
+    });
   };
+  const tutorCopy = TUTOR_DEMO[lang];
+  const cardLabels = FLASHCARD_LABELS[lang];
   return (
     <>
       <section id="experience" className="sht-story sht-story-paper" aria-labelledby="sht-story-practice-title">
@@ -153,9 +191,15 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
           </div>
         </div>
         <div className="sht-story-demo" aria-label={t.demo}>
+          <div className="sht-reference-quiz-tabs" role="group" aria-label={lang==="hy"?"Ընտրել առարկան":lang==="ru"?"Выбрать предмет":"Choose a subject"}>
+            {SAMPLE_SUBJECTS[lang].map((label,index)=>(
+              <button type="button" key={label} aria-pressed={questionIndex % 3 === index}
+                onClick={()=>setQuestionIndex(index)}>{label}</button>
+            ))}
+          </div>
           <div className="sht-story-demo-head">
             <span><BookOpen size={16} aria-hidden="true" />{question.subject}</span>
-            <span className="sht-story-demo-count">{String(questionIndex + 1).padStart(2,"0")} / {String(SAMPLE_QUESTIONS[lang].length).padStart(2,"0")}</span>
+            <span className="sht-story-demo-count">{String(Math.floor(questionIndex / 3) + 1).padStart(2,"0")} / 02}</span>
           </div>
           <div className="sht-story-demo-body">
             <span className="sht-story-label">{t.check}</span>
@@ -182,7 +226,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
                 <ChevronLeft size={18} aria-hidden="true" />
               </button>
               <span className="sht-story-quiz-score" aria-live="polite">
-                {lang==="hy"?"Ճիշտ":lang==="ru"?"Верно":"Correct"}: {correctCount} / {SAMPLE_QUESTIONS[lang].length}
+                {lang==="hy"?"Ճիշտ":lang==="ru"?"Верно":"Correct"}: {correctCount} / {sampleProgress}
               </span>
               <button type="button" className="sht-story-quiz-next" onClick={()=>changeQuestion(1)}>
                 {lang==="hy"?"Հաջորդը":lang==="ru"?"Дальше":"Next"}<ArrowRight size={17} aria-hidden="true" />
@@ -202,9 +246,16 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
           <p>{t.journeyDesc}</p>
         </div>
         <div className="sht-journey-card" aria-label={t.sampleProgress}>
-          <div className="sht-journey-heading"><span><GraduationCap size={20} aria-hidden="true"/>Shtemarm</span><span>{t.progressNumber}</span></div>
+          <div className="sht-journey-heading"><span><GraduationCap size={20} aria-hidden="true"/>Shtemarm</span>
+            <span aria-live="polite">{answeredCount} / {sampleProgress}</span></div>
           <h3>{t.pathTitle}</h3>
-          <div className="sht-journey-line" aria-hidden="true"><span/></div>
+          <div className="sht-journey-line" aria-hidden="true">
+            <span style={{ width: `${(answeredCount / sampleProgress) * 100}%` }} />
+          </div>
+          <p className="sht-reference-progress-live" aria-live="polite">
+            {lang==="hy" ? "Ճիշտ պատասխաններ" : lang==="ru" ? "Правильные ответы" : "Correct answers"}:
+            {" "}{correctCount} / {sampleProgress}
+          </p>
           {[t.path1,t.path2,t.path3].map((v,i)=>
             <div className={"sht-journey-step"+(i<2?" is-complete":"")} key={v}>
               <span className="sht-journey-step-number">{i<2?<Check size={17} aria-hidden="true"/>:i+1}</span>
@@ -227,9 +278,15 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
             <div><strong>Shtemarm AI</strong><span>{t.aiBadge}</span></div>
             <Sparkles size={19} aria-hidden="true"/>
           </div>
+          <div className="sht-reference-teacher-modes" role="group" aria-label={t.aiBadge}>
+            {(["hint","explain","practice"] as const).map(mode=>(
+              <button key={mode} type="button" aria-pressed={tutorMode===mode}
+                onClick={()=>setTutorMode(mode)}>{tutorCopy.modes[mode]}</button>
+            ))}
+          </div>
           <div className="sht-ai-messages">
             <div className="sht-ai-user">{t.aiStudent}</div>
-            <div className="sht-ai-tutor"><span className="sht-ai-tutor-icon"><Lightbulb size={16} aria-hidden="true"/></span><span>{t.aiReply}</span></div>
+            <div className="sht-ai-tutor"><span className="sht-ai-tutor-icon"><Lightbulb size={16} aria-hidden="true"/></span><span aria-live="polite">{tutorCopy.replies[tutorMode]}</span></div>
           </div>
           <div className="sht-ai-mock-input" aria-hidden="true"><span>...</span><ArrowRight size={17}/></div>
         </div>
