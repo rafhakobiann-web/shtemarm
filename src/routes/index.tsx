@@ -212,6 +212,30 @@ function LandingPage() {
     return () => { mounted = false; };
   }, [navigate]);
 
+  // Reveal on entry without scroll listeners; reduced-motion users see content immediately.
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined" ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        document.documentElement.classList.contains("user-reduced-motion")) return;
+    const page = document.querySelector<HTMLElement>(".ref-landing");
+    if (!page) return;
+    const targets = page.querySelectorAll<HTMLElement>(".ref-story-copy, .ref-story-visual, .ref-tool, .sht-feature, .sht-subject-card");
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("ref-inview");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.06 });
+    targets.forEach(node => {
+      if (node.getBoundingClientRect().top <= window.innerHeight * 0.95) node.classList.add("ref-inview");
+      else observer.observe(node);
+    });
+    page.classList.add("ref-motion-ready");
+    return () => observer.disconnect();
+  }, []);
+
   const benefits = [
     { Icon: BookOpen, title: t.b1, description: t.b1d, className: "sht-feature-featured" },
     { Icon: ListChecks, title: t.b2, description: t.b2d, className: "" },
