@@ -1,4 +1,5 @@
 import { fetchBookResponse } from "./fetch-book-response";
+import { loadArmenianOriginalBook } from "./armenian-original";
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
@@ -85,13 +86,10 @@ export const BIO_BOOKS = [
   { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
-/** Four independently playable Shtemarm-authored practice banks.
- * The user's 2018 GTC PDF volumes are indexed separately in
- * /data/armenian-source-index.json; do not label these practice questions
- * as transcribed originals until individually source-verified.
- */
+/** Volume I loads PDF-transcribed source material; volumes II–IV remain
+ * separately labeled Shtemarm-authored practice until transcribed. */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · բնօրինակ առաջադրանքներ · ստուգման փուլ", cover: "/covers/armenian-language.svg" },
   { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
   { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
   { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
@@ -167,7 +165,7 @@ export function loadBook(id: number): Promise<Book> {
     // Keep the request identity: an older failed request must not evict a
     // successful newer request started by the user's manual refresh.
     let request: Promise<Book>;
-    request = fetchBookResponse(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`, async (r) => {
+    request = (id === 41 ? loadArmenianOriginalBook() : fetchBookResponse(id === 63 || id === 64 ? `/data/physics-original-book${id - 62}.json` : id === 61 || id === 62 ? `/data/physics-book${id - 60}.json` : id >= 51 && id <= 54 ? `/data/original-${({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[id]}.json` : id >= 41 && id <= 44 ? `/data/armenian-book${id - 40}.json` : id > 30 && id < 40 ? `/data/bio-book${id - 30}.json` : id > 20 && id < 30 ? `/data/history-book${id - 20}.json` : `/data/book${id}.json`, async (r) => {
           if (!r.ok) throw new Error(`Book ${id} HTTP ${r.status}`);
           const type = r.headers.get("content-type") ?? "";
           // Some hosting platforms return a successful HTML fallback for
@@ -187,6 +185,7 @@ export function loadBook(id: number): Promise<Book> {
           }
           return data as Book;
         })
+        )
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
           if (cache.get(id) === request) cache.delete(id);
