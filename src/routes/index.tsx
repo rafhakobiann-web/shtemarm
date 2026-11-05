@@ -173,7 +173,7 @@ function LandingPage() {
   const lang = useLang();
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
-  const androidLabel = lang === "hy" ? "Android APK" : lang === "ru" ? "Android APK" : "Android APK";
+  const androidLabel = "Android APK";
   const apkTag = lang === "hy" ? "Վեբ կայք + GitHub APK" : lang === "ru" ? "Сайт + APK с GitHub" : "Website + GitHub APK";
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
