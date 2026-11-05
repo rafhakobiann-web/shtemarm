@@ -37,3 +37,15 @@ export function safePublicApkUrl(raw: string | undefined): string | null {
     return null;
   }
 }
+
+
+
+// A released tag is not necessarily accessible to the public if the GitHub
+// repository is private. Ignore legacy VITE_ANDROID_APK_URL configuration
+// pointing to this private repo, even if it otherwise looks like a valid APK.
+export function publiclyAccessibleApkUrl(raw: string | undefined): string | null {
+  const url = safePublicApkUrl(raw);
+  if (!url) return null;
+  if (/^https:\/\/github\.com\/rafhakobiann-web\/shtemarm(?:\/|$)/i.test(url)) return null;
+  return url;
+}
