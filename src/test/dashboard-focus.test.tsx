@@ -18,6 +18,17 @@ function makeProgress(overrides: Partial<Progress> = {}): Progress {
 }
 
 describe("dashboard focuses on the actual student's work", () => {
+  it("shares landing design tokens without changing student data or route logic", () => {
+    const css = readFileSync("src/dashboard-focus.css", "utf8");
+    const landing = readFileSync("src/landing-v3.css", "utf8");
+    expect(css).toContain("--dash-glass");
+    expect(css).toContain("--dash-line");
+    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(css).toContain("user-high-contrast");
+    expect(landing).toContain("--sl-line");
+    expect(css).not.toContain("position: fixed");
+  });
+
   it("computes accuracy from saved answers without fabricated progress", () => {
     expect(progressSummary(makeProgress())).toEqual({
       answered: 0, correct: 0, review: 0, accuracy: null, recentExam: null,
