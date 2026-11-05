@@ -8,6 +8,7 @@ import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
 import { learningLevel } from "@/lib/learningLevels";
 import { recommendLearningPath } from "@/lib/learningPath";
+import { weeklyLearningReport } from "@/lib/weeklyLearningReport";
 import { DAILY_GOAL_CHANGED, dailyGoalProgress, getDailyGoal, setDailyGoal, suggestDailyGoal, weeklyGoalSummary } from "@/lib/dailyStudyGoal";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
@@ -85,6 +86,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   }, []);
   const goalToday = dailyGoalProgress(questHistory, dailyGoal);
   const goalWeek = weeklyGoalSummary(questHistory, dailyGoal);
+  const report = weeklyLearningReport(questHistory, unitMistakes, subjects);
   const goalSuggestion = suggestDailyGoal(questHistory);
   const changeGoal = (key: "answers" | "reviews", value: number) => setGoal(setDailyGoal({...dailyGoal,[key]:value}));
   const quests = dailyQuests(questHistory);
@@ -149,6 +151,19 @@ export function DashboardFocus({ name, progress, subjects }: {
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկվող նպատակ" : lang === "ru" ? "Рекомендуемая цель" : "Suggested goal"}: {goalSuggestion.answers} + {goalSuggestion.reviews} · <button type="button" className="min-h-10 font-bold text-primary underline-offset-2 hover:underline" onClick={()=>setGoal(setDailyGoal(goalSuggestion))}>{lang === "hy" ? "Կիրառել" : lang === "ru" ? "Применить" : "Apply"}</button></p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Այս շաբաթ" : lang === "ru" ? "На этой неделе" : "This week"}: {goalWeek.completedDays} {lang === "hy" ? "օր նպատակն իրականացվել է" : lang === "ru" ? "дней цель выполнена" : "days with goal completed"} · {goalWeek.answered} {lang === "hy" ? "հարց" : lang === "ru" ? "вопросов" : "questions"} · {goalWeek.reviewed} {lang === "hy" ? "կրկնություն" : lang === "ru" ? "повторений" : "reviews"}</p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Նպատակները կամավոր են։ Բաց թողած օրերի համար տուգանք չկա։ Տվյալները պահվում են այս սարքում։" : lang === "ru" ? "Цели добровольны, пропуски без штрафов. Данные на этом устройстве." : "Goals are optional, with no penalty for missed days. Data is saved on this device."}</p>
+      </section>
+      <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}>
+        <h2 className="font-black">{lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}</h2>
+        <p className="text-xs text-muted-foreground">{report.start} — {report.end}</p>
+        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{report.answered}</strong>{lang === "hy" ? "Հարցեր" : lang === "ru" ? "Вопросы" : "Questions"}</div>
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{report.reviewed}</strong>{lang === "hy" ? "Կրկնություններ" : lang === "ru" ? "Повторы" : "Reviews"}</div>
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{report.activeDays}</strong>{lang === "hy" ? "Ակտիվ օրեր" : lang === "ru" ? "Активные дни" : "Active days"}</div>
+        </div>
+        <div className="flex items-end gap-1" role="img" aria-label={lang === "hy" ? "Օրական ակտիվության գծապատկեր" : lang === "ru" ? "Активность по дням" : "Daily activity chart"}>{report.daily.map(day=><div key={day.day} title={day.day+": "+(day.answered+day.reviewed)} className="flex-1 rounded-t bg-primary/70" style={{height:`${Math.max(4,Math.min(60,(day.answered+day.reviewed)*5))}px`}} />)}</div>
+        {report.subjects.length > 0 && <div className="space-y-1"><h3 className="text-sm font-bold">{lang === "hy" ? "Առարկաներ՝ պահպանված սխալներով" : lang === "ru" ? "Предметы и сохранённые ошибки" : "Subjects and saved mistakes"}</h3>{report.subjects.map(item=><p key={item.subject} className="text-xs text-muted-foreground">{SUBJECT_NAMES[item.subject]?.[i] ?? item.subject}: {item.pending}</p>)}</div>}
+        <p className="text-xs text-muted-foreground">{report.suggestions.length ? (lang === "hy" ? "Հաջորդ շաբաթ առաջարկվում է կրկնել՝ " : lang === "ru" ? "На следующей неделе повторить: " : "Suggested for next week: ")+report.suggestions.map(s=>SUBJECT_NAMES[s.subject]?.[i] ?? s.subject).join(", ") : lang === "hy" ? "Պահպանված սխալներից նոր առաջարկ դեռ չկա։" : lang === "ru" ? "Пока нет рекомендаций на основе ошибок." : "No saved-mistake recommendations yet."}</p>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Տվյալները միայն այս սարքից են։ Առարկայական ճշտությունը և պատմական XP-ն դեռ հասանելի չեն։" : lang === "ru" ? "Данные только с этого устройства. Точность по предметам и история XP пока недоступны." : "Device-local data only. Subject accuracy and historical XP are not yet available."}</p>
       </section>
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}>
         <h2 className="font-black">{lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}</h2>
