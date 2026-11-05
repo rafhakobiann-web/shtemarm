@@ -1,4 +1,4 @@
-import { getQuestHistory, localDay, weekStart, type QuestHistory, QUESTS_CHANGED } from "@/lib/gamification";
+import { localDay, weekStart, type QuestHistory } from "@/lib/gamification";
 
 const KEY = "shtemarm:daily-study-goal:v1";
 export const DAILY_GOAL_CHANGED = "shtemarm:daily-goal-changed";
