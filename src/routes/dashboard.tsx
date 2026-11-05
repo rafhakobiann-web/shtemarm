@@ -361,37 +361,25 @@ function Index() {
         </Link>
       </nav>
       <section className="space-y-7" id="dashboard">
-        <div className="space-y-3">
-          <p className="text-sm font-bold text-primary">
-            {name ? tx("Բարև, {name}։ Ուրախ ենք, որ նորից ես այստեղ։", { name }) : tx("Բարև՝ ընկեր։ Ուրախ ենք, որ այցելեցիր Shtemarm։")}
-          </p>
-          <h2 className="text-2xl font-black sm:text-3xl">{tx("Քո ուսումնական վահանակը")}</h2>
+        <div className="space-y-4">
+          <h2 className="academy-section-title text-xl font-black sm:text-2xl">{tx("Քո ուսումնական գործիքները")}</h2>
           <div className="sht-dashboard-bento grid gap-3 sm:grid-cols-3">
-            <div className="academy-bento p-4">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><Sparkles className="size-4 text-primary" aria-hidden="true" />{tx("Քո միավորները")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{progress.xp} <span className="text-sm font-semibold text-muted-foreground">XP</span></p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Մակարդակ")} {level(progress.xp)}</p>
-            </div>
-            <div className="academy-bento p-4">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><CheckCircle2 className="size-4 text-success" aria-hidden="true" />{tx("Ճիշտ պատասխաններ")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 1).length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Ընդհանուր պատասխանված հարցերից")}</p>
-            </div>
-            <div className="academy-bento p-4">
-              <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><RotateCcw className="size-4 text-amber-600" aria-hidden="true" />{tx("Կրկնելու հարցեր")}</p>
-              <p className="mt-1 text-2xl font-black tabular-nums">{Object.values(progress.answers).filter((v) => v === 0).length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{tx("Անհատական առաջարկ")}</p>
-            </div>
+            <Link to="/study-plan" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Target className="size-5" /></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շարունակել ուսուցումը")}</strong><span className="block text-xs text-muted-foreground">{tx("Այսօրվա անհատական պլանը")}</span></span>
+              <ArrowRight className="size-4 shrink-0 text-primary" />
+            </Link>
+            <Link to="/mistakes" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><RotateCcw className="size-5" /></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Իմ սխալները")}</strong><span className="block text-xs text-muted-foreground">{tx("Կրկնիր դժվար հարցերը")}</span></span>
+              <ArrowRight className="size-4 shrink-0 text-primary" />
+            </Link>
+            <Link to="/chat" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Brain className="size-5" /></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("AI ուսուցիչ")}</strong><span className="block text-xs text-muted-foreground">{tx("Հուշումներ և բացատրություններ")}</span></span>
+              <ArrowRight className="size-4 shrink-0 text-primary" />
+            </Link>
           </div>
-          {Object.values(progress.answers).some((v) => v === 0) && (
-            <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-bold">{tx("Առաջարկ քեզ համար")}</p>
-                <p className="text-sm text-muted-foreground">{tx("Կրկնիր նախկինում սխալ պատասխանած հարցերը, հետո նորից ստուգիր առաջընթացդ։")}</p>
-              </div>
-              <Link to="/mistakes" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold hover:bg-muted">{tx("Կրկնել սխալները")}</Link>
-            </div>
-          )}
           <details className="group/progress rounded-[1.35rem] border bg-card shadow-card">
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-black hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
               <span className="flex items-center gap-2"><Trophy className="size-5 text-primary"/>{tx("Մանրամասն առաջընթաց")}</span>
@@ -529,7 +517,7 @@ function Index() {
             sub={tx("Ընտրիր բաժինները և քանակը")}
             icon={<ClipboardCheck className="size-5" />}
           />
-          <ExamTile to="/math" title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
+          <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
           <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
