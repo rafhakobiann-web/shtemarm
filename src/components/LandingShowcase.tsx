@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type PointerEvent, type ReactNode } from "react";
 import {
   ArrowRight, BookOpen, BookMarked, Bookmark, Check, ChevronLeft, ChevronRight,
-  CircleHelp, Clock3, Download, GraduationCap, Layers3, MessageCircle, RotateCcw,
+  CircleHelp, Clock3, Download, GraduationCap, Layers3, RotateCcw,
   Send, Sparkles, Star, Target, Trophy, Volume2, WandSparkles, Zap,
 } from "lucide-react";
 
@@ -112,7 +112,7 @@ const WORDS = {
   },
 } as const;
 
-function PhoneShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function PhoneShell({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={"ref-device " + className}>
       <div className="ref-device-frame">
