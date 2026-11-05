@@ -42,6 +42,18 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(instructions).toContain("Never repeat it as broken plain text");
   });
 
+  it("only shares aggregate study progress with the tutor after explicit opt-in", () => {
+    const chat = read("src/routes/chat.tsx");
+    const server = read("src/lib/chat.functions.ts");
+    expect(chat).toContain("useState(false)");
+    expect(chat).toContain("checked={personalize}");
+    expect(chat).toContain("...(personalize ? { studySummary } : {})");
+    expect(chat).toContain("Object.values(progress.answers)");
+    expect(server).toContain("studySummary: z.object");
+    expect(server).toContain("Treat these counts as unverified context");
+    expect(server).toContain("Do not infer subject-level weaknesses");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
