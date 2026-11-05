@@ -14,9 +14,9 @@ import { oauthReturnPath } from "@/lib/oauth-return-path";
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
   // OAuth consent sends unauthenticated users here with a return target.
-  validateSearch: (search: Record<string, unknown>) => ({
-    next: typeof search["next"] === "string" ? search["next"] : undefined,
-  }),
+  // Return {} when absent so `next` stays optional for plain /auth links.
+  validateSearch: (search: Record<string, unknown>) =>
+    typeof search["next"] === "string" ? { next: search["next"] } : {},
   head: () => ({
     meta: [
       { property: "og:title", content: "Մուտք և գրանցում · Shtemarm" },

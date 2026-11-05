@@ -26,8 +26,8 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     const authorizationId = new URLSearchParams(location.search).get("authorization_id")!;
     const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
     if (error) throw error;
-    const immediate = data?.redirect_url ?? data?.redirect_to;
-    if (immediate && !data?.client) throw redirect({ href: immediate });
+    // An immediate-redirect result carries redirect_url and no client details.
+    if (data && "redirect_url" in data) throw redirect({ href: data.redirect_url });
     return data;
   },
   component: Consent,
@@ -61,7 +61,7 @@ function Consent() {
       setError(error.message);
       return;
     }
-    const target = data?.redirect_url ?? data?.redirect_to;
+    const target = data && "redirect_url" in data ? data.redirect_url : undefined;
     if (!target) {
       setBusy(false);
       setError("Լիազորման սերվերը չվերադարձրեց վերահասցե։");
