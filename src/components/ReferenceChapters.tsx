@@ -15,7 +15,7 @@ const TRANSLATIONS = {
   hy: {
     sample: "Ինտերակտիվ ցուցադրություն", booksTag: "Շտեմարաններ · ծանոթացում", booksTitle: "Շտեմարանները՝ քո ձեռքի տակ",
     booksDesc: "Ընտրիր առարկա և ծանոթացիր գրքերի կառուցվածքին։ Հարցերի իրական բովանդակությունը բացվում է ուսումնական հարթակում։",
-    bookChoose: "Ընտրիր առարկան", bookShelf: "Շտեմարաններ", bookOne: "Հատոր I", bookTwo: "Հատոր II", bookThree: "Հատոր III",
+    bookChoose: "Ընտրիր առարկան", bookShelf: "Շտեմարաններ", bookOne: "Հատոր I", bookTwo: "Հատոր II", bookThree: "Հատոր III", bookFour: "Հատոր IV",
     bookOpen: "Բացել շտեմարանները", readingTag: "Անգլերեն · ընթերցում", readingTitle: "Կարդա, մտածիր, ընտրիր պատասխանը",
     readingDesc: "Կարճ ընթերցողական օրինակով փորձիր, թե ինչպես են աշխատում տեքստային առաջադրանքները։",
     readingHeader: "Ընթերցանության առաջադրանք", readingQuestion: "Where does Ani go after school?",
@@ -49,7 +49,7 @@ const TRANSLATIONS = {
   en: {
     sample: "Interactive illustration", booksTag: "Question books · explore", booksTitle: "Your question books, close at hand",
     booksDesc: "Pick a subject and explore its book structure. Actual question content opens in the learning platform.",
-    bookChoose: "Choose a subject", bookShelf: "Question books", bookOne: "Volume I", bookTwo: "Volume II", bookThree: "Volume III",
+    bookChoose: "Choose a subject", bookShelf: "Question books", bookOne: "Volume I", bookTwo: "Volume II", bookThree: "Volume III", bookFour: "Volume IV",
     bookOpen: "Explore the books", readingTag: "English · reading", readingTitle: "Read, think, choose your answer",
     readingDesc: "Try a short original reading example to see how text-based exercises work.",
     readingHeader: "Reading comprehension", readingQuestion: "Where does Ani go after school?",
@@ -83,7 +83,7 @@ const TRANSLATIONS = {
   ru: {
     sample: "Интерактивная демонстрация", booksTag: "Сборники · знакомство", booksTitle: "Сборники заданий всегда под рукой",
     booksDesc: "Выбери предмет и познакомься со структурой книг. Сами задания доступны в учебной платформе.",
-    bookChoose: "Выбери предмет", bookShelf: "Сборники заданий", bookOne: "Том I", bookTwo: "Том II", bookThree: "Том III",
+    bookChoose: "Выбери предмет", bookShelf: "Сборники заданий", bookOne: "Том I", bookTwo: "Том II", bookThree: "Том III", bookFour: "Том IV",
     bookOpen: "Открыть сборники", readingTag: "Английский · чтение", readingTitle: "Читай, думай, выбирай ответ",
     readingDesc: "Попробуй короткое авторское упражнение на понимание текста.",
     readingHeader: "Чтение и понимание", readingQuestion: "Where does Ani go after school?",
@@ -121,6 +121,8 @@ const BOOK_SUBJECTS = {
   en: ["Armenian", "English", "Mathematics", "Biology"],
   ru: ["Армянский", "Английский", "Математика", "Биология"],
 } as const;
+
+const BOOK_COUNTS = [4, 3, 2, 4] as const;
 
 const FLASH_WORDS = [
   { word: "Resilient", meaning: { hy: "Դիմացկուն", en: "Able to recover after difficulty", ru: "Стойкий" } },
@@ -172,9 +174,9 @@ export function ReferenceChapters({ lang, part }: { lang: Lang; part: Chapter })
           <div className="sht-ref-chips" role="group" aria-label={t.bookChoose}>{BOOK_SUBJECTS[lang].map((item, index) =>
             <button key={item} type="button" aria-pressed={subject === index} onClick={() => setSubject(index)}>{item}</button>)}</div>
           <div className="sht-ref-inner-heading"><h3>{t.bookShelf}</h3><BookOpen size={18} aria-hidden="true" /></div>
-          <div className="sht-ref-book-row" aria-live="polite">{[t.bookOne, t.bookTwo, t.bookThree].map((v, i) =>
+          <div className="sht-ref-book-row" aria-live="polite" style={{ gridTemplateColumns: "repeat(" + BOOK_COUNTS[subject] + ",minmax(0,1fr))" }}>{[t.bookOne, t.bookTwo, t.bookThree, t.bookFour].slice(0, BOOK_COUNTS[subject]).map((v, i) =>
             <div className={"sht-ref-book sht-ref-book-" + i} key={i}>
-              <span>{BOOK_SUBJECTS[lang][subject]}</span><strong>{["I", "II", "III"][i]}</strong><small>{v}</small>
+              <span>{BOOK_SUBJECTS[lang][subject]}</span><strong>{["I", "II", "III", "IV"][i]}</strong><small>{v}</small>
             </div>)}</div>
           <div className="sht-ref-phone-action"><Link to="/auth">{t.bookOpen}<ArrowRight size={15} aria-hidden="true" /></Link></div>
           <span className="sht-ref-sample">{t.sample}</span>
