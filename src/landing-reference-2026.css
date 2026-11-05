@@ -621,3 +621,44 @@ html.dark .sht-editorial[data-design="reference"] .sht-story-download {
 html.user-reduced-motion .sht-editorial[data-design="reference"] :is(.sht-hero-copy,.sht-hero-visual,.sht-reference-flashcard-content,.sht-journey-line span) {
   animation:none!important;transition:none!important;transform:none!important;
 }
+
+/* Cascade guard: older tablet and liquid phone rules have an extra html
+   selector. Match their specificity so the small-screen hero cannot remain
+   at desktop headline size or clip the device inside 320px viewports. */
+@media (max-width:1040px) {
+  html .sht-editorial[data-design="reference"] .sht-hero h1,
+  html[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-hero h1 {
+    font-size:clamp(2.15rem,4vw,3.55rem);
+    line-height:1.17;
+  }
+}
+@media (max-width:760px) {
+  html .sht-editorial[data-design="reference"] .sht-hero,
+  html[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-hero {
+    grid-template-columns:minmax(0,1fr);
+    min-height:0;
+    padding:1.55rem 1.25rem;
+  }
+  html .sht-editorial[data-design="reference"] .sht-hero h1,
+  html[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-hero h1 {
+    font-size:clamp(2.05rem,7.6vw,3.55rem);
+    line-height:1.17;
+    max-width:16ch;
+  }
+}
+@media (max-width:420px) {
+  html .sht-editorial[data-design="reference"] .sht-hero,
+  html[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-hero {
+    padding:1.4rem .95rem;
+    border-radius:1.45rem;
+  }
+  html .sht-editorial[data-design="reference"] .sht-hero h1,
+  html[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-hero h1 {
+    font-size:clamp(1.95rem,8.1vw,2.65rem);
+    max-width:100%;
+  }
+  html .sht-editorial[data-design="reference"] .sht-editorial-phone,
+  html.dark[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-editorial-phone {
+    width:min(100%,18rem);
+  }
+}
