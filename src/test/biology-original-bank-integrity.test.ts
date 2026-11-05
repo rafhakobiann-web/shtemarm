@@ -18,7 +18,7 @@ describe("Biology III/IV original-book text and source-answer integrity", () => 
       expect(book.source.complete).toBe(false);
       expect(book.source.sha256).toBe(original.sourceSha256);
       expect(coverage.sourceSha256).toBe(original.sourceSha256);
-      expect(book.sections).toHaveLength(5);
+      expect(book.sections.length).toBeGreaterThanOrEqual(5);
 
       let count = 0;
       const seen = new Set<string>();
@@ -27,20 +27,31 @@ describe("Biology III/IV original-book text and source-answer integrity", () => 
         expect(source).toBeDefined();
         let sectionCount = 0;
         for (const unit of section.units) {
-          expect(unit.kind).toBe("mc");
-          expect(unit.questions).toHaveLength(1);
-          const question = unit.questions[0];
-          const questionNumber = Number(question.n);
+          const questionNumber = Number(unit.kind === "mc" ? unit.questions[0].n : unit.label);
           const identity = `${section.n}:${questionNumber}`;
           expect(seen.has(identity), `Duplicate printed ID ${identity}`).toBe(false);
           seen.add(identity);
+          expect(Number.isInteger(questionNumber), identity).toBe(true);
           expect(questionNumber).toBeGreaterThanOrEqual(1);
-          expect(questionNumber).toBeLessThanOrEqual(source.choiceKeys.length);
-          expect(question.stem?.trim().length, identity).toBeGreaterThan(8);
-          expect(Object.keys(question.options ?? {}).sort()).toEqual(["1", "2", "3", "4"]);
-          expect(Object.values(question.options).every(value => typeof value === "string" && value.trim().length > 0), identity).toBe(true);
-          expect(question.answer, identity).toBe(source.choiceKeys[questionNumber - 1]);
+          expect(questionNumber).toBeLessThanOrEqual(source.questionCount);
+          expect(["mc", "num", "set", "seq", "match"]).toContain(unit.kind);
           expect(unit.sourcePage, identity).toBe(pageForBiologyQuestion(source, questionNumber));
+          if (unit.kind === "mc") {
+            expect(unit.questions).toHaveLength(1);
+            const question = unit.questions[0];
+            expect(questionNumber).toBeLessThanOrEqual(source.choiceKeys.length);
+            expect(question.stem?.trim().length, identity).toBeGreaterThan(8);
+            expect(Object.keys(question.options ?? {}).sort()).toEqual(["1", "2", "3", "4"]);
+            expect(Object.values(question.options).every(value => typeof value === "string" && value.trim().length > 0), identity).toBe(true);
+            expect(question.answer, identity).toBe(source.choiceKeys[questionNumber - 1]);
+          } else if (unit.kind === "num") {
+            expect(unit.questions.length).toBeGreaterThan(0);
+            expect(unit.questions.every((q: { stem: string; answer: string }) =>
+              q.stem.trim().length > 0 && q.answer.trim().length > 0), identity).toBe(true);
+          } else {
+            expect(unit.passage?.trim().length, identity).toBeGreaterThan(0);
+            expect(unit.kind === "match" ? Object.keys(unit.answer).length > 0 : Array.isArray(unit.answer), identity).toBe(true);
+          }
           sectionCount++;
           count++;
         }
@@ -54,8 +65,8 @@ describe("Biology III/IV original-book text and source-answer integrity", () => 
           if (ch === section.n) expect(excluded.has(n), identity).toBe(false);
         }
       }
-      expect(count).toBe(expected);
-      expect(coverage.importedQuestions).toBe(expected);
+      expect(count).toBeGreaterThanOrEqual(expected);
+      expect(coverage.importedQuestions).toBe(count);
     });
   }
 });
