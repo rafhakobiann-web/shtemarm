@@ -409,10 +409,10 @@ function LandingPage() {
               <strong>{names[lang]}</strong>
               <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
             </>;
-            const props = { key, "data-subject": key, className: "sht-subject-card", "aria-label": names[lang] + " · " + ui.openSubject };
-            if (sessionStatus !== "signed-in") return <Link {...props} to="/auth">{body}</Link>;
-            if (key === "physics") return <Link {...props} to="/subject/$subject" params={{ subject: "physics" }}>{body}</Link>;
-            return <Link {...props} to="/dashboard" search={{ subject: key as "english"|"math"|"armenian"|"history"|"biology" }}>{body}</Link>;
+            const props = { "data-subject": key, className: "sht-subject-card", "aria-label": names[lang] + " · " + ui.openSubject };
+            if (sessionStatus !== "signed-in") return <Link key={key} {...props} to="/auth">{body}</Link>;
+            if (key === "physics") return <Link key={key} {...props} to="/subject/$subject" params={{ subject: "physics" }}>{body}</Link>;
+            return <Link key={key} {...props} to="/dashboard" search={{ subject: key as "english"|"math"|"armenian"|"history"|"biology" }}>{body}</Link>;
           })}
         </div>
       </section>
