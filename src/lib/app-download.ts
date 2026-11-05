@@ -13,6 +13,11 @@ export const GITHUB_ANDROID_RELEASE_URL =
 export const GITHUB_ANDROID_APK_URL =
   "https://github.com/rafhakobiann-web/shtemarm/releases/download/v0.3.0-beta.4/Shtemarm-Android-0.3.0-beta.4-Debug-Test.apk";
 
+// Bundled site asset is distributable to ordinary website visitors even while
+// the source GitHub repository and its releases are private.
+export const SITE_ANDROID_APK_URL = "/downloads/shtemarm-android.apk";
+export const SITE_ANDROID_BETA_VERSION = "0.1.1-beta.1";
+
 export const LATEST_ANDROID_VERSION = "0.2.0-beta.1";
 export const PUBLIC_ANDROID_VERSION = "0.1.1-beta.1";
 export const LATEST_ANDROID_VERSION_CODE = 5;
