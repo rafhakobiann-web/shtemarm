@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl } from "@/lib/app-download";
 
@@ -37,6 +38,9 @@ describe("Shtemarm app download", () => {
     const manifest = JSON.parse(source("public/downloads/android-release.json"));
     expect(SITE_ANDROID_BETA_VERSION).toBe(manifest.version);
     expect(SITE_ANDROID_APK_URL).toBe("/downloads/shtemarm-android.apk");
+    const file = "public/downloads/shtemarm-android.apk";
+    expect(statSync(file).size).toBe(manifest.size);
+    expect(createHash("sha256").update(readFileSync(file)).digest("hex")).toBe(manifest.sha256);
     expect(safePublicApkUrl(SITE_ANDROID_APK_URL)).toBe(SITE_ANDROID_APK_URL);
     expect(download).toContain("?? SITE_ANDROID_APK_URL");
     expect(showcase).toContain("href={SITE_ANDROID_APK_URL}");
