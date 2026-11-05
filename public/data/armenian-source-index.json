@@ -68,44 +68,44 @@
       "examYear": 2018,
       "extractionAudit": {
         "source": "hayoc-1(2).pdf",
-        "status": "Eight source chapters and appendix imported; 29 split option layouts repaired, 31 complex source diagrams/layouts withheld pending visual review",
+        "status": "Source chapters and appendix integrated for practice; nine visual syntax diagrams withheld pending faithful visual reconstruction",
         "questionCount": 1394,
         "multipleChoice": 883,
         "shortAnswer": 511,
-        "playableCandidateCount": 1363,
-        "reviewRequiredMultipleChoice": 31,
-        "answerKeyStatus": "1682 printed answer positions linked; 31 complex multiple-choice layouts still require visual proofreading",
+        "playableCandidateCount": 1385,
+        "reviewRequiredMultipleChoice": 9,
+        "answerKeyStatus": "1682 keyed original tasks linked to printed answer tables; nine diagrammatic options still require layout verification and illustration support",
         "supplementStatus": "Imported 48 bundles and matched 288 statement keys against the printed answer grid on page 253",
         "sections": [
           {
             "section": 1,
             "multipleChoice": 103,
             "shortAnswer": 97,
-            "reviewRequiredMultipleChoice": 1
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 2,
             "multipleChoice": 111,
             "shortAnswer": 70,
-            "reviewRequiredMultipleChoice": 3
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 3,
             "multipleChoice": 212,
             "shortAnswer": 110,
-            "reviewRequiredMultipleChoice": 2
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 4,
             "multipleChoice": 200,
             "shortAnswer": 194,
-            "reviewRequiredMultipleChoice": 13
+            "reviewRequiredMultipleChoice": 9
           },
           {
             "section": 5,
             "multipleChoice": 27,
             "shortAnswer": 8,
-            "reviewRequiredMultipleChoice": 1
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 6,
@@ -123,7 +123,7 @@
             "section": 8,
             "multipleChoice": 204,
             "shortAnswer": 24,
-            "reviewRequiredMultipleChoice": 11
+            "reviewRequiredMultipleChoice": 0
           }
         ],
         "appendix": {
@@ -142,7 +142,7 @@
           ]
         },
         "totalSourceExercisesIncludingAppendix": 1682,
-        "playableExercisesIncludingAppendix": 1651
+        "playableExercisesIncludingAppendix": 1673
       }
     },
     {
