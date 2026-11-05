@@ -17,6 +17,19 @@ export function StudyTutorDrawer() {
   const katex = useKatex();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
+  const [selectedQuestion, setSelectedQuestion] = useState<{ question: string; chosen: string } | null>(null);
+  const [includeQuestion, setIncludeQuestion] = useState(false);
+  useEffect(() => {
+    const onSelect = (event: Event) => {
+      const detail = (event as CustomEvent<{ question?: unknown; chosen?: unknown }>).detail;
+      if (!detail || typeof detail.question !== "string") return;
+      setSelectedQuestion({ question: detail.question.slice(0, 1200), chosen: typeof detail.chosen === "string" ? detail.chosen.slice(0, 100) : "" });
+      setIncludeQuestion(false);
+      setOpen(true);
+    };
+    window.addEventListener("shtemarm:tutor-question", onSelect);
+    return () => window.removeEventListener("shtemarm:tutor-question", onSelect);
+  }, []);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const contextToken = useRef<string | undefined>(undefined);
@@ -33,12 +46,14 @@ export function StudyTutorDrawer() {
 
   async function send() {
     const question = input.trim().slice(0, 2000);
+    const sharedContext = includeQuestion && selectedQuestion ? `Selected exercise (student-approved): ${selectedQuestion.question}${selectedQuestion.chosen ? `\\nStudent-selected option: ${selectedQuestion.chosen}` : ""}\\n\\n` : "";
+    const submittedQuestion = (sharedContext + question).slice(0, 2000);
     if (!question || loading) return;
     setMessages(previous => [...previous, { role: "user", text: question }]);
     setInput("");
     setLoading(true);
     try {
-      const result = await chatReply({ data: { question, contextToken: contextToken.current, mode: "adaptive", locale: lang } });
+      const result = await chatReply({ data: { question: submittedQuestion, contextToken: contextToken.current, mode: "adaptive", locale: lang } });
       if ("contextToken" in result && typeof result.contextToken === "string") contextToken.current = result.contextToken;
       setMessages(previous => [...previous, { role: "assistant", text: result.error ? t.error : result.text }]);
     } catch {
@@ -58,7 +73,7 @@ export function StudyTutorDrawer() {
           {messages.map((message,index) => <div key={index} className={message.role==="user"?"ml-8 rounded-2xl bg-primary/10 p-3 text-sm":"mr-5 rounded-2xl border bg-card p-3 text-sm"}><RichText text={message.text} katex={katex} /></div>)}
           {loading && <p role="status"><Loader2 className="size-5 animate-spin text-primary" /></p>}
         </div>
-        <div className="border-t p-3"><p className="mb-2 text-xs text-muted-foreground">{t.note}</p><form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-end gap-2"><textarea value={input} onChange={event=>setInput(event.target.value)} rows={2} maxLength={2000} aria-label={t.placeholder} placeholder={t.placeholder} className="min-h-12 min-w-0 flex-1 resize-none rounded-xl border bg-background px-3 py-2 text-sm" /><button type="submit" disabled={loading || !input.trim()} aria-label={t.send} className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground disabled:opacity-50"><Send className="size-5" /></button></form></div>
+        <div className="border-t p-3">{selectedQuestion && <div className="mb-3 space-y-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs"><strong className="block">{lang==="hy"?"Ընտրված առաջադրանք․ նախադիտում":lang==="ru"?"Выбранное задание: предпросмотр":"Selected question preview"}</strong><p className="max-h-24 overflow-auto whitespace-pre-wrap break-words">{selectedQuestion.question}</p>{selectedQuestion.chosen && <p>{lang==="hy"?"Ընտրված տարբերակ":lang==="ru"?"Выбранный вариант":"Selected option"}: {selectedQuestion.chosen}</p>}<label className="flex items-center gap-2"><input type="checkbox" checked={includeQuestion} onChange={event=>setIncludeQuestion(event.target.checked)} className="size-4 accent-primary" /><span>{lang==="hy"?"Համաձայն եմ փոխանցել այս տվյալները AI-ին":lang==="ru"?"Согласен передать эти данные ИИ":"I agree to share this context with AI"}</span></label><button type="button" className="underline underline-offset-2" onClick={()=>{setSelectedQuestion(null);setIncludeQuestion(false);}}>{lang==="hy"?"Հեռացնել համատեքստը":lang==="ru"?"Удалить контекст":"Remove context"}</button></div>}<p className="mb-2 text-xs text-muted-foreground">{t.note}</p><form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-end gap-2"><textarea value={input} onChange={event=>setInput(event.target.value)} rows={2} maxLength={2000} aria-label={t.placeholder} placeholder={t.placeholder} className="min-h-12 min-w-0 flex-1 resize-none rounded-xl border bg-background px-3 py-2 text-sm" /><button type="submit" disabled={loading || !input.trim()} aria-label={t.send} className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground disabled:opacity-50"><Send className="size-5" /></button></form></div>
       </section>
     </div>}
   </>;
