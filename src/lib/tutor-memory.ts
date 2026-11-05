@@ -12,7 +12,7 @@ export const EMPTY_TUTOR_MEMORY: TutorMemory = { enabled: false, preferredMode: 
 export function normalizeTutorMemory(value: unknown): TutorMemory {
   if (!value || typeof value !== "object" || Array.isArray(value)) return { ...EMPTY_TUTOR_MEMORY };
   const item = value as Record<string, unknown>;
-  const preferredMode: StudyMode = item.preferredMode === "explain" || item.preferredMode === "quiz" ? item.preferredMode : "hint";
+  const preferredMode: StudyMode = item.preferredMode === "explain" || item.preferredMode === "quiz" || item.preferredMode === "adaptive" ? item.preferredMode : "hint";
   const focusTopics = Array.isArray(item.focusTopics)
     ? item.focusTopics.filter((topic): topic is string => typeof topic === "string" && topic.trim().length > 0 && topic.length <= 60).slice(0, 5)
     : [];
