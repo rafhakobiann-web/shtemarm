@@ -342,6 +342,7 @@ html .sht-v3 .sht-info-band {margin:0;gap:.75rem;}
 }
 html.user-reduced-motion .sht-v3 :is(*,*::before,*::after) {animation:none!important;transition:none!important;}
 html.user-reduced-motion .sl-flashcard {transform:none!important;}
+html.user-reduced-motion .sht-v3.sl-motion-ready :is(.sl-tile,.sl-journey-copy,.sl-journey-visual,.sl-app-panel,.sht-feature,.sht-subject-card) {opacity:1!important;transform:none!important;}
 html.user-high-contrast .sht-v3 :is(.sl-lab,.sl-tile,.sl-journey,.sl-app-panel) {border:2px solid var(--foreground);}
 @media (prefers-reduced-transparency:reduce) {
   html[data-surface="liquid"] .sht-v3 .sht-landing-nav {-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--card);}
