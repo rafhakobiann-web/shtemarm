@@ -46,7 +46,36 @@ describe("Four Armenian language study volumes", () => {
   });
 
   it("does not misrepresent Shtemarm-authored practice as official PDF transcriptions", () => {
-    expect(ARMENIAN_BOOKS.every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
+    expect(ARMENIAN_BOOKS[0].sub).toContain("բնօրինակ");
+    expect(ARMENIAN_BOOKS.slice(1).every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
+  });
+
+  it("loads original phonetics 1–6 with answers verified against the printed answer key", () => {
+    const official = JSON.parse(readFileSync("public/data/armenian-book1-official-phonetics-01.json", "utf8"));
+    const book = JSON.parse(readFileSync("public/data/armenian-book1.json", "utf8"));
+    expect(official.sourceVerified).toBe(true);
+    expect(official.questions.map((q: { n: string }) => q.n)).toEqual(["1","2","3","4","5","6"]);
+    expect(official.questions.map((q: { answer: string }) => q.answer)).toEqual(["4","4","3","4","4","3"]);
+    expect(book.sections[0].units[0].questions).toEqual(official.questions.map(
+      ({ n, stem, options, answer }: { n: string; stem: string; options: Record<string, string>; answer: string }) =>
+        ({ n, stem, options, answer })
+    ));
+  });
+
+  it("aligns part I playable practice to the real eight PDF chapters without dropping questions", () => {
+    const book = JSON.parse(readFileSync("public/data/armenian-book1.json", "utf8"));
+    const index = JSON.parse(readFileSync("public/data/armenian-source-index.json", "utf8"));
+    expect(book.sections.map((section: { title: string }) => section.title))
+      .toEqual(index.volumes[0].sections.map((section: { title: string }) => section.title));
+    const questions = book.sections.flatMap((section: { units: Array<{ questions: unknown[] }> }) =>
+      section.units.flatMap(unit => unit.questions));
+    expect(questions).toHaveLength(102);
+    const unitIds = book.sections.flatMap((section: { units: Array<{ id: string }> }) =>
+      section.units.map(unit => unit.id));
+    expect(new Set(unitIds).size).toBe(unitIds.length);
+    expect(book.sections[0].units[0].questions).toHaveLength(6);
+    expect(book.sections[7].units.reduce((n: number, unit: { questions: unknown[] }) =>
+      n + unit.questions.length, 0)).toBe(24);
   });
 
 });

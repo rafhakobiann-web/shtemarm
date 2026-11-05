@@ -1,0 +1,31 @@
+name: Verify Armenian original Volume I
+
+on:
+  pull_request:
+    paths:
+      - 'public/data/armenian-official-1-section*.json'
+      - 'public/data/armenian-source-index.json'
+      - 'src/lib/armenian-original.ts'
+      - 'src/lib/books.ts'
+      - 'src/test/armenian-original.test.ts'
+      - 'src/test/armenian-volumes.test.ts'
+      - '.github/workflows/verify-armenian-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Verify source structure and original question banks
+        run: bunx vitest run src/test/armenian-original.test.ts src/test/armenian-volumes.test.ts
+      - name: Build Shtemarm
+        run: bun run build
