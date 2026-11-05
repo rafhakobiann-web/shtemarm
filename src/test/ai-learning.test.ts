@@ -54,6 +54,20 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain("Do not infer subject-level weaknesses");
   });
 
+  it("keeps learning memory opt-in, browser-only and erasable", () => {
+    const memory = read("src/lib/tutor-memory.ts");
+    const chat = read("src/routes/chat.tsx");
+    const server = read("src/lib/chat.functions.ts");
+    expect(memory).toContain("enabled: false");
+    expect(memory).toContain("localStorage.removeItem(TUTOR_MEMORY_KEY)");
+    expect(memory).toContain("focusTopics");
+    expect(chat).toContain("checked={remember}");
+    expect(chat).toContain("clearTutorMemory()");
+    expect(chat).toContain("...(remember && focusTopic ? { focusTopic } : {})");
+    expect(server).toContain("focusTopic: z.string().trim().min(1).max(60).optional()");
+    expect(server).toContain("not a verified weakness");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
