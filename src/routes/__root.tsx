@@ -143,8 +143,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: interactionMotionCss,
       },
       { rel: "stylesheet", href: studyComfortCss },
-      { rel: "stylesheet", href: landingV3Css }
-      { rel: "stylesheet", href: dashboardFocusCss },,
+      { rel: "stylesheet", href: landingV3Css },
+      { rel: "stylesheet", href: dashboardFocusCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
