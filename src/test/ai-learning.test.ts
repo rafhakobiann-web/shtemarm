@@ -24,6 +24,15 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(tutorModeInstructions("hint","ru")).toContain("Russian");
   });
 
+  it("keeps Armenian tutoring terminology natural and mathematical notation renderable", () => {
+    const prompt = tutorModeInstructions("explain", "hy");
+    expect(prompt).toContain("natural subject terminology");
+    expect(prompt).toContain("կոորդինատ");
+    expect(prompt).toContain("single correctly delimited formula");
+    expect(prompt).toContain("Verify all numeric steps");
+    expect(prompt).toContain("no more than one worked example");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
