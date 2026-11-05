@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ALL_BOOKS, loadBook, type Book } from "@/lib/books";
 import { searchBookCatalog, searchLoadedBooks } from "@/lib/smartSearch";
 import { useLang } from "@/lib/lang";
+import { upsertStudyItem } from "@/lib/studyLibrary";
 
 export const Route = createFileRoute("/search")({
   staticData: { sitemap:false },
@@ -62,7 +63,7 @@ function SmartSearchPage(){
     {history.length>0&&<div className="flex flex-wrap gap-2"><span className="text-xs text-muted-foreground">{tr("Վերջին որոնումներ","Recent searches","Недавние запросы")}:</span>{history.map(term=><button key={term} className="rounded-lg border px-2 py-1 text-xs" onClick={()=>{setQuery(term);setLoaded([]);}}>{term}</button>)}</div>}
     {error&&<p role="alert" className="text-sm text-destructive">{error}</p>}
     <p className="text-xs text-muted-foreground">{tr("Գտնված արդյունքներ","Results","Результаты")}: {hits.length}{loaded.length>0?" · "+tr("Հարցերի արդյունքները սահմանափակված են 80-ով մեկ բեռնումում։","Question results are limited to 80 per loaded set.","Результаты заданий ограничены 80 за загрузку."): ""}</p>
-    <div className="space-y-2">{hits.map(hit=><Link key={hit.key} to="/book/$bookId" params={{bookId:String(hit.bookId)}} className="block rounded-xl border bg-card p-4 hover:border-primary/50"><span className="text-xs font-bold text-primary">{hit.kind==="book"?tr("Գիրք","Book","Сборник"):hit.kind==="section"?tr("Բաժին","Section","Раздел"):tr("Առաջադրանք","Question","Задание")}</span><h2 className="mt-1 break-words text-sm font-semibold">{hit.title}</h2><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{hit.snippet}</p></Link>)}</div>
+    <div className="space-y-2">{hits.map(hit=><div key={hit.key} className="rounded-xl border bg-card p-4"><Link to="/book/$bookId" params={{bookId:String(hit.bookId)}} className="block hover:text-primary"><span className="text-xs font-bold text-primary">{hit.kind==="book"?tr("Գիրք","Book","Сборник"):hit.kind==="section"?tr("Բաժին","Section","Раздел"):tr("Առաջադրանք","Question","Задание")}</span><h2 className="mt-1 break-words text-sm font-semibold">{hit.title}</h2><p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{hit.snippet}</p></Link><button type="button" className="mt-2 min-h-10 rounded-lg border px-3 text-xs font-bold" onClick={()=>{const ok=upsertStudyItem({id:hit.key,title:hit.title,subject:ALL_BOOKS.find(b=>b.id===hit.bookId)?.title??"",bookId:hit.bookId,section:hit.section,collection:"",note:"",reviewAt:null,createdAt:Date.now()});if(!ok)setError(tr("Պահպանել չհաջողվեց։","Could not save.","Не удалось сохранить."));}}>{tr("Պահպանել իմ գրադարանում","Save to my library","Сохранить в библиотеку")}</button></div>)}</div>
     {normalized&&!hits.length&&!busy&&<p className="text-sm text-muted-foreground">{tr("Արդյունք դեռ չկա։ Փորձիր այլ բառ կամ սեղմիր «Որոնել»։","No results yet. Try another term or press Search.","Пока нет результатов. Измените запрос или нажмите «Поиск».")}</p>}
   </main>;
 }
