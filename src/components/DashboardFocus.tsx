@@ -9,6 +9,7 @@ import { level, type Progress } from "@/lib/progress";
 import { learningLevel } from "@/lib/learningLevels";
 import { recommendLearningPath } from "@/lib/learningPath";
 import { weeklyLearningReport } from "@/lib/weeklyLearningReport";
+import { examReadiness } from "@/lib/examReadiness";
 import { DAILY_GOAL_CHANGED, dailyGoalProgress, getDailyGoal, setDailyGoal, suggestDailyGoal, weeklyGoalSummary } from "@/lib/dailyStudyGoal";
 import type { OnboardingSubject } from "@/lib/onboarding";
 
@@ -87,6 +88,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   const goalToday = dailyGoalProgress(questHistory, dailyGoal);
   const goalWeek = weeklyGoalSummary(questHistory, dailyGoal);
   const report = weeklyLearningReport(questHistory, unitMistakes, subjects);
+  const readiness = examReadiness(progress, unitMistakes, subjects);
   const goalSuggestion = suggestDailyGoal(questHistory);
   const changeGoal = (key: "answers" | "reviews", value: number) => setGoal(setDailyGoal({...dailyGoal,[key]:value}));
   const quests = dailyQuests(questHistory);
@@ -151,6 +153,19 @@ export function DashboardFocus({ name, progress, subjects }: {
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկվող նպատակ" : lang === "ru" ? "Рекомендуемая цель" : "Suggested goal"}: {goalSuggestion.answers} + {goalSuggestion.reviews} · <button type="button" className="min-h-10 font-bold text-primary underline-offset-2 hover:underline" onClick={()=>setGoal(setDailyGoal(goalSuggestion))}>{lang === "hy" ? "Կիրառել" : lang === "ru" ? "Применить" : "Apply"}</button></p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Այս շաբաթ" : lang === "ru" ? "На этой неделе" : "This week"}: {goalWeek.completedDays} {lang === "hy" ? "օր նպատակն իրականացվել է" : lang === "ru" ? "дней цель выполнена" : "days with goal completed"} · {goalWeek.answered} {lang === "hy" ? "հարց" : lang === "ru" ? "вопросов" : "questions"} · {goalWeek.reviewed} {lang === "hy" ? "կրկնություն" : lang === "ru" ? "повторений" : "reviews"}</p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Նպատակները կամավոր են։ Բաց թողած օրերի համար տուգանք չկա։ Տվյալները պահվում են այս սարքում։" : lang === "ru" ? "Цели добровольны, пропуски без штрафов. Данные на этом устройстве." : "Goals are optional, with no penalty for missed days. Data is saved on this device."}</p>
+      </section>
+      <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Քննության պատրաստվածության տվյալներ" : lang === "ru" ? "Готовность к экзамену" : "Exam readiness evidence"}>
+        <h2 className="font-black">{lang === "hy" ? "Քննության պատրաստվածություն" : lang === "ru" ? "Готовность к экзамену" : "Exam readiness"}</h2>
+        <p className="text-xs text-muted-foreground">{readiness.evidence === "insufficient" ? (lang === "hy" ? "Գնահատման համար տվյալները բավարար չեն։" : lang === "ru" ? "Недостаточно данных для оценки." : "Not enough evidence for an assessment.") : readiness.evidence === "partial" ? (lang === "hy" ? "Մասնակի տվյալներ․ շարունակիր փորձնական քննությունները։" : lang === "ru" ? "Данные неполные. Продолжайте пробные экзамены." : "Partial evidence. Continue mock exams.") : (lang === "hy" ? "Առկա են առաջընթացի տվյալներ։ Սա պաշտոնական քննության կանխատեսում չէ։" : lang === "ru" ? "Есть данные о прогрессе. Это не прогноз официального экзамена." : "Progress evidence available. This is not an official exam prediction.")}</p>
+        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{readiness.answered}</strong>{lang === "hy" ? "Պատասխանված" : lang === "ru" ? "Ответов" : "Answered"}</div>
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{readiness.accuracy === null ? "—" : readiness.accuracy + "%"}</strong>{lang === "hy" ? "Վերջին պատասխանների ճշտություն" : lang === "ru" ? "Точность последних ответов" : "Latest-answer accuracy"}</div>
+          <div className="rounded-xl border bg-card p-3"><strong className="block text-lg">{readiness.examAverage === null ? "—" : readiness.examAverage + "%"}</strong>{lang === "hy" ? "Փորձնականների միջին" : lang === "ru" ? "Среднее пробных" : "Mock exam average"}</div>
+        </div>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Վավեր փորձնական քննություններ՝ " : lang === "ru" ? "Учтено пробных экзаменов: " : "Valid mock exams: "}{readiness.validExams} · {lang === "hy" ? "Պահպանված չյուրացված սխալներ՝ " : lang === "ru" ? "Неосвоенные ошибки: " : "Pending saved mistakes: "}{readiness.pendingMistakes}</p>
+        {readiness.subjectPriorities.some(item=>item.pending>0) && <div className="space-y-1"><h3 className="text-sm font-bold">{lang === "hy" ? "Կրկնության առաջնահերթություններ" : lang === "ru" ? "Приоритеты повторения" : "Review priorities"}</h3>{readiness.subjectPriorities.filter(item=>item.pending>0).map(item=><p key={item.subject} className="text-xs">{SUBJECT_NAMES[item.subject][i]}: {item.pending}</p>)}</div>}
+        <div className="flex flex-wrap gap-2">{readiness.nextSteps.map(step=><Link key={step} to={step==="review"?"/mistakes":"/dashboard"} className="inline-flex min-h-10 items-center rounded-xl border border-primary/30 px-3 py-2 text-xs font-bold text-primary">{step==="review"?(lang==="hy"?"Կրկնել սխալները":lang==="ru"?"Повторить ошибки":"Review mistakes"):step==="exam"?(lang==="hy"?"Փորձնական քննություն":lang==="ru"?"Пробный экзамен":"Mock exam"):(lang==="hy"?"Շարունակել պարապել":lang==="ru"?"Продолжить практику":"Continue practice")} <ArrowRight className="ml-1 size-3.5" /></Link>)}</div>
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Ցուցանիշները հիմնված են պահպանված պատասխանների վերջին վիճակի և փորձնական քննությունների վրա։ Առարկայական ճշտություն չի հաշվարկվում առանց ստուգված առարկայական տվյալների։" : lang === "ru" ? "Показатели основаны на последних сохранённых ответах и пробных экзаменах. Точность по предметам без проверенных данных не рассчитывается." : "Metrics use the latest saved answer state and mock exams. Subject accuracy is not inferred without verified subject data."}</p>
       </section>
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}>
         <h2 className="font-black">{lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}</h2>
