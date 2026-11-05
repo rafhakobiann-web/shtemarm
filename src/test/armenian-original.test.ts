@@ -10,7 +10,7 @@ import { sectionAnswerIds } from "@/lib/books";
 
 const counts = [
   [103, 97, 0],
-  [111, 70, 1],
+  [111, 70, 0],
   [212, 110, 0],
   [200, 194, 9],
   [27, 8, 0],
@@ -48,10 +48,10 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
       (n, [mc, short, flagged]) => [n[0] + mc, n[1] + short, n[2] + flagged],
       [0, 0, 0],
     );
-    expect(totals).toEqual([883, 511, 10]);
+    expect(totals).toEqual([883, 511, 9]);
   });
 
-  it("converts 1,384 source tasks and 288 assertions into playable exercises", () => {
+  it("converts 1,385 source tasks and 288 assertions into playable exercises", () => {
     const book = buildArmenianOriginalBook(originals, assertions);
     expect(book.id).toBe(41);
     expect(book.sections).toHaveLength(9);
@@ -80,7 +80,7 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
         }
       }
     }
-    expect(playableMC).toBe(1161);
+    expect(playableMC).toBe(1162);
     expect(playableShort).toBe(511);
   });
 
