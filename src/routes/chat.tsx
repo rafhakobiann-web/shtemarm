@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 import { studyLabels, STUDY_MODE_DEFAULT, type StudyMode } from "@/lib/ai-study-modes";
 import { useProgress } from "@/lib/progress";
+import { clearTutorMemory, readTutorMemory, writeTutorMemory } from "@/lib/tutor-memory";
 
 export const Route = createFileRoute("/chat")({
   staticData: { sitemap: false },
@@ -43,6 +44,15 @@ function ChatPage() {
   const labels = studyLabels[lang];
   const progress = useProgress();
   const [personalize, setPersonalize] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [focusTopic, setFocusTopic] = useState("");
+  useEffect(() => { const saved = readTutorMemory(); if (saved.enabled) { setRemember(true); setPersonalize(true); setFocusTopic(saved.focusTopics[0] ?? ""); setMode(saved.preferredMode); } }, []);
+  const changeMemory = (enabled: boolean) => {
+    setRemember(enabled);
+    if (enabled) { setPersonalize(true); writeTutorMemory({ enabled: true, preferredMode: mode, focusTopics: focusTopic ? [focusTopic] : [] }); }
+    else { clearTutorMemory(); }
+  };
+  const forgetMemory = () => { clearTutorMemory(); setRemember(false); setPersonalize(false); setFocusTopic(""); };
   const answerResults = Object.values(progress.answers);
   const studySummary = { reviewed: answerResults.length, incorrect: answerResults.filter(value => value === 0).length };
   const [mode,setMode] = useState<StudyMode>(STUDY_MODE_DEFAULT);
@@ -51,6 +61,7 @@ function ChatPage() {
   const selectMode = (next:StudyMode) => {
     setMode(next);
     try { localStorage.setItem(MODE_KEY, next); } catch { /* private browsing */ }
+    if (remember) writeTutorMemory({ enabled: true, preferredMode: next, focusTopics: focusTopic ? [focusTopic] : [] });
   };
 
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -77,6 +88,7 @@ function ChatPage() {
         question:content, contextToken:contextTokenRef.current,
         mode, locale:lang,
         ...(personalize ? { studySummary } : {}),
+        ...(remember && focusTopic ? { focusTopic } : {}),
       } });
       if ("contextToken" in res && typeof res.contextToken === "string")
         contextTokenRef.current = res.contextToken;
@@ -119,6 +131,19 @@ function ChatPage() {
           <span className="space-y-1"><strong className="block">{lang === "hy" ? "Անհատականացնել իմ առաջընթացով" : lang === "ru" ? "Учитывать мой прогресс" : "Personalize using my progress"}</strong>
           <span className="block text-xs leading-5 text-muted-foreground">{lang === "hy" ? "Միայն քո համաձայնությամբ AI-ին կփոխանցվեն լուծված և այժմ սխալ նշված հարցերի ընդհանուր քանակները՝ առանց հարցերի տեքստերի։ Կարող ես ցանկացած պահին անջատել։" : lang === "ru" ? "Только с твоего согласия ИИ получит общие числа решённых и неверных ответов без текста вопросов. Можно отключить в любой момент." : "Only with your permission, share counts of answered and currently incorrect questions, never their text. Turn off anytime."}</span></span>
         </label>
+        <div className="mt-3 space-y-3 rounded-xl border border-border bg-card/70 p-3">
+          <label className="flex items-start gap-3 text-sm">
+            <input type="checkbox" checked={remember} onChange={event => changeMemory(event.target.checked)} className="mt-1 size-4 accent-primary" />
+            <span><strong className="block">{lang === "hy" ? "Հիշել իմ ուսուցման նախընտրությունները" : lang === "ru" ? "Запомнить мои учебные предпочтения" : "Remember my learning preferences"}</strong>
+              <span className="block text-xs leading-5 text-muted-foreground">{lang === "hy" ? "Միայն այս դիտարկիչում կպահվեն ուսուցման ձևն ու քո նշած թեման։ Զրույցները չեն պահպանվի։" : lang === "ru" ? "Только в этом браузере сохраняются режим обучения и выбранная тема. Переписка не сохраняется." : "Save your learning mode and chosen topic in this browser only. Conversations are not saved."}</span>
+            </span>
+          </label>
+          {remember && <label className="block space-y-1 text-xs font-semibold">
+            <span>{lang === "hy" ? "Թեմա, որը ցանկանում եմ կրկնել (ըստ ցանկության)" : lang === "ru" ? "Тема для повторения (необязательно)" : "Topic to revisit (optional)"}</span>
+            <input maxLength={60} value={focusTopic} onChange={event => { const topic = event.target.value; setFocusTopic(topic); writeTutorMemory({ enabled: true, preferredMode: mode, focusTopics: topic ? [topic] : [] }); }} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+          </label>}
+          <button type="button" onClick={forgetMemory} className="rounded-lg border border-border px-3 py-2 text-xs font-semibold hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">{lang === "hy" ? "Ջնջել AI ուսուցչի հիշողությունը" : lang === "ru" ? "Удалить память ИИ-учителя" : "Clear tutor memory"}</button>
+        </div>
       </section>
 
       <div className="glass flex min-h-[50vh] flex-col gap-3 rounded-3xl p-4 sm:p-6">
