@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ALL_BOOKS, loadBook, type Book } from "@/lib/books";
-import { matchesSearch, searchBookCatalog, searchLoadedBooks } from "@/lib/smartSearch";
+import { searchBookCatalog, searchLoadedBooks } from "@/lib/smartSearch";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/search")({
