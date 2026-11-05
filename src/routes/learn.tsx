@@ -24,7 +24,10 @@ function LearningHub() {
     { label:t.tutor, description:t.tutorSub, to:"/chat" as const, icon:Brain },
   ];
   return <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-8 sm:px-6 sm:py-12">
-    <header className="relative isolate overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-teal-500/10 p-6 shadow-sm sm:p-10 lg:p-12">\n      <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-teal-400/10 blur-3xl" />\n      <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-16 size-56 rounded-full bg-primary/10 blur-3xl" />\n      <div className="relative z-10 space-y-4">
+    <header className="relative isolate overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-teal-500/10 p-6 shadow-sm sm:p-10 lg:p-12">
+      <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-teal-400/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-16 size-56 rounded-full bg-primary/10 blur-3xl" />
+      <div className="relative z-10 space-y-4">
       <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary"><Sparkles className="size-4" />{t.eyebrow}</span>
       <h1 className="max-w-3xl text-balance text-3xl font-black tracking-tight sm:text-5xl">{t.title}</h1>
       <p className="max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">{t.intro}</p>
