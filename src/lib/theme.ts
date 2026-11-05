@@ -3,7 +3,7 @@ import { applyAccent, readSavedAccent, DISPLAY_PREFERENCES_KEY } from "@/lib/acc
 
 export type Theme = "light" | "dark";
 export type ColorMode = Theme | "system";
-export type SurfaceTheme = "classic" | "soft" | "liquid";
+export type SurfaceTheme = "classic" | "soft";
 export type GlassIntensity = "adaptive" | "subtle" | "balanced" | "vivid";
 export type GlassQuality = "lite" | "balanced" | "rich";
 export type Appearance = {
@@ -17,12 +17,12 @@ export const APPEARANCE_KEY = "shtemarm-appearance-v2";
 const LEGACY_KEY = "shtemarm-theme";
 export const DEFAULT_APPEARANCE: Readonly<Appearance> = Object.freeze({
   mode: "system",
-  surface: "liquid",
+  surface: "soft",
   glass: "adaptive",
   blur: true,
 });
 const modes: readonly ColorMode[] = ["system", "light", "dark"];
-const surfaces: readonly SurfaceTheme[] = ["classic", "soft", "liquid"];
+const surfaces: readonly SurfaceTheme[] = ["classic", "soft"];
 const glasses: readonly GlassIntensity[] = ["adaptive", "subtle", "balanced", "vivid"];
 
 function valid<T extends string>(value: unknown, options: readonly T[], fallback: T): T {
@@ -167,7 +167,7 @@ function startupAppearance() {
     const legacy = localStorage.getItem("shtemarm-theme") ?? "";
     const mode = ["light", "dark", "system"].includes(v.mode)
       ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
-    const surface = ["classic", "soft", "liquid"].includes(v.surface) ? v.surface : "liquid";
+    const surface = ["classic", "soft"].includes(v.surface) ? v.surface : "soft";
     const glass = ["adaptive", "subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "adaptive";
     const dark = mode === "dark" ||
       (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
