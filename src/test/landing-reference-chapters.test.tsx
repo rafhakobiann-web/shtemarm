@@ -56,6 +56,10 @@ describe("reference-inspired landing chapters", () => {
     expect(covers).toHaveLength(3);
     expect(covers[0].textContent).toContain("Անգլերեն");
     expect(covers[0].textContent).toContain("I");
+    fireEvent.click(screen.getByRole("button", { name: "Մաթեմատիկա" }));
+    expect(container.querySelectorAll(".sht-ref-book")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "Հայոց լեզու" }));
+    expect(container.querySelectorAll(".sht-ref-book")).toHaveLength(4);
   });
 
   it("shows sample progress explicitly, not as genuine user scores", () => {
