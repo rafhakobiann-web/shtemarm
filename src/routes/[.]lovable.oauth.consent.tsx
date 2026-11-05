@@ -22,10 +22,12 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     const next = location.pathname + location.searchStr;
     if (!data.session) throw redirect({ to: "/auth", search: { next } });
   },
-  loader: async ({ location }) => {
-    const authorizationId = new URLSearchParams(location.search).get("authorization_id")!;
+  loaderDeps: ({ search }) => ({ authorization_id: search.authorization_id }),
+  loader: async ({ deps }) => {
+    const authorizationId = deps.authorization_id;
     const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
     if (error) throw error;
+    if (!data) throw new Error("Authorization details were not returned.");
     // An immediate-redirect result carries redirect_url and no client details.
     if (data && "redirect_url" in data) throw redirect({ href: data.redirect_url });
     return data;
