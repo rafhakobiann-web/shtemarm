@@ -33,6 +33,15 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(prompt).toContain("no more than one worked example");
   });
 
+  it("prevents block KaTeX inside paragraph markup and specifies display delimiters", () => {
+    const page = read("src/routes/chat.tsx");
+    const instructions = tutorModeInstructions("explain", "hy");
+    expect(page).toContain('<div className={cn("whitespace-pre-line rounded-2xl');
+    expect(page).toContain('<RichText text={m.content} katex={katex} />');
+    expect(instructions).toContain("$...$");
+    expect(instructions).toContain("Never repeat it as broken plain text");
+  });
+
   it("accepts language, modes and genuine conversation context, not only user questions",()=>{
     const server=read("src/lib/chat.functions.ts");
     const page=read("src/routes/chat.tsx");
