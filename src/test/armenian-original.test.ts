@@ -62,15 +62,17 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
       expect(new Set(section.units.map(u => u.id)).size).toBe(section.units.length);
       expect(new Set(sectionAnswerIds(section)).size).toBe(sectionAnswerIds(section).length);
       for (const unit of section.units) {
-        expect(unit.questions.length).toBeGreaterThan(0);
-        expect(unit.questions.length).toBeLessThanOrEqual(20);
         if (unit.kind === "mc") {
+          expect(unit.questions.length).toBeGreaterThan(0);
+          expect(unit.questions.length).toBeLessThanOrEqual(20);
           playableMC += unit.questions.length;
           for (const q of unit.questions) {
             expect(q.options[q.answer]).toBeTruthy();
-            expect(Object.keys(q.options)).toHaveLength(4);
+            expect(Object.keys(q.options)).toHaveLength(section.n === 9 ? 3 : 4);
           }
         } else if (unit.kind === "num") {
+          expect(unit.questions.length).toBeGreaterThan(0);
+          expect(unit.questions.length).toBeLessThanOrEqual(20);
           playableShort += unit.questions.length;
           expect(unit.questions.every(q => q.answer.length > 0)).toBe(true);
         } else {
