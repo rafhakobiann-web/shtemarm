@@ -85,12 +85,16 @@ export const BIO_BOOKS = [
   { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
-/** Original Armenian-language practice bank; official past-paper links are shown separately. */
+/** Four independently playable Shtemarm-authored practice banks.
+ * The user's 2018 GTC PDF volumes are indexed separately in
+ * /data/armenian-source-index.json; do not label these practice questions
+ * as transcribed originals until individually source-verified.
+ */
 export const ARMENIAN_BOOKS = [
-  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
-  { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · հեղինակային վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 41, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս I · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 42, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս II · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 43, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս III · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
+  { id: 44, title: "Հայոց լեզու և հայ գրականություն", sub: "Մաս IV · 2018 թ. քննության շտեմարանի կառուցվածք · ուսումնական վարժանքներ", cover: "/covers/armenian-language.svg" },
 ] as const;
 
 /** Two playable original physics practice volumes, corresponding to the two
