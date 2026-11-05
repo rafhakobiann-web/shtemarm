@@ -54,6 +54,18 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(page).toContain("aria-pressed={mode===key}");
   });
 
+  it("supports actionable student feedback without silently storing chat content", () => {
+    const page = read("src/routes/chat.tsx");
+    expect(page).toContain("Սխալ պատասխան");
+    expect(page).toContain("Ավելի պարզ");
+    expect(page).toContain("Այլ օրինակ");
+    expect(page).toContain('aria-pressed={feedback[i] === "bad"}');
+    expect(page).toContain('disabled={loading}');
+    expect(page).toContain('break-words');
+    expect(page).toContain('setFeedback(previous =>');
+    expect(page).not.toContain("localStorage.setItem(\"shtemarm:chat");
+  });
+
   it("increases the useful individual budget without removing total provider protections",()=>{
     const budget=read("src/lib/ai-quota.server.ts");
     const env=read(".env.example");
