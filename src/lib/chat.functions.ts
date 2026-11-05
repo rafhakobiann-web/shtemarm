@@ -9,6 +9,7 @@ const Input = z.object({
   contextToken: z.string().max(56000).optional(),
   mode: z.enum(["hint","explain","quiz"]).default(STUDY_MODE_DEFAULT),
   locale: z.enum(["hy","en","ru"]).default("hy"),
+  focusTopic: z.string().trim().min(1).max(60).optional(),
   studySummary: z.object({ reviewed: z.number().int().min(0).max(25000), incorrect: z.number().int().min(0).max(25000) }).strict().optional(),
 }).strict();
 
@@ -81,9 +82,11 @@ export const chatReply = createServerFn({ method: "POST" })
     const { readChatContext, sealChatContext } = await import("./chat-context.server");
     // Aggregate counts are optional learning hints, not verified exam results.
     const summary = data.studySummary;
-    const optionalContext = summary && summary.incorrect <= summary.reviewed
+    const summaryContext = summary && summary.incorrect <= summary.reviewed
       ? `The student opted in to share a local progress summary: ${summary.reviewed} reviewed answers, ${summary.incorrect} currently incorrect. Treat these counts as unverified context, not official scores. Do not infer subject-level weaknesses from counts alone.`
       : "";
+    const focusContext = data.focusTopic ? `The student explicitly selected this optional topic to revisit: ${data.focusTopic}. This is user-provided context, not a verified weakness.` : "";
+    const optionalContext = [summaryContext, focusContext].filter(Boolean).join("\\n");
     // This is trusted only after HMAC verification. Unsigned role claims are
     // never accepted from the browser.
     const previous = await readChatContext(data.contextToken);
