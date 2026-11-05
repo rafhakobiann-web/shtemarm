@@ -28,6 +28,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HistoryBookRouteImport } from './routes/history-book'
 import { Route as MathHandbookRouteImport } from './routes/math-handbook'
 import { Route as MathReviewRouteImport } from './routes/math-review'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MiniGamesRouteImport } from './routes/mini-games'
 import { Route as MistakesRouteImport } from './routes/mistakes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -36,6 +37,7 @@ import { Route as StudyPlanRouteImport } from './routes/study-plan'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminExplanationsRouteImport } from './routes/admin.explanations'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public-auth-config'
@@ -51,6 +53,7 @@ import { Route as PhysicsOriginalRouteImport } from './routes/physics.original'
 import { Route as PhysicsScanPracticeRouteImport } from './routes/physics.scan-practice'
 import { Route as SubjectSubjectRouteImport } from './routes/subject.$subject'
 import { Route as TestBookIdRouteImport } from './routes/test.$bookId'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as StudyBookIdSectionIdRouteImport } from './routes/study.$bookId.$sectionId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -148,6 +151,11 @@ const MathReviewRoute = MathReviewRouteImport.update({
   path: '/math-review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MiniGamesRoute = MiniGamesRouteImport.update({
   id: '/mini-games',
   path: '/mini-games',
@@ -188,6 +196,12 @@ const VocabularyRoute = VocabularyRouteImport.update({
   path: '/vocabulary',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminExplanationsRoute = AdminExplanationsRouteImport.update({
   id: '/admin/explanations',
   path: '/admin/explanations',
@@ -263,6 +277,11 @@ const TestBookIdRoute = TestBookIdRouteImport.update({
   path: '/test/$bookId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudyBookIdSectionIdRoute = StudyBookIdSectionIdRouteImport.update({
   id: '/study/$bookId/$sectionId',
   path: '/study/$bookId/$sectionId',
@@ -289,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/history-book': typeof HistoryBookRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
+  '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
@@ -297,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
@@ -312,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math/': typeof MathIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRoutesByTo {
@@ -334,6 +356,7 @@ export interface FileRoutesByTo {
   '/history-book': typeof HistoryBookRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
+  '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
@@ -342,6 +365,7 @@ export interface FileRoutesByTo {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
@@ -357,6 +381,7 @@ export interface FileRoutesByTo {
   '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math': typeof MathIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRoutesById {
@@ -380,6 +405,7 @@ export interface FileRoutesById {
   '/history-book': typeof HistoryBookRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
+  '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
@@ -388,6 +414,7 @@ export interface FileRoutesById {
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/api/public-auth-config': typeof ApiPublicAuthConfigRoute
@@ -403,6 +430,7 @@ export interface FileRoutesById {
   '/subject/$subject': typeof SubjectSubjectRoute
   '/test/$bookId': typeof TestBookIdRoute
   '/math/': typeof MathIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/study/$bookId/$sectionId': typeof StudyBookIdSectionIdRoute
 }
 export interface FileRouteTypes {
@@ -427,6 +455,7 @@ export interface FileRouteTypes {
     | '/history-book'
     | '/math-handbook'
     | '/math-review'
+    | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
@@ -435,6 +464,7 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
     | '/admin/feedback'
     | '/api/public-auth-config'
@@ -450,6 +480,7 @@ export interface FileRouteTypes {
     | '/subject/$subject'
     | '/test/$bookId'
     | '/math/'
+    | '/.lovable/oauth/consent'
     | '/study/$bookId/$sectionId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -472,6 +503,7 @@ export interface FileRouteTypes {
     | '/history-book'
     | '/math-handbook'
     | '/math-review'
+    | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
@@ -480,6 +512,7 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
     | '/admin/feedback'
     | '/api/public-auth-config'
@@ -495,6 +528,7 @@ export interface FileRouteTypes {
     | '/subject/$subject'
     | '/test/$bookId'
     | '/math'
+    | '/.lovable/oauth/consent'
     | '/study/$bookId/$sectionId'
   id:
     | '__root__'
@@ -517,6 +551,7 @@ export interface FileRouteTypes {
     | '/history-book'
     | '/math-handbook'
     | '/math-review'
+    | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
@@ -525,6 +560,7 @@ export interface FileRouteTypes {
     | '/study-tools'
     | '/support'
     | '/vocabulary'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
     | '/admin/feedback'
     | '/api/public-auth-config'
@@ -540,6 +576,7 @@ export interface FileRouteTypes {
     | '/subject/$subject'
     | '/test/$bookId'
     | '/math/'
+    | '/.lovable/oauth/consent'
     | '/study/$bookId/$sectionId'
   fileRoutesById: FileRoutesById
 }
@@ -563,6 +600,7 @@ export interface RootRouteChildren {
   HistoryBookRoute: typeof HistoryBookRoute
   MathHandbookRoute: typeof MathHandbookRoute
   MathReviewRoute: typeof MathReviewRoute
+  McpRoute: typeof McpRoute
   MiniGamesRoute: typeof MiniGamesRoute
   MistakesRoute: typeof MistakesRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -571,6 +609,7 @@ export interface RootRouteChildren {
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
   VocabularyRoute: typeof VocabularyRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminExplanationsRoute: typeof AdminExplanationsRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
   ApiPublicAuthConfigRoute: typeof ApiPublicAuthConfigRoute
@@ -586,6 +625,7 @@ export interface RootRouteChildren {
   SubjectSubjectRoute: typeof SubjectSubjectRoute
   TestBookIdRoute: typeof TestBookIdRoute
   MathIndexRoute: typeof MathIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   StudyBookIdSectionIdRoute: typeof StudyBookIdSectionIdRoute
 }
 
@@ -724,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MathReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mini-games': {
       id: '/mini-games'
       path: '/mini-games'
@@ -778,6 +825,13 @@ declare module '@tanstack/react-router' {
       path: '/vocabulary'
       fullPath: '/vocabulary'
       preLoaderRoute: typeof VocabularyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/explanations': {
@@ -885,6 +939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestBookIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/study/$bookId/$sectionId': {
       id: '/study/$bookId/$sectionId'
       path: '/study/$bookId/$sectionId'
@@ -915,6 +976,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryBookRoute: HistoryBookRoute,
   MathHandbookRoute: MathHandbookRoute,
   MathReviewRoute: MathReviewRoute,
+  McpRoute: McpRoute,
   MiniGamesRoute: MiniGamesRoute,
   MistakesRoute: MistakesRoute,
   OnboardingRoute: OnboardingRoute,
@@ -923,6 +985,8 @@ const rootRouteChildren: RootRouteChildren = {
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
   VocabularyRoute: VocabularyRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AdminExplanationsRoute: AdminExplanationsRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
   ApiPublicAuthConfigRoute: ApiPublicAuthConfigRoute,
@@ -938,6 +1002,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubjectSubjectRoute: SubjectSubjectRoute,
   TestBookIdRoute: TestBookIdRoute,
   MathIndexRoute: MathIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   StudyBookIdSectionIdRoute: StudyBookIdSectionIdRoute,
 }
 export const routeTree = rootRouteImport

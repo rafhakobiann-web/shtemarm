@@ -9,9 +9,14 @@ import { useProgress } from "@/lib/progress";
 import { useLang, useTx } from "@/lib/lang";
 import { authFeedback } from "@/lib/auth-feedback";
 import { googleOAuthMethod, googleOAuthRedirect, hasAuthenticatedSession } from "@/lib/google-oauth-routing";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
+  // OAuth consent sends unauthenticated users here with a return target.
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search["next"] === "string" ? search["next"] : undefined,
+  }),
   head: () => ({
     meta: [
       { property: "og:title", content: "Մուտք և գրանցում · Shtemarm" },
