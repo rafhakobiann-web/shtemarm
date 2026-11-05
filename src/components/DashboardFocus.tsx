@@ -1,4 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { getUnitMistakes, UNIT_MISTAKES_CHANGED } from "@/lib/unitMistakes";
+import { summarizeRevision } from "@/lib/revisionSchedule";
 import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sparkles, Target, Trophy } from "lucide-react";
 import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
@@ -53,6 +56,14 @@ export function DashboardFocus({ name, progress, subjects }: {
   const t = WORDS[lang];
   const i = lang === "en" ? 1 : lang === "ru" ? 2 : 0;
   const summary = progressSummary(progress);
+  const [unitMistakes, setUnitMistakes] = useState(() => getUnitMistakes());
+  useEffect(() => {
+    const refresh = () => setUnitMistakes(getUnitMistakes());
+    window.addEventListener(UNIT_MISTAKES_CHANGED, refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener(UNIT_MISTAKES_CHANGED, refresh); window.removeEventListener("storage", refresh); };
+  }, []);
+  const revision = useMemo(() => summarizeRevision(unitMistakes, Date.now()), [unitMistakes]);
   const selected = [...new Set(subjects)].slice(0, 6);
   const nextTo = summary.review > 0 ? "/mistakes" : "/study-plan";
   const nextText = summary.review > 0 ? t.retry : t.start;
@@ -84,6 +95,12 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Այսօրվա ուսումնական առաջարկներ" : lang === "ru" ? "Рекомендации на сегодня" : "Today’s learning suggestions"}>
+        <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-black">{lang === "hy" ? "Այսօրվա կրկնությունը" : lang === "ru" ? "Повторение на сегодня" : "Today’s revision"}</h2><Link to="/mistakes" className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">{t.retry}<ArrowRight className="size-4" /></Link></div>
+        <p className="text-sm text-muted-foreground">{revision.due} {lang === "hy" ? "հարց՝ առաջարկվող կրկնության համար" : lang === "ru" ? "вопросов к повторению" : "questions suggested for review"} · {revision.pending} {lang === "hy" ? "չյուրացված գրառում" : lang === "ru" ? "неосвоенных записей" : "unmastered records"}</p>
+        {revision.bySubject.length > 0 && <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առավել շատ սխալներ՝" : lang === "ru" ? "Больше всего ошибок:" : "Most saved mistakes:"} {revision.bySubject.slice(0, 3).map(([subject, count]) => `${SUBJECT_NAMES[subject as OnboardingSubject]?.[i] ?? subject} (${count})`).join(" · ")}</p>}
+        <p className="text-xs text-muted-foreground">{lang === "hy" ? "Հաշվարկված է այս սարքում պահված շտեմարանային սխալներով․ սա ամբողջական գնահատական չէ։" : lang === "ru" ? "На основе ошибок, сохранённых на этом устройстве; не полная оценка знаний." : "Based on question-bank mistakes saved on this device; not a complete mastery assessment."}</p>
+      </section>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map(({ label, value, Icon }) => (
           <div className="academy-bento min-w-0 p-4" key={label}>
