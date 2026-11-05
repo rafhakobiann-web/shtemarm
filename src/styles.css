@@ -1362,3 +1362,12 @@ html.user-high-contrast .sht-landing :is(.sht-landing-nav,.sht-feature,.sht-subj
   .sht-lang-switch { padding: .15rem; }
   .sht-nav-login { padding: .4rem .52rem; }
 }
+
+/* Phase 4.2: gentle achievement reveal; no autoplay under reduced-motion settings. */
+@keyframes achievement-reveal {
+  from { opacity: .72; transform: translateY(5px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-achievement] { animation: none !important; transition: none !important; }
+}
