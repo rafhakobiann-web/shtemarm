@@ -123,6 +123,21 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(css).toContain("prefers-reduced-motion:reduce");
   });
 
+  it("keeps the reference-style experiment isolated and loaded after old Liquid Glass CSS",()=>{
+    const root=read("src/routes/__root.tsx");
+    const home=read("src/routes/index.tsx");
+    const css=read("src/landing-reference-2026.css");
+    expect(root).toContain('import landingReferenceCss from "../landing-reference-2026.css?url";');
+    expect(root.indexOf('href: landingEditorialCss')).toBeLessThan(root.indexOf('href: landingReferenceCss'));
+    expect(home).toContain('data-design="reference"');
+    expect(css).toContain('data-design="reference"');
+    expect(css).toContain('html.dark[data-surface="liquid"] .sht-editorial[data-design="reference"] .sht-demo-option');
+    expect(css).toContain("sht-reference-flashcard");
+    expect(css).toContain("sht-reference-quiz-tabs");
+    expect(css).toContain("sht-reference-teacher-modes");
+    expect(css).toContain("prefers-reduced-motion:reduce");
+  });
+
   it("does not add external tracking, embeds or a nonexistent Play Store listing",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
     expect(sample).not.toContain("iframe");
