@@ -204,18 +204,6 @@ html.dark[data-surface="liquid"] .sht-editorial .sht-ref-intro h2 {font-weight:9
   from {opacity:.4;transform:translateY(12px) scale(.985);}
   to {opacity:1;transform:translateY(0) scale(1);}
 }
-@keyframes sht-ref-chapter-enter {
-  from {opacity:.65;transform:translateY(18px);}
-  to {opacity:1;transform:translateY(0);}
-}
 @media(prefers-reduced-motion:no-preference) {
   .sht-editorial .sht-ref-flashcard {animation:sht-ref-card-enter .28s cubic-bezier(.18,.68,.18,1) both;}
-  @supports(animation-timeline:view()) {
-    .sht-editorial .sht-ref-section .sht-ref-intro,
-    .sht-editorial .sht-ref-section .sht-ref-visual {
-      animation:sht-ref-chapter-enter linear both;
-      animation-timeline:view();
-      animation-range:entry 0% cover 25%;
-    }
-  }
 }
