@@ -97,7 +97,7 @@
 .sht-editorial .sht-ref-exam-kpis div {border:1px solid #dfeaea;border-radius:11px;background:white;min-height:79px;padding:10px;display:flex;flex-direction:column;gap:9px;font-size:.69rem;font-weight:850;}
 .sht-editorial .sht-ref-exam-kpis svg {color:#d99519;}
 .sht-editorial .sht-ref-label {display:block;color:#476a70;font-size:.7rem;font-weight:900;margin:15px 0 6px;}
-.sht-editorial .sht-ref-exam select {display:block;width:100%;border-radius:9px;border:1px solid #d2e1e1;background:white;color:#234851;font:750 .79rem/1.5 inherit;padding:10px;}
+.sht-editorial .sht-ref-exam select {display:block;width:100%;border-radius:9px;border:1px solid #d2e1e1;background:white;color:#234851;font-size:.79rem;font-weight:750;line-height:1.5;font-family:inherit;padding:10px;}
 .sht-editorial .sht-ref-exam-note {color:#55717b;font-size:.65rem;line-height:1.6;margin-top:13px;}
 .sht-editorial .sht-ref-exam-cta {display:flex;align-items:center;justify-content:center;gap:8px;min-height:43px;margin-top:16px;border-radius:12px;background:#ffb717;color:#193943;font-size:.76rem;font-weight:900;}
 .sht-editorial .sht-ref-community {background:linear-gradient(125deg,#ffbc25,#f4a10a);color:#1d3940;}
