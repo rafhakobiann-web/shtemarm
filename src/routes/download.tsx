@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
-import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_BETA_VERSION, GITHUB_ANDROID_RELEASE_URL, PUBLIC_ANDROID_VERSION, safePublicApkUrl } from "@/lib/app-download";
+import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_BETA_VERSION, GITHUB_ANDROID_RELEASE_URL, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -142,7 +142,7 @@ function DownloadPage() {
   // This public GitHub Release is real and published. A later verified,
   // administrator-configured APK or same-origin release may override it.
   const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk ?? GITHUB_ANDROID_APK_URL;
-  const displayedVersion = publishedVersion ?? (apkUrl===GITHUB_ANDROID_APK_URL ? GITHUB_ANDROID_BETA_VERSION : PUBLIC_ANDROID_VERSION);
+  const displayedVersion = publishedVersion ?? (apkUrl===GITHUB_ANDROID_APK_URL ? GITHUB_ANDROID_BETA_VERSION : null);
   const releaseDetailsLabel = lang==="en"?"Open the GitHub release":lang==="ru"?"Открыть релиз на GitHub":"Բացել GitHub թողարկման էջը";
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
@@ -162,9 +162,7 @@ function DownloadPage() {
           <div>
             <h2 id="android-app-title" className="text-xl font-black">{text.android}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{text.native}</p>
-            <p className="mt-1 text-sm font-bold text-primary">
-              {text.versionLabel}: {displayedVersion}
-            </p>
+            {displayedVersion && <p className="mt-1 text-sm font-bold text-primary">{text.versionLabel}: {displayedVersion}</p>}
           </div>
           <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
             <Download className="size-5" />{text.apkAvailable}
