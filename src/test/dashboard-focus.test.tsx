@@ -58,6 +58,8 @@ describe("dashboard focuses on the actual student's work", () => {
     expect(dashboard).toContain("onToggle={event => setExpanded");
     expect(dashboard).toContain('id="exams"');
     expect(dashboard).toContain('id="subjects"');
+    expect(dashboard).toContain('search={{ mode: "exam" }}');
+    expect(dashboard).toContain("sht-dashboard-bento");
     expect(dashboard).toContain('<DashboardFocus name={name} progress={progress} subjects={savedSubjects} />');
     expect(readFileSync("src/components/AppHeader.tsx", "utf8")).toContain('<Link to="/"');
   });
