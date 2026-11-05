@@ -376,7 +376,7 @@ function Index() {
             </Link>
             <Link to="/learn" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Brain className="size-5" /></span>
-              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("AI ուսուցիչ")}</strong><span className="block text-xs text-muted-foreground">{tx("Հուշումներ և բացատրություններ")}</span></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական կենտրոն")}</strong><span className="block text-xs text-muted-foreground">{tx("Սովորել, թեստավորվել և կրկնել")}</span></span>
               <ArrowRight className="size-4 shrink-0 text-primary" />
             </Link>
           </div>
