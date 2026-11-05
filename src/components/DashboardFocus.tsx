@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { getUnitMistakes, UNIT_MISTAKES_CHANGED } from "@/lib/unitMistakes";
-import { achievements, dailyQuests, getQuestHistory, localDay, QUESTS_CHANGED } from "@/lib/gamification";
+import { achievements, dailyQuests, getQuestHistory, getWeeklySelections, localDay, QUESTS_CHANGED, setWeeklySelections, weeklyChallenges } from "@/lib/gamification";
 import { summarizeRevision } from "@/lib/revisionSchedule";
 import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sparkles, Target, Trophy } from "lucide-react";
 import { useLang } from "@/lib/lang";
@@ -73,6 +73,13 @@ export function DashboardFocus({ name, progress, subjects }: {
     return () => { window.removeEventListener(QUESTS_CHANGED, refresh); window.removeEventListener("storage", refresh); };
   }, []);
   const quests = dailyQuests(questHistory);
+  const [weeklySelection, setWeeklySelection] = useState<string[]>(() => getWeeklySelections());
+  const weekly = weeklyChallenges(questHistory, weeklySelection);
+  const toggleWeekly = (id: string) => {
+    const next = weeklySelection.includes(id) ? weeklySelection.filter(value => value !== id) : [...weeklySelection, id];
+    setWeeklySelection(next);
+    setWeeklySelections(next);
+  };
   const unlocked = achievements(progress).filter(item => item.unlocked);
   const calendarDays = Array.from({ length: 28 }, (_, i) => {
     const day = new Date(); day.setHours(12, 0, 0, 0); day.setDate(day.getDate() - (27 - i));
@@ -123,6 +130,14 @@ export function DashboardFocus({ name, progress, subjects }: {
           {calendarDays.map(day => <span key={day.date} title={day.date+": "+day.count} className={`aspect-square rounded-lg border ${day.count>=15?"bg-primary":day.count>=5?"bg-primary/60":day.count>0?"bg-primary/25":"bg-muted/50"}`} />)}
         </div>
         <div className="grid gap-2 sm:grid-cols-3">{quests.map(quest => <div key={quest.id} className="rounded-xl border bg-card p-3"><p className="text-xs font-semibold">{quest.id==="review-3"?(lang==="hy"?"Կրկնել 3 սխալ":lang==="ru"?"Повторить 3 ошибки":"Review 3 mistakes"):quest.id==="answer-15"?(lang==="hy"?"Պատասխանել 15 հարցի":lang==="ru"?"Ответить на 15 вопросов":"Answer 15 questions"):(lang==="hy"?"Պատասխանել 5 հարցի":lang==="ru"?"Ответить на 5 вопросов":"Answer 5 questions")}</p><p className="mt-1 text-sm font-bold tabular-nums">{quest.count}/{quest.goal}</p><div className="mt-2 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{width:`${Math.min(100,quest.count/quest.goal*100)}%`}} /></div></div>)}</div>
+        <div className="space-y-2">
+          <h3 className="text-sm font-black">{lang==="hy"?"Շաբաթական ընտրովի մարտահրավերներ":lang==="ru"?"Необязательные задания недели":"Optional weekly challenges"}</h3>
+          <div className="grid gap-2 sm:grid-cols-3">{weekly.map(item => <label key={item.id} className="flex cursor-pointer flex-col gap-2 rounded-xl border bg-card p-3 text-xs">
+            <span className="flex items-center gap-2"><input type="checkbox" checked={item.selected} onChange={() => toggleWeekly(item.id)} className="size-4 accent-primary" /><strong>{item.id==="review-10"?(lang==="hy"?"Կրկնել 10 սխալ":lang==="ru"?"Повторить 10 ошибок":"Review 10 mistakes"):item.id==="answer-50"?(lang==="hy"?"Պատասխանել 50 հարցի":lang==="ru"?"Ответить на 50 вопросов":"Answer 50 questions"):(lang==="hy"?"Պատասխանել 20 հարցի":lang==="ru"?"Ответить на 20 вопросов":"Answer 20 questions")}</strong></span>
+            {item.selected && <><span className="font-semibold tabular-nums">{item.count}/{item.goal}</span><span className="h-2 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{width:`${Math.min(100,item.count/item.goal*100)}%`}} /></span></>}
+          </label>)}</div>
+          <p className="text-xs text-muted-foreground">{lang==="hy"?"Մարտահրավերները կամավոր են։ Կարող ես փոխել ընտրությունը ցանկացած պահի։ Բաց թողնելու համար տուգանք չկա։":lang==="ru"?"Задания добровольные, выбор можно изменить без штрафов.":"Challenges are optional; change your selection anytime without penalties."}</p>
+        </div>
         <div className="space-y-2">
           <h3 className="text-sm font-black">{lang==="hy"?"Իմ նվաճումները":lang==="ru"?"Мои достижения":"My achievements"}</h3>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
