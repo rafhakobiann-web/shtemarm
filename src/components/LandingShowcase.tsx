@@ -144,6 +144,81 @@ const SAMPLE_SUBJECTS: Record<Lang, readonly string[]> = {
   ru:["Математика","Английский","Армянский"],
 };
 
+
+/** Front-end-only example responses: never presented as a live AI request. */
+const TUTOR_DEMO: Record<Lang, {
+  modes: Record<"hint"|"explain"|"practice",string>;
+  replies: Record<"hint"|"explain"|"practice",string>;
+}> = {
+  hy: {
+    modes:{hint:"Հուշում",explain:"Բացատրություն",practice:"Ինքնաստուգում"},
+    replies:{
+      hint:"Նախ մտածիր՝ ի՞նչ պետք է անել +5-ը վերացնելու համար։ Հավասարման երկու կողմերում կատարիր նույն գործողությունը։",
+      explain:"3x + 5 = 14 → 3x = 9 → x = 3։ Երկու կողմերից հանում ենք 5, ապա բաժանում 3-ի։",
+      practice:"Քո հերթն է․ եթե 2x + 4 = 12, ապա x-ը որքա՞ն է։ Պատասխանդ փորձիր ստուգել՝ 2 · 4 + 4 = 12։",
+    },
+  },
+  en: {
+    modes:{hint:"Hint",explain:"Step by step",practice:"Try it"},
+    replies:{
+      hint:"What would remove the +5? Perform the same operation on both sides of the equation.",
+      explain:"3x + 5 = 14 → 3x = 9 → x = 3. Subtract 5 from both sides, then divide by 3.",
+      practice:"Your turn: if 2x + 4 = 12, what is x? Check your result: 2 × 4 + 4 = 12.",
+    },
+  },
+  ru: {
+    modes:{hint:"Подсказка",explain:"По шагам",practice:"Попробуй"},
+    replies:{
+      hint:"Как убрать +5? Выполни одно и то же действие с обеими частями уравнения.",
+      explain:"3x + 5 = 14 → 3x = 9 → x = 3. Вычти 5 из обеих частей, затем раздели на 3.",
+      practice:"Твоя очередь: если 2x + 4 = 12, чему равен x? Проверь: 2 × 4 + 4 = 12.",
+    },
+  },
+};
+
+/** Original, non-copyrighted words for the illustrative flashcard interaction. */
+const FLASHCARDS: Record<Lang,readonly {word:string;translation:string;example:string}[]> = {
+  hy:[
+    {word:"achieve",translation:"հասնել, ձեռք բերել",example:"You can achieve your goals."},
+    {word:"consider",translation:"հաշվի առնել",example:"Consider another solution."},
+    {word:"improve",translation:"բարելավել",example:"Practice can improve your skills."},
+  ],
+  en:[
+    {word:"achieve",translation:"to successfully reach a goal",example:"You can achieve your goals."},
+    {word:"consider",translation:"to think carefully about",example:"Consider another solution."},
+    {word:"improve",translation:"to make something better",example:"Practice can improve your skills."},
+  ],
+  ru:[
+    {word:"achieve",translation:"достигать",example:"You can achieve your goals."},
+    {word:"consider",translation:"обдумывать, учитывать",example:"Consider another solution."},
+    {word:"improve",translation:"улучшать",example:"Practice can improve your skills."},
+  ],
+};
+
+const FLASHCARD_LABELS: Record<Lang,{
+  kicker:string; title:string; description:string; know:string; review:string; saved:string;
+  showReview:string; showAll:string; tap:string; session:string;
+}> = {
+  hy:{
+    kicker:"Բառապաշար · ինտերակտիվ",title:"Սահեցրու, հիշիր, կրկնիր։",
+    description:"Սահեցրու ձախ՝ եթե գիտես բառը, աջ՝ եթե ուզում ես նորից սովորել։ Կարող ես նաև օգտվել կոճակներից։",
+    know:"Գիտեմ",review:"Կրկնել",saved:"Կրկնելու բառեր",
+    showReview:"Դիտել կրկնվողները",showAll:"Բոլոր բառերը",tap:"Սահեցրու քարտը",session:"Միայն այս ցուցադրության ընթացքում",
+  },
+  en:{
+    kicker:"Vocabulary · interactive",title:"Swipe, remember, repeat.",
+    description:"Swipe left if you know the word or right to review later. Buttons work too.",
+    know:"I know it",review:"Review again",saved:"Words to review",
+    showReview:"Review saved words",showAll:"All words",tap:"Swipe the card",session:"Only during this demo session",
+  },
+  ru:{
+    kicker:"Слова · интерактивно",title:"Листай, запоминай, повторяй.",
+    description:"Свайп влево — знаю слово, вправо — повторю. Или используй кнопки.",
+    know:"Знаю",review:"Повторить",saved:"Слова для повтора",
+    showReview:"Повторить слова",showAll:"Все слова",tap:"Листай карточку",session:"Только в этой демонстрации",
+  },
+};
+
 export function LandingShowcase({ lang }: { lang: Lang }) {
   const t = WORDS[lang];
   const [questionIndex,setQuestionIndex] = useState(0);
@@ -289,6 +364,60 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
             <div className="sht-ai-tutor"><span className="sht-ai-tutor-icon"><Lightbulb size={16} aria-hidden="true"/></span><span aria-live="polite">{tutorCopy.replies[tutorMode]}</span></div>
           </div>
           <div className="sht-ai-mock-input" aria-hidden="true"><span>...</span><ArrowRight size={17}/></div>
+        </div>
+      </section>
+
+      <section className="sht-story sht-story-flashcards" aria-labelledby="sht-story-flashcards-title">
+        <div className="sht-story-copy">
+          <span className="sht-story-kicker"><Layers3 size={17} aria-hidden="true" />{cardLabels.kicker}</span>
+          <h2 id="sht-story-flashcards-title">{cardLabels.title}</h2>
+          <p>{cardLabels.description}</p>
+          <div className="sht-reference-review-count" aria-live="polite">
+            <BookmarkCheck size={17} aria-hidden="true" />{cardLabels.saved}: <strong>{reviewWords.length}</strong>
+          </div>
+          <button className="sht-reference-review-toggle" type="button"
+            disabled={!showReview && reviewWords.length===0}
+            onClick={()=>{setShowReview(previous=>!previous);setCardIndex(0);}}>
+            {showReview ? cardLabels.showAll : cardLabels.showReview}
+            <ArrowRight size={16} aria-hidden="true" />
+          </button>
+          <span className="sht-reference-session-note">{cardLabels.session}</span>
+        </div>
+        <div className="sht-reference-flashcard-panel">
+          <div className="sht-reference-flashcard-counter">
+            <span>SHTEMARM / WORDS</span>
+            <span>{(cardIndex % cardSet.length)+1} / {cardSet.length}</span>
+          </div>
+          <div className="sht-reference-flashcard" role="group" aria-label={flashcard.word}
+            onPointerDown={event=>{
+              if(event.pointerType==="touch" || event.pointerType==="pen")
+                cardSwipe.current={id:event.pointerId,x:event.clientX,y:event.clientY};
+            }}
+            onPointerUp={event=>{
+              const swipe=cardSwipe.current;
+              cardSwipe.current=null;
+              if(!swipe || swipe.id!==event.pointerId)return;
+              const dx=event.clientX-swipe.x,dy=event.clientY-swipe.y;
+              if(Math.abs(dx)>54 && Math.abs(dx)>Math.abs(dy)*1.2)
+                nextFlashcard(dx>0);
+            }}
+            onPointerCancel={()=>{cardSwipe.current=null;}}>
+            <span className="sht-reference-flashcard-kicker"><MoveHorizontal size={16} aria-hidden="true" />{cardLabels.tap}</span>
+            <div key={displayCard} className="sht-reference-flashcard-content">
+              <strong>{flashcard.word}</strong>
+              <span>{flashcard.translation}</span>
+              <p>{flashcard.example}</p>
+            </div>
+            <div className="sht-reference-flashcard-corners" aria-hidden="true"><span>01</span><span>↗</span></div>
+          </div>
+          <div className="sht-reference-flashcard-actions" role="group" aria-label={cardLabels.title}>
+            <button type="button" onClick={()=>nextFlashcard(false)}>
+              <Check size={18} aria-hidden="true" />{cardLabels.know}
+            </button>
+            <button type="button" onClick={()=>nextFlashcard(true)}>
+              <BookmarkCheck size={18} aria-hidden="true" />{cardLabels.review}
+            </button>
+          </div>
         </div>
       </section>
 
