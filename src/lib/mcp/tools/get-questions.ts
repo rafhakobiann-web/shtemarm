@@ -16,7 +16,7 @@ type RawUnit = {
   kind: "mc" | "set" | "seq" | "match" | "num";
   passage?: string;
   questions?: { n: string; stem: string; options?: Record<string, string>; answer?: string }[];
-  answer?: unknown;
+  answer?: string | number | number[] | Record<string, number> | null;
 };
 
 type RawBook = { sections: { n: number; title?: string; label?: string; units: RawUnit[] }[] };
