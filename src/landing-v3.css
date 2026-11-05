@@ -350,3 +350,11 @@ html[data-surface="liquid"][data-glass-quality="lite"] .sht-v3 .sht-landing-nav 
 /* Semantic dark-mode contrast: never use a fixed white font on dark cards. */
 html.dark .sht-v3 :is(.sl-lab,.sl-tile,.sl-journey,.sl-journey-visual,.sl-reader-paper,.sl-app-panel) {color:var(--foreground);}
 html.dark .sht-v3 :is(.sl-section-heading h2,.sl-journey-copy h2,.sl-tile h3,.sl-lab-stage h3) {color:var(--foreground);}
+
+/* Each tool has its own restrained accent treatment inside the shared palette. */
+.sht-v3 .sl-tile-flash::before {
+  background:radial-gradient(ellipse at 50% -55%,color-mix(in srgb,var(--primary) 16%,transparent),transparent 79%);
+}
+.sht-v3 .sl-tile-tutor::before {
+  background:radial-gradient(ellipse at 50% -55%,color-mix(in srgb,var(--primary) 11%,transparent),transparent 79%);
+}
