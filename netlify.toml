@@ -1,0 +1,10 @@
+# Shtemarm is a server-rendered TanStack Start app with Nitro, not a
+# static-only SPA. The Lovable Vite preset otherwise defaults to Cloudflare.
+# Netlify's Nitro preset emits SSR functions + redirects via its Frameworks API
+# and static assets into dist. Do not use /* -> /index.html rewrites.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NITRO_PRESET = "netlify"

@@ -3,6 +3,15 @@ on:
   pull_request:
     paths:
       - 'src/routes/index.tsx'
+      - 'src/routes/download.tsx'
+      - 'src/components/LandingShowcase.tsx'
+      - 'src/landing-editorial-2026.css'
+      - 'src/landing-reference-2026.css'
+      - 'netlify.toml'
+      - 'src/lib/app-download.ts'
+      - 'src/test/landing-editorial-2026.test.ts'
+      - 'src/test/landing-sample-interaction.test.tsx'
+      - 'src/test/download-scroll.test.ts'
       - 'src/routes/dashboard.tsx'
       - 'src/routes/onboarding.tsx'
       - 'src/routes/auth.tsx'
@@ -19,6 +28,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Regression tests
-        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts
+        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts src/test/landing-editorial-2026.test.ts src/test/landing-sample-interaction.test.tsx src/test/download-scroll.test.ts
       - name: Website production build
         run: bun run build

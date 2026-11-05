@@ -1,6 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { PRIVATE_BETA_URL, safePublicApkUrl } from "@/lib/app-download";
+import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl, publiclyAccessibleApkUrl } from "@/lib/app-download";
 
 const source = (name: string) => readFileSync(name, "utf8");
 
@@ -30,19 +31,27 @@ describe("Shtemarm app download", () => {
     expect(download).toContain('appinstalled');
     expect(download).toContain("VITE_ANDROID_APK_URL");
   });
-  it("does not misrepresent the repository's private APK as a public file", () => {
+  it("uses the existing public website APK instead of a private GitHub release", () => {
     const download = source("src/routes/download.tsx");
-    // The private beta may be linked through Actions instead of an old tag.
-    // Never treat a workflow URL as a publicly downloadable APK.
-    expect(PRIVATE_BETA_URL).toMatch(
-      /^https:\/\/github\.com\/rafhakobiann-web\/shtemarm\/(?:actions\/workflows\/[a-z0-9-]+\.yml|releases\/tag\/v[\w.-]+)$/,
-    );
-    expect(PRIVATE_BETA_URL).not.toMatch(/\.apk(?:[?#]|$)/);
-    expect(download).toContain("privateNote");
-    expect(download).toContain("invited");
-    expect(download).not.toContain('const GITHUB_TOKEN');
+    const landing = source("src/routes/index.tsx");
+    const showcase = source("src/components/LandingShowcase.tsx");
+    const manifest = JSON.parse(source("public/downloads/android-release.json"));
+    expect(SITE_ANDROID_BETA_VERSION).toBe(manifest.version);
+    expect(SITE_ANDROID_APK_URL).toBe("/downloads/shtemarm-android.apk");
+    const file = "public/downloads/shtemarm-android.apk";
+    expect(statSync(file).size).toBe(manifest.size);
+    expect(createHash("sha256").update(readFileSync(file)).digest("hex")).toBe(manifest.sha256);
+    expect(safePublicApkUrl(SITE_ANDROID_APK_URL)).toBe(SITE_ANDROID_APK_URL);
+    expect(publiclyAccessibleApkUrl("https://github.com/rafhakobiann-web/shtemarm/releases/download/v0.3.0-beta.4/private.apk")).toBeNull();
+    expect(publiclyAccessibleApkUrl(SITE_ANDROID_APK_URL)).toBe(SITE_ANDROID_APK_URL);
+    expect(download).toContain("?? SITE_ANDROID_APK_URL");
+    expect(showcase).toContain("href={SITE_ANDROID_APK_URL}");
+    expect(showcase).toContain("download=\"Shtemarm-Android.apk\"");
+    expect(landing).toContain('to="/download"');
+    expect([landing,showcase,download].join("\\n")).not.toContain("play.google.com/store/apps");
     expect(source(".env.example")).toContain("VITE_ANDROID_APK_URL=");
   });
+
 });
 
 describe("smooth scrolling is accessible and avoids expensive repaints", () => {
