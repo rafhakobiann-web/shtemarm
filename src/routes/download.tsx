@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
-import { PRIVATE_BETA_URL, LATEST_ANDROID_VERSION, PUBLIC_ANDROID_VERSION, safePublicApkUrl } from "@/lib/app-download";
+import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_BETA_VERSION, GITHUB_ANDROID_RELEASE_URL, PUBLIC_ANDROID_VERSION, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -106,7 +106,7 @@ function DownloadPage() {
     apkAvailable: "Download Android APK", apkPrivate: "Android beta for invited testers",
     privateNote: "The beta APK is currently hosted in a private GitHub repository. Only invited collaborators can access it. A public download will be enabled after the release and distribution review.",
     appNote: "Beta app: some textbooks and examination modes are still incomplete. Only install an APK you trust.",
-    publicNote: "The download below points to a public APK configured by the website administrator.",
+    publicNote: "The Android beta is available from the public Shtemarm GitHub release or an administrator-approved APK mirror. This is not a Google Play app.",
     web: "Install the website", webInfo: "A quick home-screen shortcut that opens Shtemarm like an app. It requires an internet connection for most content.",
     install: "Install website", installed: "Already installed", manual: "Add to home screen",
     androidSteps: "On Android Chrome: open the ⋮ menu → Install app or Add to Home screen.",
@@ -121,7 +121,7 @@ function DownloadPage() {
     apkAvailable: "Скачать Android APK", apkPrivate: "Android-бета для приглашённых участников",
     privateNote: "APK находится в закрытом репозитории GitHub. Доступ есть только у приглашённых участников. Публичная загрузка появится после проверки релиза и прав на материалы.",
     appNote: "Бета-версия: некоторые сборники и форматы экзаменов ещё не завершены. Устанавливайте только доверенные APK.",
-    publicNote: "Файл загружается по публичной ссылке, настроенной администратором сайта.",
+    publicNote: "Тестовая версия Android доступна через публичный релиз Shtemarm на GitHub или проверенное зеркало. Это не приложение из Google Play.",
     web: "Установить сайт", webInfo: "Ярлык на главном экране, открывающий Shtemarm как приложение. Для большинства материалов нужен интернет.",
     install: "Установить сайт", installed: "Уже установлено", manual: "Добавить на главный экран",
     androidSteps: "Android Chrome: меню ⋮ → Установить приложение или Добавить на главный экран.",
@@ -136,7 +136,7 @@ function DownloadPage() {
     apkAvailable: "Ներբեռնել Android APK-ն", apkPrivate: "Android-ի փորձնական տարբերակը՝ հրավիրված մասնակիցների համար",
     privateNote: "APK-ն այժմ պահվում է GitHub-ի փակ պահոցում։ Այն հասանելի է միայն հրավիրված մասնակիցներին։ Հանրային ներբեռնումը հասանելի կդառնա թողարկման և նյութերի տարածման իրավունքների ստուգումից հետո։",
     appNote: "Փորձնական տարբերակ․ որոշ շտեմարաններ և քննական ռեժիմներ դեռ ամբողջական չեն։ Տեղադրիր միայն վստահելի աղբյուրից ստացված APK։",
-    publicNote: "Այս հղումը տանում է կայքի կառավարչի կարգավորած հանրային APK-ին։",
+    publicNote: "Android-ի փորձնական տարբերակը հասանելի է Shtemarm-ի հանրային GitHub թողարկումից կամ հաստատված APK հղումից։ Սա Google Play հավելված չէ։",
     web: "Տեղադրել կայքը", webInfo: "Գլխավոր էկրանի հարմար պատկերակ, որը բացում է Shtemarm-ը հավելվածի նման։ Նյութերի մեծ մասի համար անհրաժեշտ է ինտերնետ։",
     install: "Տեղադրել կայքը", installed: "Արդեն տեղադրված է", manual: "Ավելացնել գլխավոր էկրանին",
     androidSteps: "Android Chrome-ում բացիր ⋮ ընտրացանկը և ընտրիր «Տեղադրել հավելվածը» կամ «Ավելացնել գլխավոր էկրանին»։",
@@ -145,7 +145,11 @@ function DownloadPage() {
     onlyAuthorized: "Բացել փակ փորձնական թողարկումը", available: "Android-ի համար",
   };
 
-  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk;
+  // This public GitHub Release is real and published. A later verified,
+  // administrator-configured APK or same-origin release may override it.
+  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk ?? GITHUB_ANDROID_APK_URL;
+  const displayedVersion = publishedVersion ?? (apkUrl===GITHUB_ANDROID_APK_URL ? GITHUB_ANDROID_BETA_VERSION : PUBLIC_ANDROID_VERSION);
+  const releaseDetailsLabel = lang==="en"?"Open the GitHub release":lang==="ru"?"Открыть релиз на GitHub":"Բացել GitHub թողարկման էջը";
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
       <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary">
@@ -165,20 +169,17 @@ function DownloadPage() {
             <h2 id="android-app-title" className="text-xl font-black">{text.android}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{text.native}</p>
             <p className="mt-1 text-sm font-bold text-primary">
-              {text.versionLabel}: {apkUrl ? (publishedVersion ?? PUBLIC_ANDROID_VERSION) : PUBLIC_ANDROID_VERSION}
+              {text.versionLabel}: {displayedVersion}
             </p>
-            <p className="mt-1 text-sm font-bold text-muted-foreground">{text.upcoming}: {LATEST_ANDROID_VERSION}</p>
           </div>
-          {apkUrl ? (
-            <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
-              <Download className="size-5" />{text.apkAvailable}
-            </a>
-          ) : (
-            <a href={PRIVATE_BETA_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm font-bold text-primary hover:bg-primary/15">
-              <ExternalLink className="size-5" />{text.onlyAuthorized}
-            </a>
-          )}
-          <p className="text-sm leading-6 text-muted-foreground">{apkUrl ? text.publicNote : text.privateNote}</p>
+          <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
+            <Download className="size-5" />{text.apkAvailable}
+          </a>
+          <a href={GITHUB_ANDROID_RELEASE_URL} target="_blank" rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary hover:underline">
+            <ExternalLink className="size-4" />{releaseDetailsLabel}
+          </a>
+          <p className="text-sm leading-6 text-muted-foreground">{text.publicNote}</p>
           <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-5 text-muted-foreground">{text.appNote}</p>
           <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-5 text-muted-foreground">{text.updateNote}</p>
         </section>
