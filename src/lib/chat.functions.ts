@@ -122,7 +122,7 @@ export const chatReply = createServerFn({ method: "POST" })
             headers: { Authorization: `Bearer ${zAiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
               model: zAiModel,
-              messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(data.mode,data.locale) }, ...messages],
+              messages: [{ role: "system", content: SYSTEM + "\n" + tutorModeInstructions(data.mode,data.locale) }, ...tutorMessages],
               temperature: 0.3,
               max_tokens: 700,
             }),
