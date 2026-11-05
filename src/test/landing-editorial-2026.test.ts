@@ -18,6 +18,10 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(landing).toContain('to="/download"');
     expect(root).toContain('landingEditorialCss from "../landing-editorial-2026.css?url"');
     expect(root).toContain('href: landingEditorialCss');
+    const netlify=read("netlify.toml");
+    expect(netlify).toContain('NITRO_PRESET = "netlify"');
+    expect(netlify).toContain('publish = "dist"');
+    expect(netlify).not.toContain('/* /index.html 200');
     expect(css).toContain(".sht-story-paper");
     expect(css).toContain(".sht-story-gold");
     expect(css).toContain(".sht-story-ai");
