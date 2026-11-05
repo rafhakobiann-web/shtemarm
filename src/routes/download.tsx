@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
-import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_BETA_VERSION, GITHUB_ANDROID_RELEASE_URL, safePublicApkUrl } from "@/lib/app-download";
+import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -57,9 +57,9 @@ function DownloadPage() {
     };
   }, []);
 
-  // A manually approved release workflow can publish this static manifest.
-  // Missing files may receive the SPA HTML fallback; those simply fail JSON
-  // parsing and the page continues to show the private-tester option.
+  // A manually approved workflow publishes the APK with this static manifest.
+  // If the host responds with HTML or a missing manifest, retain the last
+  // known site-hosted beta rather than linking to a private GitHub release.
   useEffect(() => {
     if (safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL)) return;
     const controller = new AbortController();
@@ -80,7 +80,7 @@ function DownloadPage() {
           }
         }
       })
-      .catch(() => { /* No public APK yet: continue with private beta. */ });
+      .catch(() => { /* Keep the bundled site APK fallback. */ });
     return () => controller.abort();
   }, []);
 
@@ -105,7 +105,7 @@ function DownloadPage() {
     versionLabel: "Available download", updateNote: "Important: earlier test APKs may use a different signing key. If Android refuses an update, uninstalling the old app can delete your saved progress.",
     apkAvailable: "Download Android APK",
     appNote: "Beta app: some textbooks and examination modes are still incomplete. Only install an APK you trust.",
-    publicNote: "The Android beta is available from the public Shtemarm GitHub release or an administrator-approved APK mirror. This is not a Google Play app.",
+    publicNote: "The APK is hosted by Shtemarm itself, so visitors do not need a GitHub account. This is not a Google Play app.",
     web: "Install the website", webInfo: "A quick home-screen shortcut that opens Shtemarm like an app. It requires an internet connection for most content.",
     install: "Install website", installed: "Already installed", manual: "Add to home screen",
     androidSteps: "On Android Chrome: open the ⋮ menu → Install app or Add to Home screen.",
@@ -118,7 +118,7 @@ function DownloadPage() {
     versionLabel: "Доступная версия", updateNote: "Важно: предыдущий тестовый APK мог быть подписан другим ключом. Если обновление не устанавливается, удаление старого приложения может стереть сохранённый прогресс.",
     apkAvailable: "Скачать Android APK",
     appNote: "Бета-версия: некоторые сборники и форматы экзаменов ещё не завершены. Устанавливайте только доверенные APK.",
-    publicNote: "Тестовая версия Android доступна через публичный релиз Shtemarm на GitHub или проверенное зеркало. Это не приложение из Google Play.",
+    publicNote: "APK загружается прямо с сайта Shtemarm без аккаунта GitHub. Это не приложение из Google Play.",
     web: "Установить сайт", webInfo: "Ярлык на главном экране, открывающий Shtemarm как приложение. Для большинства материалов нужен интернет.",
     install: "Установить сайт", installed: "Уже установлено", manual: "Добавить на главный экран",
     androidSteps: "Android Chrome: меню ⋮ → Установить приложение или Добавить на главный экран.",
@@ -131,7 +131,7 @@ function DownloadPage() {
     versionLabel: "Ներբեռնվող տարբերակ", updateNote: "Կարևոր․ նախորդ փորձնական APK-ն կարող է ունենալ այլ ստորագրություն։ Եթե թարմացումը չի տեղադրվում, հին հավելվածը հեռացնելիս հնարավոր է կորցնես պահպանված առաջընթացը։",
     apkAvailable: "Ներբեռնել Android APK-ն",
     appNote: "Փորձնական տարբերակ․ որոշ շտեմարաններ և քննական ռեժիմներ դեռ ամբողջական չեն։ Տեղադրիր միայն վստահելի աղբյուրից ստացված APK։",
-    publicNote: "Android-ի փորձնական տարբերակը հասանելի է Shtemarm-ի հանրային GitHub թողարկումից կամ հաստատված APK հղումից։ Սա Google Play հավելված չէ։",
+    publicNote: "Android-ի APK-ն հասանելի է անմիջապես Shtemarm կայքից՝ առանց GitHub հաշվի։ Սա Google Play հավելված չէ։",
     web: "Տեղադրել կայքը", webInfo: "Գլխավոր էկրանի հարմար պատկերակ, որը բացում է Shtemarm-ը հավելվածի նման։ Նյութերի մեծ մասի համար անհրաժեշտ է ինտերնետ։",
     install: "Տեղադրել կայքը", installed: "Արդեն տեղադրված է", manual: "Ավելացնել գլխավոր էկրանին",
     androidSteps: "Android Chrome-ում բացիր ⋮ ընտրացանկը և ընտրիր «Տեղադրել հավելվածը» կամ «Ավելացնել գլխավոր էկրանին»։",
@@ -139,11 +139,9 @@ function DownloadPage() {
     noPrompt: "Եթե տեղադրման կոճակ չի երևում, օգտվիր դիտարկչի ընտրացանկից։",
   };
 
-  // This public GitHub Release is real and published. A later verified,
-  // administrator-configured APK or same-origin release may override it.
-  const apkUrl = safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? publishedApk ?? GITHUB_ANDROID_APK_URL;
-  const displayedVersion = publishedVersion ?? (apkUrl===GITHUB_ANDROID_APK_URL ? GITHUB_ANDROID_BETA_VERSION : null);
-  const releaseDetailsLabel = lang==="en"?"Open the GitHub release":lang==="ru"?"Открыть релиз на GitHub":"Բացել GitHub թողարկման էջը";
+  // Avoid linking unauthenticated visitors to Releases in a private repository.
+  const apkUrl = publishedApk ?? safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? SITE_ANDROID_APK_URL;
+  const displayedVersion = publishedVersion ?? (apkUrl===SITE_ANDROID_APK_URL ? SITE_ANDROID_BETA_VERSION : null);
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
       <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary">
@@ -167,9 +165,9 @@ function DownloadPage() {
           <a href={apkUrl} download={apkUrl.startsWith("/") ? "Shtemarm-Android.apk" : undefined} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-extrabold text-primary-foreground transition-colors hover:bg-primary/90">
             <Download className="size-5" />{text.apkAvailable}
           </a>
-          <a href={GITHUB_ANDROID_RELEASE_URL} target="_blank" rel="noopener noreferrer"
+          <a href="/downloads/android-release.json" target="_blank" rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary hover:underline">
-            <ExternalLink className="size-4" />{releaseDetailsLabel}
+            <ExternalLink className="size-4" />{lang==="en"?"APK version & checksum":lang==="ru"?"Версия и контрольная сумма APK":"APK-ի տարբերակը և ստուգիչ գումարը"}
           </a>
           <p className="text-sm leading-6 text-muted-foreground">{text.publicNote}</p>
           <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-5 text-muted-foreground">{text.appNote}</p>
