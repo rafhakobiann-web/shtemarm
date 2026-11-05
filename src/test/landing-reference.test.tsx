@@ -24,11 +24,11 @@ describe("video-inspired public landing", () => {
 
   it("lets anonymous visitors solve a local sample without touching real results", () => {
     render(<LandingShowcase lang="en" />);
-    fireEvent.click(screen.getByRole("button", { name: "x = 4" }));
+    fireEvent.click(screen.getByRole("button", { name: /x = 4/ }));
     expect(screen.getByText("Correct! 2x = 8, so x = 4.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Try again/ }));
     expect(screen.queryByText("Correct! 2x = 8, so x = 4.")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "x = 3" }));
+    fireEvent.click(screen.getByRole("button", { name: /x = 3/ }));
     expect(screen.getByText(/Subtract 6 from both sides/)).toBeInTheDocument();
   });
 
