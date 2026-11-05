@@ -319,9 +319,14 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
-        {show && chosen !== q.answer && <p role="status" className="mt-3 rounded-xl bg-muted px-3 py-3 text-sm font-semibold">
-          {words.wrong} {q.answer}) {q.options[q.answer]}
-        </p>}
+        {show && chosen !== q.answer && <div role="status" className="mt-4 space-y-3 rounded-2xl border border-destructive/25 bg-destructive/5 p-4 sm:p-5">
+          <p className="flex items-center gap-2 text-sm font-bold text-destructive"><X aria-hidden="true" className="size-5 shrink-0" />{language === "en" ? "Not quite — review your answer" : language === "ru" ? "Неверно — проверьте ответ" : "Սխալ պատասխան․ վերանայի՛ր ընտրությունդ"}</p>
+          {chosen && <p className="text-sm leading-relaxed text-foreground"><span className="font-semibold">{language === "en" ? "Your answer:" : language === "ru" ? "Ваш ответ:" : "Քո պատասխանը՝"}</span> {chosen}) {q.options[chosen]}</p>}
+          <div className="rounded-xl border border-success/30 bg-success/10 p-3 text-foreground">
+            <p className="mb-1 flex items-center gap-2 text-sm font-bold text-success"><Check aria-hidden="true" className="size-4" />{words.wrong}</p>
+            <p className="text-base font-semibold leading-relaxed">{q.answer}) {q.options[q.answer]}</p>
+          </div>
+        </div>}
         {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
