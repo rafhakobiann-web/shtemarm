@@ -9,14 +9,14 @@ import {
 import { sectionAnswerIds } from "@/lib/books";
 
 const counts = [
-  [103, 97, 10],
-  [111, 70, 11],
-  [212, 110, 5],
+  [103, 97, 1],
+  [111, 70, 3],
+  [212, 110, 2],
   [200, 194, 13],
   [27, 8, 1],
   [10, 2, 0],
   [16, 6, 0],
-  [204, 24, 20],
+  [204, 24, 11],
 ] as const;
 const originals: ArmenianOriginalSection[] = counts.map((_, i) =>
   JSON.parse(readFileSync(`public/data/armenian-official-1-section${i + 1}.json`, "utf8")),
@@ -48,10 +48,10 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
       (n, [mc, short, flagged]) => [n[0] + mc, n[1] + short, n[2] + flagged],
       [0, 0, 0],
     );
-    expect(totals).toEqual([883, 511, 60]);
+    expect(totals).toEqual([883, 511, 31]);
   });
 
-  it("converts 1,334 source tasks and 288 assertions into playable exercises", () => {
+  it("converts 1,363 source tasks and 288 assertions into playable exercises", () => {
     const book = buildArmenianOriginalBook(originals, assertions);
     expect(book.id).toBe(41);
     expect(book.sections).toHaveLength(9);
@@ -80,7 +80,7 @@ describe("2018 GTC Armenian Volume I original transcription", () => {
         }
       }
     }
-    expect(playableMC).toBe(1111);
+    expect(playableMC).toBe(1140);
     expect(playableShort).toBe(511);
   });
 
