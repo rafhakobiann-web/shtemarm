@@ -181,7 +181,7 @@ export async function loadArmenianOriginalBook(): Promise<Book> {
   const assertions = await fetchBookResponse("/data/armenian-official-1-assertions.json", async response => {
     if (!response.ok) throw new Error("Հայոց լեզվի բնօրինակ հավելվածը չի բեռնվել՝ HTTP " + response.status);
     const mime = response.headers.get("content-type") ?? "";
-    if (mime && !/json|text\\/plain|octet-stream/i.test(mime)) {
+    if (mime && !/json|text\/plain|octet-stream/i.test(mime)) {
       throw new Error("Բնօրինակ հավելվածի փոխարեն վերադարձվել է ոչ JSON բովանդակություն։");
     }
     return await response.json() as ArmenianOriginalAssertions;
