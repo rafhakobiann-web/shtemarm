@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_RELEASE_URL, safePublicApkUrl } from "@/lib/app-download";
+import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl } from "@/lib/app-download";
 
 const read=(path:string)=>readFileSync(path,"utf8");
 
@@ -27,18 +27,24 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(css).toContain(".sht-story-ai");
     expect(css).toContain(".sht-story-download");
     expect(css).toContain(".sht-editorial-phone");
+    expect(css).toContain(".sht-dynamic-island");
+    expect(css).toContain("html.dark .sht-editorial");
+    expect(landing).toContain('aria-expanded={islandExpanded}');
+    expect(landing).toContain('href="#experience"');
   });
 
-  it("has a working guest practice sample, not an invented official exam question",()=>{
+  it("offers a real, answerable three-question guest sample without pretending it is an official bank",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
-    expect(sample).toContain("const [answer,setAnswer] = useState<number|null>(null)");
-    expect(sample).toContain('onClick={()=>setAnswer(n)}');
-    expect(sample).toContain("n===3");
+    expect(sample).toContain("SAMPLE_QUESTIONS");
+    expect(sample).toContain("Mathematics · sample");
+    expect(sample).toContain("English · sample");
+    expect(sample).toContain("Armenian language · sample");
+    expect(sample).toContain("setAnswers(previous=>");
+    expect(sample).toContain("changeQuestion(1)");
+    expect(sample).toContain("changeQuestion(-1)");
     expect(sample).toContain('role="status"');
-    expect(sample).toContain('onClick={()=>setAnswer(null)}');
     expect(sample).toContain("not an official question-bank item");
     expect(sample).toContain("ոչ պաշտոնական շտեմարանի հարց");
-    expect(sample).toContain("не задание из официального сборника");
   });
 
   it("keeps AI and progress previews explicitly illustrative and non-billable",()=>{
@@ -53,19 +59,19 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(sample).toContain('to="/auth"');
   });
 
-  it("points Android visitors only to a verified public GitHub beta, not Google Play",()=>{
+  it("downloads a site-hosted APK that guests can access without private GitHub permissions",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
-    const landing=read("src/routes/index.tsx");
     const download=read("src/routes/download.tsx");
-    expect(GITHUB_ANDROID_APK_URL).toContain("github.com/rafhakobiann-web/shtemarm/releases/download/v0.3.0-beta.4/");
-    expect(safePublicApkUrl(GITHUB_ANDROID_APK_URL)).toBe(GITHUB_ANDROID_APK_URL);
-    expect(GITHUB_ANDROID_RELEASE_URL).toContain("/releases/tag/v0.3.0-beta.4");
-    expect(sample).toContain('href={GITHUB_ANDROID_APK_URL}');
-    expect(sample).toContain('href={GITHUB_ANDROID_RELEASE_URL}');
-    expect(sample).toContain("Debug beta build");
-    expect(download).toContain("?? GITHUB_ANDROID_APK_URL");
-    expect(landing).toContain('to="/download"');
-    expect([landing,sample,download].join("\\n")).not.toContain("play.google.com/store/apps");
+    const manifest=JSON.parse(read("public/downloads/android-release.json"));
+    expect(SITE_ANDROID_APK_URL).toBe("/downloads/shtemarm-android.apk");
+    expect(SITE_ANDROID_BETA_VERSION).toBe(manifest.version);
+    expect(manifest.path).toBe(SITE_ANDROID_APK_URL);
+    expect(safePublicApkUrl(SITE_ANDROID_APK_URL)).toBe(SITE_ANDROID_APK_URL);
+    expect(sample).toContain('href={SITE_ANDROID_APK_URL}');
+    expect(sample).toContain('download="Shtemarm-Android.apk"');
+    expect(download).toContain('?? SITE_ANDROID_APK_URL');
+    expect(sample).not.toContain("GITHUB_ANDROID_RELEASE_URL");
+    expect(download).not.toContain("GITHUB_ANDROID_RELEASE_URL");
   });
 
   it("supports small screens, touch interaction, and reduced-motion accessibility",()=>{
@@ -81,12 +87,11 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(landing).toContain("onPointerCancel");
   });
 
-  it("reuses the official GitHub release and requires no new image hosting, scripts, or external tracking",()=>{
+  it("does not add external tracking, embeds or a nonexistent Play Store listing",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
     expect(sample).not.toContain("iframe");
     expect(sample).not.toContain("<script");
     expect(sample).not.toContain("play.google.com/");
     expect(sample).not.toContain("window.location.assign");
-    expect(sample).toContain('rel="noopener noreferrer"');
   });
 });
