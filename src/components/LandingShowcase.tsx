@@ -129,7 +129,7 @@ const SAMPLE_QUESTIONS: Record<Lang, readonly SampleQuestion[]> = {
   ],
 };
 
-export function LandingShowcase({ lang }: { lang: Lang }) {
+export function LandingShowcase({ lang, part = "all" }: { lang: Lang; part?: "all" | "practice" | "journey" | "ai" | "download" }) {
   const t = WORDS[lang];
   const [questionIndex,setQuestionIndex] = useState(0);
   const [answers,setAnswers] = useState<Record<number,number>>({});
@@ -143,6 +143,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
   };
   return (
     <>
+      {(part === "all" || part === "practice") && (
       <section id="experience" className="sht-story sht-story-paper" aria-labelledby="sht-story-practice-title">
         <div className="sht-story-copy">
           <span className="sht-story-kicker"><Sparkles size={16} aria-hidden="true"/>{t.kicker}</span>
@@ -195,6 +196,8 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      )}
+      {(part === "all" || part === "journey") && (
       <section className="sht-story sht-story-gold" aria-labelledby="sht-story-journey-title">
         <div className="sht-story-copy">
           <span className="sht-story-kicker"><GraduationCap size={16} aria-hidden="true"/>{t.journeyKicker}</span>
@@ -215,6 +218,8 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      )}
+      {(part === "all" || part === "ai") && (
       <section className="sht-story sht-story-ai" aria-labelledby="sht-story-ai-title">
         <div className="sht-story-copy">
           <span className="sht-story-kicker"><Sparkles size={16} aria-hidden="true"/>{t.aiKicker}</span>
@@ -235,6 +240,8 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
         </div>
       </section>
 
+      )}
+      {(part === "all" || part === "download") && (
       <section id="download" className="sht-story sht-story-download" aria-labelledby="sht-story-install-title">
         <div className="sht-story-install-head">
           <span className="sht-story-kicker"><Download size={16} aria-hidden="true"/>{t.installKicker}</span>
@@ -258,6 +265,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
         </div>
         <div className="sht-install-foot"><LockKeyhole size={16} aria-hidden="true"/><p>{t.betaNote} <Link to="/download">{t.instructions}<ArrowRight size={14} aria-hidden="true"/></Link></p></div>
       </section>
+      )}
     </>
   );
 }
