@@ -46,7 +46,8 @@ describe("Four Armenian language study volumes", () => {
   });
 
   it("does not misrepresent Shtemarm-authored practice as official PDF transcriptions", () => {
-    expect(ARMENIAN_BOOKS.every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
+    expect(ARMENIAN_BOOKS[0].sub).toContain("բնօրինակ");
+    expect(ARMENIAN_BOOKS.slice(1).every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
   });
 
   it("loads original phonetics 1–6 with answers verified against the printed answer key", () => {
