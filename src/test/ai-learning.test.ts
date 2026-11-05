@@ -54,6 +54,16 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(server).toContain("Do not infer subject-level weaknesses");
   });
 
+  it("offers contextual teaching styles under checked questions without mixing cached answers", () => {
+    const card = read("src/components/UnitCard.tsx");
+    const explanation = read("src/lib/explain.functions.ts");
+    expect(card).toContain('(["hint","explain","practice"] as const)');
+    expect(card).toContain("teachingStyle, passage:");
+    expect(explanation).toContain('teachingStyle: z.enum(["explain","hint","practice"])');
+    expect(explanation).toContain("${data.teachingStyle}");
+    expect(explanation).toContain("AI-ի կողմից");
+  });
+
   it("supports adaptive learning across tutor prompts, API, preferences and UI", () => {
     for (const lang of ["hy", "en", "ru"] as const) {
       const prompt = tutorModeInstructions("adaptive", lang);
