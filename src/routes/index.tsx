@@ -177,6 +177,7 @@ function LandingPage() {
   const apkTag = lang === "hy" ? "Վեբ կայք + GitHub APK" : lang === "ru" ? "Сайт + APK с GitHub" : "Website + GitHub APK";
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
+  const [islandExpanded, setIslandExpanded] = useState(false);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
   const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
   const changeActivity = (direction: PreviewDirection) =>
@@ -293,6 +294,23 @@ function LandingPage() {
           <div className="sht-orbit sht-orbit-two" aria-hidden="true" />
           <div className="sht-editorial-phone">
             <div className="sht-editorial-phone-status" aria-hidden="true"><span>09:41</span><span>● ▰▰ ▣</span></div>
+            <div className={"sht-dynamic-island" + (islandExpanded ? " is-expanded" : "")}>
+              <button type="button" className="sht-dynamic-island-toggle"
+                aria-expanded={islandExpanded} aria-controls="sht-dynamic-island-content"
+                aria-label={lang === "hy" ? "Բացել հեռախոսի ինտերակտիվ կղզյակը" : lang === "ru" ? "Открыть интерактивный островок" : "Open interactive phone island"}
+                onClick={() => setIslandExpanded(open => !open)}>
+                <span className="sht-island-pulse" aria-hidden="true" />
+                <span>{islandExpanded ? "Shtemarm" : (lang === "hy" ? "Փորձիր հիմա" : lang === "ru" ? "Попробуй" : "Try a demo")}</span>
+                <ChevronDown className="size-3.5" aria-hidden="true" />
+              </button>
+              <div id="sht-dynamic-island-content" className="sht-dynamic-island-content" hidden={!islandExpanded}>
+                <span>{lang === "hy" ? "Անվճար ուսումնական օրինակ" : lang === "ru" ? "Бесплатный пример задания" : "Free practice preview"}</span>
+                <a href="#experience" onClick={() => setIslandExpanded(false)}>
+                  {lang === "hy" ? "Լուծել հարցերը" : lang === "ru" ? "Решать вопросы" : "Try questions"}
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
           <div className="sht-preview" data-focus={active}>
             <div className="sht-preview-top">
               <div className="sht-window-dots" aria-hidden="true"><i /><i /><i /></div>
