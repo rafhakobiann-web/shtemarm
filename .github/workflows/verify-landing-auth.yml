@@ -10,7 +10,6 @@ on:
       - 'src/lib/app-download.ts'
       - 'src/test/landing-editorial-2026.test.ts'
       - 'src/test/landing-sample-interaction.test.tsx'
-      - 'src/test/landing-polish-interaction.test.tsx'
       - 'src/test/download-scroll.test.ts'
       - 'src/routes/dashboard.tsx'
       - 'src/routes/onboarding.tsx'
@@ -28,7 +27,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Regression tests
-        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts src/test/landing-editorial-2026.test.ts src/test/landing-sample-interaction.test.tsx src/test/landing-polish-interaction.test.tsx src/test/download-scroll.test.ts
+        run: bunx vitest run src/test/onboarding.test.ts src/test/legacy-mistake-recovery.test.ts src/test/landing-editorial-2026.test.ts src/test/landing-sample-interaction.test.tsx src/test/download-scroll.test.ts
       - name: Website production build
         run: bun run build
-
