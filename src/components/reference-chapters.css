@@ -194,3 +194,28 @@ html.dark[data-surface="liquid"] .sht-editorial .sht-ref-intro h2 {font-weight:9
 @media(prefers-reduced-motion:reduce) {
   .sht-editorial .sht-ref-section *,.sht-editorial .sht-ref-access * {animation:none!important;scroll-behavior:auto!important;transition:none!important;}
 }
+
+/* Lightweight, compositor-only response to changing cards and scroll entry. */
+.sht-editorial .sht-ref-chips button,
+.sht-editorial .sht-ref-card-actions button {min-height:42px;}
+.sht-editorial .sht-ref-answer-list button,
+.sht-editorial .sht-ref-path-head button {min-height:42px;}
+@keyframes sht-ref-card-enter {
+  from {opacity:.4;transform:translateY(12px) scale(.985);}
+  to {opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes sht-ref-chapter-enter {
+  from {opacity:.65;transform:translateY(18px);}
+  to {opacity:1;transform:translateY(0);}
+}
+@media(prefers-reduced-motion:no-preference) {
+  .sht-editorial .sht-ref-flashcard {animation:sht-ref-card-enter .28s cubic-bezier(.18,.68,.18,1) both;}
+  @supports(animation-timeline:view()) {
+    .sht-editorial .sht-ref-section .sht-ref-intro,
+    .sht-editorial .sht-ref-section .sht-ref-visual {
+      animation:sht-ref-chapter-enter linear both;
+      animation-timeline:view();
+      animation-range:entry 0% cover 25%;
+    }
+  }
+}
