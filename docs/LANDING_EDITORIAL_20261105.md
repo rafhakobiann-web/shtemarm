@@ -25,6 +25,10 @@ The requested **two original questions per section and two complete English text
 - [x] GitHub connector confirmed the PR branch remains separate from `main`.
 - [x] Website APK and metadata file exist in the repository; automated checksum and size regression added.
 - [x] New source-level regressions and jsdom interaction tests committed; GitHub workflow updated to include them.
+- [x] Fixed missing `ChevronLeft` import that would break TypeScript/build during sample-question navigation.
+- [x] Explicit dark ink on paper, gold and download panels preserves readable contrast in dark mode.
+- [x] Legacy `VITE_ANDROID_APK_URL` values pointing at this private GitHub repository are ignored, so they cannot override the on-site APK. 
+- [x] jsdom interaction tests explicitly clean up after each run.
 - [x] Netlify and Vercel posted successful deployment status contexts for the PR head as of the initial check.
 - [ ] **GitHub Actions unavailable:** workflow runs show `failure` with **zero runner steps**, before executing tests. This cannot be treated as passing tests. Inspect account runner availability/billing/settings and rerun.
 - [ ] Run `bunx vitest run src/test/landing-editorial-2026.test.ts src/test/landing-sample-interaction.test.tsx src/test/download-scroll.test.ts`.
