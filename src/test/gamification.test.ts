@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { achievements, dailyQuests, getQuestHistory, parseQuestHistory, recordQuestActivity } from "@/lib/gamification";
 describe("daily learning quests", () => {
   beforeEach(() => { localStorage.clear(); });
@@ -19,7 +20,7 @@ describe("daily learning quests", () => {
     expect(parseQuestHistory('{"bad":{"answered":["1"],"reviewed":[]}}')).toEqual({});
   });
   it("renders saved achievements in the dashboard without claiming unfinished weekly challenges", () => {
-    const dashboard = require("node:fs").readFileSync("src/components/DashboardFocus.tsx", "utf8");
+    const dashboard = readFileSync("src/components/DashboardFocus.tsx", "utf8");
     expect(dashboard).toContain("achievements(progress).map");
     expect(dashboard).toContain("item.unlocked");
     expect(dashboard).toContain("Weekly challenges and new rewards are still in development.");
