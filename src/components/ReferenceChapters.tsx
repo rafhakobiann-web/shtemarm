@@ -1,9 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowLeft, ArrowRight, BookOpen, BookMarked, BrainCircuit, Check, CheckCircle2,
-  ChevronDown, ChevronRight, CircleHelp, Clock3, Download, Flame, GraduationCap,
-  Languages, ListChecks, Play, RotateCcw, Sparkles, Target, Trophy, X,
+  ArrowRight, BookOpen, BookMarked, Check, CheckCircle2,
+  ChevronDown, Clock3, Download, Flame, GraduationCap,
+  ListChecks, Play, RotateCcw, Sparkles, Target, Trophy,
 } from "lucide-react";
 import { SITE_ANDROID_APK_URL } from "@/lib/app-download";
 import "./reference-chapters.css";
@@ -128,7 +128,7 @@ const FLASH_WORDS = [
   { word: "Achieve", meaning: { hy: "Հասնել հաջողության", en: "To reach a goal", ru: "Достигать" } },
 ] as const;
 
-function DeviceFrame({ children, title = "Shtemarm" }: { children: React.ReactNode; title?: string }) {
+function DeviceFrame({ children, title = "Shtemarm" }: { children: ReactNode; title?: string }) {
   return (
     <div className="sht-ref-device">
       <div className="sht-ref-device-status"><span>09:41</span><span className="sht-ref-island" aria-hidden="true" /><span aria-hidden="true">◖ ▰</span></div>
@@ -156,7 +156,7 @@ export function ReferenceChapters({ lang, part }: { lang: Lang; part: Chapter })
     setReview(current => needsReview && !current.includes(cardIndex) ? [...current, cardIndex] : current);
     setCardIndex(current => Math.min(current + 1, FLASH_WORDS.length));
   };
-  const onCardUp = (event: React.PointerEvent<HTMLDivElement>) => {
+  const onCardUp = (event: PointerEvent<HTMLDivElement>) => {
     if (!start.current) return;
     const dx = event.clientX - start.current.x;
     const dy = event.clientY - start.current.y;
