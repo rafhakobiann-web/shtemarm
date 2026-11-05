@@ -49,4 +49,21 @@ describe("Four Armenian language study volumes", () => {
     expect(ARMENIAN_BOOKS.every(book => book.sub.includes("ուսումնական վարժանքներ"))).toBe(true);
   });
 
+  it("aligns part I playable practice to the real eight PDF chapters without dropping questions", () => {
+    const book = JSON.parse(readFileSync("public/data/armenian-book1.json", "utf8"));
+    const index = JSON.parse(readFileSync("public/data/armenian-source-index.json", "utf8"));
+    expect(book.sections.map((section: { title: string }) => section.title))
+      .toEqual(index.volumes[0].sections.map((section: { title: string }) => section.title));
+    const questions = book.sections.flatMap((section: { units: Array<{ questions: unknown[] }> }) =>
+      section.units.flatMap(unit => unit.questions));
+    expect(questions).toHaveLength(96);
+    const unitIds = book.sections.flatMap((section: { units: Array<{ id: string }> }) =>
+      section.units.map(unit => unit.id));
+    expect(new Set(unitIds).size).toBe(unitIds.length);
+    expect(book.sections[0].units[0].questions.every((question: { stem: string }) =>
+      /գրված ճիշտ|հնչյունափոխված|հնչյուն/.test(question.stem))).toBe(true);
+    expect(book.sections[7].units.reduce((n: number, unit: { questions: unknown[] }) =>
+      n + unit.questions.length, 0)).toBe(24);
+  });
+
 });
