@@ -6,6 +6,7 @@ import { useBook } from "@/lib/useBook";
 import { ALL_BOOKS, questionAnswerKey, questionForAnswerKey, secTitle, type Unit } from "@/lib/books";
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, isAnswered, type UnitAnswer } from "@/components/UnitCard";
+import { StudyTutorDrawer } from "@/components/StudyTutorDrawer";
 import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
@@ -95,6 +96,7 @@ function StudyPage() {
       ) : (
         <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       )}
+      {section && section.units.length > 0 && <StudyTutorDrawer key={`${bookId}-${sectionId}`} />}
     </div>
   );
 }
