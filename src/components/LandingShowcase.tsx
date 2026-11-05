@@ -4,7 +4,7 @@ import {
   ArrowRight, BookOpen, Check, CheckCircle2, ChevronRight, Download, ExternalLink,
   GraduationCap, Lightbulb, LockKeyhole, Monitor, RotateCcw, Smartphone, Sparkles,
 } from "lucide-react";
-import { GITHUB_ANDROID_APK_URL, GITHUB_ANDROID_RELEASE_URL, GITHUB_ANDROID_BETA_VERSION } from "@/lib/app-download";
+import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION } from "@/lib/app-download";
 
 type Lang = "hy" | "en" | "ru";
 
@@ -32,12 +32,12 @@ const WORDS = {
     aiCta: "Բացել AI ուսուցչին",
     installKicker: "Վեբ + Android",
     installTitle: "Սովորիր այնտեղ, որտեղ քեզ հարմար է։",
-    installDesc: "Բացիր Shtemarm-ը դիտարկչում կամ ներբեռնիր Android-ի փորձնական APK-ն անմիջապես GitHub Releases-ից։ Google Play-ում հավելված դեռ չունենք։",
+    installDesc: "Բացիր Shtemarm-ը դիտարկչում կամ ներբեռնիր Android-ի փորձնական APK-ն անմիջապես կայքից։ Google Play-ում հավելված դեռ չունենք։",
     browser: "Օգտվել կայքից", browserDesc: "Աշխատում է հեռախոսով, պլանշետով և համակարգչով՝ առանց APK ներբեռնելու։",
     browserCta: "Սկսել կայքում",
-    android: "Android հավելված", androidDesc: "Հանրային GitHub Release-ից ներբեռնվող փորձնական APK։",
-    apkCta: "Ներբեռնել APK-ն GitHub-ից",
-    releaseCta: "Տեսնել թողարկման էջը",
+    android: "Android հավելված", androidDesc: "Կայքի սեփական սերվերից ներբեռնվող փորձնական APK։",
+    apkCta: "Ներբեռնել Android APK-ն կայքից",
+    releaseCta: "Տեղադրման և թարմացման հրահանգներ",
     betaNote: "Փորձնական debug build. Հնարավոր են անավարտ գործառույթներ և թարմացման ստորագրության անհամապատասխանություն։ Նախ պահպանիր առաջընթացդ։",
     instructions: "Տեղադրման հրահանգներ",
   },
@@ -64,12 +64,12 @@ const WORDS = {
     aiCta: "Open AI tutor",
     installKicker: "Web + Android",
     installTitle: "Learn wherever works for you.",
-    installDesc: "Open Shtemarm in your browser or get the Android beta APK directly from GitHub Releases. We don't have a Google Play app.",
+    installDesc: "Open Shtemarm in your browser or download the Android beta APK from this website. We don't have a Google Play app.",
     browser: "Use the website", browserDesc: "Works on phones, tablets and computers without installing an APK.",
     browserCta: "Start on the website",
-    android: "Android application", androidDesc: "Public beta APK hosted on GitHub Releases.",
-    apkCta: "Download APK from GitHub",
-    releaseCta: "View the release page",
+    android: "Android application", androidDesc: "Beta APK served directly from the Shtemarm website.",
+    apkCta: "Download Android APK",
+    releaseCta: "Installation & update guide",
     betaNote: "Debug beta build. Some features are unfinished and signing keys may prevent in-place updates. Back up your progress first.",
     instructions: "Installation instructions",
   },
@@ -96,20 +96,51 @@ const WORDS = {
     aiCta: "Открыть ИИ-репетитора",
     installKicker: "Сайт + Android",
     installTitle: "Учись там, где тебе удобно.",
-    installDesc: "Открой Shtemarm в браузере или скачай тестовый APK для Android напрямую с GitHub Releases. Приложения в Google Play пока нет.",
+    installDesc: "Открой Shtemarm в браузере или скачай тестовый APK для Android прямо с сайта. Приложения в Google Play пока нет.",
     browser: "Открыть сайт", browserDesc: "Работает на телефонах, планшетах и компьютерах без APK.",
     browserCta: "Начать на сайте",
-    android: "Android-приложение", androidDesc: "Публичный тестовый APK из GitHub Releases.",
-    apkCta: "Скачать APK с GitHub",
-    releaseCta: "Открыть страницу релиза",
+    android: "Android-приложение", androidDesc: "Тестовый APK, загружаемый прямо с сайта Shtemarm.",
+    apkCta: "Скачать APK для Android",
+    releaseCta: "Установка и обновление",
     betaNote: "Тестовая debug-сборка. Некоторые функции не закончены, а другая подпись может помешать обновлению. Сохрани прогресс заранее.",
     instructions: "Инструкция по установке",
   },
 } as const;
 
+type SampleQuestion = { subject: string; prompt: string; options: readonly string[]; correct: number; hint: string; explanation: string };
+
+// Original, short examples for visitors. Real textbook question access is tracked
+// separately in Draft PR #207 and must not be confused with these examples.
+const SAMPLE_QUESTIONS: Record<Lang, readonly SampleQuestion[]> = {
+  hy: [
+    { subject: "Մաթեմատիկա · փորձնական հարց", prompt: "Եթե 3x + 5 = 14, ապա որքա՞ն է x-ը։", options: ["2", "3", "4"], correct: 1, hint: "Հանիր 5 երկու կողմից, հետո բաժանիր 3-ի։", explanation: "14 − 5 = 9, իսկ 9 ÷ 3 = 3։" },
+    { subject: "Անգլերեն · փորձնական հարց", prompt: "Ո՞րն է Present Simple ժամանակաձևով նախադասությունը։", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Փնտրիր սովորական, կրկնվող գործողությունը։", explanation: "«She reads every day» արտահայտում է կրկնվող գործողություն։" },
+    { subject: "Հայոց լեզու · փորձնական հարց", prompt: "«Գեղեցիկ» բառը ո՞ր խոսքի մասն է։", options: ["Ածական", "Գոյական", "Բայ"], correct: 0, hint: "Բառը նկարագրում է առարկայի հատկանիշը։", explanation: "«Գեղեցիկ» բառը ածական է, քանի որ ցույց է տալիս հատկանիշ։" },
+  ],
+  en: [
+    { subject: "Mathematics · sample", prompt: "If 3x + 5 = 14, what is x?", options: ["2", "3", "4"], correct: 1, hint: "Subtract 5 from both sides, then divide by 3.", explanation: "14 − 5 = 9, then 9 ÷ 3 = 3." },
+    { subject: "English · sample", prompt: "Which sentence uses the Present Simple tense?", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Look for a repeated everyday action.", explanation: "“She reads every day” describes a habit in the Present Simple." },
+    { subject: "Armenian language · sample", prompt: "Which part of speech is «գեղեցիկ» (beautiful)?", options: ["Adjective", "Noun", "Verb"], correct: 0, hint: "It describes a quality.", explanation: "It is an adjective because it describes a quality." },
+  ],
+  ru: [
+    { subject: "Математика · пример", prompt: "Если 3x + 5 = 14, чему равен x?", options: ["2", "3", "4"], correct: 1, hint: "Вычти 5, затем раздели на 3.", explanation: "14 − 5 = 9, затем 9 ÷ 3 = 3." },
+    { subject: "Английский · пример", prompt: "Какое предложение написано в Present Simple?", options: ["She is reading now.", "She reads every day.", "She read yesterday."], correct: 1, hint: "Найди повторяющееся действие.", explanation: "«She reads every day» описывает привычное действие." },
+    { subject: "Армянский язык · пример", prompt: "Какая часть речи — «գեղեցիկ» (красивый)?", options: ["Прилагательное", "Существительное", "Глагол"], correct: 0, hint: "Это слово обозначает признак предмета.", explanation: "Это прилагательное, обозначающее признак." },
+  ],
+};
+
 export function LandingShowcase({ lang }: { lang: Lang }) {
   const t = WORDS[lang];
-  const [answer,setAnswer] = useState<number|null>(null);
+  const [questionIndex,setQuestionIndex] = useState(0);
+  const [answers,setAnswers] = useState<Record<number,number>>({});
+  const question = SAMPLE_QUESTIONS[lang][questionIndex];
+  const answer = answers[questionIndex] ?? null;
+  const correctCount = SAMPLE_QUESTIONS[lang].reduce((count, sample, index) =>
+    count + Number(answers[index] === sample.correct), 0);
+  const resetQuiz = () => { setAnswers({}); setQuestionIndex(0); };
+  const changeQuestion = (direction: number) => {
+    setQuestionIndex(current => (current + direction + SAMPLE_QUESTIONS[lang].length) % SAMPLE_QUESTIONS[lang].length);
+  };
   return (
     <>
       <section id="experience" className="sht-story sht-story-paper" aria-labelledby="sht-story-practice-title">
@@ -122,23 +153,43 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
           </div>
         </div>
         <div className="sht-story-demo" aria-label={t.demo}>
-          <div className="sht-story-demo-head"><span><BookOpen size={16} aria-hidden="true"/>{t.demo}</span><span className="sht-story-demo-count">01 / 01</span></div>
+          <div className="sht-story-demo-head">
+            <span><BookOpen size={16} aria-hidden="true" />{question.subject}</span>
+            <span className="sht-story-demo-count">{String(questionIndex + 1).padStart(2,"0")} / {String(SAMPLE_QUESTIONS[lang].length).padStart(2,"0")}</span>
+          </div>
           <div className="sht-story-demo-body">
             <span className="sht-story-label">{t.check}</span>
-            <h3>{t.question}</h3>
-            <div className="sht-story-answers" role="group" aria-label={t.question}>
-              {[2,3,4].map((n,i)=><button key={n} type="button" aria-pressed={answer===n}
-                className={answer===n?(n===3?"is-correct":"is-wrong"):""}
-                onClick={()=>setAnswer(n)}>
-                <span>{["A","B","C"][i]}</span>{n}
-                {answer===n&&n===3?<Check size={18} aria-hidden="true"/>:<ChevronRight size={18} aria-hidden="true"/>}
-              </button>)}
+            <h3 key={lang + questionIndex} className="sht-story-question">{question.prompt}</h3>
+            <div className="sht-story-answers" role="group" aria-label={question.prompt}>
+              {question.options.map((option,i) => (
+                <button key={i} type="button" aria-pressed={answer===i}
+                  className={answer===i ? (i===question.correct ? "is-correct" : "is-wrong") : ""}
+                  onClick={()=>setAnswers(previous=>({...previous,[questionIndex]:i}))}>
+                  <span>{["A","B","C"][i]}</span>{option}
+                  {answer===i&&i===question.correct?<Check size={18} aria-hidden="true" />:<ChevronRight size={18} aria-hidden="true" />}
+                </button>
+              ))}
             </div>
-            {answer!==null&&<p className={"sht-story-feedback "+(answer===3?"is-correct":"")} role="status">
-              {answer===3?<CheckCircle2 size={18} aria-hidden="true"/>:<Lightbulb size={18} aria-hidden="true"/>}
-              {answer===3?t.correct:t.incorrect}
-            </p>}
-            {answer!==null&&<button type="button" className="sht-story-reset" onClick={()=>setAnswer(null)}><RotateCcw size={15} aria-hidden="true"/>{t.reset}</button>}
+            {answer!==null && (
+              <p className={"sht-story-feedback " + (answer===question.correct ? "is-correct" : "")} role="status">
+                {answer===question.correct?<CheckCircle2 size={18} aria-hidden="true" />:<Lightbulb size={18} aria-hidden="true" />}
+                {answer===question.correct ? question.explanation : question.hint}
+              </p>
+            )}
+            <div className="sht-story-quiz-bottom">
+              <button type="button" className="sht-story-quiz-arrow" onClick={()=>changeQuestion(-1)}
+                aria-label={lang==="hy"?"Նախորդ հարցը":lang==="ru"?"Предыдущий вопрос":"Previous question"}>
+                <ChevronLeft size={18} aria-hidden="true" />
+              </button>
+              <span className="sht-story-quiz-score" aria-live="polite">
+                {lang==="hy"?"Ճիշտ":lang==="ru"?"Верно":"Correct"}: {correctCount} / {SAMPLE_QUESTIONS[lang].length}
+              </span>
+              <button type="button" className="sht-story-quiz-next" onClick={()=>changeQuestion(1)}>
+                {lang==="hy"?"Հաջորդը":lang==="ru"?"Дальше":"Next"}<ArrowRight size={17} aria-hidden="true" />
+              </button>
+              <button type="button" className="sht-story-reset" onClick={resetQuiz}
+                aria-label={t.reset}><RotateCcw size={15} aria-hidden="true" />{t.reset}</button>
+            </div>
           </div>
           <p className="sht-story-demo-foot">{t.sample}</p>
         </div>
@@ -200,9 +251,9 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
           <article className="sht-install-option sht-install-option-github">
             <span className="sht-install-icon"><Smartphone size={23} aria-hidden="true"/></span>
             <h3>{t.android}</h3>
-            <p>{t.androidDesc} <span className="sht-install-beta">v{GITHUB_ANDROID_BETA_VERSION}</span></p>
-            <a href={GITHUB_ANDROID_APK_URL} target="_blank" rel="noopener noreferrer" className="sht-install-action"><Download size={17} aria-hidden="true"/>{t.apkCta}</a>
-            <a href={GITHUB_ANDROID_RELEASE_URL} target="_blank" rel="noopener noreferrer" className="sht-install-release">{t.releaseCta}<ExternalLink size={15} aria-hidden="true"/></a>
+            <p>{t.androidDesc} <span className="sht-install-beta">v{SITE_ANDROID_BETA_VERSION}</span></p>
+            <a href={SITE_ANDROID_APK_URL} download="Shtemarm-Android.apk" className="sht-install-action"><Download size={17} aria-hidden="true"/>{t.apkCta}</a>
+            <Link to="/download" className="sht-install-release">{t.releaseCta}<ExternalLink size={15} aria-hidden="true"/></Link>
           </article>
         </div>
         <div className="sht-install-foot"><LockKeyhole size={16} aria-hidden="true"/><p>{t.betaNote} <Link to="/download">{t.instructions}<ArrowRight size={14} aria-hidden="true"/></Link></p></div>
