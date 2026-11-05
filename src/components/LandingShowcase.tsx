@@ -238,9 +238,11 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
   const displayCard = cardSet[cardIndex % cardSet.length];
   const flashcard = FLASHCARDS[lang][displayCard];
   const nextFlashcard = (needsReview: boolean) => {
-    setReviewWords(previous => needsReview ?
-      (previous.includes(displayCard) ? previous : [...previous,displayCard]) :
-      previous.filter(index => index !== displayCard));
+    const next = needsReview ?
+      (reviewWords.includes(displayCard) ? reviewWords : [...reviewWords,displayCard]) :
+      reviewWords.filter(index => index !== displayCard);
+    setReviewWords(next);
+    if (showReview && next.length === 0) setShowReview(false);
     setCardIndex(i => i + 1);
   };
   const resetQuiz = () => { setAnswers({}); setQuestionIndex(0); };
@@ -265,7 +267,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
             {[t.one,t.two,t.three].map((step,i)=><span key={step}><b>{i+1}</b>{step}</span>)}
           </div>
         </div>
-        <div className="sht-story-demo" aria-label={t.demo}>
+        <div className="sht-story-demo" aria-label={question.subject}>
           <div className="sht-reference-quiz-tabs" role="group" aria-label={lang==="hy"?"Ընտրել առարկան":lang==="ru"?"Выбрать предмет":"Choose a subject"}>
             {SAMPLE_SUBJECTS[lang].map((label,index)=>(
               <button type="button" key={label} aria-pressed={questionIndex % 3 === index}
