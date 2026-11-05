@@ -29,6 +29,8 @@ describe("Shtemarm editorial learning landing",()=>{
     expect(css).toContain(".sht-editorial-phone");
     expect(css).toContain(".sht-dynamic-island");
     expect(css).toContain("html.dark .sht-editorial");
+    expect(css).toContain("html.dark .sht-editorial :is(.sht-story-paper,.sht-story-gold,.sht-story-download)");
+    expect(css).toContain("font-family:\"Noto Sans Armenian\"");
     expect(landing).toContain('aria-expanded={islandExpanded}');
     expect(landing).toContain('href="#experience"');
   });
@@ -36,6 +38,8 @@ describe("Shtemarm editorial learning landing",()=>{
   it("offers a real, answerable three-question guest sample without pretending it is an official bank",()=>{
     const sample=read("src/components/LandingShowcase.tsx");
     expect(sample).toContain("SAMPLE_QUESTIONS");
+    expect(sample).toContain("CheckCircle2, ChevronLeft, ChevronRight");
+    expect(sample).toContain("<ChevronLeft size={18}");
     expect(sample).toContain("Mathematics · sample");
     expect(sample).toContain("English · sample");
     expect(sample).toContain("Armenian language · sample");
