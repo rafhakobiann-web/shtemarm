@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, MonitorDown, Smartphone } from "lucide-react";
-import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl } from "@/lib/app-download";
+import { SITE_ANDROID_APK_URL, SITE_ANDROID_BETA_VERSION, safePublicApkUrl, publiclyAccessibleApkUrl } from "@/lib/app-download";
 import { useLang } from "@/lib/lang";
 
 export const Route = createFileRoute("/download")({
@@ -61,7 +61,7 @@ function DownloadPage() {
   // If the host responds with HTML or a missing manifest, retain the last
   // known site-hosted beta rather than linking to a private GitHub release.
   useEffect(() => {
-    if (safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL)) return;
+    if (publiclyAccessibleApkUrl(import.meta.env.VITE_ANDROID_APK_URL)) return;
     const controller = new AbortController();
     fetch("/downloads/android-release.json", {
       signal: controller.signal,
@@ -140,7 +140,7 @@ function DownloadPage() {
   };
 
   // Avoid linking unauthenticated visitors to Releases in a private repository.
-  const apkUrl = publishedApk ?? safePublicApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? SITE_ANDROID_APK_URL;
+  const apkUrl = publishedApk ?? publiclyAccessibleApkUrl(import.meta.env.VITE_ANDROID_APK_URL) ?? SITE_ANDROID_APK_URL;
   const displayedVersion = publishedVersion ?? (apkUrl===SITE_ANDROID_APK_URL ? SITE_ANDROID_BETA_VERSION : null);
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-3 sm:space-y-8">
