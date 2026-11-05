@@ -11,7 +11,7 @@ describe("Shtemarm editorial learning landing",()=>{
     const css=read("src/landing-editorial-2026.css");
     expect(landing).toContain('className="sht-landing sht-editorial"');
     expect(landing).toContain('id="sht-hero-title"');
-    expect(landing.match(/<h1\\b/g)?.length).toBe(1);
+    expect(landing.match(/<h1\b/g)?.length).toBe(1);
     expect(landing).toContain('<LandingShowcase lang={lang} />');
     expect(landing).toContain('className="sht-editorial-phone"');
     expect(landing).toContain('to="/auth"');
