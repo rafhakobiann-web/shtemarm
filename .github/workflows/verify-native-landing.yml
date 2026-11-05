@@ -1,0 +1,26 @@
+name: Verify interactive Shtemarm landing
+on:
+  pull_request:
+    paths:
+      - 'src/components/LandingLabV3.tsx'
+      - 'src/landing-v3.css'
+      - 'src/routes/index.tsx'
+      - 'src/routes/__root.tsx'
+      - 'src/test/landing-reference.test.tsx'
+      - '.github/workflows/verify-native-landing.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install exact dependencies
+        run: bun install --frozen-lockfile
+      - name: Test landing and related UI regressions
+        run: bunx vitest run src/test/landing-reference.test.tsx src/test/intuitive-motion.test.ts src/test/academy-design.test.ts src/test/responsive-shell-regression.test.ts
+      - name: Validate TypeScript
+        run: bunx tsc --noEmit
+      - name: Build production website
+        run: bun run build
