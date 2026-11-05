@@ -6,6 +6,7 @@ import { chatReply } from "@/lib/chat.functions";
 import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 import { studyLabels, STUDY_MODE_DEFAULT, type StudyMode } from "@/lib/ai-study-modes";
+import { useProgress } from "@/lib/progress";
 
 export const Route = createFileRoute("/chat")({
   staticData: { sitemap: false },
@@ -40,6 +41,10 @@ function ChatPage() {
   const tx = useTx();
   const lang = useLang();
   const labels = studyLabels[lang];
+  const progress = useProgress();
+  const [personalize, setPersonalize] = useState(false);
+  const answerResults = Object.values(progress.answers);
+  const studySummary = { reviewed: answerResults.length, incorrect: answerResults.filter(value => value === 0).length };
   const [mode,setMode] = useState<StudyMode>(STUDY_MODE_DEFAULT);
   // Save only the learning preference, never conversation text or signed tokens.
   useEffect(() => { setMode(readPreferredMode()); }, []);
@@ -71,6 +76,7 @@ function ChatPage() {
       const res = await chatReply({ data: {
         question:content, contextToken:contextTokenRef.current,
         mode, locale:lang,
+        ...(personalize ? { studySummary } : {}),
       } });
       if ("contextToken" in res && typeof res.contextToken === "string")
         contextTokenRef.current = res.contextToken;
@@ -108,6 +114,11 @@ function ChatPage() {
             </button>
           ))}
         </div>
+        <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-primary/10 bg-card/70 p-3 text-sm">
+          <input type="checkbox" checked={personalize} onChange={event => setPersonalize(event.target.checked)} className="mt-1 size-4 accent-primary" />
+          <span className="space-y-1"><strong className="block">{lang === "hy" ? "Անհատականացնել իմ առաջընթացով" : lang === "ru" ? "Учитывать мой прогресс" : "Personalize using my progress"}</strong>
+          <span className="block text-xs leading-5 text-muted-foreground">{lang === "hy" ? "Միայն քո համաձայնությամբ AI-ին կփոխանցվեն լուծված և այժմ սխալ նշված հարցերի ընդհանուր քանակները՝ առանց հարցերի տեքստերի։ Կարող ես ցանկացած պահին անջատել։" : lang === "ru" ? "Только с твоего согласия ИИ получит общие числа решённых и неверных ответов без текста вопросов. Можно отключить в любой момент." : "Only with your permission, share counts of answered and currently incorrect questions, never their text. Turn off anytime."}</span></span>
+        </label>
       </section>
 
       <div className="glass flex min-h-[50vh] flex-col gap-3 rounded-3xl p-4 sm:p-6">
