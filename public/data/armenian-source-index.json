@@ -68,49 +68,62 @@
       "examYear": 2018,
       "extractionAudit": {
         "source": "hayoc-1(2).pdf",
-        "status": "raw PDF text extraction completed locally; not yet integrated into playable question bank",
-        "questionCount": 1370,
-        "answerKeyStatus": "PDF answer pages 249–255 extracted; question-by-question matching not verified",
+        "status": "all eight original sections transcribed to separate JSON files; playable conversion added; visual proofread still pending",
+        "questionCount": 1394,
+        "multipleChoice": 883,
+        "shortAnswer": 511,
+        "playableCandidateCount": 1334,
+        "reviewRequiredMultipleChoice": 60,
+        "answerKeyStatus": "all 1394 printed answer-key positions matched against PDF answer tables; source wording and 60 complex layouts require visual proofread",
+        "supplementStatus": "«Պնդումների փունջ» pages 240–248 NOT included in current count; needs separate import and validation",
         "sections": [
           {
             "section": 1,
             "multipleChoice": 103,
-            "shortAnswer": 89
+            "shortAnswer": 97,
+            "reviewRequiredMultipleChoice": 10
           },
           {
             "section": 2,
             "multipleChoice": 111,
-            "shortAnswer": 48
+            "shortAnswer": 70,
+            "reviewRequiredMultipleChoice": 11
           },
           {
             "section": 3,
             "multipleChoice": 212,
-            "shortAnswer": 110
+            "shortAnswer": 110,
+            "reviewRequiredMultipleChoice": 5
           },
           {
             "section": 4,
             "multipleChoice": 200,
-            "shortAnswer": 194
+            "shortAnswer": 194,
+            "reviewRequiredMultipleChoice": 13
           },
           {
             "section": 5,
             "multipleChoice": 27,
-            "shortAnswer": 8
+            "shortAnswer": 8,
+            "reviewRequiredMultipleChoice": 1
           },
           {
             "section": 6,
             "multipleChoice": 10,
-            "shortAnswer": 8
+            "shortAnswer": 2,
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 7,
             "multipleChoice": 16,
-            "shortAnswer": 6
+            "shortAnswer": 6,
+            "reviewRequiredMultipleChoice": 0
           },
           {
             "section": 8,
             "multipleChoice": 204,
-            "shortAnswer": 24
+            "shortAnswer": 24,
+            "reviewRequiredMultipleChoice": 20
           }
         ]
       }
