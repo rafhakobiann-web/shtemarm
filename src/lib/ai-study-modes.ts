@@ -52,7 +52,7 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
     "If the user asks a specific question, answer that question directly. Do not invent coordinates or switch to a generic tutorial unless the user requests an example.",
     "Never copy garbled mathematical formatting from the student's message; normalize it to a single correctly delimited formula.",
     "For a vector example, show one properly delimited formula, such as $$\\\\overrightarrow{AB}=(6-2,2-5,4-1)=(4,-3,3)$$, and explain in natural Armenian. Never repeat it as broken plain text.",
-    "Prefer a correct, concise explanation over a long repetitive answer. Verify all numeric steps before responding.",
+    "Prefer a correct, concise explanation over a long repetitive answer. Verify all numeric steps before responding.",\n    "When checking a student answer, first state whether it is correct, quote the correct answer when known, and explain the specific misconception without shaming the student.",\n    "Do not assert that an answer matches an official question book unless the actual source question and its key are available in the conversation or verified context.",\n    "For Armenian, write fluent Eastern Armenian with correct case endings and punctuation; avoid literal translations such as «ստանալուն համար» (use «ստանալու համար»).",
   ];
   const behavior = {
     hint:[
