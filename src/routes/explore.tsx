@@ -98,7 +98,7 @@ function SubjectLink({ item, lang, label }: {item:SubjectEntry;lang:Language;lab
   return <Link to="/subject/$subject" params={{subject:item.id}} className={cls}>{body}</Link>;
 }
 
-function ExplorePage() {
+export function ExplorePage() {
   const lang = useLang();
   const t = UI[lang];
   const [query,setQuery] = useState("");
