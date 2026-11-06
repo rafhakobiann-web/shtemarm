@@ -17,4 +17,9 @@ describe("math formula parsing", () => {
     expect(enhanceMathText("x² + √(9) + 1/2")).toContain("$x^{2}$");
     expect(enhanceMathText("√(9)")).toContain("$\\sqrt{9}$");
   });
+  it("preserves restored PDF formula expressions for inline rendering", () => {
+    const source = "Source: $f(x)=e^x(-x^2+x+1)$; $f(x)=x\\lvert x\\rvert$; $45^\\circ$";
+    const formulas = splitMath(source).filter(piece => piece.math).map(piece => piece.text);
+    expect(formulas).toEqual(["f(x)=e^x(-x^2+x+1)", "f(x)=x\\lvert x\\rvert", "45^\\circ"]);
+  });
 });
