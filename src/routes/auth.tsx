@@ -258,7 +258,10 @@ function AuthPage() {
         {lang === "en" ? "Retry sign-in connection" :
           lang === "ru" ? "Повторить подключение" : "Կրկին փորձել մուտքի կապը"}
       </button>
-      <Link to="/" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-bold text-primary-foreground">
+      <Link to="/guest" search={{ subject: "math" }} className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-bold text-primary-foreground">
+        {lang === "en" ? "Try free sample questions" : lang === "ru" ? "Попробовать задания без входа" : "Փորձել հարցեր՝ առանց մուտքի"}
+      </Link>
+      <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-muted-foreground hover:text-foreground">
         {tx("Վերադառնալ ներկայացման էջ")}
       </Link>
     </div>
@@ -318,7 +321,7 @@ function AuthPage() {
             isRecovery ? tx("Նոր գաղտնաբառ") : tx("Մուտք")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {tx("Կարող ես սովորել նաև առանց հաշվի։ Մուտքը թույլ է տալիս համաժամացնել առաջընթացը, երբ առցանց ծառայությունը հասանելի է։")}
+          {lang === "en" ? "Try sample questions without an account. Sign in to access full study tools and save your progress." : lang === "ru" ? "Примеры заданий доступны без аккаунта. Войдите, чтобы открыть все инструменты и сохранять прогресс." : "Առանց հաշվի կարող ես փորձել օրինակելի առաջադրանքները։ Ամբողջական բաժինների և առաջընթացի պահպանման համար անհրաժեշտ է մուտք։"}
         </p>
       </div>
 
@@ -366,9 +369,14 @@ function AuthPage() {
           </button>
         )}
       </div>
-      <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-muted-foreground hover:text-primary">
-        {tx("Շարունակել առանց մուտքի")}
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+        <Link to="/guest" search={{ subject: "math" }} className="inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10">
+          {lang === "en" ? "Try without signing in" : lang === "ru" ? "Попробовать без регистрации" : "Փորձել առանց գրանցվելու"}
+        </Link>
+        <Link to="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-muted-foreground hover:text-primary">
+          {lang === "en" ? "Back to home" : lang === "ru" ? "На главную" : "Գլխավոր էջ"}
+        </Link>
+      </div>
     </div>
   );
 }

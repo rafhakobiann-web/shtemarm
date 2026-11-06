@@ -22,9 +22,9 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 const COPY = {
-  hy: { login:"Մուտք",start:"Սկսել անվճար",learn:"Իմանալ ավելին",tag:"Քո գիտելիքները՝ շարժման մեջ",hero:"Սովորիր փորձելով, առաջ գնա հասկանալով",intro:"Փորձիր առաջադրանքներ հենց այստեղ, բացահայտիր ճիշտ պատասխանի տրամաբանությունը և ամրապնդիր գիտելիքներդ՝ քեզ հարմար տեմպով։",benefits:"Ինչու ընտրել Shtemarm-ը",subjects:"Սովորիր քեզ անհրաժեշտ առարկաները",steps:"Ինչպես է աշխատում",preview:"Տես՝ ինչ է սպասվում քեզ",faq:"Հաճախ տրվող հարցեր",ready:"Պատրա՞ստ ես սկսել",readyDesc:"Ստեղծիր հաշիվ և սկսիր սովորել քո նպատակներով։",b1:"Շտեմարաններ",b1d:"Աշխատիր առարկայական հարցերով և ստուգիր պատասխաններդ։",b2:"Սխալների կրկնություն",b2d:"Վերադարձիր սխալ հարցերին ու ամրապնդիր գիտելիքներդ։",b3:"Անհատական պլան",b3d:"Ընտրիր առարկաներդ և ստացիր օրվա առաջադրանքներ։",b4:"XP և նվաճումներ",b4d:"Հետևիր առաջընթացին և նշիր փոքր հաղթանակներդ։",s1:"Ստեղծիր հաշիվ",s2:"Ընտրիր նպատակներդ",s3:"Սկսիր լուծել և կրկնել",demo:"Օրինակ՝ այսօրվա ուսումնական պլան",demo1:"Կրկնիր սխալ հարցերը",demo2:"Լուծիր նոր առաջադրանքներ",demo3:"Կրկնիր բառերը քարտերով",faq1:"Կարո՞ղ եմ սովորել առանց հաշվի։",faq1a:"Ուսումնական բաժիններից օգտվելու համար անհրաժեշտ է մուտք գործել։ Ներկայացման էջը բաց է բոլորի համար։",faq2:"Ի՞նչ կլինի նախկին առաջընթացիս հետ։",faq2a:"Նախկինում այս սարքում պահված առաջընթացը չի ջնջվում։ Մուտքից հետո հնարավորության դեպքում այն համաժամացվում է հաշվի հետ։",faq3:"Ո՞ր լեզուներն են հասանելի։",faq3a:"Ինտերֆեյսը հասանելի է հայերեն, անգլերեն և ռուսերեն։ Շտեմարանների հարցերը մնում են իրենց բնօրինակ լեզվով։"},
-  en: {login:"Sign in",start:"Get started",learn:"Learn more",tag:"Your learning, brought to life",hero:"Learn by trying. Grow by understanding",intro:"Try questions right here, see why each answer works, and build lasting confidence at your own pace.",benefits:"Why Shtemarm?",subjects:"Study the subjects you need",steps:"How it works",preview:"See what's waiting for you",faq:"Frequently asked questions",ready:"Ready to begin?",readyDesc:"Create an account and start learning toward your goals.",b1:"Question books",b1d:"Practice subject questions and check your answers.",b2:"Mistake review",b2d:"Return to missed questions and strengthen your knowledge.",b3:"Personal study plan",b3d:"Choose subjects and get daily learning tasks.",b4:"XP and achievements",b4d:"Track progress and celebrate small milestones.",s1:"Create an account",s2:"Choose your goals",s3:"Practice and review",demo:"Example daily study plan",demo1:"Review missed questions",demo2:"Practice new questions",demo3:"Review vocabulary cards",faq1:"Can I study without an account?",faq1a:"Sign-in is required for study tools. The introductory page is public.",faq2:"What happens to my previous progress?",faq2a:"Previously saved progress on this device is not deleted and can be synced to your account when available.",faq3:"Which languages are available?",faq3a:"The interface supports Armenian, English and Russian. Original question text stays in its source language."},
-  ru: {login:"Войти",start:"Начать",learn:"Подробнее",tag:"Твои знания в действии",hero:"Пробуй, понимай, двигайся вперёд",intro:"Решай задания прямо здесь, разбирай ответы и закрепляй знания в своём ритме.",benefits:"Почему Shtemarm?",subjects:"Изучай нужные предметы",steps:"Как это работает",preview:"Посмотри, что тебя ждёт",faq:"Частые вопросы",ready:"Готов начать?",readyDesc:"Создай аккаунт и учись в соответствии со своими целями.",b1:"Сборники заданий",b1d:"Решай вопросы по предметам и проверяй ответы.",b2:"Работа над ошибками",b2d:"Возвращайся к ошибкам и закрепляй знания.",b3:"Личный план",b3d:"Выбирай предметы и получай задания на день.",b4:"XP и достижения",b4d:"Следи за прогрессом и отмечай достижения.",s1:"Создай аккаунт",s2:"Выбери цели",s3:"Решай и повторяй",demo:"Пример плана на день",demo1:"Повтори ошибки",demo2:"Реши новые задания",demo3:"Повтори слова по карточкам",faq1:"Можно ли учиться без аккаунта?",faq1a:"Для учебных разделов нужен вход. Вводная страница открыта всем.",faq2:"Что будет со старым прогрессом?",faq2a:"Прогресс, сохранённый на этом устройстве, не удаляется и может синхронизироваться с аккаунтом.",faq3:"Какие языки доступны?",faq3a:"Интерфейс доступен на армянском, английском и русском. Текст заданий остаётся на языке оригинала."},
+  hy: { login:"Մուտք",start:"Սկսել անվճար",learn:"Իմանալ ավելին",tag:"Քո գիտելիքները՝ շարժման մեջ",hero:"Սովորիր փորձելով, առաջ գնա հասկանալով",intro:"Փորձիր առաջադրանքներ հենց այստեղ, բացահայտիր ճիշտ պատասխանի տրամաբանությունը և ամրապնդիր գիտելիքներդ՝ քեզ հարմար տեմպով։",benefits:"Ինչու ընտրել Shtemarm-ը",subjects:"Սովորիր քեզ անհրաժեշտ առարկաները",steps:"Ինչպես է աշխատում",preview:"Տես՝ ինչ է սպասվում քեզ",faq:"Հաճախ տրվող հարցեր",ready:"Պատրա՞ստ ես սկսել",readyDesc:"Ստեղծիր հաշիվ և սկսիր սովորել քո նպատակներով։",b1:"Շտեմարաններ",b1d:"Աշխատիր առարկայական հարցերով և ստուգիր պատասխաններդ։",b2:"Սխալների կրկնություն",b2d:"Վերադարձիր սխալ հարցերին ու ամրապնդիր գիտելիքներդ։",b3:"Անհատական պլան",b3d:"Ընտրիր առարկաներդ և ստացիր օրվա առաջադրանքներ։",b4:"XP և նվաճումներ",b4d:"Հետևիր առաջընթացին և նշիր փոքր հաղթանակներդ։",s1:"Ստեղծիր հաշիվ",s2:"Ընտրիր նպատակներդ",s3:"Սկսիր լուծել և կրկնել",demo:"Օրինակ՝ այսօրվա ուսումնական պլան",demo1:"Կրկնիր սխալ հարցերը",demo2:"Լուծիր նոր առաջադրանքներ",demo3:"Կրկնիր բառերը քարտերով",faq1:"Կարո՞ղ եմ սովորել առանց հաշվի։",faq1a:"Հյուրի ռեժիմում յուրաքանչյուր առարկայից կարող ես փորձել երկու օրինակ՝ առանց մուտքի։ Ամբողջական շտեմարանների համար անհրաժեշտ է հաշիվ։",faq2:"Ի՞նչ կլինի նախկին առաջընթացիս հետ։",faq2a:"Նախկինում այս սարքում պահված առաջընթացը չի ջնջվում։ Մուտքից հետո հնարավորության դեպքում այն համաժամացվում է հաշվի հետ։",faq3:"Ո՞ր լեզուներն են հասանելի։",faq3a:"Ինտերֆեյսը հասանելի է հայերեն, անգլերեն և ռուսերեն։ Շտեմարանների հարցերը մնում են իրենց բնօրինակ լեզվով։"},
+  en: {login:"Sign in",start:"Get started",learn:"Learn more",tag:"Your learning, brought to life",hero:"Learn by trying. Grow by understanding",intro:"Try questions right here, see why each answer works, and build lasting confidence at your own pace.",benefits:"Why Shtemarm?",subjects:"Study the subjects you need",steps:"How it works",preview:"See what's waiting for you",faq:"Frequently asked questions",ready:"Ready to begin?",readyDesc:"Create an account and start learning toward your goals.",b1:"Question books",b1d:"Practice subject questions and check your answers.",b2:"Mistake review",b2d:"Return to missed questions and strengthen your knowledge.",b3:"Personal study plan",b3d:"Choose subjects and get daily learning tasks.",b4:"XP and achievements",b4d:"Track progress and celebrate small milestones.",s1:"Create an account",s2:"Choose your goals",s3:"Practice and review",demo:"Example daily study plan",demo1:"Review missed questions",demo2:"Practice new questions",demo3:"Review vocabulary cards",faq1:"Can I study without an account?",faq1a:"You can try two original examples per subject as a guest. Sign in for full study tools and saved progress.",faq2:"What happens to my previous progress?",faq2a:"Previously saved progress on this device is not deleted and can be synced to your account when available.",faq3:"Which languages are available?",faq3a:"The interface supports Armenian, English and Russian. Original question text stays in its source language."},
+  ru: {login:"Войти",start:"Начать",learn:"Подробнее",tag:"Твои знания в действии",hero:"Пробуй, понимай, двигайся вперёд",intro:"Решай задания прямо здесь, разбирай ответы и закрепляй знания в своём ритме.",benefits:"Почему Shtemarm?",subjects:"Изучай нужные предметы",steps:"Как это работает",preview:"Посмотри, что тебя ждёт",faq:"Частые вопросы",ready:"Готов начать?",readyDesc:"Создай аккаунт и учись в соответствии со своими целями.",b1:"Сборники заданий",b1d:"Решай вопросы по предметам и проверяй ответы.",b2:"Работа над ошибками",b2d:"Возвращайся к ошибкам и закрепляй знания.",b3:"Личный план",b3d:"Выбирай предметы и получай задания на день.",b4:"XP и достижения",b4d:"Следи за прогрессом и отмечай достижения.",s1:"Создай аккаунт",s2:"Выбери цели",s3:"Решай и повторяй",demo:"Пример плана на день",demo1:"Повтори ошибки",demo2:"Реши новые задания",demo3:"Повтори слова по карточкам",faq1:"Можно ли учиться без аккаунта?",faq1a:"В гостевом режиме можно решить по два примера по каждому предмету. Для полных сборников нужен вход.",faq2:"Что будет со старым прогрессом?",faq2a:"Прогресс, сохранённый на этом устройстве, не удаляется и может синхронизироваться с аккаунтом.",faq3:"Какие языки доступны?",faq3a:"Интерфейс доступен на армянском, английском и русском. Текст заданий остаётся на языке оригинала."},
 };
 // These are sample activity descriptions, never the user's actual study progress.
 const DEMO_DETAILS = {
@@ -53,7 +53,7 @@ const FAQ_ITEMS = {
     ],
     [
       "Ինչպե՞ս սկսել սովորել Shtemarm-ում։",
-      "Ստեղծիր հաշիվ կամ մուտք գործիր Google-ով կամ էլ․ փոստով, ընտրիր առարկաներդ ու ուսման նպատակը։ Դրանից հետո քո անձնական էջից կարող ես բացել շտեմարաններն ու սկսել պարապել։"
+      "Կարող ես առանց գրանցվելու փորձել երկու ցուցադրական հարց յուրաքանչյուր առարկայից։ Ամբողջական շտեմարանների և առաջընթացի պահպանման համար մուտք գործիր կամ ստեղծիր հաշիվ։"
     ],
     [
       "Կարո՞ղ եմ պատրաստվել միասնական քննություններին։",
@@ -87,7 +87,7 @@ const FAQ_ITEMS = {
     ],
     [
       "How do I get started?",
-      "Create an account or sign in with Google or email, choose your subjects and learning goal, then open the question books from your personal dashboard."
+      "Try two original sample questions per subject without signing in. For complete workbooks and saved progress, create an account or sign in."
     ],
     [
       "Can Shtemarm help me prepare for entrance exams?",
@@ -121,7 +121,7 @@ const FAQ_ITEMS = {
     ],
     [
       "Как начать заниматься?",
-      "Создай аккаунт или войди через Google либо электронную почту, выбери предметы и цель обучения, затем открой задания в личном кабинете."
+      "Без регистрации можно попробовать по два авторских задания по каждому предмету. Для полных сборников и сохранения прогресса создай аккаунт или войди."
     ],
     [
       "Поможет ли Shtemarm подготовиться к вступительным экзаменам?",
@@ -268,6 +268,7 @@ function LandingPage() {
           <span>Shtemarm</span>
         </Link>
         <nav className="sht-nav-links" aria-label={lang === "hy" ? "Հիմնական բաժիններ" : lang === "ru" ? "Основные разделы" : "Main sections"}>
+          <Link to="/guest" search={{ subject: "math" }}>{lang === "hy" ? "Փորձել առանց գրանցվելու" : lang === "ru" ? "Без регистрации" : "Try as guest"}</Link>
           <a href="#benefits">{ui.navBenefits}</a>
           <a href="#subjects">{t.subjects}</a>
           <a href="#how-it-works">{ui.navSteps}</a>
@@ -277,7 +278,7 @@ function LandingPage() {
           <details className="sht-mobile-links">
             <summary aria-label={lang === "hy" ? "Բացել բաժինները" : lang === "ru" ? "Открыть разделы" : "Open sections"}><Menu className="size-5" aria-hidden="true" /></summary>
             <nav aria-label={lang === "hy" ? "Բջջային բաժիններ" : lang === "ru" ? "Мобильное меню" : "Mobile menu"}>
-              {[["#try-it", lang === "hy" ? "Փորձել հարց" : lang === "ru" ? "Решить вопрос" : "Try a question"], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq], ["/download", lang === "hy" ? "Ներբեռնել հավելվածը" : lang === "ru" ? "Скачать приложение" : "Download app"]].map(([hash, label]) => (
+              {[["/guest", lang === "hy" ? "Փորձել առանց գրանցվելու" : lang === "ru" ? "Попробовать без регистрации" : "Try as guest"], ["#try-it", lang === "hy" ? "Փորձել հարց" : lang === "ru" ? "Решить вопрос" : "Try a question"], ["#benefits", ui.navBenefits], ["#subjects", t.subjects], ["#how-it-works", ui.navSteps], ["#faq", t.faq], ["/download", lang === "hy" ? "Ներբեռնել հավելվածը" : lang === "ru" ? "Скачать приложение" : "Download app"]].map(([hash, label]) => (
                 <a key={hash} href={hash} onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}>{label}<ArrowRight className="size-4" aria-hidden="true" /></a>
               ))}
             </nav>
@@ -319,7 +320,7 @@ function LandingPage() {
           <p className="sht-hero-description">{t.intro}</p>
           <div className="sht-hero-actions">
             <Link to={entryTo} className="sht-button-primary">{entryLabel}<ArrowRight className="size-5" aria-hidden="true" /></Link>
-            <a href="#try-it" className="sht-button-secondary">{lang === "hy" ? "Փորձել հիմա" : lang === "ru" ? "Попробовать" : "Try it now"}<ArrowDown className="size-4" aria-hidden="true" /></a>
+            <Link to="/guest" search={{ subject: "math" }} className="sht-button-secondary">{lang === "hy" ? "Փորձել առանց գրանցվելու" : lang === "ru" ? "Без регистрации" : "Try as guest"}<ArrowRight className="size-4" aria-hidden="true" /></Link>
           </div>
           <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{ui.explore}</span></div>
         </div>
@@ -410,7 +411,7 @@ function LandingPage() {
               <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
             </>;
             const props = { "data-subject": key, className: "sht-subject-card", "aria-label": names[lang] + " · " + ui.openSubject };
-            if (sessionStatus !== "signed-in") return <Link key={key} {...props} to="/auth">{body}</Link>;
+            if (sessionStatus !== "signed-in") return <Link key={key} {...props} to="/guest" search={{ subject: key }}>{body}</Link>;
             if (key === "physics") return <Link key={key} {...props} to="/subject/$subject" params={{ subject: "physics" }}>{body}</Link>;
             return <Link key={key} {...props} to="/dashboard" search={{ subject: key as "english"|"math"|"armenian"|"history"|"biology" }}>{body}</Link>;
           })}
