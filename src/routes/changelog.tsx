@@ -182,42 +182,42 @@ function ChangelogPage() {
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6 sm:py-10">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
-        <ArrowLeft className="size-4" />{en ? "Back to home" : "Վերադառնալ գլխավոր էջ"}
+        <ArrowLeft className="size-4" />{en ? "Back to home" : ru ? "На главную" : "Վերադառնալ գլխավոր էջ"}
       </Link>
 
       <section className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/10 via-card to-violet-500/10 p-6 sm:p-10">
         <div className="pointer-events-none absolute -right-8 -top-12 size-48 rounded-full bg-primary/10 blur-3xl" />
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border bg-background/70 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-primary">
-            <Clock3 className="size-3.5" />{en ? "Project updates" : "Նախագծի թարմացումներ"}
+            <Clock3 className="size-3.5" />{en ? "Project updates" : ru ? "Обновления проекта" : "Նախագծի թարմացումներ"}
           </span>
-          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{en ? "What's new" : "Ի՞նչն է նոր"}</h1>
+          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{en ? "What's new" : ru ? "Что нового" : "Ի՞նչն է նոր"}</h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {en ? "See what has improved in Shtemarm, in simple words." : "Իմացիր՝ ինչն է փոխվել Shtemarm-ում՝ պարզ ու հասկանալի ձևով։"}
+            {en ? "See what has improved in Shtemarm, in simple words." : ru ? "Узнайте об изменениях в Shtemarm простыми словами." : "Իմացիր՝ ինչն է փոխվել Shtemarm-ում՝ պարզ ու հասկանալի ձևով։"}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
-            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">✨ {en ? "Feature updates" : "Նոր հնարավորություններ"}</span>
-            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">🛠️ {en ? "Fixes" : "Շտկումներ"}</span>
-            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">📈 {en ? "Progress tracking" : "Առաջընթացի հետևում"}</span>
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">✨ {en ? "Feature updates" : ru ? "Новые возможности" : "Նոր հնարավորություններ"}</span>
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">🛠️ {en ? "Fixes" : ru ? "Исправления" : "Շտկումներ"}</span>
+            <span className="rounded-xl border bg-background/75 px-3 py-2 text-sm font-bold">📈 {en ? "Progress tracking" : ru ? "Отслеживание прогресса" : "Առաջընթացի հետևում"}</span>
           </div>
         </div>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-3">
         <article className="rounded-2xl border bg-card p-4">
-          <p className="text-sm font-semibold text-muted-foreground">{en ? "New dictionary entries" : "Բառարանի նոր գրառումներ"}</p>
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "New dictionary entries" : ru ? "Новые слова в словаре" : "Բառարանի նոր գրառումներ"}</p>
           <p className="mt-1 text-3xl font-black tabular-nums">+1,104</p>
-          <p className="mt-1 text-xs text-muted-foreground">{en ? "Committed on Oct 26" : "Commit՝ հոկտեմբերի 26-ին"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "Committed on Oct 26" : ru ? "Коммит от 26 октября" : "Commit՝ հոկտեմբերի 26-ին"}</p>
         </article>
         <article className="rounded-2xl border bg-card p-4">
-          <p className="text-sm font-semibold text-muted-foreground">{en ? "English books" : "Անգլերենի գրքեր"}</p>
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "English books" : ru ? "Учебники английского" : "Անգլերենի գրքեր"}</p>
           <p className="mt-1 text-3xl font-black">3</p>
-          <p className="mt-1 text-xs text-muted-foreground">{en ? "Coverage audit still needed" : "Ծածկույթի ստուգումը դեռ պետք է"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "Coverage audit still needed" : ru ? "Проверка полноты ещё необходима" : "Ծածկույթի ստուգումը դեռ պետք է"}</p>
         </article>
         <article className="rounded-2xl border bg-card p-4">
-          <p className="text-sm font-semibold text-muted-foreground">{en ? "Status" : "Կարգավիճակ"}</p>
-          <p className="mt-1 text-xl font-black">{en ? "In progress" : "Ընթացքի մեջ"}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{en ? "More words are being checked" : "Բառերի ստուգումը շարունակվում է"}</p>
+          <p className="text-sm font-semibold text-muted-foreground">{en ? "Status" : ru ? "Статус" : "Կարգավիճակ"}</p>
+          <p className="mt-1 text-xl font-black">{en ? "In progress" : ru ? "В работе" : "Ընթացքի մեջ"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{en ? "More words are being checked" : ru ? "Проверка слов продолжается" : "Բառերի ստուգումը շարունակվում է"}</p>
         </article>
       </section>
 
@@ -235,7 +235,7 @@ function ChangelogPage() {
                   <span className={`grid size-11 shrink-0 place-items-center rounded-2xl ${update.tone}`}><Icon className="size-5" /></span>
                   <div className="min-w-0">
                     <h2 className="text-lg font-black sm:text-xl">{en ? update.title : ru ? update.titleRu ?? update.title : update.titleHy}</h2>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{en ? "Update log" : "Փոփոխությունների մատյան"}</p>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{en ? "Update log" : ru ? "История изменений" : "Փոփոխությունների մատյան"}</p>
                   </div>
                 </div>
                 <ul className="mt-5 space-y-3">
