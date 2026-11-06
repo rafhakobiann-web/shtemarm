@@ -1,0 +1,99 @@
+/* Minimal responsive presentation: last-loaded, scoped overrides.
+   Preserve functional demos, routes, account controls and theme semantics. */
+html .sht-landing.sht-v3 {
+  gap:clamp(2.5rem,5vw,4.5rem);
+  min-width:0;
+}
+html .sht-v3 .sht-landing-nav {
+  max-width:100%; min-width:0; border-radius:1rem;
+  background:var(--card);border:1px solid var(--border);
+  box-shadow:0 4px 18px -15px rgb(0 0 0 / 25%);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+html[data-surface="liquid"] .sht-v3 .sht-landing-nav {
+  background:var(--card);border-color:var(--border);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+.sht-v3 :is(.sht-nav-links,.sht-nav-actions,.sht-hero-copy,.sht-hero-visual) {min-width:0;}
+.sht-v3 .sht-nav-links {flex-wrap:wrap;row-gap:.25rem;}
+.sht-v3 .sht-nav-links a {font-size:.8rem;}
+html .sht-v3 .sht-hero {
+  min-height:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(1.2rem,3vw,2.75rem);padding:clamp(1rem,3vw,2.5rem);
+  border:1px solid var(--border);border-radius:1.5rem;
+  background:var(--card);box-shadow:none;
+}
+html .sht-v3 .sht-hero::before,html .sht-v3 .sht-hero::after {content:none;}
+.sht-v3 .sht-hero-copy {padding:clamp(.25rem,1vw,1rem);gap:1.1rem;}
+html .sht-v3 .sht-hero h1 {
+  max-width:17ch;font-size:clamp(2rem,4vw,3.9rem);
+  line-height:1.22;letter-spacing:-.035em;overflow-wrap:break-word;
+}
+.sht-v3 .sht-eyebrow,.sht-v3 .sht-section-kicker {background:transparent;border-color:var(--border);}
+html .sht-v3 .sht-hero-description {max-width:37rem;line-height:1.7;}
+.sht-v3 .sht-hero-actions {display:flex;flex-wrap:wrap;gap:.65rem;}
+html .sht-v3 :is(.sht-button-primary,.sht-button-secondary) {
+  min-height:2.85rem;border-radius:.8rem;box-shadow:none;
+}
+.sht-v3 .sht-hero-visual {gap:.65rem;}
+/* One useful interactive example is enough above the fold. The optional
+   study-plan details remain accessible on demand. */
+.sht-v3 .sl-plan-details {margin-top:.25rem;}
+.sht-v3 .sht-info-band {display:none;}
+.sht-v3 :is(.sht-feature-decoration,.sht-cta-decoration) {display:none;}
+.sht-v3 :is(.sht-feature,.sht-subject-card,.sht-step,.sl-tile,.sl-lab,.sl-journey,.sl-app-panel) {
+  border-radius:1rem;box-shadow:none;
+}
+.sht-v3 :is(.sht-feature,.sht-subject-card,.sl-tile)::before {content:none;}
+html .sht-v3 .sht-bento-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;}
+html .sht-v3 .sht-feature-featured {grid-column:auto;grid-row:auto;}
+.sht-v3 .sht-feature {min-width:0;padding:clamp(1rem,2vw,1.45rem);}
+.sht-v3 .sht-section-heading {max-width:44rem;}
+.sht-v3 :is(.sht-section-heading p,.sl-section-heading p) {line-height:1.65;}
+.sht-v3 .sht-subject-grid {gap:.7rem;}
+.sht-v3 .sht-subject-card {min-width:0;overflow-wrap:anywhere;}
+.sht-v3 .sl-tiles {gap:.85rem;}
+.sht-v3 :is(.sl-tile,.sl-journey,.sl-app-panel) {background:var(--card);border-color:var(--border);}
+.sht-v3 .sl-tile::before {content:none;}
+/* Avoid a disappearing page when reveal observers fail or users scroll fast. */
+.sht-v3.sl-motion-ready :is(.sl-tile,.sl-journey-copy,.sl-journey-visual,.sl-app-panel,.sht-feature,.sht-subject-card) {
+  opacity:1!important;transform:none!important;
+}
+.sht-v3 :is(.sl-tile,.sht-feature,.sht-subject-card) {transition:border-color .16s ease,background-color .16s ease;}
+.sht-v3 :is(.sl-tile,.sht-feature,.sht-subject-card):hover {transform:none;box-shadow:none;}
+.sht-v3 :is(.sl-lab,.sl-tile,.sl-reader-paper,.sl-app-panel) {color:var(--foreground);}
+.sht-v3 :is(.sl-lab-stage h3,.sl-tile h3,.sl-section-heading h2) {color:var(--foreground);}
+@media(max-width:1100px){
+  .sht-v3 .sht-nav-links {display:none;}
+  .sht-v3 .sht-mobile-links {display:block;}
+  html .sht-v3 .sht-hero {grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+}
+@media(max-width:800px){
+  html .sht-v3 .sht-hero {grid-template-columns:minmax(0,1fr);padding:1.2rem;}
+  .sht-v3 .sht-hero-copy {padding:0;}
+  html .sht-v3 .sht-hero h1 {max-width:23ch;font-size:clamp(2rem,6vw,3.1rem);}
+  html .sht-v3 .sht-bento-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .sht-v3 .sl-tiles {grid-template-columns:minmax(0,1fr);}
+}
+@media(max-width:560px){
+  html .sht-v3 .sht-landing-nav {padding:.5rem;gap:.35rem;}
+  .sht-v3 .sht-nav-actions {gap:.25rem;flex-wrap:nowrap;min-width:0;}
+  .sht-v3 .ref-nav-download {display:none;}
+  .sht-v3 .sht-palette-picker {display:none;}
+  html .sht-v3 .sht-hero {padding:1rem;border-radius:1rem;}
+  html .sht-v3 .sht-hero h1 {font-size:clamp(1.85rem,8vw,2.6rem);line-height:1.25;}
+  html .sht-v3 .sht-bento-grid {grid-template-columns:minmax(0,1fr);}
+  html .sht-v3 .sht-feature-featured {grid-column:auto;}
+  .sht-v3 .sht-subject-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .sht-v3 .sht-subject-card {padding:.9rem;gap:.5rem;}
+  .sht-v3 .sht-section {scroll-margin-top:5.5rem;}
+}
+@media(max-width:360px){
+  .sht-v3 .sht-brand-icon {width:2rem;height:2rem;}
+  .sht-v3 .sht-lang-switch button {min-width:1.55rem;padding-inline:.15rem;}
+  .sht-v3 .sht-hero-actions > * {width:100%;justify-content:center;}
+  .sht-v3 .sht-subject-grid {grid-template-columns:minmax(0,1fr);}
+}
+@media(prefers-reduced-motion:reduce){
+  .sht-v3 *,.sht-v3 *::before,.sht-v3 *::after {scroll-behavior:auto!important;transition:none!important;animation:none!important;}
+}

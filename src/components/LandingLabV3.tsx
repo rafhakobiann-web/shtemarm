@@ -113,7 +113,7 @@ const SUBJECTS: { id: Subject; glyph: string }[] = [
   { id: "math", glyph: "∑" }, { id: "english", glyph: "Aa" }, { id: "armenian", glyph: "Ա" },
 ];
 
-export function LandingHeroLab({ lang }: { lang: Lang }) {
+export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryTo?: "/auth" | "/dashboard" }) {
   const t = L[lang];
   const [subject, setSubject] = useState<Subject>("math");
   const [index, setIndex] = useState(0);
@@ -143,7 +143,7 @@ export function LandingHeroLab({ lang }: { lang: Lang }) {
           {finished ? (
             <div className="sl-lab-finish" aria-live="polite"><CheckCircle2 size={37} /><h3>{t.finished}</h3><p>{t.finishedText}</p>
               <button type="button" onClick={restart}><RotateCcw size={17} />{t.retry}</button>
-              <Link to="/dashboard">{t.begin}<ArrowRight size={17} /></Link>
+              <Link to={entryTo}>{t.begin}<ArrowRight size={17} /></Link>
             </div>
           ) : (
             <>
@@ -231,7 +231,7 @@ function Flashcard({ lang }: { lang: Lang }) {
   );
 }
 
-function Tutor({ lang }: { lang: Lang }) {
+function Tutor({ lang, entryTo }: { lang: Lang; entryTo: "/auth" | "/dashboard" }) {
   const t = L[lang], [active, setActive] = useState(0);
   return <article className="sl-tile sl-tile-tutor" aria-labelledby="sl-tutor-title">
     <div className="sl-tile-top"><span className="sl-tile-icon"><WandSparkles size={21} /></span><span>02 / 03</span></div>
@@ -241,7 +241,7 @@ function Tutor({ lang }: { lang: Lang }) {
       <div className="sl-chat-answer" key={"answer-" + active}><Lightbulb size={18} /><p>{active === 0 ? t.reply1 : t.reply2}</p></div>
     </div>
     <div className="sl-tutor-prompts">{[t.prompt1, t.prompt2].map((prompt, i) => <button type="button" key={prompt} aria-pressed={active === i} onClick={() => setActive(i)}>{prompt}</button>)}</div>
-    <Link to="/auth" className="sl-text-link">{t.teacher}<ArrowUpRight size={17} /></Link>
+    <Link to={entryTo} className="sl-text-link">{t.teacher}<ArrowUpRight size={17} /></Link>
   </article>;
 }
 
@@ -258,7 +258,7 @@ function Reader({ lang }: { lang: Lang }) {
   </article>;
 }
 
-export function LandingExperiences({ lang }: { lang: Lang }) {
+export function LandingExperiences({ lang, entryTo = "/auth" }: { lang: Lang; entryTo?: "/auth" | "/dashboard" }) {
   const t = L[lang];
   const [step, setStep] = useState(0);
   const steps = [
@@ -270,7 +270,7 @@ export function LandingExperiences({ lang }: { lang: Lang }) {
   return <>
     <section id="practice-demo" className="sl-experience" aria-labelledby="sl-exp-title">
       <div className="sl-section-heading"><span className="sl-kicker"><Sparkles size={16} />{t.sectionTag}</span><h2 id="sl-exp-title">{t.sectionTitle}</h2><p>{t.sectionText}</p></div>
-      <div className="sl-tiles"><Flashcard lang={lang} /><Tutor lang={lang} /><Reader lang={lang} /></div>
+      <div className="sl-tiles"><Flashcard lang={lang} /><Tutor lang={lang} entryTo={entryTo} /><Reader lang={lang} /></div>
     </section>
     <section className="sl-journey" aria-labelledby="sl-journey-title">
       <div className="sl-journey-copy"><span className="sl-kicker"><GraduationCap size={17} /> Shtemarm</span><h2 id="sl-journey-title">{t.stepsTitle}</h2><p>{t.stepsText}</p>
@@ -284,7 +284,7 @@ export function LandingExperiences({ lang }: { lang: Lang }) {
     </section>
     <section className="sl-app-panel" aria-labelledby="sl-app-title"><span className="sl-app-icon"><Download size={27} /></span>
       <div><span className="sl-kicker">{t.appTag}</span><h2 id="sl-app-title">{t.appTitle}</h2><p>{t.appText}</p></div>
-      <div className="sl-app-actions"><Link to="/download"><Download size={18} />{t.download}<ArrowRight size={18} /></Link><Link to="/auth">{t.online}<ArrowUpRight size={17} /></Link></div>
+      <div className="sl-app-actions"><Link to="/download"><Download size={18} />{t.download}<ArrowRight size={18} /></Link><Link to={entryTo}>{t.online}<ArrowUpRight size={17} /></Link></div>
     </section>
   </>;
 }

@@ -7,6 +7,7 @@ import { getMathMistakes } from "@/lib/mathMistakes";
 import { getUnitMistakes } from "@/lib/unitMistakes";
 import { buildStudyPlan, STUDY_PLAN_SUBJECTS, type PlanMistake, type StudyPlanSubject } from "@/lib/studyPlan";
 import { useLang } from "@/lib/lang";
+import { normalizePlannerDays, weeklyPersonalPlan } from "@/lib/personalStudyPlanner";
 
 export const Route = createFileRoute("/study-plan")({
   staticData: { sitemap: false },
@@ -33,8 +34,8 @@ const NAMES: Record<StudyPlanSubject, [string,string,string]> = {
   geography: ["Աշխարհագրություն","Geography","География"],
   russian: ["Ռուսաց լեզու","Russian","Русский язык"],
 };
-type Settings = { subjects: StudyPlanSubject[]; minutes: number };
-const defaults: Settings = { subjects: ["english","math","armenian","history","biology"], minutes: 25 };
+type Settings = { subjects: StudyPlanSubject[]; minutes: number; activeDays: number[] };
+const defaults: Settings = { subjects: ["english","math","armenian","history","biology"], minutes: 25, activeDays: [0,1,2,3,4,5,6] };
 function readSettings(): Settings {
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(KEY) ?? "null");
@@ -43,7 +44,7 @@ function readSettings(): Settings {
     const subjects = Array.isArray(s.subjects)
       ? s.subjects.filter((item): item is StudyPlanSubject => STUDY_PLAN_SUBJECTS.includes(item as StudyPlanSubject))
       : defaults.subjects;
-    return { subjects: [...new Set(subjects)], minutes: [15,25,45,60].includes(s.minutes ?? 0) ? s.minutes! : 25 };
+    return { subjects: [...new Set(subjects)], minutes: [15,25,45,60].includes(s.minutes ?? 0) ? s.minutes! : 25, activeDays: normalizePlannerDays(s.activeDays) };
   } catch { return defaults; }
 }
 function readDone(): Record<string, string[]> {
@@ -86,7 +87,9 @@ function StudyPlanPage() {
     setSettings(next);
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* no storage */ }
   }
-  const tasks = useMemo(() => buildStudyPlan(progress, mistakes, settings.subjects, settings.minutes), [progress,mistakes,settings]);
+  const recommendedTasks = useMemo(() => buildStudyPlan(progress, mistakes, settings.subjects, settings.minutes), [progress,mistakes,settings]);
+  const tasks = settings.activeDays.includes(new Date().getDay()) ? recommendedTasks : [];
+  const week = weeklyPersonalPlan(progress,mistakes,settings,done);
   const day = todayLocal();
   const completed = done[day] ?? [];
   function toggleDone(id: string) {
@@ -117,11 +120,18 @@ function StudyPlanPage() {
         {[15,25,45,60].map(minutes => <option key={minutes} value={minutes}>{minutes} {tr("րոպե","minutes","минут")}</option>)}
       </select>
     </section>
+    <section className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6 space-y-3" aria-label={tr("Շաբաթական պլան","Weekly plan","Недельный план")}>
+      <h2 className="font-black">{tr("Շաբաթական պլան","Weekly plan","Недельный план")}</h2>
+      <p className="text-xs text-muted-foreground">{tr("Ընտրիր ուսման օրերը։ Հանգստի և բաց թողնված օրերը չեն նվազեցնում միավորները։","Choose your study days. Rest and missed days have no penalties.","Выберите учебные дни. За отдых и пропуски нет штрафов.")}</p>
+      <div className="flex flex-wrap gap-2">{[1,2,3,4,5,6,0].map((weekday,index)=><button type="button" key={weekday} aria-pressed={settings.activeDays.includes(weekday)} onClick={()=>changeSettings({...settings,activeDays:settings.activeDays.includes(weekday)?settings.activeDays.filter(d=>d!==weekday):[...settings.activeDays,weekday]})} className={`min-h-10 min-w-10 rounded-xl border px-3 text-xs font-bold ${settings.activeDays.includes(weekday)?"border-primary bg-primary/10 text-primary":"bg-muted/30 text-muted-foreground"}`}>{[tr("Երկ","Mon","Пн"),tr("Երք","Tue","Вт"),tr("Չրք","Wed","Ср"),tr("Հնգ","Thu","Чт"),tr("Ուրբ","Fri","Пт"),tr("Շբթ","Sat","Сб"),tr("Կիր","Sun","Вс")][index]}</button>)}</div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{week.map(item=><div key={item.day} className="rounded-xl border bg-background p-3"><p className="text-xs font-bold">{item.day}</p><p className="mt-1 text-xs text-muted-foreground">{item.isRestDay?tr("Հանգստի օր","Rest day","День отдыха"):tr("Առաջադրանքներ","Tasks","Задания")+": "+item.tasks.length}</p>{!item.isRestDay&&<p className="mt-1 text-xs text-primary">{item.completed}/{item.tasks.length} · {item.tasks.map(t=>NAMES[t.subject][idx]).join(", ")}</p>}</div>)}</div>
+    </section>
     <section className="space-y-4" aria-label={tr("Այսօրվա պլան","Today's plan","План на сегодня")}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-xl font-black"><CalendarCheck className="size-5 text-primary"/>{tr("Այսօրվա պլանը","Today's plan","План на сегодня")}</h2>
         <span className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold">{finished}/{tasks.length}</span>
       </div>
+      {hydrated && !settings.activeDays.includes(new Date().getDay()) && <p className="rounded-xl border bg-muted/30 p-4 text-sm">{tr("Այսօր հանգստի օր է։ Կարող ես փոխել ուսման օրերը՝ առանց տուգանքի։","Today is a rest day. Change your study days anytime without penalties.","Сегодня день отдыха. Учебные дни можно менять без штрафов.")}</p>}
       {!hydrated ? <p role="status">{tr("Բեռնվում է…","Loading…","Загрузка…")}</p> : tasks.length === 0
         ? <div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground">{tr("Ընտրիր առնվազն մեկ առարկա՝ պլանը կազմելու համար։","Select at least one subject to create your plan.","Выберите хотя бы один предмет.")}</div>
         : <div className="grid gap-3 md:grid-cols-2">{tasks.map((task,i) => {

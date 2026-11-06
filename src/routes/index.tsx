@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { LandingHeroLab, LandingExperiences } from "@/components/LandingLabV3";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowDown, ArrowRight, Download, ChevronDown, ChevronLeft, ChevronRight, BookOpen, CheckCircle2, GraduationCap, Languages, ListChecks, Menu, Moon, Palette, ShieldCheck, Sparkles, Sun, Target, Trophy } from "lucide-react";
@@ -7,6 +7,7 @@ import { setAppearance } from "@/lib/theme";
 import { previewIndex, previewSwipeDirection, type PreviewDirection } from "@/lib/preview-interaction";
 import { ACCENT_SWATCHES, DEFAULT_ACCENT, applyAccent, chooseAccent, readSavedAccent, type Accent } from "@/lib/accent";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
+import { landingDestination, landingActionLabel, type LandingSession } from "@/lib/landing-session";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
@@ -173,7 +174,9 @@ function LandingPage() {
   const lang = useLang();
   const t = COPY[lang];
   const ui = LANDING_UI[lang];
-  const navigate = useNavigate();
+  const [sessionStatus, setSessionStatus] = useState<LandingSession>("loading");
+  const entryTo = landingDestination(sessionStatus);
+  const entryLabel = landingActionLabel(lang, sessionStatus);
   const [active, setActive] = useState(0);
   const [accent, setAccent] = useState<Accent>(DEFAULT_ACCENT);
   const previewSwipe = useRef<{ pointerId: number; x: number; y: number } | null>(null);
@@ -202,15 +205,28 @@ function LandingPage() {
   }, []);
   useEffect(() => {
     initLang();
-    let mounted = true;
-    void ensureBrowserSupabaseConfig()
-      .then(ok => ok ? supabase.auth.getSession() : null)
-      .then(result => {
-        if (mounted && result?.data.session) void navigate({ to: "/dashboard", replace: true });
-      })
-      .catch(() => {});
-    return () => { mounted = false; };
-  }, [navigate]);
+    let active = true;
+    let eventSeen = false;
+    let unsubscribe: (() => void) | undefined;
+    // Stay on the public homepage whether signed in or signed out.
+    // Session changes update button destinations, never navigate automatically.
+    void ensureBrowserSupabaseConfig().then(async ready => {
+      if (!active) return;
+      if (!ready) { setSessionStatus("unavailable"); return; }
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        eventSeen = true;
+        if (active) setSessionStatus(session ? "signed-in" : "signed-out");
+      });
+      unsubscribe = () => data.subscription.unsubscribe();
+      try {
+        const result = await supabase.auth.getSession();
+        if (active && !eventSeen) setSessionStatus(result.error ? "unavailable" : result.data.session ? "signed-in" : "signed-out");
+      } catch {
+        if (active && !eventSeen) setSessionStatus("unavailable");
+      }
+    }).catch(() => { if (active) setSessionStatus("unavailable"); });
+    return () => { active = false; unsubscribe?.(); };
+  }, []);
 
   // Reveal on entry without scroll listeners; reduced-motion users see content immediately.
   useEffect(() => {
@@ -292,7 +308,7 @@ function LandingPage() {
             </div>
           </details>
           <Link to="/download" className="ref-nav-download"><Download size={16} aria-hidden="true" />{lang === "hy" ? "Ներբեռնել" : lang === "ru" ? "Скачать" : "Download"}</Link>
-          <Link to="/auth" aria-label={ui.signIn} className="sht-nav-login">{ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
+          <Link to={entryTo} aria-label={sessionStatus === "signed-in" ? entryLabel : ui.signIn} className="sht-nav-login">{sessionStatus === "signed-in" ? ui.account : ui.signIn}<ArrowRight aria-hidden="true" className="size-4" /></Link>
         </div>
       </header>
 
@@ -302,14 +318,14 @@ function LandingPage() {
           <h1 id="sht-hero-title">{t.hero}<span className="sht-hero-period">.</span></h1>
           <p className="sht-hero-description">{t.intro}</p>
           <div className="sht-hero-actions">
-            <Link to="/auth" className="sht-button-primary">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+            <Link to={entryTo} className="sht-button-primary">{entryLabel}<ArrowRight className="size-5" aria-hidden="true" /></Link>
             <a href="#try-it" className="sht-button-secondary">{lang === "hy" ? "Փորձել հիմա" : lang === "ru" ? "Попробовать" : "Try it now"}<ArrowDown className="size-4" aria-hidden="true" /></a>
           </div>
           <div className="sht-hero-caption"><CheckCircle2 className="size-5" aria-hidden="true" /><span>{ui.explore}</span></div>
         </div>
 
         <div id="try-it" className="sht-hero-visual" role="region" aria-label={ui.sample}>
-          <LandingHeroLab lang={lang} />
+          <LandingHeroLab lang={lang} entryTo={entryTo} />
           <details className="sl-plan-details">
             <summary><Sparkles className="size-4" aria-hidden="true" />{lang === "hy" ? "Դիտել ուսումնական պլանի օրինակը" : lang === "ru" ? "Посмотреть пример учебного плана" : "Explore a sample study plan"}<ChevronDown className="size-4" aria-hidden="true" /></summary>
             <div className="sl-plan-preview">
@@ -354,7 +370,7 @@ function LandingPage() {
         </div>
       </section>
 
-      <LandingExperiences lang={lang} />
+      <LandingExperiences lang={lang} entryTo={entryTo} />
 
       <div className="sht-info-band" aria-label={ui.explore}>
         <span><BookOpen className="size-5" aria-hidden="true" />{t.b1}</span>
@@ -387,13 +403,17 @@ function LandingPage() {
           <p>{ui.subjectsIntro}</p>
         </div>
         <div className="sht-subject-grid">
-          {SUBJECTS.map(({ key, names, Icon }) => (
-            <Link key={key} to="/auth" data-subject={key} className="sht-subject-card" aria-label={names[lang] + " · " + ui.openSubject}>
+          {SUBJECTS.map(({ key, names, Icon }) => {
+            const body = <>
               <span className="sht-subject-icon"><Icon className="size-6" aria-hidden="true" /></span>
               <strong>{names[lang]}</strong>
               <ArrowRight className="sht-subject-arrow size-5" aria-hidden="true" />
-            </Link>
-          ))}
+            </>;
+            const props = { "data-subject": key, className: "sht-subject-card", "aria-label": names[lang] + " · " + ui.openSubject };
+            if (sessionStatus !== "signed-in") return <Link key={key} {...props} to="/auth">{body}</Link>;
+            if (key === "physics") return <Link key={key} {...props} to="/subject/$subject" params={{ subject: "physics" }}>{body}</Link>;
+            return <Link key={key} {...props} to="/dashboard" search={{ subject: key as "english"|"math"|"armenian"|"history"|"biology" }}>{body}</Link>;
+          })}
         </div>
       </section>
 
@@ -432,7 +452,7 @@ function LandingPage() {
       <section className="sht-bottom-cta" aria-labelledby="sht-cta-title">
         <span className="sht-cta-decoration" aria-hidden="true"><GraduationCap /></span>
         <div><span className="sht-cta-overline">SHTEMARM</span><h2 id="sht-cta-title">{t.ready}</h2><p>{t.readyDesc}</p></div>
-        <Link to="/auth" className="sht-button-primary sht-cta-button">{t.start}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+        <Link to={entryTo} className="sht-button-primary sht-cta-button">{entryLabel}<ArrowRight className="size-5" aria-hidden="true" /></Link>
       </section>
 
       <footer className="sht-landing-footer">

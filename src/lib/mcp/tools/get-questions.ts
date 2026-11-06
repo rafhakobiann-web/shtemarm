@@ -61,7 +61,13 @@ export default defineTool({
 
     let remaining = MAX_QUESTIONS;
     let truncated = false;
-    const units = [];
+    const units: Array<{
+      id: string;
+      kind: RawUnit["kind"];
+      passage: string;
+      questions: Array<{ n: string; stem: string; options: Record<string, string> | null; answer: string | null }>;
+      answer: RawUnit["answer"];
+    }> = [];
     for (const unit of found.units) {
       if (remaining <= 0) {
         truncated = true;

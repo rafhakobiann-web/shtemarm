@@ -18,19 +18,19 @@ describe("persisted user appearance", () => {
   });
   it("uses bounded, safe values and migrates old dark-mode preference", () => {
     expect(normalizeAppearance(null)).toEqual(DEFAULT_APPEARANCE);
-    expect(DEFAULT_APPEARANCE.surface).toBe("liquid");
+    expect(DEFAULT_APPEARANCE.surface).toBe("soft");
     expect(DEFAULT_APPEARANCE.blur).toBe(true);
     expect(normalizeAppearance(null, "dark").mode).toBe("dark");
     expect(normalizeAppearance({
       mode: "hacked", surface: "nonexistent", glass: "<script>", blur: "false",
     })).toEqual(DEFAULT_APPEARANCE);
   });
-  it("applies and remembers the complete Liquid Glass configuration", () => {
+  it("migrates retired Liquid Glass surface to academy style", () => {
     setAppearance({ mode: "dark", surface: "liquid", glass: "vivid", blur: false });
-    expect(readAppearance()).toEqual({ mode: "dark", surface: "liquid", glass: "vivid", blur: false });
+    expect(readAppearance()).toEqual({ mode: "dark", surface: "soft", glass: "vivid", blur: false });
     const root = document.documentElement;
     expect(root.classList.contains("dark")).toBe(true);
-    expect(root.dataset.surface).toBe("liquid");
+    expect(root.dataset.surface).toBe("soft");
     expect(root.dataset.glass).toBe("vivid");
     expect(root.dataset.glassBlur).toBe("off");
     expect(JSON.parse(localStorage.getItem(APPEARANCE_KEY) ?? "null").glass).toBe("vivid");
@@ -42,7 +42,7 @@ describe("persisted user appearance", () => {
     cleanup();
     resetAppearance();
     expect(localStorage.getItem(APPEARANCE_KEY)).toBeNull();
-    expect(document.documentElement.dataset.surface).toBe("liquid");
+    expect(document.documentElement.dataset.surface).toBe("soft");
   });
   it("renders OS mode without throwing if browser matchMedia is absent", () => {
     expect(["light", "dark"]).toContain(resolvedTheme({ ...DEFAULT_APPEARANCE }));

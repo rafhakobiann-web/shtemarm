@@ -18,6 +18,8 @@ import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
 import studyComfortCss from "../study-comfort.css?url";
 import landingV3Css from "../landing-v3.css?url";
+import dashboardFocusCss from "../dashboard-focus.css?url";
+import minimalLayoutCss from "../minimal-layout-2026.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -143,6 +145,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "stylesheet", href: studyComfortCss },
       { rel: "stylesheet", href: landingV3Css },
+      { rel: "stylesheet", href: dashboardFocusCss },
+      { rel: "stylesheet", href: minimalLayoutCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -183,6 +187,9 @@ function RootComponent() {
 }
 
 const PUBLIC_PATHS = new Set(["/", "/auth", "/about", "/privacy", "/terms", "/download"]);
+// Signed-out visitors may open the dashboard, book and section pages for a short
+// answer trial (see src/lib/guest-trial.ts). Every other page still needs sign-in.
+const GUEST_TRIAL_PATH = /^\/(dashboard|book\/\d+|study\/\d+\/\d+)$/;
 function AuthBoundary({children}:{children:ReactNode}) {
   const location=useLocation();
   const navigate=useNavigate();
@@ -191,6 +198,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
   const [onboardingVersion,setOnboardingVersion]=useState(0);
   const pathname=location.pathname;
   const isPublic=PUBLIC_PATHS.has(pathname);
+  const isGuestTrial=GUEST_TRIAL_PATH.test(pathname);
   useEffect(()=>{
     let active=true;
     let subscription: {unsubscribe:()=>void}|undefined;
@@ -222,16 +230,16 @@ function AuthBoundary({children}:{children:ReactNode}) {
   },[]);
   useEffect(()=>{
     if(status==="loading"||status==="unavailable")return;
-    if(status==="signed-out"&&!isPublic){void navigate({to:"/auth",replace:true});return;}
+    if(status==="signed-out"&&!isPublic&&!isGuestTrial){void navigate({to:"/auth",replace:true});return;}
     if(status==="signed-in"&&userId){
       const onboarded=!!readOnboarding(userId);
-      if(!onboarded&&pathname!=="/onboarding"&&pathname!=="/auth"){void navigate({to:"/onboarding",replace:true});return;}
+      if(!onboarded&&!isPublic&&pathname!=="/onboarding"){void navigate({to:"/onboarding",replace:true});return;}
       if(onboarded&&pathname==="/onboarding"){void navigate({to:"/dashboard",replace:true});return;}
     }
   },[status,userId,isPublic,pathname,navigate,onboardingVersion]);
   // The landing page and auth are public. All study pages fail closed while
   // the auth service is loading or unavailable. Never render protected content first.
-  if(isPublic)return <>{children}</>;
+  if(isPublic||(isGuestTrial&&status==="signed-out"))return <>{children}</>;
   if(status==="loading"||status==="unavailable")return <div role="status" className="mx-auto max-w-lg rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
     {status==="loading"?"Ստուգվում է մուտքը…":"Մուտքի ծառայությունը ժամանակավորապես անհասանելի է։ Փորձիր կրկին ավելի ուշ։"}
   </div>;

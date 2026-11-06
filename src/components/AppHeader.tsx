@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download, HeartHandshake, ListChecks, CalendarCheck, Trophy } from "lucide-react";
+import { Home, Flame, Star, User, Menu, BookOpen, Info, MessageSquare, Languages, Moon, Sun, Calculator, MessageCircle, Gamepad2, Wrench, Bookmark, History, Download, HeartHandshake, ListChecks, CalendarCheck, Trophy } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { resolvedTheme, setAppearance, useAppearance } from "@/lib/theme";
 import { useProgress, level } from "@/lib/progress";
@@ -67,6 +67,7 @@ export function AppHeader() {
         </Link>
         <nav aria-label={lang === "ru" ? "Главное меню" : lang === "en" ? "Main navigation" : "Հիմնական նավարկում"}
           className="hidden min-w-0 items-center gap-0.5 xl:flex 2xl:gap-1">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Home className="size-4" />{lang === "en" ? "Landing" : lang === "ru" ? "Главная" : "Գլխավոր"}</Link>
           <Link to="/dashboard" hash="subjects"
             className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <BookOpen className="size-4"/>{t.subjects}
@@ -124,7 +125,8 @@ export function AppHeader() {
                 <SheetDescription className="sr-only">{t.menu}</SheetDescription>
               </SheetHeader>
 
-              <Link to="/auth" onClick={close} className={item}>
+              <Link to="/" onClick={close} className={item}><Home className="size-4" />{lang === "en" ? "Landing page" : lang === "ru" ? "Главная страница" : "Գլխավոր էջ"}</Link>
+               <Link to="/auth" onClick={close} className={item}>
                 <User className="size-4" />
                 <span className="truncate">{email ?? t.account}</span>
               </Link>

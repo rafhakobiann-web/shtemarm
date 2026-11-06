@@ -58,6 +58,38 @@ export function dailyQuests(history: QuestHistory, day = localDay()): DailyQuest
     {id:"review-3",goal:3,count:Math.min(3,entry.reviewed.length)},
   ];
 }
+export type WeeklyChallenge = { id: "answer-20" | "answer-50" | "review-10"; goal: number; count: number; selected: boolean };
+const WEEKLY_KEY = "shtemarm:weekly-challenge-selection:v1";
+export function weekStart(day = new Date()): string {
+  const d = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return localDay(d);
+}
+export function getWeeklySelections(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(WEEKLY_KEY) ?? "[]");
+    return Array.isArray(value) ? value.filter((v): v is string => ["answer-20","answer-50","review-10"].includes(v)).slice(0, 3) : [];
+  } catch { return []; }
+}
+export function setWeeklySelections(ids: string[]) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(WEEKLY_KEY, JSON.stringify([...new Set(ids.filter(id => ["answer-20","answer-50","review-10"].includes(id)))].slice(0, 3)));
+    window.dispatchEvent(new Event(QUESTS_CHANGED));
+  } catch { /* storage may be disabled */ }
+}
+export function weeklyChallenges(history: QuestHistory, selected: readonly string[], now = new Date()): WeeklyChallenge[] {
+  const start = weekStart(now);
+  const dates = Object.entries(history).filter(([date]) => date >= start && date <= localDay(now));
+  const answered = new Set(dates.flatMap(([,entry]) => entry.answered));
+  const reviewed = new Set(dates.flatMap(([,entry]) => entry.reviewed));
+  return [
+    {id:"answer-20",goal:20,count:Math.min(20,answered.size),selected:selected.includes("answer-20")},
+    {id:"answer-50",goal:50,count:Math.min(50,answered.size),selected:selected.includes("answer-50")},
+    {id:"review-10",goal:10,count:Math.min(10,reviewed.size),selected:selected.includes("review-10")},
+  ];
+}
 export function achievements(progress: Pick<Progress,"answers" | "xp" | "streak">): Achievement[] {
   const total = Object.keys(progress.answers).length;
   return [

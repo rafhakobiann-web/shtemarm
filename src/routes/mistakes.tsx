@@ -6,6 +6,7 @@ import { UnitCard, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import { matchGrammarTopic } from "@/lib/grammarHandbook";
 import { useLang } from "@/lib/lang";
 import { useProgress } from "@/lib/progress";
+import { isRevisionDue, nextRevisionAt, summarizeRevision } from "@/lib/revisionSchedule";
 import { LEGACY_MISTAKES_CHANGED, legacyMistakeStatus, markRecoveredMastered, removeRecoveredMistake, ignoreRecoveredMathMistake, recoverHistoricalBookMistakes, recoverHistoricalMathMistakes, type RecoveredMistake } from "@/lib/legacyMistakeRecovery";
 import { getMistakes, markMistakeMastered, removeMistake, type Mistake } from "@/lib/mistakeNotebook";
 import { getMathMistakes, markMathMistakeMastered, removeMathMistake, MATH_MISTAKES_CHANGED, type MathMistake } from "@/lib/mathMistakes";
@@ -269,6 +270,8 @@ function MistakesPage() {
   const current = pending.length ? pending[position % pending.length] : undefined;
   const totalPending = entries.filter(entry => !entry.mastered).length;
   const totalMastered = entries.length - totalPending;
+  const revision = useMemo(() => summarizeRevision(inSubject, Date.now()), [inSubject]);
+  const nextScheduled = useMemo(() => pending.map(nextRevisionAt).filter((time): time is number => time !== null).sort((a,b) => a-b)[0], [pending]);
 
   return <main className="mx-auto max-w-4xl space-y-5 pb-24">
     <Link to="/study-tools" className="inline-flex min-h-11 items-center gap-2 text-sm text-primary"><ArrowLeft className="size-4"/>{lang === "hy" ? "Ուսումնական կենտրոն" : lang === "en" ? "Learning center" : "Учебный центр"}</Link>
@@ -280,6 +283,12 @@ function MistakesPage() {
         <div className="rounded-xl bg-muted/50 p-3"><span className="block text-xs text-muted-foreground">{t.pending}</span><strong className="text-2xl tabular-nums">{totalPending}</strong></div>
         <div className="rounded-xl bg-muted/50 p-3"><span className="block text-xs text-muted-foreground">{t.mastered}</span><strong className="text-2xl tabular-nums">{totalMastered}</strong></div>
       </div>
+      <section className="space-y-2 rounded-2xl border border-primary/20 bg-primary/5 p-4" aria-label={lang==="hy"?"Խելացի կրկնություն":lang==="ru"?"Умное повторение":"Smart revision"}>
+        <div className="flex flex-wrap items-center justify-between gap-2"><strong className="text-sm">{lang==="hy"?"Խելացի կրկնություն":lang==="ru"?"Умное повторение":"Smart revision"}</strong><span className="text-sm font-bold text-primary">{revision.due} {lang==="hy"?"հարց՝ կրկնելու ժամանակն է":lang==="ru"?"вопросов к повторению":"questions due"}</span></div>
+        <p className="text-xs leading-5 text-muted-foreground">{lang==="hy"?"Կրկնության օրերը առաջարկվում են սխալ փորձերի քանակով։ Դրանք չեն նշանակում, որ թեման արդեն յուրացված է։":lang==="ru"?"Интервалы повторения зависят от числа ошибок и не подтверждают освоение темы.":"Review intervals use mistake attempts; they do not prove mastery."}</p>
+        {revision.bySubject.length > 0 && <p className="text-xs">{lang==="hy"?"Ավելի շատ կրկնություն պահանջող առարկաներ":lang==="ru"?"Предметы для повторения":"Subjects to revisit"}: {revision.bySubject.slice(0,3).map(([key,count])=>labelSubject(key,lang)+" ("+count+")").join(" · ")}</p>}
+        {nextScheduled !== undefined && <p className="text-xs text-muted-foreground">{lang==="hy"?"Հաջորդ առաջարկվող կրկնությունը":lang==="ru"?"Следующее повторение":"Next suggested review"}: {new Date(nextScheduled).toLocaleDateString(lang==="hy"?"hy-AM":lang==="ru"?"ru-RU":"en-US")}</p>}
+      </section>
     </header>
     <label className="flex flex-wrap items-center gap-3 text-sm font-semibold">{t.subject}
       <select value={subject} onChange={e => { setSubject(e.target.value); setPosition(0); setSolvedMessage(false); }}
@@ -327,6 +336,7 @@ function MistakesPage() {
               {entry.mastered ? t.mastered : t.pending} · {entry.attempts} {t.attempts}
             </span>
           </div>
+          {!entry.mastered && <p className="text-xs font-semibold text-primary">{isRevisionDue(entry, Date.now()) ? (lang==="hy"?"Կրկնելու ժամանակն է":lang==="ru"?"Пора повторить":"Due for review") : (lang==="hy"?"Առաջարկվող կրկնություն":lang==="ru"?"Повторить":"Suggested review")+": "+new Date(nextRevisionAt(entry)!).toLocaleDateString(lang==="hy"?"hy-AM":lang==="ru"?"ru-RU":"en-US")}</p>}
           <p className="line-clamp-3 whitespace-pre-line text-sm font-medium">{preview(entry) || t.noText}</p>
           <div className="flex flex-wrap items-center justify-between gap-2">
             {!entry.mastered && <button type="button" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary/30 px-3 text-sm font-semibold text-primary"

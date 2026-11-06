@@ -133,6 +133,7 @@ function Explain(props: { instruction: string; passage: string; question: string
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [mode, setMode] = useState<"offline"|"cached"|"live"|null>(null);
+  const [teachingStyle, setTeachingStyle] = useState<"hint"|"explain"|"practice">("explain");
   const label = mode==="offline"
     ? lang==="ru"?"Локальное объяснение (без ИИ)":lang==="en"?"Local explanation (no AI)":"Տեղային բացատրություն (առանց AI-ի)"
     : mode==="cached"
@@ -140,6 +141,9 @@ function Explain(props: { instruction: string; passage: string; question: string
       :lang==="ru"?"Объяснение ИИ":lang==="en"?"AI explanation":"AI բացատրություն";
   return (
     <div>
+    <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={lang==="hy"?"AI ուսուցման ձևը":lang==="ru"?"Режим обучения ИИ":"AI teaching style"}>
+      {(["hint","explain","practice"] as const).map(style => <button key={style} type="button" aria-pressed={teachingStyle===style} onClick={() => { setTeachingStyle(style); setText(null); setFailed(false); setMode(null); }} className={cn("min-h-10 rounded-xl border px-3 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-primary", teachingStyle===style?"border-primary bg-primary/10 text-primary":"border-border bg-card text-foreground hover:border-primary/40")}>{style==="hint"?(lang==="hy"?"Հուշում":lang==="ru"?"Подсказка":"Hint"):style==="practice"?(lang==="hy"?"Նմանատիպ վարժություն":lang==="ru"?"Похожее упражнение":"Similar exercise"):(lang==="hy"?"Բացատրություն":lang==="ru"?"Объяснение":"Explanation")}</button>)}
+    </div>
     {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
     {text && <RichExplanation text={text} error={failed}/>}
     {(!text || failed) && <Button
@@ -149,7 +153,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       onClick={async () => {
         setLoading(true);
         try {
-          const r = await fn({ data: { ...props, locale: lang, passage: props.passage.slice(0, 5800) } });
+          const r = await fn({ data: { ...props, locale: lang, teachingStyle, passage: props.passage.slice(0, 5800) } });
           setText(r.error ? tx(r.text) : r.text);
           setFailed(r.error);
           setMode(r.offline ? "offline" : r.cached ? "cached" : "live");
@@ -319,6 +323,7 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
+        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("shtemarm:tutor-question", { detail: { question: String(q.stem).slice(0, 1200), chosen: chosen ? String(chosen).slice(0, 100) : "" } }))} className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 text-xs font-semibold text-primary hover:bg-primary/10">{language==="hy"?"Հարցնել AI-ին այս առաջադրանքի մասին":language==="ru"?"Спросить ИИ об этом задании":"Ask AI about this question"}</button>
         {show && chosen !== q.answer && <p role="status" className="mt-3 rounded-xl bg-muted px-3 py-3 text-sm font-semibold">
           {words.wrong} {q.answer}) {q.options[q.answer]}
         </p>}
