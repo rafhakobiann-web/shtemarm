@@ -44,12 +44,14 @@ describe("study answer interaction through the real parent state", () => {
   it.each(["game", "classic"])("selects text and outer row and shows Check in %s mode", (mode) => {
     state.mode = mode;
     const Component = Route.options.component as React.ComponentType;
-    render(<Component />);
+    const { rerender } = render(<Component />);
     if (mode === "game") {
       const first = screen.getByRole("region", { name: "First question" });
       fireEvent.click(within(first).getByText("it", { exact: true }));
       fireEvent.click(within(first).getByRole("button", { name: "Ստուգել →" }));
-      // A progress update must not leave an orphaned, non-React answer card.
+      // Force a parent reconciliation, as the real app does when progress updates.
+      // A duplicate key must not leave orphaned, non-interactive answer rows.
+      rerender(<Component />);
       expect(screen.getAllByRole("article")).toHaveLength(1);
       expect(within(first).getByRole("radio", { name: /d տարբերակը/ })).toBeDisabled();
       fireEvent.click(screen.getByRole("button", { name: "Շարունակել →" }));
