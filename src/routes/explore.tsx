@@ -39,7 +39,7 @@ const UI = {
   hy: {
     kicker:"Ամեն ինչ՝ իր տեղում",title:"Բացահայտիր ուսումնական աշխարհդ",
     intro:"Գտիր առարկան, բացիր շտեմարանը կամ սկսիր քննությունը։ Այստեղ այլևս հարկավոր չէ փնտրել երկար վահանակներում։",
-    back:"Վահանակ", search:"Որոնել առարկա կամ թեմա", clear:"Մաքրել որոնումը",
+    back:"Վահանակ", search:"Որոնել առարկա կամ գործիք", clear:"Մաքրել որոնումը",
     all:"Բոլորը", subjects:"Առարկաներ", exams:"Քննություններ", tools:"Գործիքներ",
     subjectHeading:"Ընտրիր առարկան", subjectHint:"Սկզբում ընտրիր առարկան․ հաջորդ էջում՝ գիրքը կամ թեստը։",
     openSubject:"Բացել առարկան", noResults:"Ոչինչ չգտնվեց։ Փորձիր այլ բառ կամ մաքրիր որոնումը։",
@@ -52,7 +52,7 @@ const UI = {
   en: {
     kicker:"Everything in its place",title:"Find your next learning step",
     intro:"Explore subjects, open a workbook, or start a practice exam. No more hunting through long dashboards.",
-    back:"Dashboard", search:"Search subjects and topics", clear:"Clear search",
+    back:"Dashboard", search:"Search subjects and tools", clear:"Clear search",
     all:"All", subjects:"Subjects", exams:"Exams", tools:"Tools",
     subjectHeading:"Choose a subject", subjectHint:"Pick a subject first, then its workbook or practice test.",
     openSubject:"Explore subject", noResults:"No matches found. Try another word or clear your search.",
@@ -65,7 +65,7 @@ const UI = {
   ru: {
     kicker:"Всё на своих местах",title:"Найди следующий шаг в учёбе",
     intro:"Выбирай предмет, открывай сборник или начинай пробный экзамен. Больше не нужно искать нужное в длинном кабинете.",
-    back:"Кабинет", search:"Поиск предметов и тем", clear:"Очистить поиск",
+    back:"Кабинет", search:"Поиск предметов и инструментов", clear:"Очистить поиск",
     all:"Все",subjects:"Предметы",exams:"Экзамены",tools:"Инструменты",
     subjectHeading:"Выбери предмет",subjectHint:"Сначала предмет, потом сборник или тест.",
     openSubject:"Открыть предмет",noResults:"Ничего не найдено. Попробуй другой запрос.",
@@ -123,10 +123,6 @@ export function ExplorePage() {
     Object.values(subject.detail).some(text => text.toLocaleLowerCase().includes(clean)) ||
     subject.id.includes(clean)
   ), [clean]);
-  const includeSubjects = filter === "all" || filter === "subjects";
-  const includeExams = (filter === "all" || filter === "exams") && !clean;
-  const includeTools = (filter === "all" || filter === "tools") && !clean;
-
   const filterOptions = [
     {id:"all" as const, label:t.all,icon:Compass},
     {id:"subjects" as const,label:t.subjects,icon:LibraryBig},
@@ -142,6 +138,12 @@ export function ExplorePage() {
     { to:"/flashcards", label:l("Հիշողության քարտեր","Flashcards","Карточки"), Icon:BookText },
     { to:"/mini-games", label:l("Ուսումնական խաղեր","Learning games","Учебные игры"), Icon:Sparkles },
   ] as const;
+  const matchesTool = (index:number) => !clean || Object.values(studyTools[index].label)
+    .some(label => label.toLocaleLowerCase().includes(clean));
+  const hasMatchingTools = studyTools.some((_,index) => matchesTool(index));
+  const includeSubjects = (filter === "all" || filter === "subjects") && (!clean || matches.length > 0);
+  const includeExams = (filter === "all" || filter === "exams") && !clean;
+  const includeTools = (filter === "all" || filter === "tools") && (!clean || hasMatchingTools);
 
   return (
     <div className="explore-page mx-auto max-w-6xl space-y-8 pb-12 pt-3 sm:space-y-10 sm:pt-6">
@@ -162,7 +164,7 @@ export function ExplorePage() {
         <div className="relative mt-6 max-w-3xl">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
-            onChange={e=>{setQuery(e.target.value);if(e.target.value.trim())setFilter("subjects");}}
+            onChange={e=>{setQuery(e.target.value);if(e.target.value.trim())setFilter("all");}}
             className="explore-search min-h-14 w-full rounded-2xl border bg-background pl-12 pr-14 text-sm font-semibold text-foreground outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" />
           {query && <button type="button" onClick={()=>setQuery("")} aria-label={t.clear}
             className="absolute right-2 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-xl text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">
@@ -180,17 +182,19 @@ export function ExplorePage() {
         </button>)}
       </nav>
 
+      {clean && matches.length===0 && !hasMatchingTools && <div role="status" className="rounded-2xl border bg-card p-5">
+        <p className="text-sm text-muted-foreground">{t.noResults}</p>
+        <button type="button" onClick={()=>{setQuery("");setFilter("all");}} className="mt-3 min-h-11 rounded-xl border px-4 text-sm font-bold text-primary">{t.clearFilters}</button>
+      </div>}
+
       {includeSubjects && <section id="subjects" aria-labelledby="explore-subjects" className="scroll-mt-24 space-y-4">
         <div className="space-y-1">
           <h2 id="explore-subjects" className="text-xl font-black text-foreground sm:text-2xl">{t.subjectHeading}</h2>
           <p className="text-sm text-muted-foreground">{t.subjectHint}</p>
         </div>
-        {matches.length ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {matches.map(item=><SubjectLink key={item.id} item={item} lang={lang} label={t.openSubject}/>)}
-        </div> : <div role="status" className="rounded-2xl border bg-card p-5">
-          <p className="text-sm text-muted-foreground">{t.noResults}</p>
-          <button type="button" onClick={()=>{setQuery("");setFilter("all");}} className="mt-3 min-h-11 rounded-xl border px-4 text-sm font-bold text-primary">{t.clearFilters}</button>
-        </div>}
+        </div>
       </section>}
 
       {includeExams && <section id="exams" aria-labelledby="explore-exams" className="scroll-mt-24 space-y-4">
@@ -210,13 +214,13 @@ export function ExplorePage() {
         <div className="space-y-1"><h2 id="explore-tools" className="text-xl font-black sm:text-2xl">{t.toolsHeading}</h2>
           <p className="text-sm text-muted-foreground">{t.toolsHint}</p></div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Link to="/study-plan" className="explore-quick-link"><GraduationCap className="size-5 text-primary"/>{studyTools[0].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/mistakes" className="explore-quick-link"><RotateCcw className="size-5 text-primary"/>{studyTools[1].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/math-handbook" search={{book:"matem-1",chapter:1,section:1,topic:undefined}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{studyTools[2].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} className="explore-quick-link"><Languages className="size-5 text-primary"/>{studyTools[3].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/chat" className="explore-quick-link"><Brain className="size-5 text-primary"/>{studyTools[4].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/flashcards" className="explore-quick-link"><BookText className="size-5 text-primary"/>{studyTools[5].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/mini-games" className="explore-quick-link"><Sparkles className="size-5 text-primary"/>{studyTools[6].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>
+          {matchesTool(0) && <Link to="/study-plan" className="explore-quick-link"><GraduationCap className="size-5 text-primary"/>{studyTools[0].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(1) && <Link to="/mistakes" className="explore-quick-link"><RotateCcw className="size-5 text-primary"/>{studyTools[1].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(2) && <Link to="/math-handbook" search={{book:"matem-1",chapter:1,section:1,topic:undefined}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{studyTools[2].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(3) && <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} className="explore-quick-link"><Languages className="size-5 text-primary"/>{studyTools[3].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(4) && <Link to="/chat" className="explore-quick-link"><Brain className="size-5 text-primary"/>{studyTools[4].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(5) && <Link to="/flashcards" className="explore-quick-link"><BookText className="size-5 text-primary"/>{studyTools[5].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {matchesTool(6) && <Link to="/mini-games" className="explore-quick-link"><Sparkles className="size-5 text-primary"/>{studyTools[6].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
         </div>
       </section>}
 
