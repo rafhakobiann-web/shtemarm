@@ -43,7 +43,7 @@ describe("AI explanation step segmentation", () => {
 
   it("keeps spaced-out supporting calculations on the numbered step instead of creating extra pages", () => {
     const steps = buildExplanationSteps([{kind:"text",value:
-      "1. Find the unknown\\n\\nUse \\(x + 2 = 5\\)\\n\\nSubtract two from both sides\\n2. Verify\\n\\nSubstitute the answer"
+      "1. Find the unknown\\n\\nUse $x + 2 = 5$\\n\\nSubtract two from both sides\\n2. Verify\\n\\nSubstitute the answer"
     }]);
     expect(steps).toHaveLength(2);
     expect(steps[0].value).toContain("Subtract two from both sides");
