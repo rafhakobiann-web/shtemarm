@@ -27,3 +27,13 @@ A heuristic review additionally flagged many flattened PDF-order math expression
 - Review at 320px/390px and desktop for KaTeX inline/block rendering, native SVG and explanation/AI flow.
 - GitHub Actions runner availability must be verified; source checks do not substitute for executed CI tests.
 - Keep Draft PR separate from live Lovable; no merge or Production deployment until QA.
+
+## Math handbook rules (follow-up)
+- Inspected the existing handbook: 47 teaching topics were present before this addition; the guide now includes **53**.
+- Added six manually written, multilingual (Armenian / English / Russian) lessons in `src/lib/mathHandbookCalculus.ts`: the power/sum derivative rules, product and exponential differentiation, tangent equations, the derivative of `x|x|`, monotonicity and extrema by derivative sign, and logarithm properties.
+- Each new lesson contains its rule, an illustrative worked example with three steps, a verified answer, and a common mistake. Examples are teaching examples, not individual solutions copied from the original question bank.
+- The function category makes derivative lessons available within the `ՖՈՒՆԿՑԻԱՆԵՐ` sections of both workbooks; the logarithm lesson is available within `ԱՐՏԱՀԱՅՏՈՒԹՅՈՒՆՆԵՐԻ` sections.
+- Wrapped two undelimited TeX formulas (and their answers) in the additional lessons. Converted the GCD/LCM and true/false logical identities into explicitly delimited KaTeX so they do not appear as literal command text.
+- Expanded `src/test/math-handbook.test.ts` with category coverage, TeX delimiter checks and multilingual lesson assertions.
+
+**Remaining checks:** Execute the test suite and inspect handbook rule cards in browser (Armenian fonts, mobile widths, all color schemes). The handbook does not yet provide an individually verified explanation for every one of the 5,676 book questions.
