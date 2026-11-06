@@ -81,3 +81,28 @@ for (const item of sourceGlyphs) {
     Math.abs(y-item.y) < 0.12
   )), "Missing PDF glyph '"+item.glyph+"' on page "+item.sourcePage+" ("+key+"/"+item.task+"/"+item.sub+")");
 }
+
+
+// PDF-verified formula-rich explanation text must not regress to unordered
+// PDF glyph extraction. These checks guard the exact question conditions,
+// not the answer-key values or whether statements are true.
+const sourceFormulaPrompts = [
+  {book:"matem-1",section:"2-8",task:"39",sub:0,fragments:["$n$","$P_n=720$"]},
+  {book:"matem-1",section:"3-2",task:"8",fragments:["$f(x)=e^x(-x^2+x+1)$"],extras:[
+    "$Oy$", "$Ox$", "կրիտիկական", "$45^\\circ$", "$[-1;2]$", "$f(\\cos(\\pi/10))>f(\\cos(\\pi/9))$"
+  ]},
+  {book:"matem-2",section:"3-4",task:"40",fragments:["$f(x)=x\\lvert x\\rvert$"],extras:[
+    "$D(f)=[0;+\\infty)$", "համաչափ", "աճող", "$g(x)=\\operatorname{ctg}x$", "$f'(x)=2x$", "շոշափողը"
+  ]},
+];
+for (const source of sourceFormulaPrompts) {
+  const rows = bank[source.book]?.[source.section]?.[source.task];
+  assert.ok(rows, "Missing restored formula task: "+source.book+"/"+source.section+"/"+source.task);
+  for (const [index,row] of rows.entries()) {
+    const expected = [...source.fragments, ...(source.extras ? [source.extras[index]] : [])];
+    for (const fragment of expected) {
+      assert.ok(row?.prompt?.includes(fragment),
+        "Missing formula in "+source.book+"/"+source.section+"/"+source.task+"/"+(index+1)+": "+fragment);
+    }
+  }
+}
