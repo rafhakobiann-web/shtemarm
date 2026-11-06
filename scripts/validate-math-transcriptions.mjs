@@ -87,6 +87,15 @@ for (const item of sourceGlyphs) {
 // PDF glyph extraction. These checks guard the exact question conditions,
 // not the answer-key values or whether statements are true.
 const sourceFormulaPrompts = [
+  {book:"matem-1",section:"2-5",task:"1",fragments:["$f(x)=2x^3-3x^2-7$"],extras:[
+    "$x=3$", "$f'(1)$", "$[-1;3]$", "$x_0=1$"
+  ]},
+  {book:"matem-1",section:"2-5",task:"2",fragments:["$f(x)=\\frac{x^3}{3}-\\frac{x^2}{2}-6x+1$"],extras:[
+    "ամենափոքր", "$f'(x)=0$", "կրիտիկական", "$[-1;6]$"
+  ]},
+  {book:"matem-1",section:"2-5",task:"3",fragments:["$f(x)=2x^3-6x+6$"],extras:[
+    "$x=2$", "նվազման", "$[-2;0]$", "$x_0=0$"
+  ]},
   {book:"matem-1",section:"2-8",task:"39",sub:0,fragments:["$n$","$P_n=720$"]},
   {book:"matem-1",section:"3-2",task:"8",fragments:["$f(x)=e^x(-x^2+x+1)$"],extras:[
     "$Oy$", "$Ox$", "կրիտիկական", "$45^\\circ$", "$[-1;2]$", "$f(\\cos(\\pi/10))>f(\\cos(\\pi/9))$"
