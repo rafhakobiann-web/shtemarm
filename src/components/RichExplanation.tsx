@@ -84,6 +84,8 @@ export function RichExplanation({
       previous: "Նախորդ քայլը",
       next: "Հաջորդ քայլը",
       finish: "Ավարտել",
+      jump: "Անցնել քայլին",
+      allSteps: "Լուծման քայլերը",
       caution: "AI-ի բացատրությունը կարող է սխալ լինել․ ստուգիր պատասխանը շտեմարանի բանալիով։",
       offline: "Տեղային բացատրություն (առանց AI-ի)",
       cached: "Պահպանված AI բացատրություն",
@@ -98,6 +100,8 @@ export function RichExplanation({
       previous: "Previous step",
       next: "Next step",
       finish: "Finish lesson",
+      jump: "Go to step",
+      allSteps: "Solution steps",
       caution: "AI explanations can be inaccurate. Check the official answer key.",
       offline: "Local explanation (no AI)",
       cached: "Saved AI explanation",
@@ -112,6 +116,8 @@ export function RichExplanation({
       previous: "Предыдущий шаг",
       next: "Следующий шаг",
       finish: "Завершить",
+      jump: "Перейти к шагу",
+      allSteps: "Шаги решения",
       caution: "ИИ может ошибаться. Проверяйте ответы по ключу сборника.",
       offline: "Локальное объяснение (без ИИ)",
       cached: "Сохранённое объяснение ИИ",
@@ -187,6 +193,11 @@ export function RichExplanation({
             </div>
           </DialogHeader>
 
+          {total > 1 && <nav aria-label={copy.allSteps} className="sht-explanation-stepper shrink-0 border-b bg-background px-4 py-2 sm:px-8">
+            {steps.map((_, i) => <button type="button" key={i}
+              aria-label={copy.jump+" "+(i+1)} aria-current={i===index?"step":undefined}
+              onClick={()=>setCurrent(i)}>{i+1}</button>)}
+          </nav>}
           <div className="sht-explanation-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-8 sm:py-8" key={index}>
             <article aria-label={copy.progress+" "+(index + 1)} className="sht-explanation-stage mx-auto flex min-h-full w-full max-w-4xl flex-col rounded-2xl border border-primary/25 bg-card p-5 text-base leading-8 text-foreground sm:p-8 sm:text-lg">
               <span className="mb-5 inline-flex size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-lg font-black text-primary">

@@ -200,3 +200,62 @@ html[data-surface="liquid"] .sht-subject-header {
   border-color: var(--border);
   box-shadow: none;
 }
+
+/* Stronger visual wayfinding without turning the dashboard into another grid of widgets. */
+.explore-filters {
+  border-color: color-mix(in srgb, var(--primary) 16%, var(--border));
+}
+.explore-subject-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.explore-subject-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  opacity: 0;
+  transition: opacity .16s ease;
+}
+.explore-subject-card:hover::after,
+.explore-subject-card:focus-visible::after { opacity: 1; }
+.explore-subject-mark {
+  inline-size: 3.35rem;
+  block-size: 3.35rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  font-size: .95rem;
+}
+.explore-subject-mark[data-subject="math"] { background: #e5eefa; color: #264a91; border-color: #bdcff2; }
+.explore-subject-mark[data-subject="english"] { background: #e5f4ed; color: #136449; border-color: #b4e3ce; }
+.explore-subject-mark[data-subject="armenian"] { background: #f6e8f6; color: #80478b; border-color: #e8c8e9; }
+.explore-subject-mark[data-subject="history"] { background: #fff0dc; color: #83551a; border-color: #f3d6ab; }
+.explore-subject-mark[data-subject="biology"] { background: #e3f5f0; color: #126756; border-color: #b7e4d9; }
+.explore-subject-mark[data-subject="physics"] { background: #e7edfb; color: #3b50a1; border-color: #c7d2f6; }
+.explore-subject-mark[data-subject="chemistry"] { background: #fcece4; color: #9b502f; border-color: #f2d0bf; }
+.explore-subject-mark[data-subject="geography"] { background: #e9f3e5; color: #426d37; border-color: #cce3c4; }
+.explore-subject-mark[data-subject="russian"] { background: #f2eafc; color: #754ba1; border-color: #e0cafa; }
+.sht-tutor-workspace {
+  max-height: calc(100dvh - 1rem);
+  background: var(--background);
+}
+.sht-tutor-workspace .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.sht-tutor-workspace .sht-explanation-stepper {
+  padding-block: .25rem;
+}
+.sht-tutor-workspace textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (max-width: 390px) {
+  .explore-subject-mark { inline-size: 2.75rem; block-size: 2.75rem; }
+  .explore-filters { top: 62px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .explore-subject-card::after { transition: none; }
+}

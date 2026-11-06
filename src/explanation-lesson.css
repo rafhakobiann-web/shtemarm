@@ -90,3 +90,40 @@ html.user-high-contrast .sht-explanation-stage {
   border-color: var(--foreground);
   background: var(--background);
 }
+
+/* Numbered lesson rail: direct access to any step, including diagrams. */
+.sht-explanation-stepper {
+  display: flex;
+  gap: .5rem;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+}
+.sht-explanation-stepper button {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  min-width: 2.65rem;
+  min-height: 2.65rem;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-size: .85rem;
+  font-weight: 800;
+  touch-action: manipulation;
+}
+.sht-explanation-stepper button[aria-current="step"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.sht-explanation-stepper button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .sht-explanation-stepper { gap: .35rem; padding-inline: .75rem; }
+  .sht-explanation-stepper button { min-width: 2.45rem; min-height: 2.45rem; }
+}
