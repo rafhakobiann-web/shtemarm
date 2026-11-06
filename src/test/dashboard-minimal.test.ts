@@ -13,7 +13,7 @@ describe("focused student dashboard and protected profile", () => {
   it("keeps detailed report widgets off the dashboard but exposes them in My Profile", () => {
     expect(dashboard).toContain("<DashboardOverview name={name} progress={progress} />");
     expect(dashboard).not.toContain("<DashboardFocus");
-    expect(profile).toContain("<DashboardFocus name={name} progress={progress} subjects={subjects} />");
+    expect(profile).toContain("<DashboardFocus name={name} progress={progress} subjects={subjects} showGreeting={false} />");
     expect(source("src/components/DashboardOverview.tsx")).toContain('to="/profile"');
   });
 
