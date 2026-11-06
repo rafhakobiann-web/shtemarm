@@ -315,7 +315,7 @@ export const MATH_GEOMETRY: MathTopic[] = [
       "en": "Area is base×corresponding height/2. With three sides, use Heron's formula after checking triangle inequalities.",
       "ru": "Площадь — основание×соответствующая высота/2. По трём сторонам используйте формулу Герона, сначала проверив неравенства треугольника."
     },
-    "formula": "$S=\\frac{ah}{2}$; $S=\\sqrt{p(p-a)(p-b)(p-c)}$",
+    "formula": "$S=\\frac{ah}{2}$; $p=\\frac{a+b+c}{2}$; $S=\\sqrt{p(p-a)(p-b)(p-c)}$",
     "problem": {
       "hy": "Հիմքը 10 է, բարձրությունը՝ 6։ Գտնել մակերեսը։",
       "en": "Base 10, corresponding height 6. Find area.",
