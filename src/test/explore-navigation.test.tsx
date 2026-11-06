@@ -1,19 +1,20 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
+import type { ReactNode } from "react";
 
 vi.mock("@tanstack/react-router", async () => {
   const React = await import("react");
   return {
     createFileRoute: () => (options: unknown) => options,
     useLocation: () => ({pathname:"/explore",hash:""}),
-    Link: ({ to, hash, children, ...rest }: {to:string;hash?:string;children:React.ReactNode;search?:unknown;params?:unknown;[key:string]:unknown}) => {
+    Link: ({ to, hash, children, ...rest }: {to:string;hash?:string;children:ReactNode;search?:unknown;params?:unknown;[key:string]:unknown}) => {
       const {search: _search, params: _params, ...attrs} = rest;
       return React.createElement("a", {...attrs, href:to+(hash?"#"+hash:"")},children);
     },
   };
 });
-vi.mock("@/lib/lang",()=>({useLang:()=> "en"}));
+vi.mock("@/lib/lang",()=>({useLang:()=> "en",useTx:()=> (s:string)=>s}));
 import { EXPLORE_SUBJECTS, ExplorePage } from "@/routes/explore";
 import { MOBILE_TAB_TARGETS, getMobileNavIndex } from "@/components/MobileNav";
 
