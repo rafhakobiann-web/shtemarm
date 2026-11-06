@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'src/routes/index.tsx'
+      - 'src/routes/guest.tsx'
+      - 'src/lib/guest-preview.ts'
+      - 'src/test/guest-preview.test.ts'
+      - 'src/routeTree.gen.ts'
       - 'src/routes/__root.tsx'
       - 'src/routes/dashboard.tsx'
       - 'src/components/DashboardFocus.tsx'
@@ -24,7 +28,7 @@ jobs:
       - name: Install locked dependencies
         run: bun install --frozen-lockfile
       - name: Test auth boundaries, navigation, dashboard and learning UI
-        run: bunx vitest run src/test/landing-session.test.ts src/test/dashboard-focus.test.tsx src/test/onboarding.test.ts src/test/academy-design.test.ts src/test/adaptive-design.test.ts src/test/responsive-shell-regression.test.ts src/test/landing-reference.test.tsx
+        run: bunx vitest run src/test/guest-preview.test.ts src/test/landing-session.test.ts src/test/dashboard-focus.test.tsx src/test/onboarding.test.ts src/test/academy-design.test.ts src/test/adaptive-design.test.ts src/test/responsive-shell-regression.test.ts src/test/landing-reference.test.tsx
       - name: Typecheck
         run: bunx tsc --noEmit
       - name: Build website
