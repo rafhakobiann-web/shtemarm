@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import type { Book } from "@/lib/books";
 import { Route } from "@/routes/study.$bookId.$sectionId";
@@ -16,7 +17,7 @@ vi.mock("@tanstack/react-start", () => ({ useServerFn: () => vi.fn() }));
 vi.mock("@/lib/explain.functions", () => ({ explainAnswer: vi.fn() }));
 vi.mock("@/components/EnglishText", () => ({ EnglishText: ({ text }: { text: string }) => <span>{text}</span>, PassageTranslation: () => null }));
 vi.mock("@/components/StudyTutorDrawer", () => ({ StudyTutorDrawer: () => <button>Ask tutor</button> }));
-vi.mock("@/lib/lang", () => ({ useLang: () => "en", useTx: () => (s: string) => s }));
+vi.mock("@/lib/lang", () => ({ useLang: () => "en", useTx: () => (s: string, vars?: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k) => String(vars?.[k] ?? m)) }));
 vi.mock("@/lib/guest-trial", () => ({ GUEST_TRIAL_LIMIT: 3, bumpGuestTrial: vi.fn(), sectionTrialKey: () => "1:3", useGuestTrialCount: () => 0, useSignedIn: () => true }));
 vi.mock("@/lib/progress", () => ({
   recordAnswer: (id: string, correct: boolean) => { state.answers = { ...state.answers, [id]: correct ? 1 : 0 }; },
@@ -32,6 +33,14 @@ vi.mock("@/lib/useBook", () => ({ useBook: () => ({ data: book, refetch: vi.fn()
 afterEach(() => { cleanup(); state.answers = {}; vi.restoreAllMocks(); });
 
 describe("study answer interaction through the real parent state", () => {
+  it("never gives the tutor and the current practice view the same React key", () => {
+    const source = readFileSync("src/routes/study.$bookId.$sectionId.tsx", "utf8");
+    const match = [...source.matchAll(/<(Game|Classic|StudyTutorDrawer) key=\{`([^`]+)`\}/g)];
+    expect(match.map(m => m[1])).toEqual(["Game", "Classic", "StudyTutorDrawer"]);
+    expect(new Set(match.map(m => m[2])).size).toBe(3);
+    expect(match.every(m => m[2]?.includes("${bookId}") && m[2]?.includes("${sectionId}"))).toBe(true);
+  });
+
   it.each(["game", "classic"])("selects text and outer row and shows Check in %s mode", (mode) => {
     state.mode = mode;
     const Component = Route.options.component as React.ComponentType;
