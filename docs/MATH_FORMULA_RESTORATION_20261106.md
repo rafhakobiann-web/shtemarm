@@ -29,7 +29,7 @@ A heuristic review additionally flagged many flattened PDF-order math expression
 - Keep Draft PR separate from live Lovable; no merge or Production deployment until QA.
 
 ## Math handbook rules (follow-up)
-- Inspected the existing handbook: 47 teaching topics were present before this addition; the guide now includes **53**.
+- Inspected the existing handbook: 47 teaching topics were present before this addition; the guide now includes **59**.
 - Added six manually written, multilingual (Armenian / English / Russian) lessons in `src/lib/mathHandbookCalculus.ts`: the power/sum derivative rules, product and exponential differentiation, tangent equations, the derivative of `x|x|`, monotonicity and extrema by derivative sign, and logarithm properties.
 - Each new lesson contains its rule, an illustrative worked example with three steps, a verified answer, and a common mistake. Examples are teaching examples, not individual solutions copied from the original question bank.
 - The function category makes derivative lessons available within the `ՖՈՒՆԿՑԻԱՆԵՐ` sections of both workbooks; the logarithm lesson is available within `ԱՐՏԱՀԱՅՏՈՒԹՅՈՒՆՆԵՐԻ` sections.
@@ -37,3 +37,18 @@ A heuristic review additionally flagged many flattened PDF-order math expression
 - Expanded `src/test/math-handbook.test.ts` with category coverage, TeX delimiter checks and multilingual lesson assertions.
 
 **Remaining checks:** Execute the test suite and inspect handbook rule cards in browser (Armenian fonts, mobile widths, all color schemes). The handbook does not yet provide an individually verified explanation for every one of the 5,676 book questions.
+
+## Full handbook / formula integrity review (2026-11-06)
+- Independently cross-compared the source index against handbook section metadata: **46/46** matches, Part I 22, Part II 24. This verifies book/section/title alignment, not each individual exercise's correctness.
+- Enumerated **59 unique lessons across 11 content categories** (no duplicate IDs). Each lesson includes multilingual `hy`, `en`, and `ru` title, summary, problem, step-by-step explanation, and common mistake. All 59 formulas passed basic delimiter checks.
+- Fixed the solution for diluting a 10% solution: fraction `0.2/3` is about `0.0667`, so concentration is `(0.2/3)×100%≈6.67%` (corrected in Armenian, English, Russian).
+- Corrected missing domain/definition notes: (D\ge0) and (a\ne0) for real quadratic roots, (a\ne0) for Vieta, and Heron's semiperimeter (p=(a+b+c)/2).
+- Added six further multilingual original lessons in `src/lib/mathHandbookAdvanced.ts`: chain rule, quotient rule, sine law, cosine law, ordered arrangements, logarithm change of base. Math rule total is now **59** (previous 47 + 6 calculus + 6 advanced).
+- Extended `src/test/math-handbook.test.ts` with numerical and semantic assertions for formula conditions, concentration, derivatives, Heron's formula, and the new lessons.
+
+### Question-bank follow-up queue
+A **heuristic** text-order scan found **626 possible flattened formula prompts** among existing SVG-native-linked questions: 354 in Math I (2-5: 120; 3-1: 12; 3-2: 222) and 272 in Math II (2-4: 73; 3-4: 199). These are **unconfirmed candidates**, not 626 verified broken formulas. The visual question uses the PDF-derived native SVG; the corresponding text prompt is also passed to explanations, and may have lost expression order. Source review must be done task by task before rewriting these strings.
+Added `npm run audit:math:formulas` (`scripts/audit-math-formula-integrity.mjs`) to check all prompts, TeX delimiters, native references, and print a per-section manual-review queue.
+
+### CI blocker
+At the latest inspected run, handbook/rich-math/security workflows all concluded failure **without executing any steps** (GitHub job `runner_id=0`, empty `steps`, around 3 seconds). This does not establish a build failure or success. CI/run availability must be restored/verified before merge. Local full repository checkout and browser screenshot validation were unavailable in this session. Keep PR #236 Draft.
