@@ -46,6 +46,7 @@ describe("near-full-screen step-by-step lesson",()=>{
     expect(within(dialog).getByText("Check the answer")).toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole("button",{name:/Finish lesson/}));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button",{name:/Open full-screen explanation/})).toHaveFocus();
     fireEvent.click(screen.getByRole("button",{name:/Open full-screen explanation/}));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Understand the problem")).toBeInTheDocument();
