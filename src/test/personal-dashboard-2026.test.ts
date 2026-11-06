@@ -3,19 +3,21 @@ import { readFileSync } from "node:fs";
 const read = (path:string)=>readFileSync(path,"utf8");
 
 describe("approved Shtemarm dashboard and tutor choices",()=>{
-  it("puts personalized daily plan, mistake review and tutor before the subject catalog",()=>{
+  it("keeps the dashboard focused while preserving personalized tools",()=>{
     const page=read("src/routes/dashboard.tsx");
-    expect(page).toContain('aria-label={tx("Իմ ուսումնական ուղին")}');
-    const panel=page.indexOf('aria-label={tx("Իմ ուսումնական ուղին")}');
-    const subjects=page.indexOf('id="subjects"');
-    expect(panel).toBeGreaterThan(0);
-    expect(panel).toBeLessThan(subjects);
-    expect(page.slice(panel,subjects)).toContain('to="/study-plan"');
-    expect(page.slice(panel,subjects)).toContain('to="/mistakes"');
-    expect(page.slice(panel,subjects)).toContain('to="/chat"');
+    const explore=read("src/routes/explore.tsx");
+    const profile=read("src/routes/profile.tsx");
+    expect(page).toContain('sht-home-subject-grid');
+    expect(page).toContain('id="subjects"');
+    expect(page).toContain('to="/explore"');
+    expect(page).toContain("DashboardOverview");
+    expect(explore).toContain('to="/study-plan"');
+    expect(explore).toContain('to="/mistakes"');
+    expect(explore).toContain('to="/chat"');
+    expect(profile).toContain("DashboardFocus");
     expect(page).not.toContain('to="/auth" className="inline-flex shrink-0');
   });
-  it("persists only tutor mode and not private chat messages or signed context",()=>{
+ it("persists only tutor mode and not private chat messages or signed context",()=>{
     const page=read("src/routes/chat.tsx");
     expect(page).toContain('const MODE_KEY = "shtemarm:tutor-mode:v1"');
     expect(page).toContain('saved === "hint" || saved === "explain" || saved === "quiz"');
