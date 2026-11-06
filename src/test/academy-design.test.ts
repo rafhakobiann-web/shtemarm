@@ -45,15 +45,15 @@ describe("Shtemarm Academy final design tokens",()=>{
       "HISTORY_BOOKS.map", "ARMENIAN_BOOKS.map", "BOOKS.map", "MATH_BOOKS.map"]) {
       expect(dashboard).toContain(value);
     }
-    expect(header).toContain('to="/physics/original"');
+    expect(header).toContain('to="/explore"');
     expect(header).toContain('to="/study-tools"');
   });
   it("keeps the critical study destinations visible on phones with real touch targets",()=>{
     expect(mobile).toContain("grid-cols-5");
     expect(mobile).toContain("min-h-[3.6rem]");
-    expect(mobile).toContain('hash: "subjects"');
+    expect(mobile).toContain('to: "/explore"');
     expect(mobile).toContain('hash: "exams"');
-    expect(mobile).toContain('to: "/mini-games"');
+    expect(mobile).toContain('to: "/profile"');
     expect(mobile).toContain('to: "/study-tools"');
   });
   it("localizes new study dashboard copy in English and Russian",()=>{
