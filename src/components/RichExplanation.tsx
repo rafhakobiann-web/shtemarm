@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenCheck, Expand, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buildExplanationSteps, type ExplanationStep } from "@/lib/explanation-steps";
@@ -56,6 +56,8 @@ export function RichExplanation({
   const lang = useLang();
   const titleId = useId();
   const [open, setOpen] = useState(() => !error && !!text.trim());
+  const reopenButton = useRef<HTMLButtonElement>(null);
+  const hasBeenOpen = useRef(false);
   const [current, setCurrent] = useState(0);
   const steps = useMemo(() => buildExplanationSteps(splitExplanation(text)), [text]);
   const total = Math.max(1, steps.length);
@@ -66,6 +68,11 @@ export function RichExplanation({
     setCurrent(0);
     setOpen(!error && !!text.trim());
   }, [text, error]);
+
+  useEffect(() => {
+    if (open) hasBeenOpen.current = true;
+    else if (hasBeenOpen.current) reopenButton.current?.focus();
+  }, [open]);
 
   const copy = {
     hy: {
@@ -151,7 +158,7 @@ export function RichExplanation({
             </p>
           </div>
         </div>
-        <button type="button" onClick={reveal}
+        <button ref={reopenButton} type="button" onClick={reveal}
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           <Expand className="size-4" aria-hidden="true"/>{copy.open}
         </button>
