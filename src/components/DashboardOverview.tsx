@@ -45,7 +45,6 @@ const COPY = {
 export function DashboardOverview({ name, progress }: Props) {
   const t = COPY[useLang()];
   const summary = progressSummary(progress);
-  const recommended = summary.review > 0 ? "/mistakes" : "/dashboard";
   const details = summary.answered
     ? `${summary.answered} ${t.answered} · ${summary.review} ${t.pending}`
     : t.empty;
