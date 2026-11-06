@@ -58,3 +58,60 @@ assert.equal(questions,5676);
 assert.equal(native,3532);
 console.table(counts);
 console.log(`${questions} questions have text; ${native} new transcriptions; ${blocks} native text blocks; zero missing questions.`);
+
+
+// Regression checks against the original PDF's four tiny rasterized math glyphs.
+// These image glyphs must be transcribed as positioned SVG text rather than
+// silently omitted. Original PDF hashes are in math-transcriptions/audit.json.
+const sourceGlyphs = [
+  { book:"matem-1", section:"2-8", task:39, sub:1, glyph:"n", x:43.14, y:17.4, sourcePage:230 },
+  { book:"matem-1", section:"3-2", task:8, sub:4, glyph:"°", x:174.08, y:34.02, sourcePage:249 },
+  { book:"matem-2", section:"3-4", task:40, sub:6, glyph:"f", x:2, y:16.55, sourcePage:293 },
+  { book:"matem-2", section:"3-5", task:29, sub:0, glyph:"K", x:321.64, y:91.07, sourcePage:306 },
+];
+for (const item of sourceGlyphs) {
+  const key = item.book+"/"+item.section;
+  if (!cache.has(key)) cache.set(key,JSON.parse(fs.readFileSync("public/data/math-transcriptions/"+key+".json","utf8")));
+  const task = cache.get(key).tasks[item.task];
+  assert.ok(task, "Missing source task "+key+"/"+item.task);
+  const blocks = item.sub ? task.questions[item.sub-1] : task.stem;
+  assert.ok(blocks?.some(block => block.runs.some(([glyph,x,y]) =>
+    glyph === item.glyph &&
+    Math.abs((Array.isArray(x) ? x[0] : x)-item.x) < 0.12 &&
+    Math.abs(y-item.y) < 0.12
+  )), "Missing PDF glyph '"+item.glyph+"' on page "+item.sourcePage+" ("+key+"/"+item.task+"/"+item.sub+")");
+}
+
+
+// PDF-verified formula-rich explanation text must not regress to unordered
+// PDF glyph extraction. These checks guard the exact question conditions,
+// not the answer-key values or whether statements are true.
+const sourceFormulaPrompts = [
+  {book:"matem-1",section:"2-5",task:"1",fragments:["$f(x)=2x^3-3x^2-7$"],extras:[
+    "$x=3$", "$f'(1)$", "$[-1;3]$", "$x_0=1$"
+  ]},
+  {book:"matem-1",section:"2-5",task:"2",fragments:["$f(x)=\\frac{x^3}{3}-\\frac{x^2}{2}-6x+1$"],extras:[
+    "ամենափոքր", "$f'(x)=0$", "կրիտիկական", "$[-1;6]$"
+  ]},
+  {book:"matem-1",section:"2-5",task:"3",fragments:["$f(x)=2x^3-6x+6$"],extras:[
+    "$x=2$", "նվազման", "$[-2;0]$", "$x_0=0$"
+  ]},
+  {book:"matem-1",section:"2-8",task:"39",sub:0,fragments:["$n$","$P_n=720$"]},
+  {book:"matem-1",section:"3-2",task:"8",fragments:["$f(x)=e^x(-x^2+x+1)$"],extras:[
+    "$Oy$", "$Ox$", "կրիտիկական", "$45^\\circ$", "$[-1;2]$", "$f(\\cos(\\pi/10))>f(\\cos(\\pi/9))$"
+  ]},
+  {book:"matem-2",section:"3-4",task:"40",fragments:["$f(x)=x\\lvert x\\rvert$"],extras:[
+    "$D(f)=[0;+\\infty)$", "համաչափ", "աճող", "$g(x)=\\operatorname{ctg}x$", "$f'(x)=2x$", "շոշափողը"
+  ]},
+];
+for (const source of sourceFormulaPrompts) {
+  const rows = bank[source.book]?.[source.section]?.[source.task];
+  assert.ok(rows, "Missing restored formula task: "+source.book+"/"+source.section+"/"+source.task);
+  for (const [index,row] of rows.entries()) {
+    const expected = [...source.fragments, ...(source.extras ? [source.extras[index]] : [])];
+    for (const fragment of expected) {
+      assert.ok(row?.prompt?.includes(fragment),
+        "Missing formula in "+source.book+"/"+source.section+"/"+source.task+"/"+(index+1)+": "+fragment);
+    }
+  }
+}

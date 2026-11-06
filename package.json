@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "validate:math": "node scripts/validate-math-books.mjs",
     "audit:math": "node scripts/audit-math-bank.mjs",
+    "audit:math:formulas": "node scripts/audit-math-formula-integrity.mjs",
     "validate:math:text": "node scripts/validate-math-transcriptions.mjs"
   },
   "overrides": {

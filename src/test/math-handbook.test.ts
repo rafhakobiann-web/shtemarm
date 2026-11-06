@@ -35,6 +35,76 @@ describe("Math handbook source alignment",()=>{
       if(section.chapter===3) expect(mathTopicsForSection(section).some(t=>t.id==="true-false-check")).toBe(true);
     }
   });
+  it("links derivative, tangent, absolute-value and extrema rules to both function chapters",()=>{
+    const required=["derivative-power","derivative-product-exponential","tangent-equation","absolute-value-derivative","derivative-extrema"];
+    const first=findMathSection("matem-1",2,5)!;
+    const second=findMathSection("matem-2",2,4)!;
+    for(const section of [first,second]){
+      const ids=new Set(mathTopicsForSection(section).map(t=>t.id));
+      for(const id of required)expect(ids.has(id),section.book+" missing "+id).toBe(true);
+    }
+    const expr=findMathSection("matem-2",1,2)!;
+    expect(mathTopicsForSection(expr).some(t=>t.id==="logarithm-properties")).toBe(true);
+  });
+  it("keeps TeX formulas delimited and ensures complete multilingual calculus lessons",()=>{
+    expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(59);
+    for(const topic of MATH_HANDBOOK_TOPICS){
+      if(topic.formula.includes("\\"))expect(topic.formula,topic.id).toContain("$");
+      expect((topic.formula.match(/\$/g)??[]).length%2,topic.id).toBe(0);
+    }
+    const ids=["derivative-power","derivative-product-exponential","tangent-equation","absolute-value-derivative","derivative-extrema","logarithm-properties"];
+    for(const id of ids){
+      const topic=MATH_HANDBOOK_TOPICS.find(item=>item.id===id);
+      expect(topic,id).toBeDefined();
+      for(const lang of ["hy","en","ru"] as const)expect(topic!.steps[lang]).toHaveLength(3);
+    }
+  });
+  it("keeps key math domains and worked-example arithmetic correct",()=>{
+    const get=(id:string)=>{
+      const topic=MATH_HANDBOOK_TOPICS.find(t=>t.id===id);
+      expect(topic,id).toBeDefined();
+      return topic!;
+    };
+    const mixtures=get("mixtures");
+    expect(mixtures.steps.hy.join(" ")).toContain("(0.2/3)×100%");
+    expect(mixtures.steps.en.join(" ")).toContain("(0.2/3)×100%");
+    expect(mixtures.steps.ru.join(" ")).toContain("(0,2/3)×100%");
+    expect((0.2 / 3) * 100).toBeCloseTo(6.666666666666667,12);
+    const quadratic=get("quadratic");
+    expect(quadratic.formula).toContain("D\\ge0");
+    expect(quadratic.formula).toContain("a\\ne0");
+    expect(get("vieta").formula).toContain("a\\ne0");
+    const area=get("geometry-area");
+    expect(area.formula).toContain("p=\\frac{a+b+c}{2}");
+    expect(Math.sqrt(21*(21-13)*(21-14)*(21-15))).toBe(84); // Heron for 13,14,15
+    expect(get("derivative-product-exponential").answer).toBe("$f'(0)=2$");
+    expect(get("absolute-value-derivative").answer).toBe("$f'(-2)=4$");
+    expect(get("tangent-equation").answer).toBe("$y=4x-4$");
+  });
+  it("covers six additional core lessons and verifies their worked results",()=>{
+    const ids=["derivative-chain","derivative-quotient","geometry-sine-law","geometry-cosine-law","arrangements","logarithm-base-change"];
+    const byId=(id:string)=>MATH_HANDBOOK_TOPICS.find(topic=>topic.id===id);
+    for(const id of ids){
+      const topic=byId(id);
+      expect(topic,id).toBeDefined();
+      expect(topic!.formula).toContain("$");
+      for(const locale of ["hy","en","ru"] as const){
+        expect(topic!.steps[locale]).toHaveLength(3);
+        expect(topic!.title[locale].length).toBeGreaterThan(4);
+      }
+    }
+    expect(byId("derivative-chain")?.answer).toBe("$h'(1)=96$");
+    expect(byId("derivative-quotient")?.answer).toBe("$f'(2)=-2$");
+    expect(byId("geometry-sine-law")?.answer).toBe("$b=4\\sqrt3$");
+    expect(byId("geometry-cosine-law")?.answer).toBe("$c=5$");
+    expect(byId("arrangements")?.answer).toBe("$60$");
+    expect(byId("logarithm-base-change")?.answer).toBe("$\\frac32$");
+    const geom=findMathSection("matem-1",1,8)!;
+    const expressions=findMathSection("matem-2",1,2)!;
+    expect(mathTopicsForSection(geom).some(t=>t.id==="geometry-cosine-law")).toBe(true);
+    expect(mathTopicsForSection(expressions).some(t=>t.id==="logarithm-base-change")).toBe(true);
+    expect(4*Math.sin(Math.PI/3)/Math.sin(Math.PI/6)).toBeCloseTo(4*Math.sqrt(3));
+  });
   it("has complete multilingual manually worked lessons and no topic ID collisions",()=>{
     expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(36);
     expect(new Set(MATH_HANDBOOK_TOPICS.map(t=>t.id)).size).toBe(MATH_HANDBOOK_TOPICS.length);

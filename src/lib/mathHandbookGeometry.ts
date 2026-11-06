@@ -315,7 +315,7 @@ export const MATH_GEOMETRY: MathTopic[] = [
       "en": "Area is base×corresponding height/2. With three sides, use Heron's formula after checking triangle inequalities.",
       "ru": "Площадь — основание×соответствующая высота/2. По трём сторонам используйте формулу Герона, сначала проверив неравенства треугольника."
     },
-    "formula": "$S=\\frac{ah}{2}$; $S=\\sqrt{p(p-a)(p-b)(p-c)}$",
+    "formula": "$S=\\frac{ah}{2}$; $p=\\frac{a+b+c}{2}$; $S=\\sqrt{p(p-a)(p-b)(p-c)}$",
     "problem": {
       "hy": "Հիմքը 10 է, բարձրությունը՝ 6։ Գտնել մակերեսը։",
       "en": "Base 10, corresponding height 6. Find area.",
@@ -874,7 +874,7 @@ export const MATH_GEOMETRY: MathTopic[] = [
       "en": "One valid counterexample disproves a universal claim; one positive example does not prove it universally.",
       "ru": "Один контрпример опровергает утверждение «для всех»; один подтверждающий пример не доказывает его."
     },
-    "formula": "∀x P(x) is false if ∃x with ¬P(x)",
+    "formula": "$\\neg\\bigl(\\forall x\\,P(x)\\bigr)\\iff\\exists x\\,\\neg P(x)$",
     "problem": {
       "hy": "Պնդում՝ «ցանկացած իրական x-ի համար x²>x»։ Ճի՞շտ է։",
       "en": "Claim: 'x²>x for every real x'. True?",
