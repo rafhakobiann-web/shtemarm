@@ -70,7 +70,8 @@ export function AppHeader() {
   const navClass = "inline-flex min-h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary";
   const menuClass = "flex min-h-12 min-w-0 items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary";
   const route = location.pathname;
-  const exploreActive = route === "/explore";
+  const examActive = route === "/explore" && location.hash?.replace(/^#/, "") === "exams";
+  const exploreActive = route === "/explore" && !examActive;
   const profileActive = route === "/profile";
   const current = (yes:boolean) => yes ? "bg-primary/10 text-primary" : "";
 
@@ -85,7 +86,7 @@ export function AppHeader() {
         <nav aria-label={t.nav} className="hidden items-center gap-1 lg:flex">
           <Link to="/dashboard" className={navClass+" "+current(route==="/dashboard")}><House className="size-4"/>{t.home}</Link>
           <Link to="/explore" className={navClass+" "+current(exploreActive)}><Compass className="size-4"/>{t.explore}</Link>
-          <Link to="/explore" hash="exams" className={navClass}><GraduationCap className="size-4"/>{t.exams}</Link>
+          <Link to="/explore" hash="exams" className={navClass+" "+current(examActive)}><GraduationCap className="size-4"/>{t.exams}</Link>
           <Link to="/study-tools" className={navClass+" "+current(route==="/study-tools")}><Wrench className="size-4"/>{t.tools}</Link>
           <Link to="/profile" className={navClass+" "+current(profileActive)}><UserRound className="size-4"/>{t.profile}</Link>
         </nav>
