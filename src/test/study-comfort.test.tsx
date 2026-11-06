@@ -48,6 +48,21 @@ describe("comfortable question practice", () => {
     expect(toggle).toHaveAttribute("aria-expanded","true");
   });
 
+  it("selects an answer when the student taps the option text or empty row space", () => {
+    render(<Card />);
+    const first = screen.getByRole("region", {name:"First question"});
+    const choices = within(first).getAllByRole("radio");
+    const label = choices[1]!.closest("label");
+    expect(label).not.toBeNull();
+    // Text must activate the native radio, not a nested translation button.
+    fireEvent.click(within(first).getByText("Second choice"));
+    expect(choices[1]).toBeChecked();
+    // The entire option row must also remain tappable.
+    fireEvent.click(choices[0]!.closest("label")!);
+    expect(choices[0]).toBeChecked();
+    expect(choices[1]).not.toBeChecked();
+  });
+
   it("announces wrong answers, locks checked choices and tracks each question separately", () => {
     render(<Card />);
     expect(screen.queryByRole("button", {name:"Ստուգել →"})).not.toBeInTheDocument();

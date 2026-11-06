@@ -275,14 +275,11 @@ export function UnitCard(props: {
             const isC = k === q.answer;
             const isSel = chosen === k;
             return (
-              <div
+              <label
                 key={k}
-                onClick={(event) => {
-                  // A word-translation button inside EnglishText must never pick
-                  // an answer. The actual radio remains keyboard accessible.
-                  if (show || (event.target as HTMLElement).closest("input,button,a")) return;
-                  onChange({ ...a, mc: { ...a?.mc, [answerKey]: k } });
-                }}
+                // Native label activation works across text, whitespace and the radio
+                // itself, including touch browsers and keyboard accessibility.
+                // Translation buttons are intentionally not nested inside answers.
                 className={cn(
                   "answer-option flex min-h-14 items-start gap-3 rounded-2xl border-2 px-3 py-3 text-left text-[0.95rem] transition-[color,background-color,border-color,transform,box-shadow] duration-200 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/50 motion-reduce:transition-none",
                   !show && "cursor-pointer active:scale-[0.995] motion-reduce:transform-none",
@@ -309,12 +306,12 @@ export function UnitCard(props: {
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
                 <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 leading-relaxed">
-                  {v.trim() ? <EnglishText text={v} context={`${q.stem} ${v}`} />
+                  {v.trim() ? v
                     : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
                 </span>
                 {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}
                 {show && isSel && !isC && <X aria-hidden="true" className="size-4 shrink-0 text-destructive" />}
-              </div>
+              </label>
             );
           })}
         </div>
