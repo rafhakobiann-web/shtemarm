@@ -10,18 +10,6 @@ import { useProgress, level } from "@/lib/progress";
 import { BookCover } from "@/components/BookCover";
 
 const SUBJECTS = ["english", "math", "history", "biology", "armenian"] as const;
-const LIBRARY_FILTERS = [
-  { id:"all", hy:"Բոլորը", en:"All subjects", ru:"Все" },
-  { id:"english", hy:"Անգլերեն", en:"English", ru:"Английский" },
-  { id:"math", hy:"Մաթեմատիկա", en:"Mathematics", ru:"Математика" },
-  { id:"history", hy:"Հայոց պատմություն", en:"History", ru:"История" },
-  { id:"armenian", hy:"Հայոց լեզու", en:"Armenian", ru:"Армянский" },
-  { id:"biology", hy:"Կենսաբանություն", en:"Biology", ru:"Биология" },
-  { id:"physics", hy:"Ֆիզիկա", en:"Physics", ru:"Физика" },
-  { id:"other", hy:"Այլ առարկաներ", en:"More subjects", ru:"Другие" },
-] as const;
-type LibraryFilter = typeof LIBRARY_FILTERS[number]["id"];
-
 export const Route = createFileRoute("/dashboard")({
   staticData: { sitemap: true },
   validateSearch: z.object({ subject: z.enum(SUBJECTS).optional().catch(undefined) }),
@@ -64,25 +52,6 @@ function TileBody({ cover, title, sub }: { cover?: string; title: string; sub: s
         </span>
       </div>
     </div>
-  );
-}
-
-function SubjectRow({ title, children, beta = false, defaultOpen = false }: { title: string; children: React.ReactNode; beta?: boolean; defaultOpen?: boolean }) {
-  const tx = useTx();
-  const [expanded, setExpanded] = useState(defaultOpen);
-  return (
-    <details className="group/subject overflow-hidden rounded-[1.4rem] border bg-card shadow-card" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
-      <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-4 outline-offset-[-3px] marker:hidden hover:bg-muted/40 sm:px-6 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-4" /></span>
-        <h3 className="min-w-0 flex-1 text-base font-black sm:text-lg">{title}</h3>
-        {beta && <span className="shrink-0 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-[10px] font-bold text-amber-700 dark:text-amber-200">BETA</span>}
-        <span className="sr-only">{tx("Բացել կամ փակել բաժինը")}</span>
-        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-open/subject:rotate-180" />
-      </summary>
-      <div className="grid grid-cols-1 items-stretch gap-3 border-t p-3 sm:grid-cols-2 sm:gap-4 sm:p-5 xl:grid-cols-3">
-        {children}
-      </div>
-    </details>
   );
 }
 
