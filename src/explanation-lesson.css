@@ -40,7 +40,8 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.sht-explanation-stage :is(p,div,span) { overflow-wrap: anywhere; }
+.sht-explanation-stage :is(p,pre) { overflow-wrap: anywhere; }
+.sht-explanation-stage .katex { overflow-wrap: normal; }
 .sht-explanation-dialog .sht-explanation-footer button {
   white-space: normal;
   text-align: center;
