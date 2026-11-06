@@ -8,11 +8,11 @@ import {
 import { initLang, setLang, useLang } from "@/lib/lang";
 import {
   GUEST_QUESTIONS, GUEST_SUBJECT_NAMES, GUEST_SUBJECTS,
-  type GuestSubject, type GuestLocale,
+  type GuestLocale,
 } from "@/lib/guest-preview";
 
 const searchSchema = z.object({
-  subject: z.enum(GUEST_SUBJECTS as [GuestSubject, ...GuestSubject[]]).catch("math"),
+  subject: z.enum(["math", "english", "armenian", "history", "biology", "physics"]).catch("math"),
 });
 
 export const Route = createFileRoute("/guest")({
