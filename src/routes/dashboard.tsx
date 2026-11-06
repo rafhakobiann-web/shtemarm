@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, Sparkles, Dna, LibraryBig, Target, Smartphone } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, Sparkles, Dna, LibraryBig, Target, Smartphone, UserRound } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
@@ -258,9 +258,11 @@ function ArmenianSubject() {
       <section className="space-y-4">
         <h2 className="text-xl font-black">{tx("Ինտերակտիվ շտեմարան")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Link to="/book/$bookId" params={{ bookId: "41" }} className={TILE}>
-            <TileBody cover="/covers/armenian-1.svg" title={tx("Հայոց լեզու և գրականություն")} sub={tx("8 բաժին · 96 հարց · պատասխանների ավտոմատ ստուգում")} />
-          </Link>
+          {ARMENIAN_BOOKS.map(book => (
+            <Link key={book.id} to="/book/$bookId" params={{bookId:String(book.id)}} className={TILE}>
+              <TileBody cover={book.cover} title={tx(book.title)} sub={tx(book.sub)} />
+            </Link>
+          ))}
           <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Փորձնական քննություն")} sub={tx("Խառը հարցեր բոլոր 8 բաժիններից")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Կազմել սեփական թեստ")} sub={tx("Ընտրիր բաժինը և վարժվիր ըստ թեմայի")} icon={<ClipboardCheck className="size-5" />} />
         </div>
@@ -280,176 +282,113 @@ function Index() {
   const progress = useProgress();
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
-  const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
-  const showLibrary = (key: LibraryFilter) => libraryFilter === "all" || libraryFilter === key;
   useEffect(() => {
     if (!hasSupabaseConfig()) return;
     let active = true;
     void supabase.auth.getUser()
-      .then(({ data, error }) => {
+      .then(({data,error}) => {
         if (!active || error || !data.user) return;
-        setName((data.user.user_metadata?.username as string | undefined) ?? null);
+        const candidate = data.user.user_metadata?.username;
+        if (typeof candidate === "string") setName(candidate.slice(0, 40));
       })
-      .catch(() => { /* The dashboard remains usable when profile lookup fails. */ });
-    return () => { active = false; };
+      .catch(() => { /* The Dashboard remains accessible if profile lookup fails. */ });
+    return () => {active=false;};
   }, []);
+
   if (subject === "english") return <EnglishSubject />;
   if (subject === "math") return <MathSubject />;
   if (subject === "history") return <HistorySubject />;
   if (subject === "biology") return <BiologySubject />;
   if (subject === "armenian") return <ArmenianSubject />;
 
+  const words = {
+    hy:{heading:"Ընտրիր առարկան", hint:"Միայն մեկ ընտրություն՝ բացելու գրքերը, հարցերն ու թեստերը։",all:"Բոլոր առարկաները",
+      actions:"Արագ անցումներ",exams:"Փորձնական քննություններ",examInfo:"Ընտրիր քննությունը և սկսիր փորձնական թեստը։",
+      tools:"Ուսումնական գործիքներ",toolsInfo:"Կանոններ, AI ուսուցիչ և կրկնություն։",profile:"Իմ պրոֆիլը",profileInfo:"Նպատակներն ու ամբողջ առաջընթացը։",
+      first:"Շտեմարաններ",second:"Ընտրել առարկա",downloads:"Ներբեռնել հավելվածը",news:"Թարմացումներ"},
+    en:{heading:"Choose your subject",hint:"One tap to find its workbooks, questions, and tests.",all:"Browse all subjects",
+      actions:"Quick destinations",exams:"Practice exams",examInfo:"Find your exam and begin practice.",
+      tools:"Study tools",toolsInfo:"Rules, AI tutor, and revision.",profile:"My Profile",profileInfo:"Goals, progress, and achievements.",
+      first:"Workbooks",second:"Find a subject",downloads:"Download app",news:"What's new"},
+    ru:{heading:"Выбери предмет",hint:"Один шаг до сборников, заданий и тестов.",all:"Все предметы",
+      actions:"Быстрые переходы",exams:"Пробные экзамены",examInfo:"Найди экзамен и начни подготовку.",
+      tools:"Инструменты",toolsInfo:"Правила, ИИ-учитель и повторение.",profile:"Мой профиль",profileInfo:"Цели, прогресс и награды.",
+      first:"Сборники",second:"Выбрать предмет",downloads:"Скачать приложение",news:"Что нового"},
+  }[lang];
+  const subjects = [
+    {id:"english" as const,title:{hy:"Անգլերեն",en:"English",ru:"Английский"},sub:{hy:"3 շտեմարան",en:"3 workbooks",ru:"3 сборника"},mark:"EN"},
+    {id:"math" as const,title:{hy:"Մաթեմատիկա",en:"Mathematics",ru:"Математика"},sub:{hy:"2 շտեմարան",en:"2 workbooks",ru:"2 сборника"},mark:"ƒx"},
+    {id:"armenian" as const,title:{hy:"Հայոց լեզու",en:"Armenian",ru:"Армянский"},sub:{hy:"4 մաս",en:"4 volumes",ru:"4 части"},mark:"Ա"},
+    {id:"history" as const,title:{hy:"Հայոց պատմություն",en:"History",ru:"История"},sub:{hy:"3 շտեմարան",en:"3 workbooks",ru:"3 сборника"},mark:"Հ"},
+    {id:"biology" as const,title:{hy:"Կենսաբանություն",en:"Biology",ru:"Биология"},sub:{hy:"4 մաս",en:"4 volumes",ru:"4 части"},mark:"DNA"},
+  ];
+
   return (
-    <div className="academy-home mx-auto max-w-6xl space-y-5 px-1 py-3 sm:space-y-6 sm:py-6">
+    <main className="sht-home-2026 mx-auto w-full max-w-6xl space-y-8 pb-10 pt-3 sm:space-y-9 sm:pt-6">
       <DashboardOverview name={name} progress={progress} />
-      <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2">
-        <a href="#subjects" className="academy-quick-action">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
-          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
-          <ArrowRight className="size-4 text-muted-foreground"/>
-        </a>
-        <a href="#exams" className="academy-quick-action">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Target className="size-5"/></span>
-          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Փորձնական քննություններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ստուգիր պատրաստվածությունդ")}</span></span>
-          <ArrowRight className="size-4 text-muted-foreground"/>
-        </a>
-      </nav>
-      <section className="space-y-4" id="dashboard">
-        <div id="subjects" className="scroll-mt-24 space-y-3 pt-2">
-          <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Գտիր քո շտեմարանը")}</h2>
-          <div className="dashboard-library-filters flex gap-2 overflow-x-auto pb-2" role="group" aria-label={lang === "en" ? "Filter question books by subject" : lang === "ru" ? "Фильтр сборников по предметам" : "Զտել շտեմարանները ըստ առարկայի"}>
-            {LIBRARY_FILTERS.map(option => (
-              <button key={option.id} type="button" aria-pressed={libraryFilter === option.id} onClick={() => setLibraryFilter(option.id)}
-                className="min-h-11 shrink-0 rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold text-foreground transition-colors hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-primary aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary">
-                {option[lang]}
-              </button>
-            ))}
+
+      <section id="subjects" className="scroll-mt-24 space-y-4" aria-label={words.heading}>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="space-y-1">
+            <h2 className="text-xl font-black text-foreground sm:text-2xl">{words.heading}</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">{words.hint}</p>
           </div>
-        </div>
-        {showLibrary("english") && <SubjectRow key={"english-" + libraryFilter} title={tx("Անգլերեն")} defaultOpen={libraryFilter !== "all"}>
-          {BOOKS.map((b) => (
-            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
-            </Link>
-          ))}
-        </SubjectRow>}
-
-        {showLibrary("math") && <SubjectRow key={"math-" + libraryFilter} title={tx("Մաթեմատիկա")} defaultOpen={libraryFilter !== "all"}>
-          {MATH_BOOKS.map((b) => (
-            <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
-              <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
-            </Link>
-          ))}
-        </SubjectRow>}
-
-        {showLibrary("history") && <SubjectRow key={"history-" + libraryFilter} title={tx("Հայոց պատմություն")} defaultOpen={libraryFilter !== "all"}>
-          {HISTORY_BOOKS.map((h) => (
-            <Link key={h.id} to="/book/$bookId" params={{ bookId: String(h.id) }} className={TILE}>
-              <TileBody cover={h.cover} title={h.title} sub={h.sub} />
-            </Link>
-          ))}
-        </SubjectRow>}
-
-        {showLibrary("armenian") && <SubjectRow key={"armenian-" + libraryFilter} title={tx("Հայոց լեզու և հայ գրականություն")} beta defaultOpen={libraryFilter !== "all"}>
-          <Link to="/dashboard" search={{ subject: "armenian" }} className={TILE}><TileBody title={tx("Հայոց լեզու · Թեստեր")} sub={tx("Հարցաշար և պաշտոնական նմուշներ")} /></Link>
-          {ARMENIAN_BOOKS.map((b) => <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}><TileBody cover={b.cover} title={b.title} sub={b.sub} /></Link>)}
-        </SubjectRow>}
-        {showLibrary("biology") && <SubjectRow key={"biology-" + libraryFilter} title={tx("Կենսաբանություն")} beta defaultOpen={libraryFilter !== "all"}>
-          <Link to="/biology" className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-sm font-bold text-foreground transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary sm:w-fit"><span className="inline-flex items-center gap-2"><Dna className="size-5 shrink-0 text-primary" />{tx("Կենսաբանության քննություններ")}</span><ArrowRight className="size-4 shrink-0 text-primary" /></Link>
-          {BIO_BOOKS.filter(b => b.id === 31 || b.id === 32).map((b) => (
-            <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
-            </Link>
-          ))}
-          {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
-            <Link key={b.volume} to="/book/$bookId" params={{ bookId: String(30 + b.volume) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub}/>
-            </Link>
-          ))}
-        </SubjectRow>}
-        {showLibrary("physics") && <SubjectRow key={"physics-" + libraryFilter} title={tx("Ֆիզիկա · երկու մաս")} beta defaultOpen={libraryFilter !== "all"}>
-          <Link to="/subject/$subject" params={{ subject:"physics" }} className={TILE}>
-            <TileBody cover="/covers/physics-1.svg" title={tx("Ֆիզիկա · քննությունների պատրաստություն")}
-              sub={tx("Երկու մաս · 55 առաջադրանքով փորձնական քննություն")} />
+          <Link to="/explore" className="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-black text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+            {words.all}<ArrowRight className="size-4" aria-hidden="true"/>
           </Link>
-          {PHYSICS_BOOKS.map((b)=>(
-            <Link key={b.id} to="/book/$bookId" params={{bookId:String(b.id)}} className={TILE}>
-              <TileBody cover={b.cover} title={tx(b.title)} sub={tx(b.sub)}/>
+        </div>
+
+        <div className="sht-home-subject-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {subjects.map(item => (
+            <Link key={item.id} to="/dashboard" search={{subject:item.id}}
+              className="sht-home-subject-card group flex min-h-[104px] min-w-0 items-start gap-3 rounded-2xl border bg-card p-4 text-foreground focus-visible:outline-2 focus-visible:outline-primary">
+              <span aria-hidden="true" className="sht-home-subject-mark grid size-12 shrink-0 place-items-center rounded-xl text-xs font-black text-primary">{item.mark}</span>
+              <span className="min-w-0 flex-1">
+                <strong className="block break-words text-sm font-black sm:text-base">{item.title[lang]}</strong>
+                <span className="mt-1 block text-xs text-muted-foreground">{item.sub[lang]}</span>
+              </span>
+              <ArrowRight className="mt-3 size-4 shrink-0 text-primary" aria-hidden="true"/>
             </Link>
           ))}
-        </SubjectRow>}
-        {libraryFilter === "other" && <SubjectRow key={"other-" + libraryFilter} title={tx("Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta defaultOpen={libraryFilter !== "all"}>
-          {STARTER_SUBJECT_BOOKS.filter(b=>b.id!==51).map((b) => {
-            const subject = ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number, string>)[b.id]!;
-            return (
-              <Link key={b.id} to="/subject/$subject" params={{ subject }} className={TILE}>
-                <TileBody cover={b.cover} title={tx(b.title)} sub={tx("Ուսումնական 12 հարց · ԳԹԿ 2027 ուղեցույց")} />
-              </Link>
-            );
-          })}
-        </SubjectRow>}
+          <Link to="/subject/$subject" params={{subject:"physics"}}
+            className="sht-home-subject-card group flex min-h-[104px] min-w-0 items-start gap-3 rounded-2xl border bg-card p-4 text-foreground focus-visible:outline-2 focus-visible:outline-primary">
+            <span aria-hidden="true" className="sht-home-subject-mark grid size-12 shrink-0 place-items-center rounded-xl text-sm font-black text-primary">Φ</span>
+            <span className="min-w-0 flex-1">
+              <strong className="block text-sm font-black sm:text-base">{lang==="hy"?"Ֆիզիկա":lang==="ru"?"Физика":"Physics"}</strong>
+              <span className="mt-1 block text-xs text-muted-foreground">{lang==="hy"?"2 մաս և թեստեր":lang==="ru"?"2 части и тесты":"2 volumes and tests"}</span>
+            </span>
+            <ArrowRight className="mt-3 size-4 shrink-0 text-primary" aria-hidden="true"/>
+          </Link>
+        </div>
       </section>
 
-      <section id="exams" className="scroll-mt-24 space-y-5">
-        <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Փորձնական քննություններ")}</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
-          <ExamTile
-            to="/exam/$subject" params={{ subject: "english" }}
-            title={tx("Քննություն")}
-            sub={tx("Անգլերեն · 13 բաժին · 80 միավոր")}
-            icon={<Trophy className="size-5" />}
-          />
-          <ExamTile
-            to="/exam/$subject" params={{ subject: "english" }}
-            title={tx("Անգլերեն · Կազմել թեստ")}
-            sub={tx("Ընտրիր բաժինները և քանակը")}
-            icon={<ClipboardCheck className="size-5" />}
-          />
-          <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
-          <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
-          <details className="col-span-full min-w-0 overflow-hidden rounded-2xl border bg-card" data-dashboard-more-exams>
-            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-foreground hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
-              {lang === "hy" ? "Բոլոր մյուս քննությունները" : lang === "ru" ? "Другие экзамены" : "More practice exams"}
-              <ChevronDown className="size-4 text-primary" aria-hidden="true" />
-            </summary>
-            <div className="grid gap-3 border-t p-3 sm:grid-cols-2 lg:grid-cols-3">
-          <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
-          <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
-          <ExamTile to="/subject/$subject" params={{subject:"physics"}}
-            title={tx("Ֆիզիկա · փորձնական քննություն")}
-            sub={tx("70 պատասխանային դիրք · 80 միավոր · 2 մաս")}
-            icon={<BookOpen className="size-5"/>}/>
-          {STARTER_SUBJECT_BOOKS.filter(b=>b.id!==51).map((b) => (
-            <ExamTile key={b.id} to="/subject/$subject"
-              params={{ subject: ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number,string>)[b.id]! }}
-              title={tx(b.title)} sub={tx("Ուսումնական հարցեր և ԳԹԿ-ի 2027 ուղեցույց")}
-              icon={<BookOpen className="size-5" />} />
-          ))}
-            </div>
-          </details>
-        </div>
+      <section id="exams" className="scroll-mt-24 space-y-4" aria-label={words.actions}>
+        <h2 className="text-lg font-black text-foreground">{words.actions}</h2>
+        <nav aria-label={words.actions} className="sht-dashboard-shortcuts sht-home-action-grid grid gap-3 sm:grid-cols-3">
+          <Link to="/explore" hash="exams" className="academy-quick-action sht-home-quick-link group">
+            <span aria-hidden="true" className="sht-home-action-icon"><Trophy className="size-5"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.exams}</strong>
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.examInfo}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
+          </Link>
+          <Link to="/study-tools" className="academy-quick-action sht-home-quick-link group">
+            <span aria-hidden="true" className="sht-home-action-icon"><BookOpen className="size-5"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.tools}</strong>
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.toolsInfo}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
+          </Link>
+          <Link to="/profile" className="academy-quick-action sht-home-quick-link group">
+            <span aria-hidden="true" className="sht-home-action-icon"><UserRound className="size-5"/></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.profile}</strong>
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.profileInfo}</span></span>
+            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
+          </Link>
+        </nav>
       </section>
-      <details className="group/tools rounded-2xl border bg-card">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-bold hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
-          {lang === "hy" ? "Այլ ուսումնական գործիքներ" : lang === "ru" ? "Другие инструменты" : "More study tools"}
-          <ChevronDown className="size-4 text-primary transition-transform group-open/tools:rotate-180" aria-hidden="true" />
-        </summary>
-        <div className="grid gap-3 border-t p-3 sm:grid-cols-3">
-          <Link to="/study-plan" className="sht-dashboard-bento academy-quick-action"><Target className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական պլան" : lang === "ru" ? "План занятий" : "Study plan"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/mistakes" className="academy-quick-action"><RotateCcw className="size-5 text-primary" />{lang === "hy" ? "Իմ սխալները" : lang === "ru" ? "Мои ошибки" : "Review mistakes"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/chat" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "AI ուսուցիչ" : lang === "ru" ? "ИИ-учитель" : "AI teacher"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/flashcards" className="academy-quick-action"><BookOpen className="size-5 text-primary" />{lang === "hy" ? "Բառաքարտեր" : lang === "ru" ? "Карточки" : "Flashcards"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/mini-games" className="academy-quick-action"><Trophy className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական խաղեր" : lang === "ru" ? "Учебные игры" : "Mini games"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/calc" className="academy-quick-action"><Calculator className="size-5 text-primary" />{lang === "hy" ? "Հաշվիչ" : lang === "ru" ? "Калькулятор" : "Calculator"}<ArrowRight className="ml-auto size-4" /></Link>
-          <Link to="/feedback" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "Գրել մշակողին" : lang === "ru" ? "Написать разработчику" : "Send feedback"}<ArrowRight className="ml-auto size-4" /></Link>
-        </div>
-      </details>
-      <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-5 text-sm">
-        <Link to="/download" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Smartphone className="size-4" aria-hidden="true" />{tx("Ներբեռնել Android հավելվածը")}</Link>
-        <Link to="/changelog" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Sparkles className="size-4" aria-hidden="true" />{tx("Նորություններ և թարմացումներ")}</Link>
+      <footer className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-5 text-xs font-bold text-muted-foreground">
+        <Link to="/download" className="inline-flex min-h-11 items-center gap-2 hover:text-primary"><Smartphone className="size-4"/>{words.downloads}</Link>
+        <Link to="/changelog" className="inline-flex min-h-11 items-center gap-2 hover:text-primary"><Sparkles className="size-4"/>{words.news}</Link>
       </footer>
-    </div>
+    </main>
   );
 }
-
-
