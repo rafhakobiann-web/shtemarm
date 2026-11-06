@@ -80,6 +80,7 @@ export function RichExplanation({
       open: "Բացել մեծ բացատրությունը",
       subtitle: "Կարդա յուրաքանչյուր քայլը առանձին և անցիր հաջորդին։",
       progress: "Քայլ",
+      jump: "Բացել քայլը",
       of: "-ից",
       previous: "Նախորդ քայլը",
       next: "Հաջորդ քայլը",
@@ -94,6 +95,7 @@ export function RichExplanation({
       open: "Open full-screen explanation",
       subtitle: "Read one step at a time and move forward when ready.",
       progress: "Step",
+      jump: "Go to step",
       of: "of",
       previous: "Previous step",
       next: "Next step",
@@ -108,6 +110,7 @@ export function RichExplanation({
       open: "Открыть объяснение на весь экран",
       subtitle: "Изучай один шаг за другим в удобном темпе.",
       progress: "Шаг",
+      jump: "Перейти к шагу",
       of: "из",
       previous: "Предыдущий шаг",
       next: "Следующий шаг",
@@ -171,7 +174,7 @@ export function RichExplanation({
               <BookOpenCheck className="size-4" aria-hidden="true"/>{copy[source]}
             </span>
             <DialogTitle className="pr-9 text-xl font-black leading-snug text-foreground sm:text-3xl">{copy.title}</DialogTitle>
-            <DialogDescription id={titleId} className="text-xs leading-6 text-muted-foreground sm:text-sm">{copy.subtitle}</DialogDescription>
+            <DialogDescription id={titleId} className="hidden text-xs leading-6 text-muted-foreground sm:block sm:text-sm">{copy.subtitle}</DialogDescription>
             <div className="flex items-center justify-between gap-3 pt-2">
               <span role="status" aria-live="polite" className="text-sm font-black text-foreground">
                 {copy.progress} {index + 1} {copy.of} {total}
@@ -185,14 +188,26 @@ export function RichExplanation({
               <div className="h-full rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
                 style={{width:String((index + 1) / total * 100)+"%"}}/>
             </div>
+            {total > 1 && <nav aria-label={copy.progress+" "+copy.of+" "+total}
+              className="sht-explanation-step-nav flex gap-2 overflow-x-auto pb-1 pt-2" >
+              {steps.map((_, number) => <button
+                type="button"
+                key={number}
+                onClick={() => setCurrent(number)}
+                aria-label={copy.jump+" "+(number + 1)}
+                aria-current={number === index ? "step" : undefined}
+                className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-background text-xs font-bold text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary aria-[current=step]:border-primary aria-[current=step]:bg-primary aria-[current=step]:text-primary-foreground focus-visible:outline-2 focus-visible:outline-primary">
+                {number + 1}
+              </button>)}
+            </nav>}
           </DialogHeader>
 
-          <div className="sht-explanation-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-8 sm:py-8" key={index}>
-            <article aria-label={copy.progress+" "+(index + 1)} className="sht-explanation-stage mx-auto flex min-h-full w-full max-w-4xl flex-col rounded-2xl border border-primary/25 bg-card p-5 text-base leading-8 text-foreground sm:p-8 sm:text-lg">
-              <span className="mb-5 inline-flex size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-lg font-black text-primary">
+          <div className="sht-explanation-scroll min-h-0 overflow-y-auto overscroll-contain px-4 py-4 sm:px-8 sm:py-6" key={index}>
+            <article aria-label={copy.progress+" "+(index + 1)} className="sht-explanation-stage mx-auto w-full max-w-3xl rounded-2xl border border-primary/25 bg-card p-5 text-base leading-8 text-foreground sm:p-7 sm:text-lg">
+              <span className="mb-4 inline-flex size-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-base font-black text-primary">
                 {index + 1}
               </span>
-              <div className="min-w-0 flex-1 break-words">{stepBody(step)}</div>
+              <div className="min-w-0 break-words">{stepBody(step)}</div>
             </article>
           </div>
 

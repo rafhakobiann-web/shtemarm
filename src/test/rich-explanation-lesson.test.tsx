@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 
@@ -50,6 +51,29 @@ describe("near-full-screen step-by-step lesson",()=>{
     fireEvent.click(screen.getByRole("button",{name:/Open full-screen explanation/}));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Understand the problem")).toBeInTheDocument();
+  });
+
+  it("jumps directly between explanation steps while keeping keyboard-friendly controls",()=>{
+    render(<RichExplanation text={"1. Identify the rule\\n2. Substitute values\\n3. Explain the choice\\n4. Verify the answer"}/>);
+    const dialog=screen.getByRole("dialog");
+    const jump=within(dialog).getByRole("button",{name:"Go to step 3"});
+    fireEvent.click(jump);
+    expect(within(dialog).getByText("Explain the choice")).toBeInTheDocument();
+    expect(jump).toHaveAttribute("aria-current","step");
+    expect(within(dialog).getByRole("progressbar")).toHaveAttribute("aria-valuenow","3");
+    fireEvent.click(within(dialog).getByRole("button",{name:/Previous step/}));
+    expect(within(dialog).getByText("Substitute values")).toBeInTheDocument();
+  });
+
+  it("keeps short explanations content-sized instead of stretching their bordered card",()=>{
+    const component=readFileSync("src/components/RichExplanation.tsx","utf8");
+    const style=readFileSync("src/explanation-lesson.css","utf8");
+    expect(component).toContain('className="sht-explanation-stage mx-auto w-full');
+    expect(component).not.toContain("sht-explanation-stage mx-auto flex min-h-full");
+    expect(component).not.toContain('className="min-w-0 flex-1 break-words"');
+    expect(style).toContain("height: auto;");
+    expect(style).toContain("flex: 0 1 auto;");
+    expect(style).toContain("max-height: min(92dvh, 960px)");
   });
 
   it("shows a single step for unnumbered offline responses without inventing details",()=>{
