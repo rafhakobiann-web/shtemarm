@@ -5,7 +5,6 @@ import { buildExplanationSteps, type ExplanationStep } from "@/lib/explanation-s
 import { useLang } from "@/lib/lang";
 import { MathDiagram, readDiagram } from "@/components/MathDiagram";
 import { RichText, useKatex } from "@/components/MathText";
-import { useTx } from "@/lib/lang";
 
 type ContentBlock = { kind: "text" | "diagram" | "code"; value: string };
 /** Markdown code fences are never executed or inserted as HTML. */
