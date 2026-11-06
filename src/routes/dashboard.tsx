@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useLang, useTx } from "@/lib/lang";
 import { DashboardOverview } from "@/components/DashboardOverview";
-import { readOnboarding, type OnboardingSubject } from "@/lib/onboarding";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 import { BookCover } from "@/components/BookCover";
@@ -281,7 +280,6 @@ function Index() {
   const progress = useProgress();
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
-  const [savedSubjects, setSavedSubjects] = useState<OnboardingSubject[]>([]);
   const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
   const showLibrary = (key: LibraryFilter) => libraryFilter === "all" || libraryFilter === key;
   useEffect(() => {
@@ -291,7 +289,6 @@ function Index() {
       .then(({ data, error }) => {
         if (!active || error || !data.user) return;
         setName((data.user.user_metadata?.username as string | undefined) ?? null);
-        setSavedSubjects(readOnboarding(data.user.id)?.subjects ?? []);
       })
       .catch(() => { /* The dashboard remains usable when profile lookup fails. */ });
     return () => { active = false; };
