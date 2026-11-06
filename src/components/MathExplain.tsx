@@ -98,7 +98,7 @@ export function MathExplain(props: Props) {
           ? lang==="en"?"Saved AI explanation":lang==="ru"?"Сохранённое объяснение ИИ":"Պահպանված AI բացատրություն"
           : lang==="en"?"AI explanation":lang==="ru"?"Объяснение ИИ":"AI բացատրություն"}
     </p>}
-    {active && <RichExplanation text={active.text} error={active.error}/>}
+    {active && <RichExplanation text={active.text} error={active.error} source={active.offline ? "offline" : active.cached ? "cached" : "ai"}/>}
     {(!active || active.error) && <Button
       variant="secondary" type="button" disabled={loading} onClick={() => void run()}
       className="mt-3 h-auto min-h-11 w-full whitespace-normal text-left sm:w-auto">
