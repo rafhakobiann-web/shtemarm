@@ -186,7 +186,7 @@ export const MATH_FOUNDATIONS: MathTopic[] = [
       "en": "The GCD is the greatest common divisor; the LCM is the least common multiple. For positive integers, GCD×LCM equals their product.",
       "ru": "НОД — наибольший общий делитель, НОК — наименьшее общее кратное. Для положительных целых НОД×НОК равно произведению."
     },
-    "formula": "gcd(a,b)·lcm(a,b)=a·b (a,b>0)",
+    "formula": "$\\gcd(a,b)\\cdot\\operatorname{lcm}(a,b)=ab\\quad(a,b>0)$",
     "problem": {
       "hy": "Գտնել 12-ի և 18-ի ԱՄԲ-ն ու ԱՓԲ-ը։",
       "en": "Find GCD and LCM of 12 and 18.",
