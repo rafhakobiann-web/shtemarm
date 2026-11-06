@@ -1,4 +1,4 @@
-import type { Book, MCQuestion, Section, Unit } from "./books";
+import type { Book, MCQuestion, Section, Unit, SentenceDiagram } from "./books";
 import { fetchBookResponse } from "./fetch-book-response";
 
 type OfficialMc = {
@@ -9,6 +9,7 @@ type OfficialMc = {
   answer: string;
   raw?: string;
   reviewRequired?: boolean;
+  diagramOptions?: Record<string, SentenceDiagram>;
 };
 type OfficialShort = { n: string; pdfPage?: number; stem: string; answer: string };
 export type ArmenianOriginalSection = {
@@ -67,7 +68,10 @@ function isPlayableMc(q: OfficialMc): q is OfficialMc & { stem: string; options:
   const keys = Object.keys(q.options);
   return keys.length === 4 && ["1", "2", "3", "4"].every(k =>
     typeof q.options?.[k] === "string" && Boolean(q.options[k].trim()),
-  ) && ["1", "2", "3", "4"].includes(q.answer);
+  ) && ["1", "2", "3", "4"].includes(q.answer) && (!q.diagramOptions || ["1", "2", "3", "4"].every(k => {
+    const graph = q.diagramOptions?.[k];
+    return !!graph && graph.nodes?.length > 0 && Array.isArray(graph.branches) && Array.isArray(graph.equals);
+  }));
 }
 
 /**
@@ -91,6 +95,7 @@ export function buildArmenianOriginalBook(sources: ArmenianOriginalSection[], as
       stem: cleanPdfArtifacts(q.stem),
       options: Object.fromEntries(Object.entries(q.options).map(([k, v]) => [k, cleanPdfArtifacts(v)])),
       answer: q.answer,
+      diagramOptions: q.diagramOptions,
     }));
     const skipped = source.mc.length - mc.length;
     const short: Extract<Unit, {kind: "num"}>["questions"] = source.short.map(q => ({
