@@ -35,6 +35,30 @@ describe("Math handbook source alignment",()=>{
       if(section.chapter===3) expect(mathTopicsForSection(section).some(t=>t.id==="true-false-check")).toBe(true);
     }
   });
+  it("links derivative, tangent, absolute-value and extrema rules to both function chapters",()=>{
+    const required=["derivative-power","derivative-product-exponential","tangent-equation","absolute-value-derivative","derivative-extrema"];
+    const first=findMathSection("matem-1",2,5)!;
+    const second=findMathSection("matem-2",2,4)!;
+    for(const section of [first,second]){
+      const ids=new Set(mathTopicsForSection(section).map(t=>t.id));
+      for(const id of required)expect(ids.has(id),section.book+" missing "+id).toBe(true);
+    }
+    const expr=findMathSection("matem-2",1,2)!;
+    expect(mathTopicsForSection(expr).some(t=>t.id==="logarithm-properties")).toBe(true);
+  });
+  it("keeps TeX formulas delimited and ensures complete multilingual calculus lessons",()=>{
+    expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(53);
+    for(const topic of MATH_HANDBOOK_TOPICS){
+      if(topic.formula.includes("\\"))expect(topic.formula,topic.id).toContain("$");
+      expect((topic.formula.match(/\\$/g)??[]).length%2,topic.id).toBe(0);
+    }
+    const ids=["derivative-power","derivative-product-exponential","tangent-equation","absolute-value-derivative","derivative-extrema","logarithm-properties"];
+    for(const id of ids){
+      const topic=MATH_HANDBOOK_TOPICS.find(item=>item.id===id);
+      expect(topic,id).toBeDefined();
+      for(const lang of ["hy","en","ru"] as const)expect(topic!.steps[lang]).toHaveLength(3);
+    }
+  });
   it("has complete multilingual manually worked lessons and no topic ID collisions",()=>{
     expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(36);
     expect(new Set(MATH_HANDBOOK_TOPICS.map(t=>t.id)).size).toBe(MATH_HANDBOOK_TOPICS.length);
