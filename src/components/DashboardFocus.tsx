@@ -6,6 +6,8 @@ import { summarizeRevision } from "@/lib/revisionSchedule";
 import { ArrowRight, BookOpen, CheckCircle2, ClipboardCheck, Home, RotateCcw, Sparkles, Target, Trophy } from "lucide-react";
 import { useLang } from "@/lib/lang";
 import { level, type Progress } from "@/lib/progress";
+import { progressSummary } from "@/lib/dashboard-summary";
+export { progressSummary } from "@/lib/dashboard-summary";
 import { learningLevel } from "@/lib/learningLevels";
 import { recommendLearningPath } from "@/lib/learningPath";
 import { weeklyLearningReport } from "@/lib/weeklyLearningReport";
@@ -41,17 +43,6 @@ const WORDS = {
     home:"Главная страница", answered:"Ответов", correct:"Верно", review:"Повторить", rate:"Точность",
     recent:"Последний экзамен", noRecent:"Результатов пока нет", first:"Ответов ещё нет. Начни первую тренировку.", level:"Уровень" },
 } as const;
-
-export function progressSummary(progress: Progress) {
-  const answers = Object.values(progress.answers);
-  const correct = answers.filter(value => value === 1).length;
-  const review = answers.filter(value => value === 0).length;
-  return {
-    answered: answers.length, correct, review,
-    accuracy: answers.length ? Math.round(correct * 100 / answers.length) : null,
-    recentExam: progress.exams.at(-1) ?? null,
-  };
-}
 
 export function DashboardFocus({ name, progress, subjects, showGreeting = true }: {
   name?: string | null;
