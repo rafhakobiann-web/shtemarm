@@ -53,10 +53,11 @@ export function progressSummary(progress: Progress) {
   };
 }
 
-export function DashboardFocus({ name, progress, subjects }: {
+export function DashboardFocus({ name, progress, subjects, view = "dashboard" }: {
   name?: string | null;
   progress: Progress;
   subjects: readonly OnboardingSubject[];
+  view?: "dashboard" | "profile";
 }) {
   const lang = useLang();
   const t = WORDS[lang];
@@ -120,6 +121,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   ];
   return (
     <section className="dashboard-focus space-y-4" aria-label={t.title}>
+      {view === "dashboard" && <>
       <div className="academy-bento relative overflow-hidden p-5 sm:p-7">
         <div aria-hidden="true" className="dashboard-focus-glow" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -138,6 +140,8 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      </>}
+      {view === "profile" && <>
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Учебная цель на день" : "Daily study goal"}>
         <h2 className="font-black">{lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Цель на день" : "Daily study goal"}</h2>
         <p className="text-sm tabular-nums">{goalToday.completed}/{goalToday.total} · {goalToday.percent}%</p>
@@ -238,6 +242,8 @@ export function DashboardFocus({ name, progress, subjects }: {
         </div>
         <p className="text-xs text-muted-foreground">{lang==="hy"?"Օրացույցում երևում է միայն այս սարքում պահպանված վերջին 31 օրվա ակտիվությունը։ Բաց թողած օրերը չեն նվազեցնում միավորները։":lang==="ru"?"Показаны только последние 31 день активности, сохранённой на устройстве. Пропуски не отнимают баллы.":"Only the last 31 days saved on this device are available. Missed days do not deduct points."}</p>
       </section>
+      </>}
+      {view === "dashboard" && <>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map(({ label, value, Icon }) => (
           <div className="academy-bento min-w-0 p-4" key={label}>
@@ -275,6 +281,7 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      </>}
     </section>
   );
 }
