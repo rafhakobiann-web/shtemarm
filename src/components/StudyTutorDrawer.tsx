@@ -7,9 +7,9 @@ import { buildExplanationSteps } from "@/lib/explanation-steps";
 
 type Message = { role: "user" | "assistant"; text: string };
 const copy = {
-  hy: { open:"Հարցնել AI ուսուցչին", title:"AI օգնական", intro:"Հարցրու այս բաժնի մասին։ Առաջադրանքի տեքստը ինքնաբերաբար չի փոխանցվում։", placeholder:"Գրիր քո հարցը…", send:"Ուղարկել", close:"Փակել AI օգնականը", error:"Պատասխան ստանալ չհաջողվեց։ Փորձիր կրկին։", note:"AI-ի պատասխանները կարող են սխալ լինել։ Ստուգիր շտեմարանի բանալին։" },
-  en: { open:"Ask AI tutor", title:"AI assistant", intro:"Ask about this section. Question text is never shared automatically.", placeholder:"Type your question…", send:"Send", close:"Close AI assistant", error:"Could not get an answer. Please retry.", note:"AI responses may be inaccurate. Check the official answer key." },
-  ru: { open:"Спросить ИИ", title:"ИИ-помощник", intro:"Задай вопрос об этом разделе. Текст заданий не отправляется автоматически.", placeholder:"Напиши вопрос…", send:"Отправить", close:"Закрыть ИИ-помощника", error:"Не удалось получить ответ. Попробуй ещё раз.", note:"ИИ может ошибаться. Сверяйся с ключами сборника." },
+  hy: { open:"Հարցնել AI ուսուցչին", title:"AI օգնական", intro:"Հարցրու այս բաժնի մասին։ Առաջադրանքի տեքստը ինքնաբերաբար չի փոխանցվում։", placeholder:"Գրիր քո հարցը…", send:"Ուղարկել", guided:"Բացատրիր քայլ առ քայլ", close:"Փակել AI օգնականը", error:"Պատասխան ստանալ չհաջողվեց։ Փորձիր կրկին։", note:"AI-ի պատասխանները կարող են սխալ լինել։ Ստուգիր շտեմարանի բանալին։" },
+  en: { open:"Ask AI tutor", title:"AI assistant", intro:"Ask about this section. Question text is never shared automatically.", placeholder:"Type your question…", send:"Send", guided:"Explain step by step", close:"Close AI assistant", error:"Could not get an answer. Please retry.", note:"AI responses may be inaccurate. Check the official answer key." },
+  ru: { open:"Спросить ИИ", title:"ИИ-помощник", intro:"Задай вопрос об этом разделе. Текст заданий не отправляется автоматически.", placeholder:"Напиши вопрос…", send:"Отправить", guided:"Объясни пошагово", close:"Закрыть ИИ-помощника", error:"Не удалось получить ответ. Попробуй ещё раз.", note:"ИИ может ошибаться. Сверяйся с ключами сборника." },
 } as const;
 
 /** Guided AI replies use the same safe, plain-text step parser as Math lessons.
@@ -114,7 +114,13 @@ export function StudyTutorDrawer() {
       <section id="study-ai-panel" role="dialog" aria-modal="true" aria-label={t.title} className="sht-tutor-workspace absolute inset-2 flex flex-col overflow-hidden rounded-2xl border-2 border-primary/35 bg-background shadow-2xl sm:inset-5 sm:rounded-3xl">
         <header className="flex items-center justify-between border-b px-4 py-3"><h2 className="flex items-center gap-2 text-base font-black"><Bot className="size-5 text-primary" />{t.title}</h2><button ref={closeRef} type="button" onClick={() => setOpen(false)} aria-label={t.close} className="grid size-11 place-items-center rounded-xl hover:bg-muted"><X className="size-5" /></button></header>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-7" aria-live="polite">
-          <p className="text-sm leading-6 text-muted-foreground">{t.intro}</p>
+          <div className="mx-auto max-w-5xl space-y-3">
+            <p className="text-sm leading-6 text-muted-foreground">{t.intro}</p>
+            <button type="button" onClick={()=>setInput(t.guided+" — ")}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+              <BookOpenCheck className="size-4" aria-hidden="true"/>{t.guided}
+            </button>
+          </div>
           {messages.map((message,index) => <div key={index} className={message.role==="user"?"ml-auto max-w-3xl rounded-2xl bg-primary/10 p-4 text-sm":"mx-auto max-w-5xl rounded-2xl border bg-card p-4 text-sm sm:p-6"}>{message.role==="assistant"?<GuidedTutorReply text={message.text} lang={lang} katex={katex}/>:<RichText text={message.text} katex={katex}/>}</div>)}
           {loading && <p role="status"><Loader2 className="size-5 animate-spin text-primary" /></p>}
         </div>
