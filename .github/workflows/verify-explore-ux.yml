@@ -21,6 +21,10 @@ on:
       - 'src/test/explanation-steps.test.ts'
       - 'src/test/rich-explanation-lesson.test.tsx'
       - 'src/test/ai-learning.test.ts'
+      - 'src/components/StudyTutorDrawer.tsx'
+      - 'src/components/RichExplanation.tsx'
+      - 'src/explanation-lesson.css'
+      - 'src/test/rich-explanation-lesson.test.tsx'
       - 'src/test/explore-navigation.test.tsx'
       - 'src/test/mobile-liquid-nav.test.tsx'
       - 'src/test/dashboard-focus.test.tsx'
@@ -38,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Verify exploration, student dashboard, navigation, translations and touch behavior
-        run: bunx vitest run src/test/explanation-steps.test.ts src/test/rich-explanation-lesson.test.tsx src/test/ai-learning.test.ts src/test/explore-navigation.test.tsx src/test/mobile-liquid-nav.test.tsx src/test/mobile-touch.test.ts src/test/dashboard-focus.test.tsx src/test/dashboard-minimal.test.ts src/test/personal-dashboard-2026.test.ts src/test/responsive-shell-regression.test.ts src/test/academy-design.test.ts src/test/biology-original-navigation.test.ts src/test/download-scroll.test.ts
+        run: bunx vitest run src/test/explanation-steps.test.ts src/test/rich-explanation-lesson.test.tsx src/test/ai-learning.test.ts src/test/explore-navigation.test.tsx src/test/rich-explanation-lesson.test.tsx src/test/explanation-steps.test.ts src/test/mobile-liquid-nav.test.tsx src/test/mobile-touch.test.ts src/test/dashboard-focus.test.tsx src/test/dashboard-minimal.test.ts src/test/personal-dashboard-2026.test.ts src/test/responsive-shell-regression.test.ts src/test/academy-design.test.ts src/test/biology-original-navigation.test.ts src/test/download-scroll.test.ts
       - name: Typecheck
         run: bunx tsc --noEmit
       - name: Build website
