@@ -77,7 +77,7 @@ function SubjectHeader({ title, sub, beta = false }: { title: string; sub: strin
   const tx = useTx();
   return (
     <div className="space-y-3">
-      <Link to="/dashboard" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+      <Link to="/explore" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> {tx("Բոլոր առարկաները")}
       </Link>
       <h1 className="flex flex-wrap items-center gap-2 text-3xl font-black sm:text-4xl">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h1>
