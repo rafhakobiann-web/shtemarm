@@ -138,6 +138,20 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map(({ label, value, Icon }) => (
+          <div className="academy-bento min-w-0 p-4" key={label}>
+            <p className="flex items-center gap-2 text-xs font-bold text-muted-foreground"><Icon className="size-4 text-primary" />{label}</p>
+            <p className="mt-2 text-2xl font-black tabular-nums text-foreground">{value}</p>
+          </div>
+        ))}
+      </div>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Նպատակներ և պլանավորում" : lang === "ru" ? "Цели и планирование" : "Goals and planning"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Учебная цель на день" : "Daily study goal"}>
         <h2 className="font-black">{lang === "hy" ? "Օրվա ուսումնական նպատակ" : lang === "ru" ? "Цель на день" : "Daily study goal"}</h2>
         <p className="text-sm tabular-nums">{goalToday.completed}/{goalToday.total} · {goalToday.percent}%</p>
@@ -154,6 +168,14 @@ export function DashboardFocus({ name, progress, subjects }: {
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Այս շաբաթ" : lang === "ru" ? "На этой неделе" : "This week"}: {goalWeek.completedDays} {lang === "hy" ? "օր նպատակն իրականացվել է" : lang === "ru" ? "дней цель выполнена" : "days with goal completed"} · {goalWeek.answered} {lang === "hy" ? "հարց" : lang === "ru" ? "вопросов" : "questions"} · {goalWeek.reviewed} {lang === "hy" ? "կրկնություն" : lang === "ru" ? "повторений" : "reviews"}</p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Նպատակները կամավոր են։ Բաց թողած օրերի համար տուգանք չկա։ Տվյալները պահվում են այս սարքում։" : lang === "ru" ? "Цели добровольны, пропуски без штрафов. Данные на этом устройстве." : "Goals are optional, with no penalty for missed days. Data is saved on this device."}</p>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Քննության պատրաստվածություն" : lang === "ru" ? "Готовность к экзамену" : "Exam readiness"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Քննության պատրաստվածության տվյալներ" : lang === "ru" ? "Готовность к экзамену" : "Exam readiness evidence"}>
         <h2 className="font-black">{lang === "hy" ? "Քննության պատրաստվածություն" : lang === "ru" ? "Готовность к экзамену" : "Exam readiness"}</h2>
         <p className="text-xs text-muted-foreground">{readiness.evidence === "insufficient" ? (lang === "hy" ? "Գնահատման համար տվյալները բավարար չեն։" : lang === "ru" ? "Недостаточно данных для оценки." : "Not enough evidence for an assessment.") : readiness.evidence === "partial" ? (lang === "hy" ? "Մասնակի տվյալներ․ շարունակիր փորձնական քննությունները։" : lang === "ru" ? "Данные неполные. Продолжайте пробные экзамены." : "Partial evidence. Continue mock exams.") : (lang === "hy" ? "Առկա են առաջընթացի տվյալներ։ Սա պաշտոնական քննության կանխատեսում չէ։" : lang === "ru" ? "Есть данные о прогрессе. Это не прогноз официального экзамена." : "Progress evidence available. This is not an official exam prediction.")}</p>
@@ -167,6 +189,14 @@ export function DashboardFocus({ name, progress, subjects }: {
         <div className="flex flex-wrap gap-2">{readiness.nextSteps.map(step=><Link key={step} to={step==="review"?"/mistakes":"/dashboard"} className="inline-flex min-h-10 items-center rounded-xl border border-primary/30 px-3 py-2 text-xs font-bold text-primary">{step==="review"?(lang==="hy"?"Կրկնել սխալները":lang==="ru"?"Повторить ошибки":"Review mistakes"):step==="exam"?(lang==="hy"?"Փորձնական քննություն":lang==="ru"?"Пробный экзамен":"Mock exam"):(lang==="hy"?"Շարունակել պարապել":lang==="ru"?"Продолжить практику":"Continue practice")} <ArrowRight className="ml-1 size-3.5" /></Link>)}</div>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Ցուցանիշները հիմնված են պահպանված պատասխանների վերջին վիճակի և փորձնական քննությունների վրա։ Առարկայական ճշտություն չի հաշվարկվում առանց ստուգված առարկայական տվյալների։" : lang === "ru" ? "Показатели основаны на последних сохранённых ответах и пробных экзаменах. Точность по предметам без проверенных данных не рассчитывается." : "Metrics use the latest saved answer state and mock exams. Subject accuracy is not inferred without verified subject data."}</p>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly report"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}>
         <h2 className="font-black">{lang === "hy" ? "Շաբաթական հաշվետվություն" : lang === "ru" ? "Недельный отчёт" : "Weekly learning report"}</h2>
         <p className="text-xs text-muted-foreground">{report.start} — {report.end}</p>
@@ -180,6 +210,14 @@ export function DashboardFocus({ name, progress, subjects }: {
         <p className="text-xs text-muted-foreground">{report.suggestions.length ? (lang === "hy" ? "Հաջորդ շաբաթ առաջարկվում է կրկնել՝ " : lang === "ru" ? "На следующей неделе повторить: " : "Suggested for next week: ")+report.suggestions.map(s=>SUBJECT_NAMES[s.subject]?.[i] ?? s.subject).join(", ") : lang === "hy" ? "Պահպանված սխալներից նոր առաջարկ դեռ չկա։" : lang === "ru" ? "Пока нет рекомендаций на основе ошибок." : "No saved-mistake recommendations yet."}</p>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Տվյալները միայն այս սարքից են։ Առարկայական ճշտությունը և պատմական XP-ն դեռ հասանելի չեն։" : lang === "ru" ? "Данные только с этого устройства. Точность по предметам и история XP пока недоступны." : "Device-local data only. Subject accuracy and historical XP are not yet available."}</p>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Ուսումնական ճանապարհ" : lang === "ru" ? "Учебный путь" : "Learning path"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}>
         <h2 className="font-black">{lang === "hy" ? "Իմ ուսումնական ճանապարհը" : lang === "ru" ? "Мой учебный маршрут" : "My learning path"}</h2>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առաջարկները հիմնված են ընտրած առարկաների և պահպանված սխալների վրա, ոչ թե AI-ի գնահատականի։" : lang === "ru" ? "Рекомендации основаны на выбранных предметах и сохранённых ошибках, а не на оценке ИИ." : "Suggestions use your selected subjects and saved mistakes, not an AI assessment."}</p>
@@ -188,6 +226,14 @@ export function DashboardFocus({ name, progress, subjects }: {
           <Link to={step.id === "review" ? "/mistakes" : step.id === "exam" ? "/study-plan" : "/learn"} className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">{lang === "hy" ? "Բացել" : lang === "ru" ? "Открыть" : "Open"}<ArrowRight className="size-4" /></Link>
         </li>)}</ol>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Մակարդակներ և XP" : lang === "ru" ? "Уровни и XP" : "Levels and XP"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-2 p-4 sm:p-5" aria-label={lang === "hy" ? "Մակարդակների առաջընթաց" : lang === "ru" ? "Прогресс уровней" : "Level progress"}>
         <h2 className="font-black">{lang === "hy" ? "Իմ մակարդակը" : lang === "ru" ? "Мой уровень" : "My level"} · {combinedLevel.level}</h2>
         <p className="text-sm text-muted-foreground">{combinedLevel.xp} XP · {combinedLevel.answered} {lang === "hy" ? "պատասխանված հարց" : lang === "ru" ? "ответов" : "answered questions"}</p>
@@ -196,12 +242,28 @@ export function DashboardFocus({ name, progress, subjects }: {
         </div>
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "XP-ն ցույց է տալիս ակտիվությունը։ Առարկայական յուրացումը դեռ առանձին գնահատման կարիք ունի։" : lang === "ru" ? "XP отражает активность. Освоение предметов требует отдельной проверки." : "XP measures activity. Subject mastery requires separate assessment."}</p>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Կրկնության առաջարկներ" : lang === "ru" ? "Рекомендации для повторения" : "Review suggestions"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-3 p-4 sm:p-5" aria-label={lang === "hy" ? "Այսօրվա ուսումնական առաջարկներ" : lang === "ru" ? "Рекомендации на сегодня" : "Today’s learning suggestions"}>
         <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-black">{lang === "hy" ? "Այսօրվա կրկնությունը" : lang === "ru" ? "Повторение на сегодня" : "Today’s revision"}</h2><Link to="/mistakes" className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">{t.retry}<ArrowRight className="size-4" /></Link></div>
         <p className="text-sm text-muted-foreground">{revision.due} {lang === "hy" ? "հարց՝ առաջարկվող կրկնության համար" : lang === "ru" ? "вопросов к повторению" : "questions suggested for review"} · {revision.pending} {lang === "hy" ? "չյուրացված գրառում" : lang === "ru" ? "неосвоенных записей" : "unmastered records"}</p>
         {revision.bySubject.length > 0 && <p className="text-xs text-muted-foreground">{lang === "hy" ? "Առավել շատ սխալներ՝" : lang === "ru" ? "Больше всего ошибок:" : "Most saved mistakes:"} {revision.bySubject.slice(0, 3).map(([subject, count]) => `${SUBJECT_NAMES[subject as OnboardingSubject]?.[i] ?? subject} (${count})`).join(" · ")}</p>}
         <p className="text-xs text-muted-foreground">{lang === "hy" ? "Հաշվարկված է այս սարքում պահված շտեմարանային սխալներով․ սա ամբողջական գնահատական չէ։" : lang === "ru" ? "На основе ошибок, сохранённых на этом устройстве; не полная оценка знаний." : "Based on question-bank mistakes saved on this device; not a complete mastery assessment."}</p>
       </section>
+        </div>
+      </details>
+      <details className="group/profile-detail min-w-0 overflow-hidden rounded-2xl border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-black text-foreground hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Ակտիվություն և նվաճումներ" : lang === "ru" ? "Активность и достижения" : "Activity and achievements"}
+          <span aria-hidden="true" className="shrink-0 text-primary transition-transform group-open/profile-detail:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-2 sm:p-3">
       <section className="academy-bento space-y-4 p-4 sm:p-5" aria-label={lang==="hy"?"Ուսումնական ակտիվության օրացույց":lang==="ru"?"Календарь занятий":"Learning activity calendar"}>
         <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-black">{lang==="hy"?"Իմ ուսումնական ակտիվությունը":lang==="ru"?"Моя учебная активность":"My learning activity"}</h2><span className="text-xs font-bold text-primary">{progress.xp} XP · {unlocked.length} {lang==="hy"?"նվաճում":lang==="ru"?"достижений":"achievements"}</span></div>
         <div className="grid grid-cols-7 gap-2" role="img" aria-label={lang==="hy"?"Վերջին 28 օրվա պահպանված ակտիվություն":lang==="ru"?"Сохранённая активность за 28 дней":"Saved activity for the last 28 days"}>
@@ -238,14 +300,8 @@ export function DashboardFocus({ name, progress, subjects }: {
         </div>
         <p className="text-xs text-muted-foreground">{lang==="hy"?"Օրացույցում երևում է միայն այս սարքում պահպանված վերջին 31 օրվա ակտիվությունը։ Բաց թողած օրերը չեն նվազեցնում միավորները։":lang==="ru"?"Показаны только последние 31 день активности, сохранённой на устройстве. Пропуски не отнимают баллы.":"Only the last 31 days saved on this device are available. Missed days do not deduct points."}</p>
       </section>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {stats.map(({ label, value, Icon }) => (
-          <div className="academy-bento min-w-0 p-4" key={label}>
-            <p className="flex items-center gap-2 text-xs font-bold text-muted-foreground"><Icon className="size-4 text-primary" />{label}</p>
-            <p className="mt-2 text-2xl font-black tabular-nums text-foreground">{value}</p>
-          </div>
-        ))}
-      </div>
+        </div>
+      </details>
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,.8fr)]">
         <div className="academy-bento min-w-0 space-y-3 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
