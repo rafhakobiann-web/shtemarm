@@ -7,6 +7,7 @@ on:
       - 'src/routes/dashboard.tsx'
       - 'src/routes/profile.tsx'
       - 'src/components/DashboardOverview.tsx'
+      - 'src/lib/dashboard-summary.ts'
       - 'src/test/dashboard-minimal.test.ts'
       - 'src/components/DashboardFocus.tsx'
       - 'src/components/LandingLabV3.tsx'
