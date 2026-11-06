@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, Sparkles, Dna, LibraryBig, Target, Smartphone, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, ClipboardCheck, Trophy, Brain, BookOpen, Sparkles, Dna, Smartphone, UserRound } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
