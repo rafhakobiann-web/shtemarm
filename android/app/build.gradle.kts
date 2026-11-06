@@ -27,7 +27,13 @@ android {
             }
         }
         buildTypes.getByName("release").signingConfig = signingConfigs.getByName("production")
+        // Beta APKs retain the functional debug UI, but use the SAME persistent
+        // certificate on every CI run when signing secrets are configured.
+        buildTypes.getByName("debug").signingConfig = signingConfigs.getByName("production")
     }
+    // Preview APKs use a distinct package ID, so they can be installed without
+    // replacing or deleting an existing app signed with an unknown certificate.
+    buildTypes.getByName("debug").applicationIdSuffix = ".preview"
     buildFeatures { compose = true }
     sourceSets.getByName("main").assets.srcDir(file("../../public/data"))
     compileOptions {
