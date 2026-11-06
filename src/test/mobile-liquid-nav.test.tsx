@@ -16,6 +16,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 });
 vi.mock("@/lib/lang", () => ({
   useTx: () => (value: string) => value,
+  useLang: () => "hy",
 }));
 
 afterEach(() => {
@@ -25,73 +26,61 @@ afterEach(() => {
 });
 
 describe("Liquid Glass bottom dock routes", () => {
-  it("maps all five destinations to existing routes or documented home anchors", () => {
+  it("maps five straightforward destinations to registered routes", () => {
     expect(MOBILE_TAB_TARGETS).toHaveLength(5);
-    expect(MOBILE_TAB_TARGETS.map(tab => tab.id)).toEqual([
-      "home", "books", "exams", "games", "tools",
-    ]);
+    expect(MOBILE_TAB_TARGETS.map(tab => tab.id)).toEqual(["home", "explore", "exams", "tools", "profile"]);
+    const routes = {
+      "/dashboard": "src/routes/dashboard.tsx",
+      "/explore": "src/routes/explore.tsx",
+      "/study-tools": "src/routes/study-tools.tsx",
+      "/profile": "src/routes/profile.tsx",
+    } as const;
     for (const tab of MOBILE_TAB_TARGETS) {
-      const routeFile = tab.to === "/dashboard" ? "src/routes/dashboard.tsx" :
-        tab.to === "/mini-games" ? "src/routes/mini-games.tsx" :
-        tab.to === "/study-tools" ? "src/routes/study-tools.tsx" : "";
-      expect(routeFile).not.toBe("");
+      const routeFile = routes[tab.to];
       expect(readFileSync(routeFile, "utf8")).toContain('createFileRoute("' + tab.to + '")');
     }
-    const home = readFileSync("src/routes/dashboard.tsx", "utf8");
-    expect(home).toContain('id="subjects"');
-    expect(home).toContain('id="exams"');
+    expect(readFileSync("src/routes/explore.tsx","utf8")).toContain('id="exams"');
+    expect(readFileSync("src/routes/dashboard.tsx","utf8")).toContain('id="subjects"');
   });
 
-  it("keeps the correct selected item across studies, exams, games and tools", () => {
+  it("highlights the correct destination across books, exams, tools and profile", () => {
     const scenarios: Array<[string,string,number]> = [
-      ["/dashboard", "", 0], ["/dashboard", "subjects", 1], ["/dashboard", "#exams", 2],
-      ["/", "", 0], ["/", "subjects", 1], ["/", "#exams", 2],
-      ["/book/61", "", 1], ["/study/61/1", "", 1],
-      ["/math/books", "", 1], ["/physics/original", "", 1],
-      ["/physics/books", "", 1], ["/history-book", "", 1],
-      ["/exam/english", "", 2], ["/test/1", "", 2],
-      ["/subject/physics", "", 2], ["/biology", "", 2],
-      ["/math", "", 2], ["/physics/scan-practice", "", 2],
-      ["/mini-games", "", 3], ["/mini-games/", "", 3],
-      ["/study-tools", "", 4], ["/assessment-builder", "", 4],
-      ["/calc", "", 4], ["/chat", "", 4], ["/flashcards", "", 4],
+      ["/dashboard","",0],["/dashboard","subjects",0],["/","",0],
+      ["/explore","",1],["/explore","#exams",2],["/explore","subjects",1],
+      ["/book/61","",1],["/study/61/1","",1],["/math/books","",1],
+      ["/exam/english","",2],["/math","",2],["/biology","",2],
+      ["/study-tools","",3],["/mini-games","",3],["/flashcards","",3],
+      ["/calc","",3],["/chat","",3],["/study-plan","",3],
+      ["/profile","",4],["/achievements","",4],["/learning-insights","",4],
     ];
-    for (const [path, hash, index] of scenarios) {
-      expect(getMobileNavIndex(path, hash), path + "#" + hash).toBe(index);
-    }
+    for(const [path,hash,index] of scenarios)
+      expect(getMobileNavIndex(path,hash),path+"#"+hash).toBe(index);
   });
 
-  it("renders five accessible working destinations and a moving active bubble", () => {
-    mockLocation.pathname = "/mini-games";
-    const view = render(<MobileNav />);
-    const dock = screen.getByRole("navigation", {name:"Արագ նավարկում"});
-    const links = within(dock).getAllByRole("link");
+  it("renders five working, accessible and keyboard-reachable tabs", () => {
+    mockLocation.pathname="/study-tools";
+    const view=render(<MobileNav/>);
+    const dock=screen.getByRole("navigation",{name:"Արագ նավարկում"});
+    const links=within(dock).getAllByRole("link");
     expect(links).toHaveLength(5);
-    expect(links.map(link => link.getAttribute("href"))).toEqual([
-      "/dashboard", "/dashboard#subjects", "/dashboard#exams", "/mini-games", "/study-tools",
+    expect(links.map(link=>link.getAttribute("href"))).toEqual([
+      "/dashboard","/explore","/explore#exams","/study-tools","/profile"
     ]);
-    expect(within(dock).getByRole("link", {name:"Խաղեր"})).toHaveAttribute(
-      "aria-current", "page",
-    );
-    expect(dock.querySelector(".mobile-liquid-indicator")).toHaveStyle({
-      transform:"translate3d(300%, 0, 0)",
-    });
+    expect(within(dock).getByRole("link",{name:"Գործիքներ"})).toHaveAttribute("aria-current","page");
+    expect(dock.querySelector(".mobile-liquid-indicator")).toHaveStyle({transform:"translate3d(300%, 0, 0)"});
     view.unmount();
   });
 
-  it("moves the active bubble by whole tab widths for every destination", () => {
-    for (const [path, expected] of [
-      ["/dashboard", "translate3d(0%, 0, 0)"],
-      ["/book/61", "translate3d(100%, 0, 0)"],
-      ["/exam/english", "translate3d(200%, 0, 0)"],
-      ["/mini-games", "translate3d(300%, 0, 0)"],
-      ["/study-tools", "translate3d(400%, 0, 0)"],
+  it("moves the active indicator to the current destination", () => {
+    for(const [path,expected] of [
+      ["/dashboard","translate3d(0%, 0, 0)"],
+      ["/explore","translate3d(100%, 0, 0)"],
+      ["/study-tools","translate3d(300%, 0, 0)"],
+      ["/profile","translate3d(400%, 0, 0)"]
     ]) {
-      mockLocation.pathname = path;
-      const view = render(<MobileNav />);
-      expect(view.container.querySelector(".mobile-liquid-indicator")).toHaveStyle({
-        transform: expected,
-      });
+      mockLocation.pathname=path;
+      const view=render(<MobileNav/>);
+      expect(view.container.querySelector(".mobile-liquid-indicator")).toHaveStyle({transform:expected});
       view.unmount();
     }
   });

@@ -1,30 +1,29 @@
 import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { BookOpen, ClipboardCheck, Gamepad2, House, Wrench } from "lucide-react";
-import { useTx } from "@/lib/lang";
+import { Compass, ClipboardCheck, UserRound, House, Wrench } from "lucide-react";
+import { useLang, useTx } from "@/lib/lang";
 
-/**
- * The five tabs have stable destinations; subjects/exams are real anchors
- * on the signed-in dashboard. All other tabs use actual application routes.
- */
+/** Five stable destinations: Home → Explore → Exams → Tools → Profile. */
 export const MOBILE_TAB_TARGETS = [
   { id: "home", to: "/dashboard", hash: "" },
-  { id: "books", to: "/dashboard", hash: "subjects" },
-  { id: "exams", to: "/dashboard", hash: "exams" },
-  { id: "games", to: "/mini-games", hash: "" },
+  { id: "explore", to: "/explore", hash: "" },
+  { id: "exams", to: "/explore", hash: "exams" },
   { id: "tools", to: "/study-tools", hash: "" },
+  { id: "profile", to: "/profile", hash: "" },
 ] as const;
 
 export function getMobileNavIndex(pathname: string, hash = ""): number {
   const path = pathname.replace(/\/+$/, "") || "/";
   const anchor = hash.replace(/^#/, "");
-  if (path === "/" || path === "/dashboard") return anchor === "subjects" ? 1 : anchor === "exams" ? 2 : 0;
-  if (path === "/mini-games") return 3;
+  if (path === "/" || path === "/dashboard") return 0;
+  if (path === "/explore") return anchor === "exams" ? 2 : 1;
+  if (path === "/profile" || path === "/achievements" || path === "/learning-insights") return 4;
   if (
-    path === "/study-tools" || path === "/flashcards" ||
-    path === "/assessment-builder" || path === "/calc" ||
-    path === "/chat" || path === "/vocabulary" || path === "/mistakes" || path === "/english-grammar" || path === "/math-handbook" || path === "/math-review"
-  ) return 4;
+    path === "/study-tools" || path === "/flashcards" || path === "/mini-games" ||
+    path === "/assessment-builder" || path === "/calc" || path === "/chat" ||
+    path === "/vocabulary" || path === "/mistakes" || path === "/english-grammar" ||
+    path === "/math-handbook" || path === "/math-review" || path === "/study-plan"
+  ) return 3;
   if (
     path.startsWith("/book/") || path.startsWith("/study/") ||
     path.startsWith("/math/books") || path === "/history-book" ||
@@ -32,19 +31,17 @@ export function getMobileNavIndex(pathname: string, hash = ""): number {
   ) return 1;
   if (
     path.startsWith("/exam/") || path.startsWith("/test/") ||
-    path.startsWith("/level-test/") || path.startsWith("/math") ||
-    path.startsWith("/history") || path.startsWith("/biology") ||
+    path.startsWith("/level-test/") || path === "/math" ||
+    path === "/history" || path === "/biology" ||
     path.startsWith("/subject/") || path.startsWith("/physics/scan-practice")
   ) return 2;
   return 0;
 }
-
 export function MobileNav() {
   const tx = useTx();
+  const lang = useLang();
   const { pathname, hash } = useLocation();
-  const [homeVisible, setHomeVisible] = useState<0 | 1 | 2 | null>(null);
-  const selected = (pathname === "/" || pathname === "/dashboard") && homeVisible !== null
-    ? homeVisible : getMobileNavIndex(pathname, hash);
+  const selected = getMobileNavIndex(pathname, hash);
   const [compact, setCompact] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   useEffect(() => {
@@ -134,19 +131,6 @@ export function MobileNav() {
     lastY.current = window.scrollY || 0;
     let frame = 0;
     let directionTravel = 0;
-    let lastSectionY = lastY.current;
-    const detectHomeSection = () => {
-      if (pathname !== "/" && pathname !== "/dashboard") return;
-      const subjects = document.getElementById("subjects");
-      const exams = document.getElementById("exams");
-      if (!subjects || !exams) return;
-      const marker = Math.max(130, window.innerHeight * .28);
-      const visible: 0 | 1 | 2 =
-        exams.getBoundingClientRect().top <= marker ? 2 :
-        subjects.getBoundingClientRect().top <= marker ? 1 : 0;
-      setHomeVisible(previous => previous === visible ? previous : visible);
-    };
-    detectHomeSection();
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
@@ -169,12 +153,6 @@ export function MobileNav() {
           directionTravel = 0;
         }
         lastY.current = nextY;
-        // Reading multiple bounding rectangles on every frame can force
-        // layout on long books. Sample section position every ~80px instead.
-        if ((pathname === "/" || pathname === "/dashboard") && Math.abs(nextY - lastSectionY) >= 80) {
-          lastSectionY = nextY;
-          detectHomeSection();
-        }
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -191,7 +169,6 @@ export function MobileNav() {
       settleTimer.current = null;
     }
     setCompact(false);
-    setHomeVisible(null);
     setHoverTab(null);
     setDragging(false);
   }, [pathname, hash]);
@@ -199,10 +176,12 @@ export function MobileNav() {
     if (settleTimer.current) clearTimeout(settleTimer.current);
   }, []);
 
-  // Home-page hash targets always scroll to the actual catalogue/exams section.
+  // Keep older dashboard anchors working and support the dedicated Exams hub.
   useEffect(() => {
     const anchor = hash?.replace(/^#/, "");
-    if ((pathname !== "/" && pathname !== "/dashboard") || (anchor !== "subjects" && anchor !== "exams")) return;
+    const dashboardAnchor = (pathname === "/" || pathname === "/dashboard") && (anchor === "subjects" || anchor === "exams");
+    const exploreAnchor = pathname === "/explore" && (anchor === "subjects" || anchor === "exams" || anchor === "tools");
+    if (!dashboardAnchor && !exploreAnchor) return;
     const frame = window.requestAnimationFrame(() => {
       document.getElementById(anchor)?.scrollIntoView({
         behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
@@ -214,37 +193,33 @@ export function MobileNav() {
   }, [pathname, hash]);
 
   const onTabClick = (event: MouseEvent<HTMLAnchorElement>, index: number) => {
-    if (index === 0 && (pathname === "/" || pathname === "/dashboard")) {
-      // Home should take students to the top even from #subjects or #exams.
-      // Clear the anchor using the actual router link, then scroll.
-      window.scrollTo({
-        top: 0,
-        behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-          ? "auto" : "smooth",
+    if (index === 0 && pathname === "/dashboard") {
+      window.scrollTo({top:0,behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth"});
+    }
+    if (index === 1 && pathname === "/explore") {
+      window.scrollTo({top:0,behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth"});
+    }
+    if (index === 2 && pathname === "/explore" && hash.replace(/^#/,"") === "exams") {
+      document.getElementById("exams")?.scrollIntoView({
+        behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth",
+        block:"start",
       });
     }
-    if ((pathname === "/" || pathname === "/dashboard") && (index === 1 || index === 2)) {
-      const anchor = index === 1 ? "subjects" : "exams";
-      // Also works when tapping the currently selected tab again.
-      if (hash.replace(/^#/, "") === anchor) {
-        document.getElementById(anchor)?.scrollIntoView({
-          behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-            ? "auto" : "smooth",
-          block: "start",
-        });
-      }
-    }
-    // Let TanStack Router handle navigation and update URL/history.
-    if (event.defaultPrevented) return;
+    if(event.defaultPrevented) return;
     setCompact(false);
   };
 
+  const words = {
+    hy:["Գլխավոր","Առարկաներ","Թեստեր","Գործիքներ","Պրոֆիլ"],
+    en:["Home","Explore","Exams","Tools","Profile"],
+    ru:["Главная","Предметы","Тесты","Сервис","Профиль"],
+  }[lang];
   const tabs = [
-    { ...MOBILE_TAB_TARGETS[0], label: tx("Գլխավոր"), icon: House },
-    { ...MOBILE_TAB_TARGETS[1], label: tx("Գրքեր"), icon: BookOpen },
-    { ...MOBILE_TAB_TARGETS[2], label: tx("Թեստեր"), icon: ClipboardCheck },
-    { ...MOBILE_TAB_TARGETS[3], label: tx("Խաղեր"), icon: Gamepad2 },
-    { ...MOBILE_TAB_TARGETS[4], label: tx("Գործիքներ"), icon: Wrench },
+    { ...MOBILE_TAB_TARGETS[0], label: words[0], icon: House },
+    { ...MOBILE_TAB_TARGETS[1], label: words[1], icon: Compass },
+    { ...MOBILE_TAB_TARGETS[2], label: words[2], icon: ClipboardCheck },
+    { ...MOBILE_TAB_TARGETS[3], label: words[3], icon: Wrench },
+    { ...MOBILE_TAB_TARGETS[4], label: words[4], icon: UserRound },
   ] as const;
 
   return (

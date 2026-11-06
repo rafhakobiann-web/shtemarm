@@ -15,7 +15,7 @@ describe("Biology original book navigation from screenshot", () => {
     expect(homepage).toContain('volume: 4 as const');
     expect(homepage).toContain('importedBooks.map');
     expect(homepage).toContain('BIOLOGY_ORIGINAL_BOOKS.map');
-    expect(homepage).toContain('BIO_BOOKS.filter(b => b.id === 31 || b.id === 32)');
+    expect(homepage).toContain('BIO_BOOKS.filter((b) => b.id === 31 || b.id === 32)');
     expect(homepage).toContain('to="/book/$bookId" params={{ bookId: String(30 + b.volume) }}');
   });
   it("removes the authored starter block from the source-book catalog", () => {

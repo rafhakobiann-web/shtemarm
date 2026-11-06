@@ -12,10 +12,11 @@ describe("Responsive Shtemarm layout and navigation regressions", () => {
   const settings = source("src/components/PersonalizationControls.tsx");
 
   it("routes every subject menu item to the signed-in dashboard", () => {
-    expect(header.match(/to="\/dashboard" search=\{\{ subject: /g)).toHaveLength(5);
+    expect(header).toContain('to="/explore"');
+    expect(header).toContain('to="/profile"');
     expect(header).not.toContain('to="/" search={{ subject:');
-    expect(header).toContain("xl:grid-cols-");
-    expect(header).toContain("xl:flex");
+    expect(header).toContain("max-w-6xl");
+    expect(header).toContain("lg:flex");
   });
 
   it("does not capture native tab taps before horizontal drag intent", () => {
@@ -45,7 +46,7 @@ describe("Responsive Shtemarm layout and navigation regressions", () => {
     expect(css).toContain("@media (min-width: 1024px)");
     expect(css).toContain("safe-area-inset-bottom");
     expect(landing).toContain('aria-label={ui.signIn} className="sht-nav-login"');
-    expect(dashboard).toContain("sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2");
+    expect(dashboard).toContain("sht-dashboard-shortcuts sht-home-action-grid");
     expect(css).toContain(".sht-dashboard-bento > :first-child");
   });
 

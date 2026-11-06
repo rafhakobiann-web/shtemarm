@@ -38,22 +38,25 @@ describe("Shtemarm Academy final design tokens",()=>{
     for (const value of ["sht-hero", "sht-bento-grid", "sht-subject-grid", 'to="/auth"']) {
       expect(home).toContain(value);
     }
-    for (const value of ["DashboardOverview", "academy-quick-action", "academy-bento",
-      'id="subjects"', 'id="exams"', 'to="/mini-games"',
-      'to="/math"', 'to="/history"',
+    for (const value of ["DashboardOverview", "sht-home-2026", "sht-home-subject-grid",
+      'id="subjects"', 'id="exams"', 'to="/explore"', 'to="/study-tools"',
       'to="/subject/$subject"', "PHYSICS_BOOKS.map", "BIO_BOOKS.filter",
       "HISTORY_BOOKS.map", "ARMENIAN_BOOKS.map", "BOOKS.map", "MATH_BOOKS.map"]) {
       expect(dashboard).toContain(value);
     }
-    expect(header).toContain('to="/physics/original"');
+    const explore = readFileSync("src/routes/explore.tsx","utf8");
+    for (const value of ['id="subjects"', 'id="exams"', 'id="tools"',
+      'to="/mini-games"', 'to="/math"', 'to="/history"', 'to="/biology"'])
+      expect(explore).toContain(value);
+    expect(header).toContain('to="/explore"');
     expect(header).toContain('to="/study-tools"');
   });
   it("keeps the critical study destinations visible on phones with real touch targets",()=>{
     expect(mobile).toContain("grid-cols-5");
     expect(mobile).toContain("min-h-[3.6rem]");
-    expect(mobile).toContain('hash: "subjects"');
+    expect(mobile).toContain('to: "/explore"');
     expect(mobile).toContain('hash: "exams"');
-    expect(mobile).toContain('to: "/mini-games"');
+    expect(mobile).toContain('to: "/profile"');
     expect(mobile).toContain('to: "/study-tools"');
   });
   it("localizes new study dashboard copy in English and Russian",()=>{

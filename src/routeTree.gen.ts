@@ -21,6 +21,7 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EnglishGrammarRouteImport } from './routes/english-grammar'
 import { Route as EnglishTestsRouteImport } from './routes/english-tests'
 import { Route as FeedbackRouteImport } from './routes/feedback'
@@ -115,6 +116,11 @@ const DownloadRoute = DownloadRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnglishGrammarRoute = EnglishGrammarRouteImport.update({
@@ -307,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/profile': typeof ProfileRoute
+  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -356,6 +363,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/profile': typeof ProfileRoute
+  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -406,6 +414,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
   '/profile': typeof ProfileRoute
+  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -457,6 +466,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/download'
     | '/profile'
+    | '/explore'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -506,6 +516,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/download'
     | '/profile'
+    | '/explore'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -555,6 +566,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/download'
     | '/profile'
+    | '/explore'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -605,6 +617,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DownloadRoute: typeof DownloadRoute
   ProfileRoute: typeof ProfileRoute
+  ExploreRoute: typeof ExploreRoute
   EnglishGrammarRoute: typeof EnglishGrammarRoute
   EnglishTestsRoute: typeof EnglishTestsRoute
   FeedbackRoute: typeof FeedbackRoute
@@ -726,6 +739,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/english-grammar': {
@@ -989,6 +1009,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DownloadRoute: DownloadRoute,
   ProfileRoute: ProfileRoute,
+  ExploreRoute: ExploreRoute,
   EnglishGrammarRoute: EnglishGrammarRoute,
   EnglishTestsRoute: EnglishTestsRoute,
   FeedbackRoute: FeedbackRoute,

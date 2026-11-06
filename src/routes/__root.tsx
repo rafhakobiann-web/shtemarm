@@ -19,6 +19,7 @@ import interactionMotionCss from "../interaction-motion-2026.css?url";
 import studyComfortCss from "../study-comfort.css?url";
 import landingV3Css from "../landing-v3.css?url";
 import dashboardFocusCss from "../dashboard-focus.css?url";
+import exploreCss from "../explore-2026.css?url";
 import minimalLayoutCss from "../minimal-layout-2026.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
@@ -146,6 +147,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: studyComfortCss },
       { rel: "stylesheet", href: landingV3Css },
       { rel: "stylesheet", href: dashboardFocusCss },
+      { rel: "stylesheet", href: exploreCss },
       { rel: "stylesheet", href: minimalLayoutCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },

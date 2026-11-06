@@ -27,23 +27,27 @@ describe("focused student dashboard and protected profile", () => {
     expect(focus).toContain('grid grid-cols-2 gap-3 md:grid-cols-4');
   });
 
-  it("does not expand any question-book category by default", () => {
-    expect(dashboard).toContain('defaultOpen={libraryFilter !== "all"}');
-    expect(dashboard).not.toContain('title={tx("Անգլերեն")} defaultOpen>');
-    expect(dashboard).not.toContain('title={tx("Մաթեմատիկա")} defaultOpen>');
-    expect(dashboard).toContain('libraryFilter === "other" && <SubjectRow');
+  it("replaces the old full catalogue with six subject cards and three useful next steps", () => {
+    expect(dashboard).toContain("sht-home-subject-grid");
     expect(dashboard).toContain('id="subjects"');
     expect(dashboard).toContain('id="exams"');
-    expect(dashboard).toContain('data-dashboard-more-exams');
+    expect(dashboard).not.toContain('LIBRARY_FILTERS.map');
+    expect(dashboard).toContain('to="/explore"');
+    expect(dashboard).toContain('to="/study-tools"');
+    expect(dashboard).toContain('to="/profile"');
+    expect(dashboard).toContain('ARMENIAN_BOOKS.map');
   });
 
-  it("retains access to every study route through optional tools and catalogues", () => {
-    for (const destination of [
-      "/study-plan", "/mistakes", "/chat", "/flashcards", "/mini-games",
-      "/calc", "/feedback", "/download", "/math", "/history", "/biology",
+  it("keeps all study and exam destinations in the dedicated explorer", () => {
+    const explore = source("src/routes/explore.tsx");
+    for (const route of [
+      "/study-plan","/mistakes","/chat","/flashcards","/mini-games",
+      "/math","/history","/biology","/study-tools",
     ]) {
-      expect(dashboard).toContain(destination);
+      expect(explore+dashboard).toContain(route);
     }
+    expect(explore).toContain("EXPLORE_SUBJECTS");
+    expect(explore).toContain("type=\"search\"");
   });
 
   it("protects the profile route and makes it available from the account menu", () => {

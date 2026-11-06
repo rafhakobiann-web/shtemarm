@@ -46,7 +46,7 @@ describe("Shtemarm text-only books and question UX", () => {
       ".github/workflows/verify-study-music.yml",
     ]) expect(existsSync(file)).toBe(false);
     expect(read("src/routes/dashboard.tsx")).not.toContain("function ComingSoon(");
-    expect(read("src/routes/dashboard.tsx")).toContain('to="/mini-games"');
+    expect(read("src/routes/explore.tsx")).toContain('to="/mini-games"');
     expect(read("src/components/BiologyOriginalPractice.tsx")).toContain("recordAnswer");
   });
 });
