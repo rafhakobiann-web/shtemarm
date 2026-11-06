@@ -874,7 +874,7 @@ export const MATH_GEOMETRY: MathTopic[] = [
       "en": "One valid counterexample disproves a universal claim; one positive example does not prove it universally.",
       "ru": "Один контрпример опровергает утверждение «для всех»; один подтверждающий пример не доказывает его."
     },
-    "formula": "∀x P(x) is false if ∃x with ¬P(x)",
+    "formula": "$\\neg\\bigl(\\forall x\\,P(x)\\bigr)\\iff\\exists x\\,\\neg P(x)$",
     "problem": {
       "hy": "Պնդում՝ «ցանկացած իրական x-ի համար x²>x»։ Ճի՞շտ է։",
       "en": "Claim: 'x²>x for every real x'. True?",
