@@ -51,6 +51,18 @@ describe("near-full-screen step-by-step lesson",()=>{
     expect(screen.getByText("Understand the problem")).toBeInTheDocument();
   });
 
+  it("supports jumping directly to a numbered step with an accessible active indicator",()=>{
+    render(<RichExplanation text={"1. Read the given values\\n2. Apply the formula\\n3. Verify the result"}/>);
+    const dialog=screen.getByRole("dialog");
+    const jump=within(dialog).getByRole("button",{name:"Go to step 3"});
+    fireEvent.click(jump);
+    expect(within(dialog).getByText("Verify the result")).toBeInTheDocument();
+    expect(jump).toHaveAttribute("aria-current","step");
+    expect(within(dialog).getByRole("progressbar")).toHaveAttribute("aria-valuenow","3");
+    fireEvent.click(within(dialog).getByRole("button",{name:"Previous step"}));
+    expect(within(dialog).getByText("Apply the formula")).toBeInTheDocument();
+  });
+
   it("shows a single step for unnumbered offline responses without inventing details",()=>{
     render(<RichExplanation source="offline" text="Always multiply numerator and denominator by the same number."/>);
     const dialog=screen.getByRole("dialog");
