@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { useRef, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { loadBook } from "@/lib/books";
+import { drawEnglishDemoQuestions, englishDemoQuestions, type EnglishDemoQuestion } from "@/lib/english-landing-demo";
 import { ArrowRight, ArrowUpRight, BookOpen, BookMarked, Check, CheckCircle2, ChevronLeft, ChevronRight, Download, GraduationCap, Lightbulb, RotateCcw, Sparkles, Target, WandSparkles, X } from "lucide-react";
 
 type Lang = "hy" | "en" | "ru";
@@ -12,6 +14,7 @@ const L = {
     playground: "Փորձիր հենց այստեղ", demo: "Ինտերակտիվ ուսումնական փորձարկում", anonymous: "Առանց գրանցվելու",
     choose: "Ընտրիր առարկան", math: "Մաթեմատիկա", english: "Անգլերեն", armenian: "Հայոց լեզու",
     question: "Հարց", of: "ից", correct: "Ճիշտ է", rethink: "Փորձիր հասկանալ",
+    check: "Ստուգել պատասխանը", refresh: "Նոր պատահական հարցեր", loadingBook: "Բեռնվում են շտեմարանների հարցերը…", emptyBook: "Հարցերը հիմա հասանելի չեն․ փորձիր կրկին։", multipleHint: "Ընտրիր բոլոր ճիշտ պնդումները, ապա ստուգիր։", sourceBook: "Շտեմարան", sourceSection: "Բաժին",
     next: "Հաջորդ հարցը", retry: "Նորից փորձել", explanation: "Բացատրություն",
     finished: "Ավարտեցիր փոքրիկ փորձարկումը", finishedText: "Ավելի շատ հարցեր, կրկնություն և առաջընթաց՝ քո ուսումնական տարածքում։",
     begin: "Սկսել սովորել", note: "Սրանք ցուցադրական հարցեր են․ պատասխանները չեն պահպանվում։",
@@ -38,6 +41,7 @@ const L = {
     playground: "Try it for yourself", demo: "Interactive learning playground", anonymous: "No sign-in needed",
     choose: "Choose a subject", math: "Mathematics", english: "English", armenian: "Armenian",
     question: "Question", of: "of", correct: "Exactly right", rethink: "Let's work through it",
+    check: "Check answers", refresh: "New random questions", loadingBook: "Loading questions from the books…", emptyBook: "The book questions are unavailable right now. Try again.", multipleHint: "Select every correct statement, then check.", sourceBook: "Book", sourceSection: "Section",
     next: "Next question", retry: "Try again", explanation: "Explanation",
     finished: "Mini challenge complete", finishedText: "Find more questions, review tools and progress tracking in your own study space.",
     begin: "Start learning", note: "These are sample questions. Answers aren't saved.",
@@ -64,6 +68,7 @@ const L = {
     playground: "Попробуй сам", demo: "Интерактивная учебная зона", anonymous: "Без регистрации",
     choose: "Выбери предмет", math: "Математика", english: "Английский", armenian: "Армянский",
     question: "Вопрос", of: "из", correct: "Правильно", rethink: "Разберём вместе",
+    check: "Проверить ответы", refresh: "Новые случайные вопросы", loadingBook: "Загружаются вопросы из сборников…", emptyBook: "Вопросы сейчас недоступны. Попробуй ещё раз.", multipleHint: "Выбери все правильные утверждения и проверь.", sourceBook: "Сборник", sourceSection: "Раздел",
     next: "Следующий вопрос", retry: "Ещё раз", explanation: "Объяснение",
     finished: "Мини-задание завершено", finishedText: "Больше вопросов, повторение и прогресс доступны в личном кабинете.",
     begin: "Начать учиться", note: "Это примеры вопросов. Ответы не сохраняются.",
@@ -115,17 +120,55 @@ const SUBJECTS: { id: Subject; glyph: string }[] = [
 
 export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryTo?: "/auth" | "/dashboard" }) {
   const t = L[lang];
-  const [subject, setSubject] = useState<Subject>("math");
+  const [subject, setSubject] = useState<Subject>("english");
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [checked, setChecked] = useState(false);
   const [finished, setFinished] = useState(false);
-  const question = QUESTIONS[subject][index];
-  const chooseSubject = (id: Subject) => { setSubject(id); setIndex(0); setAnswer(null); setFinished(false); };
-  const restart = () => { setIndex(0); setAnswer(null); setFinished(false); };
-  const next = () => {
-    if (index + 1 === QUESTIONS[subject].length) { setFinished(true); setAnswer(null); }
-    else { setIndex(index + 1); setAnswer(null); }
+  const [englishPool, setEnglishPool] = useState<EnglishDemoQuestion[]>([]);
+  const [englishRound, setEnglishRound] = useState<EnglishDemoQuestion[]>([]);
+  const [bookStatus, setBookStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [loadAttempt, setLoadAttempt] = useState(0);
+
+  useEffect(() => {
+    let live = true;
+    Promise.all([1, 2, 3].map(id => loadBook(id)))
+      .then(books => {
+        if (!live) return;
+        const pool = englishDemoQuestions(books);
+        setEnglishPool(pool);
+        setEnglishRound(drawEnglishDemoQuestions(pool));
+        setBookStatus(pool.length ? "ready" : "error");
+      })
+      .catch(() => { if (live) setBookStatus("error"); });
+    return () => { live = false; };
+  }, [loadAttempt]);
+
+  const questionCount = subject === "english" ? englishRound.length : QUESTIONS[subject].length;
+  const englishQuestion = subject === "english" ? englishRound[index] : undefined;
+  const question = subject === "english" ? undefined : QUESTIONS[subject][index];
+  const hasAnswer = englishQuestion ? checked : answer !== null;
+  const correct = englishQuestion
+    ? selected.length === englishQuestion.correct.length && selected.every(i => englishQuestion.correct.includes(i))
+    : answer === question?.correct;
+
+  const resetAnswer = () => { setAnswer(null); setSelected([]); setChecked(false); };
+  const chooseSubject = (id: Subject) => { setSubject(id); setIndex(0); resetAnswer(); setFinished(false); };
+  const restart = () => {
+    setIndex(0); resetAnswer(); setFinished(false);
+    if (subject === "english") setEnglishRound(drawEnglishDemoQuestions(englishPool));
   };
+  const next = () => {
+    if (index + 1 >= questionCount) { setFinished(true); resetAnswer(); }
+    else { setIndex(index + 1); resetAnswer(); }
+  };
+  const toggleEnglish = (i: number) => {
+    if (checked) return;
+    if (!englishQuestion?.multiple) { setSelected([i]); setChecked(true); return; }
+    setSelected(old => old.includes(i) ? old.filter(n => n !== i) : [...old, i]);
+  };
+
   return (
     <div className="sl-lab" aria-label={t.demo}>
       <div className="sl-lab-header">
@@ -140,36 +183,58 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
           </button>)}
         </div>
         <div className="sl-lab-stage" role="tabpanel">
-          {finished ? (
+          {subject === "english" && bookStatus !== "ready" ? (
+            <div className="sl-lab-finish" aria-live="polite">
+              <BookOpen size={32} aria-hidden="true" />
+              <p>{bookStatus === "loading" ? t.loadingBook : t.emptyBook}</p>
+              {bookStatus === "error" && <button type="button" onClick={() => { setBookStatus("loading"); setLoadAttempt(n => n + 1); }}><RotateCcw size={16} />{t.retry}</button>}
+            </div>
+          ) : finished ? (
             <div className="sl-lab-finish" aria-live="polite"><CheckCircle2 size={37} /><h3>{t.finished}</h3><p>{t.finishedText}</p>
-              <button type="button" onClick={restart}><RotateCcw size={17} />{t.retry}</button>
+              <button type="button" onClick={restart}><RotateCcw size={17} />{subject === "english" ? t.refresh : t.retry}</button>
               <Link to={entryTo}>{t.begin}<ArrowRight size={17} /></Link>
             </div>
           ) : (
-            <>
-              <div className="sl-lab-number"><span>{t.question} {index + 1} {t.of} {QUESTIONS[subject].length}</span><span>{t.playground}</span></div>
-              <div className="sl-lab-track" aria-hidden="true"><span style={{ width: (100 * (index + 1) / QUESTIONS[subject].length) + "%" }} /></div>
-              <h3 key={subject + "-" + index}>{question.prompt[lang]}</h3>
-              <div className="sl-lab-options" role="group" aria-label={question.prompt[lang]}>
-                {question.options.map((option, i) => {
-                  const selected = answer === i, correct = answer !== null && question.correct === i;
-                  return <button type="button" key={option} disabled={answer !== null} onClick={() => setAnswer(i)}
-                    aria-pressed={selected} className={(selected ? "is-selected " : "") + (correct ? "is-correct " : "") + (selected && !correct ? "is-wrong" : "")}>
-                    <span>{String.fromCharCode(65 + i)}</span><strong>{option}</strong>{correct ? <Check size={18} /> : selected ? <X size={18} /> : null}
+            <div className="sl-lab-question" key={subject + ":" + index + ":" + (englishQuestion?.id ?? "")}>
+              <div className="sl-lab-number">
+                <span>{t.question} {index + 1} {t.of} {questionCount}</span>
+                <span>{englishQuestion ? `${t.sourceBook} ${englishQuestion.bookId} · ${t.sourceSection} ${englishQuestion.section}` : t.playground}</span>
+              </div>
+              <div className="sl-lab-track" aria-hidden="true"><span style={{ width: (100 * (index + 1) / questionCount) + "%" }} /></div>
+              <h3>{englishQuestion ? englishQuestion.prompt : question?.prompt[lang]}</h3>
+              {englishQuestion?.multiple && <p className="sl-lab-multiple-hint"><Lightbulb size={15} aria-hidden="true" />{t.multipleHint}</p>}
+              <div className={"sl-lab-options" + (englishQuestion?.multiple ? " sl-lab-set-options" : "")} role="group" aria-label={englishQuestion?.prompt ?? question?.prompt[lang]}>
+                {(englishQuestion?.options ?? question?.options ?? []).map((option, i) => {
+                  const isSelected = englishQuestion ? selected.includes(i) : answer === i;
+                  const isCorrect = hasAnswer && (englishQuestion ? englishQuestion.correct.includes(i) : question?.correct === i);
+                  return <button type="button" key={i} disabled={hasAnswer}
+                    onClick={() => englishQuestion ? toggleEnglish(i) : setAnswer(i)}
+                    aria-pressed={isSelected}
+                    className={(isSelected ? "is-selected " : "") + (isCorrect ? "is-correct " : "") + (hasAnswer && isSelected && !isCorrect ? "is-wrong" : "")}>
+                    <span>{englishQuestion?.multiple ? i + 1 : String.fromCharCode(65 + i)}</span>
+                    <strong>{option}</strong>
+                    {isCorrect ? <Check size={18} /> : isSelected && hasAnswer ? <X size={18} /> : null}
                   </button>;
                 })}
               </div>
               <div className="sl-lab-feedback" aria-live="polite" aria-atomic="true">
-                {answer === null ? <p><Lightbulb size={16} />{t.note}</p>
-                  : <div className={answer === question.correct ? "is-correct" : "is-retry"}>
-                    <strong>{answer === question.correct ? <CheckCircle2 size={17} /> : <Lightbulb size={17} />}{answer === question.correct ? t.correct : t.rethink}</strong>
-                    <p>{t.explanation}: {question.why[lang]}</p>
+                {!hasAnswer ? <p><Lightbulb size={16} />{t.note}</p>
+                  : <div key={String(correct)} className={correct ? "is-correct" : "is-retry"}>
+                    <strong>{correct ? <CheckCircle2 size={17} /> : <Lightbulb size={17} />}{correct ? t.correct : t.rethink}</strong>
+                    <p>{t.explanation}: {englishQuestion
+                      ? englishQuestion.explanation || (englishQuestion.multiple
+                        ? `${t.sourceSection} ${englishQuestion.section}: ${englishQuestion.correct.map(i => i + 1).join(", ")}`
+                        : englishQuestion.options[englishQuestion.correct[0]])
+                      : question?.why[lang]}</p>
                   </div>}
               </div>
-              <div className="sl-lab-bottom"><span>0{index + 1}<i> / </i>0{QUESTIONS[subject].length}</span>
-                {answer !== null ? <button type="button" onClick={next}>{t.next}<ArrowRight size={17} /></button> : <span className="sl-lab-try">{t.playground}</span>}
+              <div className="sl-lab-bottom"><span>{String(index + 1).padStart(2, "0")}<i> / </i>{String(questionCount).padStart(2, "0")}</span>
+                {englishQuestion?.multiple && !checked
+                  ? <button type="button" disabled={!selected.length} onClick={() => setChecked(true)}>{t.check}<Check size={17} /></button>
+                  : hasAnswer ? <button type="button" onClick={next}>{t.next}<ArrowRight size={17} /></button>
+                  : <span className="sl-lab-try">{t.playground}</span>}
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
