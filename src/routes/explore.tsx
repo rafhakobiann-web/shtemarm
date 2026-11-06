@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight, Atom, BookOpen, BookText, Brain, Calculator, CheckCircle2,
   Compass, Dna, FlaskConical, GraduationCap, Languages, LibraryBig, RotateCcw,
@@ -101,8 +101,22 @@ function SubjectLink({ item, lang, label }: {item:SubjectEntry;lang:Language;lab
 export function ExplorePage() {
   const lang = useLang();
   const t = UI[lang];
+  const { hash } = useLocation();
   const [query,setQuery] = useState("");
   const [filter,setFilter] = useState<"all"|"subjects"|"exams"|"tools">("all");
+  useEffect(() => {
+    const section=hash?.replace(/^#/,"");
+    if (section!=="subjects" && section!=="exams" && section!=="tools") return;
+    setQuery("");
+    setFilter(section);
+    const frame=window.requestAnimationFrame(() => {
+      document.getElementById(section)?.scrollIntoView({
+        behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth",
+        block:"start",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [hash]);
   const clean = query.trim().toLocaleLowerCase();
   const matches = useMemo(() => EXPLORE_SUBJECTS.filter(subject =>
     !clean || Object.values(subject.title).some(text => text.toLocaleLowerCase().includes(clean)) ||
