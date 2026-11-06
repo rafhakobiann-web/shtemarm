@@ -2,8 +2,9 @@
 export type LandingSession = "loading" | "signed-in" | "signed-out" | "unavailable";
 export type LandingDestination = "/auth" | "/dashboard";
 
+/** Signed-out visitors go to the dashboard so they can try a few answers before signing up. */
 export function landingDestination(status: LandingSession): LandingDestination {
-  return status === "signed-in" ? "/dashboard" : "/auth";
+  return status === "loading" || status === "unavailable" ? "/auth" : "/dashboard";
 }
 
 export function landingActionLabel(lang: "hy" | "en" | "ru", status: LandingSession): string {

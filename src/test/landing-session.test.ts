@@ -5,9 +5,9 @@ import { landingActionLabel, landingDestination } from "@/lib/landing-session";
 const source = (path: string) => readFileSync(path, "utf8");
 
 describe("public landing is available for visitors and signed-in students", () => {
-  it("uses the Dashboard for a signed-in student and auth for visitors", () => {
+  it("sends signed-in students and signed-out visitors to the Dashboard, and waits on auth while loading", () => {
     expect(landingDestination("signed-in")).toBe("/dashboard");
-    expect(landingDestination("signed-out")).toBe("/auth");
+    expect(landingDestination("signed-out")).toBe("/dashboard");
     expect(landingDestination("loading")).toBe("/auth");
     expect(landingDestination("unavailable")).toBe("/auth");
     expect(landingActionLabel("en", "signed-in")).toBe("Go to my dashboard");
@@ -23,8 +23,9 @@ describe("public landing is available for visitors and signed-in students", () =
     expect(landing).not.toContain('navigate({ to: "/dashboard", replace: true })');
     expect(root).toContain('!onboarded&&!isPublic&&pathname!=="/onboarding"');
     expect(root).toContain('const PUBLIC_PATHS = new Set(["/",');
-    // Study pages are still protected: don't change the fail-closed boundary.
-    expect(root).toContain('if(status==="signed-out"&&!isPublic)');
+    // Guests may open only the trial paths; everything else still fails closed.
+    expect(root).toContain('const GUEST_TRIAL_PATH = /^\\/(dashboard|book\\/\\d+|study\\/\\d+\\/\\d+)$/;');
+    expect(root).toContain('if(status==="signed-out"&&!isPublic&&!isGuestTrial)');
   });
 
   it("changes all main landing actions but not the download destination", () => {
