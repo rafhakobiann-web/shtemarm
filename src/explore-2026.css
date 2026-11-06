@@ -76,7 +76,6 @@
   .explore-page *, .explore-page *::before, .explore-page *::after {
     animation: none !important;
     transition: none !important;
-    transform: none !important;
   }
 }
 html.user-high-contrast .explore-page :is(.explore-subject-card,.explore-quick-link,.explore-profile-link,.explore-hero) {
