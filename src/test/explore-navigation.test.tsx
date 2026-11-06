@@ -35,11 +35,19 @@ describe("exploration-first information architecture",()=>{
   it("lets students search directly for a subject",()=>{
     render(<ExplorePage/>);
     expect(screen.getByRole("heading",{name:"Find your next learning step"})).toBeInTheDocument();
-    const input=screen.getByRole("searchbox",{name:"Search subjects and topics"});
+    const input=screen.getByRole("searchbox",{name:"Search subjects and tools"});
     fireEvent.change(input,{target:{value:"biology"}});
     expect(screen.getByRole("heading",{name:"Biology"})).toBeInTheDocument();
     expect(screen.queryByRole("heading",{name:"Mathematics"})).not.toBeInTheDocument();
     expect(screen.queryByRole("heading",{name:"Practice exams"})).not.toBeInTheDocument();
+  });
+
+  it("finds tools without forcing students to browse every category",()=>{
+    render(<ExplorePage/>);
+    fireEvent.change(screen.getByRole("searchbox"),{target:{value:"AI tutor"}});
+    expect(screen.getByRole("heading",{name:"Helpful tools, when you need them"})).toBeInTheDocument();
+    expect(screen.getByRole("link",{name:/AI tutor/})).toBeInTheDocument();
+    expect(screen.queryByRole("heading",{name:"Choose a subject"})).not.toBeInTheDocument();
   });
 
   it("shows a useful empty result and reset instead of a blank page",()=>{
