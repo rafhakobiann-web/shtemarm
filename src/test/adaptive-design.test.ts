@@ -42,7 +42,7 @@ describe("approved adaptive Liquid Glass design", () => {
     expect(landing).toContain('createFileRoute("/")');
     expect(landing).toContain("sht-palette-picker");
     expect(dashboard).toContain('createFileRoute("/dashboard")');
-    expect(dashboard).toContain("sht-dashboard-bento");
+    expect(dashboard).toContain("sht-home-subject-grid");
     expect(dashboard).toContain("sht-dashboard-shortcuts");
     expect(exam).toContain("sht-exam-hero");
     expect(exam).toContain("sht-exam-metric");
