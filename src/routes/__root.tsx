@@ -186,7 +186,7 @@ function RootComponent() {
   return <ActiveApp />;
 }
 
-const PUBLIC_PATHS = new Set(["/", "/auth", "/about", "/privacy", "/terms", "/download"]);
+const PUBLIC_PATHS = new Set(["/", "/auth", "/about", "/privacy", "/terms", "/download", "/guest"]);
 function AuthBoundary({children}:{children:ReactNode}) {
   const location=useLocation();
   const navigate=useNavigate();
@@ -247,7 +247,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
 function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   const location=useLocation();
-  const publicView=location.pathname==="/";
+  const publicView=location.pathname==="/" || location.pathname==="/guest";
   const practiceView = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname === "/math/play";
   useEffect(() => {
     return initAppearance();
