@@ -150,3 +150,28 @@ html.user-high-contrast .sht-home-quick-link {
   border-color: var(--foreground);
   background: var(--card);
 }
+
+/* Even with Liquid Glass selected, the new navigation remains low-noise. */
+html[data-surface="liquid"] .sht-explore-header {
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+html[data-surface="liquid"] .sht-home-2026 .dashboard-overview,
+html[data-surface="liquid"] .sht-home-2026 .sht-home-quick-link {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+  isolation: auto;
+}
+html[data-surface="liquid"] .sht-home-2026 .sht-home-quick-link::before {
+  content: none;
+}
+@media (prefers-reduced-transparency: reduce) {
+  html[data-surface="liquid"] .sht-explore-header {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
