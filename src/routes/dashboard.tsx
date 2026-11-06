@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target, Download, Smartphone } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target, Download, Smartphone, UserRound } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
@@ -304,7 +304,8 @@ function Index() {
 
   return (
     <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
-      <DashboardFocus name={name} progress={progress} subjects={savedSubjects} />
+      <div className="flex justify-end"><Link to="/profile" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-card px-4 py-2 text-sm font-bold text-foreground hover:bg-primary/5"><UserRound className="size-4 text-primary" />{lang === "hy" ? "Իմ պրոֆիլը" : lang === "ru" ? "Мой профиль" : "My Profile"}<ArrowRight className="size-4" /></Link></div>
+      <DashboardFocus name={name} progress={progress} subjects={savedSubjects} view="dashboard" />
       <section className="academy-hero relative isolate flex flex-wrap items-center justify-between gap-4 overflow-hidden rounded-[1.5rem] px-5 py-6 text-white sm:px-7" aria-label={tx("Արագ սկսել")}>
         <div className="relative z-10 space-y-1">
           <p className="flex items-center gap-2 text-xs font-extrabold text-emerald-100"><GraduationCap className="size-4" />SHTEMARM</p>
