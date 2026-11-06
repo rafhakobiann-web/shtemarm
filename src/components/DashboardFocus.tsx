@@ -53,10 +53,11 @@ export function progressSummary(progress: Progress) {
   };
 }
 
-export function DashboardFocus({ name, progress, subjects }: {
+export function DashboardFocus({ name, progress, subjects, showGreeting = true }: {
   name?: string | null;
   progress: Progress;
   subjects: readonly OnboardingSubject[];
+  showGreeting?: boolean;
 }) {
   const lang = useLang();
   const t = WORDS[lang];
@@ -120,6 +121,7 @@ export function DashboardFocus({ name, progress, subjects }: {
   ];
   return (
     <section className="dashboard-focus space-y-4" aria-label={t.title}>
+      {showGreeting && <>
       <div className="academy-bento relative overflow-hidden p-5 sm:p-7">
         <div aria-hidden="true" className="dashboard-focus-glow" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -138,6 +140,7 @@ export function DashboardFocus({ name, progress, subjects }: {
           </div>
         </div>
       </div>
+      </>}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map(({ label, value, Icon }) => (
           <div className="academy-bento min-w-0 p-4" key={label}>
