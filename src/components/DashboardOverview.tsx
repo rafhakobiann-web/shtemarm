@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, RotateCcw, UserRound } from "lucide-react";
 import type { Progress } from "@/lib/progress";
-import { progressSummary } from "@/components/DashboardFocus";
+import { progressSummary } from "@/lib/dashboard-summary";
 import { useLang } from "@/lib/lang";
 
 type Props = { name?: string | null; progress: Progress };
