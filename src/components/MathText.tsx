@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 
 // Shared KaTeX loader for chat, exercises, calculator, and explanations.
 // The pinned version is loaded only once even if several components mount.
-const KATEX_VERSION = "0.16.25";
-
+const KATEX_VERSION = "0.19.1";
+const CSS_INTEGRITY = "sha384-WwGtaC6ywCHxA5cstpj/3+xIZvTez8dq2IcBQaXRkenHZ7FVVq1ZROtURwfbtTlG";
+const JS_INTEGRITY = "sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE";
 
 export type Katex = {
   renderToString: (tex: string, opts?: Record<string, unknown>) => string;
@@ -21,6 +22,7 @@ export function loadKatex(): Promise<Katex | null> {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = "https://cdn.jsdelivr.net/npm/katex@" + KATEX_VERSION + "/dist/katex.min.css";
+      link.integrity = CSS_INTEGRITY;
       link.crossOrigin = "anonymous";
       link.dataset.shtemarmKatex = "true";
       document.head.appendChild(link);
@@ -30,6 +32,9 @@ export function loadKatex(): Promise<Katex | null> {
     const done = () => { const loaded = current(); if (!loaded) loading = null; resolve(loaded); };
     script.addEventListener("load", done, { once: true });
     script.addEventListener("error", () => {
+      // A failed element must not trap subsequent attempts on an inert script.
+      script.remove();
+      document.querySelector("link[data-shtemarm-katex]")?.remove();
       loading = null;
       resolve(null);
     }, { once: true });
@@ -37,6 +42,7 @@ export function loadKatex(): Promise<Katex | null> {
     if (!existing) {
       script.src = "https://cdn.jsdelivr.net/npm/katex@" + KATEX_VERSION + "/dist/katex.min.js";
       script.crossOrigin = "anonymous";
+      script.integrity = JS_INTEGRITY;
       script.async = true;
       script.dataset.shtemarmKatex = "true";
       document.head.appendChild(script);
