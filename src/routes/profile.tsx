@@ -63,7 +63,7 @@ function MyProfile() {
           <ArrowLeft className="size-4" aria-hidden="true" />{t.back}
         </Link>
       </header>
-      <DashboardFocus name={name} progress={progress} subjects={subjects} />
+      <DashboardFocus name={name} progress={progress} subjects={subjects} showGreeting={false} />
     </div>
   );
 }
