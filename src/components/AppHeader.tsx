@@ -126,6 +126,10 @@ export function AppHeader() {
               </SheetHeader>
 
               <Link to="/" onClick={close} className={item}><Home className="size-4" />{lang === "en" ? "Landing page" : lang === "ru" ? "Главная страница" : "Գլխավոր էջ"}</Link>
+              {email && <Link to="/profile" onClick={close} className={item}>
+                <User className="size-4 text-primary" aria-hidden="true" />
+                {lang === "en" ? "My Profile" : lang === "ru" ? "Мой профиль" : "Իմ պրոֆիլը"}
+              </Link>}
                <Link to="/auth" onClick={close} className={item}>
                 <User className="size-4" />
                 <span className="truncate">{email ?? t.account}</span>
