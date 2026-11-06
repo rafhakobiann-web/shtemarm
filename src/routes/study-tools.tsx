@@ -19,7 +19,7 @@ function StudyToolsPage() {
   const lang = useLang();
   return (
     <div className="mx-auto max-w-4xl space-y-6 py-4">
-      <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+      <Link to="/explore" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="size-4" />{tx("Գլխավոր էջ")}
       </Link>
       <header className="space-y-3">
@@ -41,7 +41,7 @@ function StudyToolsPage() {
         </Link>)}
       </div>
       <StudyTools />
-      <Link to="/" className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm font-bold transition-colors hover:bg-muted"><BookOpen className="size-4" />{tx("Ընտրել շտեմարան")}</Link>
+      <Link to="/explore" className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm font-bold transition-colors hover:bg-muted"><BookOpen className="size-4" />{tx("Ընտրել շտեմարան")}</Link>
     </div>
   );
 }
