@@ -84,21 +84,19 @@ describe("dashboard focuses on the actual student's work", () => {
   it("starts with a subject picker when no answers are recorded", () => {
     render(<DashboardOverview progress={makeProgress()} />);
     expect(screen.getByText("Your first practice session starts with one question.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Start studying/ })).toHaveAttribute("href", "/dashboard#subjects");
+    expect(screen.getByRole("link", { name: /Explore subjects/ })).toHaveAttribute("href", "/explore");
     expect(screen.getByRole("link", { name: /My Profile/ })).toHaveAttribute("href", "/profile");
   });
 
-  it("keeps book and exam destinations and adds keyboard-accessible subject filters", () => {
+  it("keeps book routes and exposes a simpler discovery entry", () => {
     const dashboard = readFileSync("src/routes/dashboard.tsx", "utf8");
-    expect(dashboard).toContain("LIBRARY_FILTERS.map");
-    expect(dashboard).toContain("aria-pressed={libraryFilter === option.id}");
-    expect(dashboard).toContain("showLibrary");
-    expect(dashboard).toContain("defaultOpen={libraryFilter !==");
-    expect(dashboard).toContain("onToggle={event => setExpanded");
-    expect(dashboard).toContain('id="exams"');
+    const explore = readFileSync("src/routes/explore.tsx","utf8");
     expect(dashboard).toContain('id="subjects"');
-    expect(dashboard).toContain('search={{ mode: "exam" }}');
-    expect(dashboard).toContain("sht-dashboard-bento");
+    expect(dashboard).toContain('id="exams"');
+    expect(dashboard).toContain('to="/explore"');
+    expect(dashboard).toContain('sht-home-subject-grid');
+    for (const route of ['to="/math"', 'to="/history"', 'to="/biology"'])
+      expect(explore).toContain(route);
     expect(dashboard).toContain('<DashboardOverview name={name} progress={progress} />');
     expect(readFileSync("src/routes/profile.tsx", "utf8")).toContain('<DashboardFocus name={name} progress={progress} subjects={subjects} showGreeting={false} />');
     expect(readFileSync("src/components/AppHeader.tsx", "utf8")).toContain('<Link to="/"');
