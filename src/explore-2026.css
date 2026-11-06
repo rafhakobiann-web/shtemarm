@@ -84,3 +84,70 @@ html.user-high-contrast .explore-page :is(.explore-subject-card,.explore-quick-l
   border-color: var(--foreground);
   box-shadow: none;
 }
+
+/* New focused signed-in home: four visible decisions, no crowded catalogues. */
+.sht-home-2026 { min-width: 0; }
+.sht-home-2026 .dashboard-overview {
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 11%, transparent), transparent 60%),
+    var(--card);
+  border: 1px solid color-mix(in srgb, var(--primary) 19%, var(--border));
+  border-radius: 1.5rem;
+  box-shadow: none;
+}
+.sht-home-subject-card {
+  border-color: color-mix(in srgb, var(--primary) 12%, var(--border));
+  box-shadow: none;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+.sht-home-subject-card:hover, .sht-home-subject-card:focus-visible {
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+}
+.sht-home-subject-mark,
+.sht-home-action-icon {
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+}
+.sht-home-quick-link {
+  min-width: 0;
+  min-height: 5.5rem;
+  align-items: flex-start;
+  border-color: color-mix(in srgb, var(--primary) 14%, var(--border));
+  border-radius: 1rem;
+  box-shadow: none;
+  color: var(--foreground);
+}
+.sht-home-action-icon {
+  display: grid;
+  flex: none;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  place-items: center;
+  border-radius: .85rem;
+  color: var(--primary);
+}
+.sht-explore-header {
+  background: var(--card);
+  border-bottom-color: var(--border);
+  box-shadow: none;
+}
+.sht-explore-header a[aria-current="page"] {
+  color: var(--primary);
+}
+@media (hover:hover) and (prefers-reduced-motion: no-preference) {
+  .sht-home-subject-card:hover { transform: translateY(-2px); }
+}
+@media (max-width: 390px) {
+  .sht-home-2026 .dashboard-overview { border-radius: 1.1rem; }
+  .sht-home-subject-card { padding: .85rem; gap: .65rem; min-height: 96px; }
+  .sht-home-subject-mark { inline-size: 2.5rem; block-size: 2.5rem; }
+  .sht-home-quick-link { gap: .65rem; padding: .85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-home-subject-card { transition: none !important; transform: none !important; }
+}
+html.user-high-contrast .sht-home-subject-card,
+html.user-high-contrast .sht-home-quick-link {
+  border-color: var(--foreground);
+  background: var(--card);
+}
