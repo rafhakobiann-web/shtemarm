@@ -4,6 +4,7 @@ import { fetchBookResponse } from "./fetch-book-response";
 type OfficialMc = {
   n: string;
   pdfPage?: number;
+  page?: number;
   stem?: string;
   options?: Record<string, string>;
   answer: string;
@@ -44,6 +45,62 @@ const sectionNames = [
   "Ոճագիտություն",
   "Գրականություն",
 ] as const;
+
+export type ArmenianDiagramCorrections = {
+  volume: 1;
+  section: 4;
+  items: Record<string, {
+    pdfPage: number;
+    answer: string;
+    stem: string;
+    options: Record<string, string>;
+    diagramOptions: Record<string, SentenceDiagram>;
+  }>;
+};
+
+/** Reconstruct the nine diagram questions separately from the untouched PDF
+ * transcription. Only apply an override if its printed answer and page match. */
+export function applyArmenianDiagramCorrections(
+  sources: ArmenianOriginalSection[],
+  corrections: ArmenianDiagramCorrections,
+): ArmenianOriginalSection[] {
+  const expected: Record<string, number> = {
+    "89": 112, "90": 112, "91": 112,
+    "92": 113, "93": 113, "94": 113, "95": 113,
+    "97": 114, "98": 114,
+  };
+  if (corrections.volume !== 1 || corrections.section !== 4 ||
+      JSON.stringify(Object.keys(corrections.items).sort()) !== JSON.stringify(Object.keys(expected).sort())) {
+    throw new Error("Հայոց լեզվի գծապատկերների լրացումների ցանկը սխալ է։");
+  }
+  return sources.map(source => {
+    if (source.section !== 4) return source;
+    const patched = new Set<string>();
+    const mc = source.mc.map(q => {
+      const fix = corrections.items[q.n];
+      if (!fix) return q;
+      const optionKeys = ["1", "2", "3", "4"];
+      if (!q.reviewRequired || q.answer !== fix.answer || q.page !== expected[q.n] ||
+          fix.pdfPage !== expected[q.n] || !fix.stem.trim() ||
+          !optionKeys.every(k => Boolean(fix.options[k]?.trim()) &&
+            fix.diagramOptions[k]?.nodes.length > 0 &&
+            Array.isArray(fix.diagramOptions[k].branches) &&
+            Array.isArray(fix.diagramOptions[k].equals))) {
+        throw new Error(`Հայոց լեզվի գծապատկերի ${q.n} տվյալները չեն համընկնում բնօրինակին։`);
+      }
+      patched.add(q.n);
+      return { ...q, ...fix, reviewRequired: false };
+    });
+    if (patched.size !== Object.keys(expected).length) {
+      throw new Error("Հայոց լեզվի 9 գծապատկերներից մեկը չի գտնվել։");
+    }
+    return {
+      ...source,
+      mc,
+      reviewRequiredMC: source.reviewRequiredMC.filter(n => !patched.has(n)),
+    };
+  });
+}
 
 /** Strip only recurring PDF watermarks, not source punctuation or Armenian spelling. */
 export function cleanPdfArtifacts(value: string): string {
@@ -191,5 +248,9 @@ export async function loadArmenianOriginalBook(): Promise<Book> {
     }
     return await response.json() as ArmenianOriginalAssertions;
   });
-  return buildArmenianOriginalBook(sources, assertions);
+  const corrections = await fetchBookResponse("/data/armenian-official-1-diagrams.json", async response => {
+    if (!response.ok) throw new Error("Շարահյուսության 9 գծապատկերները չեն բեռնվել՝ HTTP " + response.status);
+    return await response.json() as ArmenianDiagramCorrections;
+  });
+  return buildArmenianOriginalBook(applyArmenianDiagramCorrections(sources, corrections), assertions);
 }
