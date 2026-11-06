@@ -1,0 +1,91 @@
+/* Large, focused explanation workspace. The actual content uses trusted
+   React / KaTeX / validated diagrams; never inject generated HTML. */
+.sht-explanation-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: min(1120px, calc(100vw - 20px));
+  max-width: none;
+  height: min(92dvh, 960px);
+  max-height: calc(100dvh - 20px);
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--primary) 42%, var(--border));
+  border-radius: 1.55rem;
+  background: var(--background);
+}
+.sht-explanation-header {
+  background: var(--card);
+}
+.sht-explanation-scroll {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--primary) 5%, transparent), transparent 68%),
+    var(--background);
+}
+.sht-explanation-stage {
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+.sht-explanation-stage .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: .5rem;
+}
+.sht-explanation-stage pre {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.sht-explanation-stage :is(p,div,span) { overflow-wrap: anywhere; }
+.sht-explanation-dialog .sht-explanation-footer button {
+  white-space: normal;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .sht-explanation-dialog {
+    width: calc(100vw - 10px);
+    height: calc(100dvh - 10px);
+    max-height: calc(100dvh - 10px);
+    border-radius: 1.1rem;
+  }
+  .sht-explanation-dialog .sht-explanation-header {
+    padding: 1rem 1.2rem;
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .sht-explanation-dialog .sht-explanation-scroll {
+    padding: 1rem;
+    scrollbar-gutter: auto;
+  }
+  .sht-explanation-dialog .sht-explanation-stage {
+    padding: 1.1rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+  .sht-explanation-dialog .sht-explanation-footer {
+    padding: .8rem 1rem;
+    padding-bottom: max(.8rem, env(safe-area-inset-bottom));
+  }
+  .sht-explanation-dialog .sht-explanation-footer button {
+    padding-inline: .7rem;
+    font-size: .8rem;
+    flex: 1 1 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-explanation-dialog *,
+  .sht-explanation-dialog *::before,
+  .sht-explanation-dialog *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html.user-high-contrast .sht-explanation-dialog,
+html.user-high-contrast .sht-explanation-stage {
+  border-color: var(--foreground);
+  background: var(--background);
+}
