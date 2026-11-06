@@ -303,7 +303,7 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   return (
-    <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
+    <div className="academy-home mx-auto max-w-6xl space-y-5 px-1 py-3 sm:space-y-6 sm:py-6">
       <DashboardOverview name={name} progress={progress} />
       <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2">
         <a href="#subjects" className="academy-quick-action">
@@ -441,22 +441,12 @@ function Index() {
           <Link to="/study-plan" className="sht-dashboard-bento academy-quick-action"><Target className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական պլան" : lang === "ru" ? "План занятий" : "Study plan"}<ArrowRight className="ml-auto size-4" /></Link>
           <Link to="/mistakes" className="academy-quick-action"><RotateCcw className="size-5 text-primary" />{lang === "hy" ? "Իմ սխալները" : lang === "ru" ? "Мои ошибки" : "Review mistakes"}<ArrowRight className="ml-auto size-4" /></Link>
           <Link to="/chat" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "AI ուսուցիչ" : lang === "ru" ? "ИИ-учитель" : "AI teacher"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/flashcards" className="academy-quick-action"><BookOpen className="size-5 text-primary" />{lang === "hy" ? "Բառաքարտեր" : lang === "ru" ? "Карточки" : "Flashcards"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/mini-games" className="academy-quick-action"><Trophy className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական խաղեր" : lang === "ru" ? "Учебные игры" : "Mini games"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/calc" className="academy-quick-action"><Calculator className="size-5 text-primary" />{lang === "hy" ? "Հաշվիչ" : lang === "ru" ? "Калькулятор" : "Calculator"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/feedback" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "Գրել մշակողին" : lang === "ru" ? "Написать разработчику" : "Send feedback"}<ArrowRight className="ml-auto size-4" /></Link>
         </div>
       </details>
-      <section className="grid gap-3 sm:grid-cols-3" aria-label={tx("Լրացուցիչ ուսումնական գործիքներ")}>
-        <ExamTile to="/flashcards" title={tx("Հիշողության քարտեր")} sub={tx("Կրկնել իրական հարցերն ու պատասխանները")} icon={<BookOpen className="size-5"/>}/>
-        <ExamTile to="/mini-games" title={tx("Ուսումնական խաղեր")} sub={tx("Վիկտորինա, ճիշտ/սխալ և համապատասխանեցում")} icon={<Trophy className="size-5"/>}/>
-      </section>
-      <section className="academy-bento grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
-        <div>
-          <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{tx("Սխա՞լ ես գտել կամ ունե՞ս առաջարկ։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:shadow-md"><MessageCircle className="size-4" aria-hidden="true" />{tx("Գրել մեզ")}</Link>
-          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Calculator className="size-4" aria-hidden="true" />{tx("Բացել հաշվիչը")}</Link>
-        </div>
-      </section>
       <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-5 text-sm">
         <Link to="/download" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Smartphone className="size-4" aria-hidden="true" />{tx("Ներբեռնել Android հավելվածը")}</Link>
         <Link to="/changelog" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Sparkles className="size-4" aria-hidden="true" />{tx("Նորություններ և թարմացումներ")}</Link>
