@@ -47,7 +47,7 @@ describe("Math handbook source alignment",()=>{
     expect(mathTopicsForSection(expr).some(t=>t.id==="logarithm-properties")).toBe(true);
   });
   it("keeps TeX formulas delimited and ensures complete multilingual calculus lessons",()=>{
-    expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(53);
+    expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(59);
     for(const topic of MATH_HANDBOOK_TOPICS){
       if(topic.formula.includes("\\"))expect(topic.formula,topic.id).toContain("$");
       expect((topic.formula.match(/\$/g)??[]).length%2,topic.id).toBe(0);
@@ -80,6 +80,30 @@ describe("Math handbook source alignment",()=>{
     expect(get("derivative-product-exponential").answer).toBe("$f'(0)=2$");
     expect(get("absolute-value-derivative").answer).toBe("$f'(-2)=4$");
     expect(get("tangent-equation").answer).toBe("$y=4x-4$");
+  });
+  it("covers six additional core lessons and verifies their worked results",()=>{
+    const ids=["derivative-chain","derivative-quotient","geometry-sine-law","geometry-cosine-law","arrangements","logarithm-base-change"];
+    const byId=(id:string)=>MATH_HANDBOOK_TOPICS.find(topic=>topic.id===id);
+    for(const id of ids){
+      const topic=byId(id);
+      expect(topic,id).toBeDefined();
+      expect(topic!.formula).toContain("$");
+      for(const locale of ["hy","en","ru"] as const){
+        expect(topic!.steps[locale]).toHaveLength(3);
+        expect(topic!.title[locale].length).toBeGreaterThan(4);
+      }
+    }
+    expect(byId("derivative-chain")?.answer).toBe("$h'(1)=96$");
+    expect(byId("derivative-quotient")?.answer).toBe("$f'(2)=-2$");
+    expect(byId("geometry-sine-law")?.answer).toBe("$b=4\\sqrt3$");
+    expect(byId("geometry-cosine-law")?.answer).toBe("$c=5$");
+    expect(byId("arrangements")?.answer).toBe("$60$");
+    expect(byId("logarithm-base-change")?.answer).toBe("$\\frac32$");
+    const geom=findMathSection("matem-1",1,8)!;
+    const expressions=findMathSection("matem-2",1,2)!;
+    expect(mathTopicsForSection(geom).some(t=>t.id==="geometry-cosine-law")).toBe(true);
+    expect(mathTopicsForSection(expressions).some(t=>t.id==="logarithm-base-change")).toBe(true);
+    expect(4*Math.sin(Math.PI/3)/Math.sin(Math.PI/6)).toBeCloseTo(4*Math.sqrt(3));
   });
   it("has complete multilingual manually worked lessons and no topic ID collisions",()=>{
     expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(36);
