@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 // Shared KaTeX loader for chat, exercises, calculator, and explanations.
 // The pinned version is loaded only once even if several components mount.
-const KATEX_VERSION = "0.19.0";
-const CSS_INTEGRITY = "sha384-3rdsX6e5mueWyoweR9NIVmtEsUkokpBT/0ALqKKIBMr9j4qhHkaIkAcGgsE6uVlp";
-const JS_INTEGRITY = "sha384-QFFtAGzvvj+bfgCGxXJlNZZR1nXEZgvG8tDLCCY1F19xl20WlfTYgguB4VcNdxYk";
+const KATEX_VERSION = "0.16.25";
+
+
 export type Katex = {
   renderToString: (tex: string, opts?: Record<string, unknown>) => string;
 };
@@ -21,23 +21,22 @@ export function loadKatex(): Promise<Katex | null> {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = "https://cdn.jsdelivr.net/npm/katex@" + KATEX_VERSION + "/dist/katex.min.css";
-      link.integrity = CSS_INTEGRITY;
       link.crossOrigin = "anonymous";
       link.dataset.shtemarmKatex = "true";
       document.head.appendChild(link);
     }
     const existing = document.querySelector<HTMLScriptElement>('script[data-shtemarm-katex]');
     const script = existing ?? document.createElement("script");
-    const done = () => resolve(current());
+    const done = () => { const loaded = current(); if (!loaded) loading = null; resolve(loaded); };
     script.addEventListener("load", done, { once: true });
     script.addEventListener("error", () => {
       loading = null;
       resolve(null);
     }, { once: true });
+    if (existing && current()) { resolve(current()); return; }
     if (!existing) {
       script.src = "https://cdn.jsdelivr.net/npm/katex@" + KATEX_VERSION + "/dist/katex.min.js";
       script.crossOrigin = "anonymous";
-      script.integrity = JS_INTEGRITY;
       script.async = true;
       script.dataset.shtemarmKatex = "true";
       document.head.appendChild(script);
@@ -66,7 +65,7 @@ export function splitMath(text: string): Piece[] {
 /** Safe, copyable formula rendering: KaTeX never trusts unverified HTML/links. */
 export function RichText({ text, katex, display = false }: { text: string; katex: Katex | null; display?: boolean }) {
   return <>{splitMath(text).map((piece, i) => {
-    if (!piece.math || !katex) return <span key={i} className="whitespace-pre-wrap">{piece.math && !katex ? (piece.display ? "$$" : "$") + piece.text + (piece.display ? "$$" : "$") : piece.text}</span>;
+    if (!piece.math || !katex) return <span key={i} className="whitespace-pre-wrap">{piece.math && !katex ? (piece.display ? "\\[" : "\\(") + piece.text + (piece.display ? "\\]" : "\\)") : piece.text}</span>;
     try {
       const html = katex.renderToString(piece.text.slice(0, 2000), {
         displayMode: piece.display || display, throwOnError: false,
