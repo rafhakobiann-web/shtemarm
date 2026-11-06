@@ -56,7 +56,7 @@ export const MATH_ALGEBRA: MathTopic[] = [
       "en": "For ax²+bx+c=0 with a≠0, the discriminant D=b²−4ac determines the number of real roots. If D<0 there are no real roots.",
       "ru": "Для ax²+bx+c=0 (a≠0) число действительных корней определяет D=b²−4ac. При D<0 действительных корней нет."
     },
-    "formula": "$D=b^2-4ac,\\quad x=\\frac{-b\\pm\\sqrt{D}}{2a}$",
+    "formula": "$D=b^2-4ac$; $x=\\frac{-b\\pm\\sqrt{D}}{2a}$ ($a\\ne0$, $D\\ge0$)",
     "problem": {
       "hy": "Լուծել x²−5x+6=0։",
       "en": "Solve x²−5x+6=0.",
@@ -99,7 +99,7 @@ export const MATH_ALGEBRA: MathTopic[] = [
       "en": "For roots x₁ and x₂ of ax²+bx+c=0, their sum is −b/a and product c/a.",
       "ru": "Если x₁ и x₂ — корни ax²+bx+c=0, то сумма равна −b/a, произведение — c/a."
     },
-    "formula": "$x_1+x_2=-\\frac{b}{a},\\quad x_1x_2=\\frac{c}{a}$",
+    "formula": "$x_1+x_2=-\\frac{b}{a},\\quad x_1x_2=\\frac{c}{a}$ ($a\\ne0$)",
     "problem": {
       "hy": "Գտնել x²−7x+12=0-ի արմատները։",
       "en": "Find roots of x²−7x+12=0.",
