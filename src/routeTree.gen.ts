@@ -20,22 +20,28 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DownloadRouteImport } from './routes/download'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EnglishGrammarRouteImport } from './routes/english-grammar'
 import { Route as EnglishTestsRouteImport } from './routes/english-tests'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as FlashcardsRouteImport } from './routes/flashcards'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HistoryBookRouteImport } from './routes/history-book'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as LearningInsightsRouteImport } from './routes/learning-insights'
 import { Route as MathHandbookRouteImport } from './routes/math-handbook'
 import { Route as MathReviewRouteImport } from './routes/math-review'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MiniGamesRouteImport } from './routes/mini-games'
 import { Route as MistakesRouteImport } from './routes/mistakes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PracticeHistoryRouteImport } from './routes/practice-history'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StudyLibraryRouteImport } from './routes/study-library'
 import { Route as StudyPlanRouteImport } from './routes/study-plan'
+import { Route as StudyPreferencesRouteImport } from './routes/study-preferences'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
@@ -113,16 +119,6 @@ const DownloadRoute = DownloadRouteImport.update({
   path: '/download',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExploreRoute = ExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EnglishGrammarRoute = EnglishGrammarRouteImport.update({
   id: '/english-grammar',
   path: '/english-grammar',
@@ -131,6 +127,11 @@ const EnglishGrammarRoute = EnglishGrammarRouteImport.update({
 const EnglishTestsRoute = EnglishTestsRouteImport.update({
   id: '/english-tests',
   path: '/english-tests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedbackRoute = FeedbackRouteImport.update({
@@ -151,6 +152,16 @@ const HistoryRoute = HistoryRouteImport.update({
 const HistoryBookRoute = HistoryBookRouteImport.update({
   id: '/history-book',
   path: '/history-book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearningInsightsRoute = LearningInsightsRouteImport.update({
+  id: '/learning-insights',
+  path: '/learning-insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MathHandbookRoute = MathHandbookRouteImport.update({
@@ -183,14 +194,39 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticeHistoryRoute = PracticeHistoryRouteImport.update({
+  id: '/practice-history',
+  path: '/practice-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudyLibraryRoute = StudyLibraryRouteImport.update({
+  id: '/study-library',
+  path: '/study-library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudyPlanRoute = StudyPlanRouteImport.update({
   id: '/study-plan',
   path: '/study-plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudyPreferencesRoute = StudyPreferencesRouteImport.update({
+  id: '/study-preferences',
+  path: '/study-preferences',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudyToolsRoute = StudyToolsRouteImport.update({
@@ -312,22 +348,28 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
-  '/profile': typeof ProfileRoute
-  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
+  '/explore': typeof ExploreRoute
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/learn': typeof LearnRoute
+  '/learning-insights': typeof LearningInsightsRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
   '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
+  '/practice-history': typeof PracticeHistoryRoute
+  '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-library': typeof StudyLibraryRoute
   '/study-plan': typeof StudyPlanRoute
+  '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -362,22 +404,28 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
-  '/profile': typeof ProfileRoute
-  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
+  '/explore': typeof ExploreRoute
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/learn': typeof LearnRoute
+  '/learning-insights': typeof LearningInsightsRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
   '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
+  '/practice-history': typeof PracticeHistoryRoute
+  '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-library': typeof StudyLibraryRoute
   '/study-plan': typeof StudyPlanRoute
+  '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -413,22 +461,28 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
-  '/profile': typeof ProfileRoute
-  '/explore': typeof ExploreRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
+  '/explore': typeof ExploreRoute
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/history': typeof HistoryRoute
   '/history-book': typeof HistoryBookRoute
+  '/learn': typeof LearnRoute
+  '/learning-insights': typeof LearningInsightsRoute
   '/math-handbook': typeof MathHandbookRoute
   '/math-review': typeof MathReviewRoute
   '/mcp': typeof McpRoute
   '/mini-games': typeof MiniGamesRoute
   '/mistakes': typeof MistakesRoute
   '/onboarding': typeof OnboardingRoute
+  '/practice-history': typeof PracticeHistoryRoute
+  '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/study-library': typeof StudyLibraryRoute
   '/study-plan': typeof StudyPlanRoute
+  '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
   '/vocabulary': typeof VocabularyRoute
@@ -465,22 +519,28 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
-    | '/profile'
-    | '/explore'
     | '/english-grammar'
     | '/english-tests'
+    | '/explore'
     | '/feedback'
     | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/learn'
+    | '/learning-insights'
     | '/math-handbook'
     | '/math-review'
     | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
+    | '/practice-history'
+    | '/profile'
+    | '/search'
     | '/sitemap.xml'
+    | '/study-library'
     | '/study-plan'
+    | '/study-preferences'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -515,22 +575,28 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
-    | '/profile'
-    | '/explore'
     | '/english-grammar'
     | '/english-tests'
+    | '/explore'
     | '/feedback'
     | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/learn'
+    | '/learning-insights'
     | '/math-handbook'
     | '/math-review'
     | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
+    | '/practice-history'
+    | '/profile'
+    | '/search'
     | '/sitemap.xml'
+    | '/study-library'
     | '/study-plan'
+    | '/study-preferences'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -565,22 +631,28 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
-    | '/profile'
-    | '/explore'
     | '/english-grammar'
     | '/english-tests'
+    | '/explore'
     | '/feedback'
     | '/flashcards'
     | '/history'
     | '/history-book'
+    | '/learn'
+    | '/learning-insights'
     | '/math-handbook'
     | '/math-review'
     | '/mcp'
     | '/mini-games'
     | '/mistakes'
     | '/onboarding'
+    | '/practice-history'
+    | '/profile'
+    | '/search'
     | '/sitemap.xml'
+    | '/study-library'
     | '/study-plan'
+    | '/study-preferences'
     | '/study-tools'
     | '/support'
     | '/vocabulary'
@@ -616,22 +688,28 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   DashboardRoute: typeof DashboardRoute
   DownloadRoute: typeof DownloadRoute
-  ProfileRoute: typeof ProfileRoute
-  ExploreRoute: typeof ExploreRoute
   EnglishGrammarRoute: typeof EnglishGrammarRoute
   EnglishTestsRoute: typeof EnglishTestsRoute
+  ExploreRoute: typeof ExploreRoute
   FeedbackRoute: typeof FeedbackRoute
   FlashcardsRoute: typeof FlashcardsRoute
   HistoryRoute: typeof HistoryRoute
   HistoryBookRoute: typeof HistoryBookRoute
+  LearnRoute: typeof LearnRoute
+  LearningInsightsRoute: typeof LearningInsightsRoute
   MathHandbookRoute: typeof MathHandbookRoute
   MathReviewRoute: typeof MathReviewRoute
   McpRoute: typeof McpRoute
   MiniGamesRoute: typeof MiniGamesRoute
   MistakesRoute: typeof MistakesRoute
   OnboardingRoute: typeof OnboardingRoute
+  PracticeHistoryRoute: typeof PracticeHistoryRoute
+  ProfileRoute: typeof ProfileRoute
+  SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudyLibraryRoute: typeof StudyLibraryRoute
   StudyPlanRoute: typeof StudyPlanRoute
+  StudyPreferencesRoute: typeof StudyPreferencesRoute
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
   VocabularyRoute: typeof VocabularyRoute
@@ -734,20 +812,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explore': {
-      id: '/explore'
-      path: '/explore'
-      fullPath: '/explore'
-      preLoaderRoute: typeof ExploreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/english-grammar': {
       id: '/english-grammar'
       path: '/english-grammar'
@@ -760,6 +824,13 @@ declare module '@tanstack/react-router' {
       path: '/english-tests'
       fullPath: '/english-tests'
       preLoaderRoute: typeof EnglishTestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feedback': {
@@ -788,6 +859,20 @@ declare module '@tanstack/react-router' {
       path: '/history-book'
       fullPath: '/history-book'
       preLoaderRoute: typeof HistoryBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning-insights': {
+      id: '/learning-insights'
+      path: '/learning-insights'
+      fullPath: '/learning-insights'
+      preLoaderRoute: typeof LearningInsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/math-handbook': {
@@ -832,6 +917,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practice-history': {
+      id: '/practice-history'
+      path: '/practice-history'
+      fullPath: '/practice-history'
+      preLoaderRoute: typeof PracticeHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -839,11 +945,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/study-library': {
+      id: '/study-library'
+      path: '/study-library'
+      fullPath: '/study-library'
+      preLoaderRoute: typeof StudyLibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/study-plan': {
       id: '/study-plan'
       path: '/study-plan'
       fullPath: '/study-plan'
       preLoaderRoute: typeof StudyPlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/study-preferences': {
+      id: '/study-preferences'
+      path: '/study-preferences'
+      fullPath: '/study-preferences'
+      preLoaderRoute: typeof StudyPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/study-tools': {
@@ -1008,22 +1128,28 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   DashboardRoute: DashboardRoute,
   DownloadRoute: DownloadRoute,
-  ProfileRoute: ProfileRoute,
-  ExploreRoute: ExploreRoute,
   EnglishGrammarRoute: EnglishGrammarRoute,
   EnglishTestsRoute: EnglishTestsRoute,
+  ExploreRoute: ExploreRoute,
   FeedbackRoute: FeedbackRoute,
   FlashcardsRoute: FlashcardsRoute,
   HistoryRoute: HistoryRoute,
   HistoryBookRoute: HistoryBookRoute,
+  LearnRoute: LearnRoute,
+  LearningInsightsRoute: LearningInsightsRoute,
   MathHandbookRoute: MathHandbookRoute,
   MathReviewRoute: MathReviewRoute,
   McpRoute: McpRoute,
   MiniGamesRoute: MiniGamesRoute,
   MistakesRoute: MistakesRoute,
   OnboardingRoute: OnboardingRoute,
+  PracticeHistoryRoute: PracticeHistoryRoute,
+  ProfileRoute: ProfileRoute,
+  SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudyLibraryRoute: StudyLibraryRoute,
   StudyPlanRoute: StudyPlanRoute,
+  StudyPreferencesRoute: StudyPreferencesRoute,
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
   VocabularyRoute: VocabularyRoute,
