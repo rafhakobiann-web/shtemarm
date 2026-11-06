@@ -75,23 +75,43 @@ function ExamTile({ to, params, search, href, title, sub, icon }: { to?: string;
 
 function SubjectHeader({ title, sub, beta = false }: { title: string; sub: string; beta?: boolean }) {
   const tx = useTx();
+  const lang = useLang();
+  const words = {
+    hy: {back:"Բոլոր առարկաները",kind:"Սովորել ըստ առարկայի",books:"Բացել շտեմարանները",exams:"Գտնել քննություն"},
+    en: {back:"All subjects",kind:"SUBJECT LEARNING",books:"Browse workbooks",exams:"Find practice exam"},
+    ru: {back:"Все предметы",kind:"ИЗУЧЕНИЕ ПРЕДМЕТА",books:"Открыть сборники",exams:"Найти экзамен"},
+  }[lang];
   return (
-    <div className="space-y-3">
-      <Link to="/explore" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> {tx("Բոլոր առարկաները")}
+    <header className="sht-subject-header min-w-0 space-y-4 rounded-3xl border bg-card p-5 sm:p-7">
+      <Link to="/explore" className="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-bold text-muted-foreground hover:bg-primary/10 hover:text-primary focus-visible:outline-2 focus-visible:outline-primary">
+        <ArrowLeft className="size-4" aria-hidden="true"/>{words.back}
       </Link>
-      <h1 className="flex flex-wrap items-center gap-2 text-3xl font-black sm:text-4xl">{title}{beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black tracking-[0.12em] text-amber-700 dark:text-amber-300">BETA</span>}</h1>
-      <p className="text-muted-foreground">{sub}</p>
-    </div>
+      <div className="space-y-3">
+        <span className="text-xs font-black uppercase tracking-wider text-primary">{words.kind}</span>
+        <h1 className="flex flex-wrap items-center gap-3 break-words text-2xl font-black tracking-tight text-foreground sm:text-4xl">
+          {title}
+          {beta && <span className="rounded-md border border-amber-500/35 bg-amber-500/10 px-2 py-1 text-[10px] font-black tracking-wider text-amber-700 dark:text-amber-300">BETA</span>}
+        </h1>
+        <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{sub}</p>
+      </div>
+      <nav className="flex flex-wrap gap-2 pt-1" aria-label={lang==="en"?"Subject shortcuts":lang==="ru"?"Быстрые переходы":"Արագ անցումներ"}>
+        <a href="#subject-books" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-primary">
+          <BookOpen className="size-4" aria-hidden="true"/>{words.books}
+        </a>
+        <Link to="/explore" hash="exams" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-bold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">
+          <Trophy className="size-4" aria-hidden="true"/>{words.exams}
+        </Link>
+      </nav>
+    </header>
   );
 }
 
 function EnglishSubject() {
   const tx = useTx();
   return (
-    <div className="mx-auto max-w-6xl space-y-12 py-6">
+    <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ և քննություններ")} />
-      <section className="space-y-6">
+      <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {BOOKS.map((b) => (
@@ -126,9 +146,9 @@ function EnglishSubject() {
 function MathSubject() {
   const tx = useTx();
   return (
-    <div className="mx-auto max-w-6xl space-y-12 py-6">
+    <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ և քննություն")} />
-      <section className="space-y-6">
+      <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {MATH_BOOKS.map((b) => (
@@ -151,9 +171,9 @@ function MathSubject() {
 function HistorySubject() {
   const tx = useTx();
   return (
-    <div className="mx-auto max-w-6xl space-y-12 py-6">
+    <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Հայոց պատմություն")} sub={tx("Շտեմարաններ և պաշտոնական քննության նմուշային թեստեր")} />
-      <section className="space-y-6">
+      <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {HISTORY_BOOKS.map((b) => (
@@ -177,9 +197,9 @@ function BiologySubject() {
   const tx = useTx();
   const importedBooks = BIO_BOOKS.filter((b) => b.id === 31 || b.id === 32);
   return (
-    <div className="mx-auto max-w-6xl space-y-12 py-6">
+    <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
-      <section className="space-y-6">
+      <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {importedBooks.map((b) => (
@@ -224,7 +244,7 @@ function ArmenianSubject() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-6">
       <SubjectHeader title={tx("Հայոց լեզու և հայ գրականություն")} sub={tx("Ուսումնական հարցաշարեր և քննության պատրաստություն")} beta />
-      <section className="space-y-4">
+      <section id="subject-books" className="space-y-4">
         <h2 className="text-xl font-black">{tx("Ինտերակտիվ շտեմարան")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {ARMENIAN_BOOKS.map(book => (

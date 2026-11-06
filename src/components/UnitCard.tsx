@@ -145,7 +145,7 @@ function Explain(props: { instruction: string; passage: string; question: string
       {(["hint","explain","practice"] as const).map(style => <button key={style} type="button" aria-pressed={teachingStyle===style} onClick={() => { setTeachingStyle(style); setText(null); setFailed(false); setMode(null); }} className={cn("min-h-10 rounded-xl border px-3 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-primary", teachingStyle===style?"border-primary bg-primary/10 text-primary":"border-border bg-card text-foreground hover:border-primary/40")}>{style==="hint"?(lang==="hy"?"Հուշում":lang==="ru"?"Подсказка":"Hint"):style==="practice"?(lang==="hy"?"Նմանատիպ վարժություն":lang==="ru"?"Похожее упражнение":"Similar exercise"):(lang==="hy"?"Բացատրություն":lang==="ru"?"Объяснение":"Explanation")}</button>)}
     </div>
     {text && mode && <p role="status" className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}
-    {text && <RichExplanation text={text} error={failed}/>}
+    {text && <RichExplanation text={text} error={failed} source={mode === "offline" ? "offline" : mode === "cached" ? "cached" : "ai"}/>}
     {(!text || failed) && <Button
       variant="secondary"
       type="button"
