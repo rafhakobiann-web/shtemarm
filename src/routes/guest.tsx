@@ -86,6 +86,7 @@ function GuestPracticePage() {
   const questions = GUEST_QUESTIONS[subject];
   const completed = step >= questions.length;
   const current = completed ? undefined : questions[step];
+  const options = current?.options[lang] ?? [];
 
   useEffect(() => { initLang(); }, []);
   // A new subject starts fresh. Never store guest scores or answers.
@@ -205,7 +206,7 @@ function GuestPracticePage() {
             )}
             <h3 className="text-lg font-bold leading-relaxed text-foreground">{current.prompt[lang]}</h3>
             <div className="grid gap-2" role="group" aria-label={current.prompt[lang]}>
-              {current.options.map((option, index) => {
+              {options.map((option, index) => {
                 const chosen = selected === index;
                 const correct = current.correct === index;
                 return (
@@ -225,7 +226,7 @@ function GuestPracticePage() {
             {revealed && (
               <div role="status" aria-live="polite" className="space-y-2 rounded-xl border border-primary/25 bg-primary/5 p-4 text-sm leading-7 text-foreground">
                 <p className="font-black">{selected === current.correct ? t.correct : t.incorrect}</p>
-                <p>{t.answer}: <strong>{current.options[current.correct]}</strong></p>
+                <p>{t.answer}: <strong>{options[current.correct]}</strong></p>
                 <p><strong>{t.explanation} </strong>{current.explanation[lang]}</p>
               </div>
             )}
