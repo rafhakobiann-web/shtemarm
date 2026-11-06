@@ -22,12 +22,12 @@ describe("public guest practice content", () => {
       for (const lang of ["hy", "en", "ru"] as const)
         expect(GUEST_SUBJECT_NAMES[subject][lang].trim().length).toBeGreaterThan(2);
       for (const question of GUEST_QUESTIONS[subject]) {
-        expect(question.options).toHaveLength(4);
-        expect(new Set(question.options).size).toBe(4);
         expect(Number.isInteger(question.correct)).toBe(true);
         expect(question.correct).toBeGreaterThanOrEqual(0);
-        expect(question.correct).toBeLessThan(question.options.length);
         for (const lang of ["hy", "en", "ru"] as const) {
+          expect(question.options[lang]).toHaveLength(4);
+          expect(new Set(question.options[lang]).size).toBe(4);
+          expect(question.correct).toBeLessThan(question.options[lang].length);
           expect(question.prompt[lang].trim().length).toBeGreaterThan(9);
           expect(question.explanation[lang].trim().length).toBeGreaterThan(18);
         }
