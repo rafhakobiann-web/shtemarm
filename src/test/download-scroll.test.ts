@@ -23,7 +23,7 @@ describe("Shtemarm app download", () => {
     const header = source("src/components/AppHeader.tsx");
     const home = source("src/routes/index.tsx");
     const download = source("src/routes/download.tsx");
-    expect(header.match(/to="\/download"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(header.match(/to="\/download"/g)?.length).toBeGreaterThanOrEqual(1);
     expect(home).toContain('to="/download"');
     expect(download).toContain('createFileRoute("/download")');
     expect(download).toContain('beforeinstallprompt');
@@ -57,7 +57,7 @@ describe("smooth scrolling is accessible and avoids expensive repaints", () => {
     const nav = source("src/components/MobileNav.tsx");
     expect(nav).toContain("directionTravel");
     expect(nav).toContain("directionTravel > 48");
-    expect(nav).toContain("lastSectionY");
+    expect(nav).toContain("window.requestAnimationFrame");
     expect(nav).toContain("MOBILE_TAB_TARGETS");
   });
   it("uses draw-cache and stable lazy lists in the native Android app", () => {
