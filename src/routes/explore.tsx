@@ -80,7 +80,7 @@ const UI = {
 function SubjectLink({ item, lang, label }: {item:SubjectEntry;lang:Language;label:string}) {
   const body = (
     <>
-      <div className="explore-subject-mark" aria-hidden="true">{item.marker}</div>
+      <div className="explore-subject-mark" data-subject={item.id} aria-hidden="true">{item.marker}</div>
       <div className="min-w-0 flex-1 space-y-1.5">
         <h3 className="break-words text-base font-black leading-tight text-foreground">{item.title[lang]}</h3>
         <p className="text-xs leading-5 text-muted-foreground">{item.detail[lang]}</p>
@@ -89,7 +89,7 @@ function SubjectLink({ item, lang, label }: {item:SubjectEntry;lang:Language;lab
       <span className="sr-only">{label}</span>
     </>
   );
-  const cls = "explore-subject-card group flex min-h-[116px] min-w-0 items-start gap-3 rounded-[1.15rem] border bg-card p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+  const cls = "explore-subject-card group flex min-h-[132px] min-w-0 items-start gap-4 rounded-[1.15rem] border bg-card p-5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
   if (item.kind === "dashboard") return (
     <Link to="/dashboard" search={{subject:item.id}} className={cls}>
       {body}
@@ -147,7 +147,7 @@ export function ExplorePage() {
 
   return (
     <div className="explore-page mx-auto max-w-6xl space-y-8 pb-12 pt-3 sm:space-y-10 sm:pt-6">
-      <div className="explore-hero min-w-0 rounded-[1.5rem] border p-5 sm:p-8">
+      <div className="explore-hero min-w-0 rounded-[1.75rem] border p-6 sm:p-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="explore-kicker inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest">
             <Compass className="size-4" aria-hidden="true"/>{t.kicker}
@@ -156,7 +156,7 @@ export function ExplorePage() {
             <ArrowRight className="size-4 rotate-180" aria-hidden="true"/>{t.back}
           </Link>
         </div>
-        <h1 className="mt-6 max-w-3xl text-balance text-3xl font-black leading-tight tracking-tight text-foreground sm:text-5xl">{t.title}</h1>
+        <h1 className="mt-7 max-w-3xl text-balance text-3xl font-black leading-[1.13] tracking-tight text-foreground sm:text-5xl">{t.title}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{t.intro}</p>
         <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground" aria-label={t.priority}>
           {[t.step1,t.step2,t.step3].map((label,i)=><span key={i} className="rounded-full border bg-card/80 px-3 py-2">{label}</span>)}
@@ -173,7 +173,7 @@ export function ExplorePage() {
         </div>
       </div>
 
-      <nav aria-label={t.all} className="explore-filters flex flex-wrap gap-2">
+      <nav aria-label={t.all} className="explore-filters sticky top-[68px] z-20 flex flex-wrap gap-2 rounded-2xl border bg-background/95 p-2 shadow-sm backdrop-blur-sm">
         {filterOptions.map(({id,label,icon:Icon})=><button type="button" key={id}
           aria-pressed={filter===id} onClick={()=>{setFilter(id);if(id!=="subjects")setQuery("");}}
           className={"inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary "+
