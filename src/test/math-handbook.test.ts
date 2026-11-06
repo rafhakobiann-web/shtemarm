@@ -59,6 +59,28 @@ describe("Math handbook source alignment",()=>{
       for(const lang of ["hy","en","ru"] as const)expect(topic!.steps[lang]).toHaveLength(3);
     }
   });
+  it("keeps key math domains and worked-example arithmetic correct",()=>{
+    const get=(id:string)=>{
+      const topic=MATH_HANDBOOK_TOPICS.find(t=>t.id===id);
+      expect(topic,id).toBeDefined();
+      return topic!;
+    };
+    const mixtures=get("mixtures");
+    expect(mixtures.steps.hy.join(" ")).toContain("(0.2/3)×100%");
+    expect(mixtures.steps.en.join(" ")).toContain("(0.2/3)×100%");
+    expect(mixtures.steps.ru.join(" ")).toContain("(0,2/3)×100%");
+    expect((0.2 / 3) * 100).toBeCloseTo(6.666666666666667,12);
+    const quadratic=get("quadratic");
+    expect(quadratic.formula).toContain("D\\ge0");
+    expect(quadratic.formula).toContain("a\\ne0");
+    expect(get("vieta").formula).toContain("a\\ne0");
+    const area=get("geometry-area");
+    expect(area.formula).toContain("p=\\frac{a+b+c}{2}");
+    expect(Math.sqrt(21*(21-13)*(21-14)*(21-15))).toBe(84); // Heron for 13,14,15
+    expect(get("derivative-product-exponential").answer).toBe("$f'(0)=2$");
+    expect(get("absolute-value-derivative").answer).toBe("$f'(-2)=4$");
+    expect(get("tangent-equation").answer).toBe("$y=4x-4$");
+  });
   it("has complete multilingual manually worked lessons and no topic ID collisions",()=>{
     expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(36);
     expect(new Set(MATH_HANDBOOK_TOPICS.map(t=>t.id)).size).toBe(MATH_HANDBOOK_TOPICS.length);
