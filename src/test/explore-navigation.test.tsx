@@ -6,6 +6,7 @@ vi.mock("@tanstack/react-router", async () => {
   const React = await import("react");
   return {
     createFileRoute: () => (options: unknown) => options,
+    useLocation: () => ({pathname:"/explore",hash:""}),
     Link: ({ to, hash, children, ...rest }: {to:string;hash?:string;children:React.ReactNode;search?:unknown;params?:unknown;[key:string]:unknown}) => {
       const {search: _search, params: _params, ...attrs} = rest;
       return React.createElement("a", {...attrs, href:to+(hash?"#"+hash:"")},children);
