@@ -25,6 +25,7 @@ jobs:
         run: >-
           bun run test
           src/test/study-comfort.test.tsx
+          src/test/study-answer-interaction.test.tsx
           src/test/study-tutor-mobile-overlay.test.tsx
           src/test/admin-session.test.ts
           src/test/security-headers.test.ts

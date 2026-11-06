@@ -106,11 +106,11 @@ function StudyPage() {
           <Button asChild variant="outline"><Link to="/book/$bookId" params={{bookId}}>{tx("Վերադառնալ բաժիններին")}</Link></Button>
         </div>
       ) : mode === "game" ? (
-        <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
+        <Game key={`study-game:${bookId}:${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
       ) : (
-        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
+        <Classic key={`study-classic:${bookId}:${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
       )}
-      {section && section.units.length > 0 && <StudyTutorDrawer key={`${bookId}-${sectionId}`} />}
+      {section && section.units.length > 0 && <StudyTutorDrawer key={`study-tutor:${bookId}:${sectionId}`} />}
     </div>
   );
 }
