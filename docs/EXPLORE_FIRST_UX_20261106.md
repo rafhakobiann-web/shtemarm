@@ -29,3 +29,20 @@ The old signed-in interface exposed many unrelated actions at once: books, exams
 - Confirm keyboard focus, reduced motion, light/dark appearance and private auth protection.
 - Check that all 4 Armenian books, 3 English books, 2 Math books and 4 Biology books remain accessible.
 - Keep Draft until test runners and UI validation succeed; do not merge or deploy to Lovable production.
+
+## UX continuation: subject detail + almost-full-screen explanations
+- The five dashboard subject pages now share a dedicated, bordered subject header with an Explore breadcrumb and working jump to the books section. A separate link leads to the practice-exam discovery section.
+- AI explanation generation in all subjects still runs through the existing server functions, official answers and offline fallback paths. No new provider, account permission or data sharing was introduced.
+- The shared `RichExplanation` viewer now opens a large lesson (up to 92dvh on desktop, close to full screen on phones) with a visible border, KaTeX/validated diagrams, a step progress bar and **Previous / Next / Finish** buttons.
+- Numbered AI outputs are split into their own steps, retaining introductory text, multiline algebra, source-grounded diagrams and code fences as non-executed text.
+- Generic and mathematical prompts request **separate numbered steps**; the Mathematics prompt now follows the student's chosen UI language instead of always forcing Armenian.
+- Model results are labeled honestly as live AI, saved AI or local offline material. Errors show as inline alerts, without opening a modal. AI explanations retain a caveat to cross-check the official key.
+- Radix dialog handles focus trapping, Escape to close, scrolling and focus restoration. The smaller summary panel remains available to reopen the lesson.
+- Existing answer checking, model quota limits, cache reuse and student progress are untouched.
+
+### New verification
+- `src/test/explanation-steps.test.ts`: numbered splitting across hy/en/ru, formulas, diagrams, single-step fallback and decimals.
+- `src/test/rich-explanation-lesson.test.tsx`: Next/Previous/Finish/reopen, offline single-step, diagram and error behavior.
+- `src/test/ai-learning.test.ts` requires localized step-by-step prompts and new fullscreen CSS.
+- Updated `Verify exploration-first interface` workflow to include the above tests and TypeScript/build gates.
+- **Unverified until CI runs:** mobile screenshots at 320/390px, math formula wraps, screen-reader keyboard navigation and actual AI/offline service responses.
