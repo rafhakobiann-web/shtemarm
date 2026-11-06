@@ -143,7 +143,7 @@ export function LandingHeroLab({ lang }: { lang: Lang }) {
           {finished ? (
             <div className="sl-lab-finish" aria-live="polite"><CheckCircle2 size={37} /><h3>{t.finished}</h3><p>{t.finishedText}</p>
               <button type="button" onClick={restart}><RotateCcw size={17} />{t.retry}</button>
-              <Link to="/auth">{t.begin}<ArrowRight size={17} /></Link>
+              <Link to="/dashboard">{t.begin}<ArrowRight size={17} /></Link>
             </div>
           ) : (
             <>

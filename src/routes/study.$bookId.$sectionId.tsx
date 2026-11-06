@@ -11,6 +11,10 @@ import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
 import { recordUnitMistakes, subjectForBookId } from "@/lib/unitMistakes";
+import { GUEST_TRIAL_LIMIT, bumpGuestTrial, sectionTrialKey, useGuestTrialCount, useSignedIn } from "@/lib/guest-trial";
+
+/** Signed-out visitors may check a limited number of answers per section. */
+type GuestGate = { locked: boolean; onAnswered: () => void };
 
 export const Route = createFileRoute("/study/$bookId/$sectionId")({
   staticData: { sitemap: false },
@@ -39,6 +43,15 @@ function StudyPage() {
   const { mode } = Route.useSearch();
   const { data: book, error, isPending, isFetching, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
+  // Signed-out visitors get a short trial per section; signed-in students are never gated.
+  const signedIn = useSignedIn();
+  const trialKey = sectionTrialKey(bookId, sectionId);
+  const trialCount = useGuestTrialCount(trialKey);
+  const guestLocked = signedIn === false && trialCount >= GUEST_TRIAL_LIMIT;
+  const guest: GuestGate = {
+    locked: guestLocked,
+    onAnswered: () => { if (signedIn === false) bumpGuestTrial(trialKey); },
+  };
 
   useEffect(() => {
     update((p) => (p.mode === mode ? p : { ...p, mode }));
@@ -67,6 +80,7 @@ function StudyPage() {
       <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">
         {section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}
       </h1>
+      {guestLocked && <GuestSignupPrompt bookId={bookId} sectionId={sectionId} />}
       {[1, 2, 3].includes(Number(bookId)) && <Link to="/english-grammar"
         search={{book:Number(bookId),section:Number(sectionId),topic:undefined}}
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
@@ -91,9 +105,9 @@ function StudyPage() {
           <Button asChild variant="outline"><Link to="/book/$bookId" params={{bookId}}>{tx("Վերադառնալ բաժիններին")}</Link></Button>
         </div>
       ) : mode === "game" ? (
-        <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
+        <Game key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
       ) : (
-        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
+        <Classic key={`${bookId}-${sectionId}`} units={section.units} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} guest={guest} />
       )}
     </div>
   );
@@ -102,7 +116,7 @@ function StudyPage() {
 const perQuestion = (u: Unit) => u.kind === "mc" || u.kind === "num";
 const qKey = (u: Unit, k: string) => (perQuestion(u) ? `${u.id}:${k}` : u.id);
 
-function useRevealer(subject: string, onResult?: (correct: boolean) => void) {
+function useRevealer(subject: string, onResult?: (correct: boolean) => void, guest?: GuestGate) {
   const [answers, setAnswers] = useState<Record<string, UnitAnswer>>({});
   const [revealed, updateRevealed] = useState<Record<string, boolean>>({});
   const checkedRef = useRef<Set<string>>(new Set());
@@ -117,7 +131,7 @@ function useRevealer(subject: string, onResult?: (correct: boolean) => void) {
     const id = qKey(u, key);
     // Guard synchronously. React state updates can be batched, so two rapid
     // taps must not record the same question twice before re-render.
-    if (checkedRef.current.has(id) || revealed[id] || !isAnswered(u, answers[u.id], perQuestion(u) ? key : undefined)) return;
+    if (guest?.locked || checkedRef.current.has(id) || revealed[id] || !isAnswered(u, answers[u.id], perQuestion(u) ? key : undefined)) return;
     checkedRef.current.add(id);
     updateRevealed((r) => ({ ...r, [id]: true }));
     const a = answers[u.id];
@@ -126,6 +140,7 @@ function useRevealer(subject: string, onResult?: (correct: boolean) => void) {
     else if (u.kind === "num") ok = normNum(a?.mc?.[key]) === normNum(questionForAnswerKey(u, key)?.answer);
     else ok = scoreUnit(u, a).got === 1;
     recordAnswer(id, ok);
+    guest?.onAnswered();
     if (a) {
       const attempted: UnitAnswer = perQuestion(u) ? {mc: {[key]: a.mc?.[key] ?? ""}} : a;
       recordUnitMistakes(subject, [u], {[u.id]: attempted});
@@ -150,11 +165,32 @@ function PhysicsSourceJump({unit}:{unit:Unit}){
   </Link>;
 }
 
+const GUEST_PROMPT = {
+  hy: { title: "Շարունակելու համար մուտք գործիր", body: "Այս բաժնում դու արդեն ստուգել ես 3 հարց։ Մուտք գործիր՝ շարունակելու և առաջընթացդ բոլոր սարքերում պահելու համար։", action: "Մուտք գործել" },
+  en: { title: "Sign in to keep going", body: "You've checked 3 questions in this section. Sign in to continue and keep your progress on all your devices.", action: "Sign in" },
+  ru: { title: "Войди, чтобы продолжить", body: "Ты проверил 3 вопроса в этом разделе. Войди, чтобы продолжить и сохранить прогресс на всех устройствах.", action: "Войти" },
+};
+
+/** Shown once a signed-out visitor has used their free answers for this section. */
+function GuestSignupPrompt({ bookId, sectionId }: { bookId: string; sectionId: string }) {
+  const lang = useLang();
+  const t = lang === "en" ? GUEST_PROMPT.en : lang === "ru" ? GUEST_PROMPT.ru : GUEST_PROMPT.hy;
+  return (
+    <section aria-labelledby="guest-signup-title" className="space-y-3 rounded-2xl border border-primary/25 bg-primary/5 p-5">
+      <h2 id="guest-signup-title" className="text-lg font-black">{t.title}</h2>
+      <p className="text-sm leading-relaxed text-muted-foreground">{t.body}</p>
+      <Button asChild className="min-h-11">
+        <Link to="/auth" search={{ next: `/study/${bookId}/${sectionId}` }}>{t.action}</Link>
+      </Button>
+    </section>
+  );
+}
+
 /* ---------------- Classic ---------------- */
-function Classic({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
+function Classic({ units, instr, instrEn, bookId, guest }: { units: Unit[]; instr: string; instrEn: string; bookId: string; guest: GuestGate }) {
   const tx = useTx();
   const lang = useLang();
-  const { answers, setAnswers, revealed, check } = useRevealer(subjectForBookId(bookId));
+  const { answers, setAnswers, revealed, check } = useRevealer(subjectForBookId(bookId), undefined, guest);
   // A fixed window keeps hundreds of source units off the main thread.
   // Answers and checked status live above the window and survive page changes.
   const PAGE_SIZE = 12;
@@ -212,7 +248,7 @@ function Classic({ units, instr, instrEn, bookId }: { units: Unit[]; instr: stri
 }
 
 /* ---------------- Game ---------------- */
-function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string; instrEn: string; bookId: string }) {
+function Game({ units, instr, instrEn, bookId, guest }: { units: Unit[]; instr: string; instrEn: string; bookId: string; guest: GuestGate }) {
   const tx = useTx();
   const progress = useProgress();
   const lang = useLang();
@@ -249,7 +285,7 @@ function Game({ units, instr, instrEn, bookId }: { units: Unit[]; instr: string;
       setCombo(0);
       setHearts((h) => h - 1);
     }
-  });
+  }, guest);
 
   const restart = () => {
     setSeed((s) => s + 1);
