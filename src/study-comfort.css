@@ -104,3 +104,57 @@ html[data-surface="liquid"] .mobile-liquid-dock { position: fixed; }
   .sht-mobile-links[open] > nav { animation: sht-menu-enter 180ms ease-out both; }
   @keyframes sht-menu-enter { from { opacity: 0; transform: translateY(-7px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
 }
+
+
+/* Mobile interaction recovery:
+   The tutor is portaled above the app. When open it owns the entire screen.
+   Never allow the floating dock to cover the dialog's send controls. */
+body[data-study-tutor-open="true"] .site-mobile-nav,
+body[data-study-tutor-open="true"] .site-header,
+body[data-study-tutor-open="true"] .site-settings-sheet {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.sht-tutor-workspace {
+  width: auto;
+  height: auto;
+  max-height: calc(100dvh - 1rem);
+  isolation: isolate;
+  overscroll-behavior: contain;
+  background: var(--background);
+}
+.sht-tutor-workspace > header { flex-shrink: 0; }
+.sht-tutor-workspace .sht-tutor-composer {
+  max-height: min(43dvh, 400px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: max(.75rem, env(safe-area-inset-bottom));
+}
+.sht-tutor-workspace textarea { font-size: 16px; }
+.sht-tutor-workspace button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.study-answer-grid .answer-option {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.study-answer-grid .answer-option:has(input:checked) {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+@media (min-width: 640px) {
+  .sht-tutor-workspace { max-height: calc(100dvh - 2.5rem); }
+}
+@media (max-width: 767px) {
+  .study-answer-grid .answer-option { min-height: 3.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-tutor-workspace *,
+  .sht-tutor-workspace *::before,
+  .sht-tutor-workspace *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
