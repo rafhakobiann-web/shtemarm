@@ -175,3 +175,28 @@ html[data-surface="liquid"] .sht-home-2026 .sht-home-quick-link::before {
     backdrop-filter: none;
   }
 }
+
+/* Subject detail pages: focused breadcrumbs, short decision path and calm book cards. */
+.sht-subject-header {
+  border-color: color-mix(in srgb, var(--primary) 23%, var(--border));
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 55%),
+    var(--card);
+  box-shadow: none;
+}
+.sht-subject-header nav {
+  scroll-margin-top: 6rem;
+}
+[id="subject-books"] { scroll-margin-top: 6rem; }
+@media (max-width: 390px) {
+  .sht-subject-header {
+    padding: 1rem;
+    border-radius: 1.1rem;
+  }
+  .sht-subject-header nav > * { flex: 1 1 auto; }
+}
+html[data-surface="liquid"] .sht-subject-header {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+}
