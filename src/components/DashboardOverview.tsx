@@ -10,8 +10,8 @@ const COPY = {
   hy: {
     heading:"Ի՞նչ ենք սովորում այսօր",
     greeting:"Բարի վերադարձ",
-    subtitle:"Ընտրիր առարկան կամ շարունակիր վերջին դժվարացած հարցերից։",
-    start:"Սկսել պարապել",
+    subtitle:"Պարապմունքները սկսվում են առարկայից։ Գտիր գիրքը, թեստը կամ կրկնության թեման՝ մի քանի հպումով։",
+    start:"Ընտրել առարկա",
     review:"Կրկնել սխալները",
     profile:"Իմ պրոֆիլը",
     answered:"պատասխանված հարց",
@@ -21,8 +21,8 @@ const COPY = {
   en: {
     heading:"What shall we study today?",
     greeting:"Welcome back",
-    subtitle:"Choose a subject or pick up where you left off.",
-    start:"Start studying",
+    subtitle:"Pick a subject, find your workbook, and start learning in a few taps.",
+    start:"Explore subjects",
     review:"Review mistakes",
     profile:"My Profile",
     answered:"questions answered",
@@ -32,8 +32,8 @@ const COPY = {
   ru: {
     heading:"Что будем изучать сегодня?",
     greeting:"С возвращением",
-    subtitle:"Выбери предмет или вернись к сложным заданиям.",
-    start:"Начать занятие",
+    subtitle:"Выбери предмет, найди сборник и начни заниматься за пару нажатий.",
+    start:"Выбрать предмет",
     review:"Повторить ошибки",
     profile:"Мой профиль",
     answered:"ответов",
@@ -67,7 +67,7 @@ export function DashboardOverview({ name, progress }: Props) {
             ? <Link to="/mistakes" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
                 {t.review}<ArrowRight className="size-4" aria-hidden="true" />
               </Link>
-            : <Link to="/dashboard" hash="subjects" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
+            : <Link to="/explore" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
                 {t.start}<ArrowRight className="size-4" aria-hidden="true" />
               </Link>}
           <Link to="/profile" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-bold text-foreground hover:bg-muted sm:flex-none">
