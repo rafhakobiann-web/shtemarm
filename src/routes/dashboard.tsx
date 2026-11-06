@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, GraduationCap, Sparkles, Dna, Atom, LibraryBig, Target, Download, Smartphone } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ClipboardCheck, Trophy, Brain, BookOpen, Calculator, CheckCircle2, RotateCcw, MessageCircle, Sparkles, Dna, LibraryBig, Target, Smartphone } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
@@ -305,63 +305,26 @@ function Index() {
   return (
     <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
       <DashboardFocus name={name} progress={progress} subjects={savedSubjects} />
-      <section className="academy-hero relative isolate flex flex-wrap items-center justify-between gap-4 overflow-hidden rounded-[1.5rem] px-5 py-6 text-white sm:px-7" aria-label={tx("Արագ սկսել")}>
+      <section className="academy-hero relative isolate overflow-hidden rounded-[1.5rem] px-5 py-6 text-white sm:px-7" aria-label={tx("Արագ սկսել")}>
         <div className="relative z-10 space-y-1">
-          <p className="flex items-center gap-2 text-xs font-extrabold text-emerald-100"><GraduationCap className="size-4" />SHTEMARM</p>
           <h2 className="text-lg font-black sm:text-xl">{tx("Սովորիր վստահ։ Պատրաստվիր խելացի։")}</h2>
-          <p className="text-sm text-emerald-50/85">{tx("Շտեմարաններ, թեմատիկ վարժություններ և փորձնական քննություններ՝ մեկ հարմար ուսումնական տարածքում։")}</p>
-        </div>
-        <div className="relative z-10 flex w-full flex-wrap gap-2 sm:w-auto">
-          <a href="#subjects" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-extrabold text-[#124e4b] sm:flex-none">
-            <BookOpen className="size-4" />{tx("Ընտրել առարկան")}<ArrowRight className="size-4" />
-          </a>
-          <a href="#exams" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2 text-sm font-bold text-white sm:flex-none">
-            <Target className="size-4" />{tx("Անցնել թեստ")}
-          </a>
+          <p className="text-sm text-emerald-50/85">{tx("Ընտրիր առարկան և սկսիր՝ կամ ստուգիր պատրաստվածությունդ։")}</p>
         </div>
       </section>
-      <Link
-        to="/download"
-        className="academy-download-cta group flex min-h-16 items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-primary shadow-sm transition-colors hover:bg-primary/10 sm:px-5"
-      >
-        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/12">
-          <Smartphone className="size-5" aria-hidden="true" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <strong className="block text-sm font-black">{tx("Shtemarm-ը՝ քո հեռախոսում")}</strong>
-          <span className="block text-xs leading-5 text-muted-foreground">{tx("Ներբեռնել Android հավելվածը կամ տեղադրել կայքը")}</span>
-        </span>
-        <Download className="size-5 shrink-0 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
-      </Link>
-      <Link
-        to="/changelog"
-        className="group flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/5 sm:px-5"
-      >
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-          <Sparkles className="size-5" aria-hidden="true" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <strong className="block text-sm font-black">{tx("Նորություններ և թարմացումներ")}</strong>
-          <span className="block text-xs leading-5 text-muted-foreground">
-            {tx("Android Beta 4 · Գրքերի կայունության շտկումներ · Ավարտված և ընթացիկ աշխատանքներ")}
-          </span>
-        </span>
-        <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" />
-      </Link>
       <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
           <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շտեմարաններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ընտրիր գիրքը")}</span></span>
           <ArrowRight className="size-4 text-muted-foreground"/>
         </a>
-        <Link to="/study-tools" className="academy-quick-action">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Brain className="size-5"/></span>
-          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական գործիքներ")}</strong><span className="block text-xs text-muted-foreground">{tx("Քո առաջընթացն ու սխալները")}</span></span>
+        <a href="#exams" className="academy-quick-action">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300"><Target className="size-5"/></span>
+          <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Փորձնական քննություններ")}</strong><span className="block text-xs text-muted-foreground">{tx("Ստուգիր պատրաստվածությունդ")}</span></span>
           <ArrowRight className="size-4 text-muted-foreground"/>
-        </Link>
+        </a>
       </nav>
       <section className="space-y-7" id="dashboard">
-        <div className="space-y-4">
+        <section className="space-y-4" aria-label={tx("Իմ ուսումնական ուղին")}>
           <h2 className="academy-section-title text-xl font-black sm:text-2xl">{tx("Քո ուսումնական գործիքները")}</h2>
           <div className="sht-dashboard-bento grid gap-3 sm:grid-cols-3">
             <Link to="/study-plan" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
@@ -374,9 +337,9 @@ function Index() {
               <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Իմ սխալները")}</strong><span className="block text-xs text-muted-foreground">{tx("Կրկնիր դժվար հարցերը")}</span></span>
               <ArrowRight className="size-4 shrink-0 text-primary" />
             </Link>
-            <Link to="/learn" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Brain className="size-5" /></span>
-              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Ուսումնական կենտրոն")}</strong><span className="block text-xs text-muted-foreground">{tx("Սովորել, թեստավորվել և կրկնել")}</span></span>
+            <Link to="/chat" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><MessageCircle className="size-5" /></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("AI ուսուցիչ")}</strong><span className="block text-xs text-muted-foreground">{tx("Հուշում, բացատրություն կամ ինքնաստուգում")}</span></span>
               <ArrowRight className="size-4 shrink-0 text-primary" />
             </Link>
           </div>
@@ -420,13 +383,9 @@ function Index() {
           })()}
             </div>
           </details>
-          <p className="text-sm text-muted-foreground">{tx("Սովորիր քայլ առ քայլ, ստուգիր գիտելիքներդ թեստերով կամ լուծիր խնդիրներ հաշվիչով։")}</p>
-        </div>
-
+        </section>
         <div id="subjects" className="scroll-mt-24 space-y-3 pt-2">
-          <p className="academy-eyebrow">{tx("Ուսումնական գրադարան")}</p>
           <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Գտիր քո շտեմարանը")}</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">{tx("Ընտրիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։")}</p>
           <div className="dashboard-library-filters flex gap-2 overflow-x-auto pb-2" role="group" aria-label={lang === "en" ? "Filter question books by subject" : lang === "ru" ? "Фильтр сборников по предметам" : "Զտել շտեմարանները ըստ առարկայի"}>
             {LIBRARY_FILTERS.map(option => (
               <button key={option.id} type="button" aria-pressed={libraryFilter === option.id} onClick={() => setLibraryFilter(option.id)}
@@ -501,9 +460,7 @@ function Index() {
       </section>
 
       <section id="exams" className="scroll-mt-24 space-y-5">
-        <p className="academy-eyebrow">{tx("Գիտելիքների ստուգում")}</p>
         <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Փորձնական քննություններ")}</h2>
-        <p className="max-w-2xl text-sm text-muted-foreground">{tx("Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։")}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4 [&>*:nth-child(1)]:lg:col-span-6 [&>*:nth-child(2)]:lg:col-span-6 [&>*:nth-child(3)]:lg:col-span-4 [&>*:nth-child(4)]:lg:col-span-4 [&>*:nth-child(5)]:lg:col-span-4">
           <ExamTile
             to="/exam/$subject" params={{ subject: "english" }}
@@ -547,6 +504,10 @@ function Index() {
           <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Calculator className="size-4" aria-hidden="true" />{tx("Բացել հաշվիչը")}</Link>
         </div>
       </section>
+      <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-5 text-sm">
+        <Link to="/download" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Smartphone className="size-4" aria-hidden="true" />{tx("Ներբեռնել Android հավելվածը")}</Link>
+        <Link to="/changelog" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Sparkles className="size-4" aria-hidden="true" />{tx("Նորություններ և թարմացումներ")}</Link>
+      </footer>
     </div>
   );
 }
