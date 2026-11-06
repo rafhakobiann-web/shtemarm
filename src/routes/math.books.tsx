@@ -301,13 +301,29 @@ function BooksPage() {
     return [...map.entries()];
   }, [book]);
 
-  if (q.isLoading) return <p className="flex items-center gap-2 p-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">{tx("Չհաջողվեց բեռնել գրքերը։")}</p>;
+  // One accessible, visible title across loading, error, chooser and sections.
+  const title = section && book
+    ? tx("{book} · Բաժին {n}", {book:tx(book.title),n:section.section})
+    : book ? tx(book.title)
+      : lang === "en" ? "Mathematics question books"
+      : lang === "ru" ? "Сборники по математике"
+      : "Մաթեմատիկայի շտեմարաններ";
+  const pageHeading = <h1 className="text-balance text-2xl font-black tracking-tight sm:text-4xl">{title}</h1>;
+
+  if (q.isLoading) return <main className="mx-auto max-w-5xl space-y-4 px-3 pb-12 pt-4">
+    {pageHeading}
+    <p role="status" className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {tx("Բեռնվում է…")}</p>
+  </main>;
+  if (q.error || !q.data) return <main className="mx-auto max-w-5xl space-y-4 px-3 pb-12 pt-4">
+    {pageHeading}
+    <p role="alert" className="text-destructive">{tx("Չհաջողվեց բեռնել գրքերը։")}</p>
+  </main>;
 
   const back = () => (sectionKey ? setSectionKey(null) : setBookId(null));
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-5xl">
+    <main className="mx-auto max-w-2xl space-y-4 px-3 pb-24 pt-4 lg:max-w-5xl">
+      {pageHeading}
       <div className="flex items-center gap-3">
         {bookId ? (
           <button onClick={back} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -361,7 +377,7 @@ function BooksPage() {
           <div className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-end">
             <div className="hidden md:block"><MathBookCover bookId={bookId} /></div>
             <div className="space-y-4">
-              <h1 className="text-3xl font-black sm:text-4xl">{tx(book.title)}</h1>
+              <h2 className="text-xl font-black sm:text-2xl">{tx("Բաժիններ և առաջադրանքներ")}</h2>
               <p className="text-muted-foreground">{tx("Շտեմարան · {place}", { place: tx(bookId === "matem-1" ? "Երևան 2019" : "Երևան 2020") })}</p>
               <div className="flex flex-wrap gap-3">
                 <Button variant="game" size="lg" asChild>
@@ -426,7 +442,7 @@ function BooksPage() {
           ))}
         </section>
       )}
-    </div>
+    </main>
   );
 }
 

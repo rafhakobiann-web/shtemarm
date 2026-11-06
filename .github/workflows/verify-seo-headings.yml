@@ -5,6 +5,11 @@ on:
     paths:
       - 'src/routes/index.tsx'
       - 'src/routes/math.play.tsx'
+      - 'src/routes/math.books.tsx'
+      - 'src/routes/biology.tsx'
+      - 'src/routes/history.tsx'
+      - 'src/routes/exam.$subject.tsx'
+      - 'src/routes/subject.$subject.tsx'
       - 'src/routes/study.$bookId.$sectionId.tsx'
       - 'src/routes/__root.tsx'
       - 'src/components/ExamDesign.tsx'
