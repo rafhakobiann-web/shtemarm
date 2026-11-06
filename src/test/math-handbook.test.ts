@@ -50,7 +50,7 @@ describe("Math handbook source alignment",()=>{
     expect(MATH_HANDBOOK_TOPICS.length).toBeGreaterThanOrEqual(53);
     for(const topic of MATH_HANDBOOK_TOPICS){
       if(topic.formula.includes("\\"))expect(topic.formula,topic.id).toContain("$");
-      expect((topic.formula.match(/\\$/g)??[]).length%2,topic.id).toBe(0);
+      expect((topic.formula.match(/\$/g)??[]).length%2,topic.id).toBe(0);
     }
     const ids=["derivative-power","derivative-product-exponential","tangent-equation","absolute-value-derivative","derivative-extrema","logarithm-properties"];
     for(const id of ids){
