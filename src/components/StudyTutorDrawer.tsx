@@ -94,8 +94,8 @@ export function StudyTutorDrawer() {
     } finally { setLoading(false); }
   }
   return <>
-    <button ref={triggerRef} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="study-ai-panel" className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex min-h-12 items-center gap-2 rounded-full border border-primary/30 bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:bottom-6 sm:right-6">
-      <Bot className="size-5" aria-hidden="true" />{t.open}
+    <button ref={triggerRef} type="button" onClick={() => setOpen(true)} aria-label={t.open} aria-expanded={open} aria-controls="study-ai-panel" className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex size-12 items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary px-3 text-sm font-bold text-primary-foreground shadow-lg hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:bottom-6 sm:right-6 sm:h-auto sm:w-auto sm:px-4 sm:py-3">
+      <Bot className="size-5 shrink-0" aria-hidden="true" /><span className="hidden sm:inline">{t.open}</span>
     </button>
     {open && createPortal(<div className="fixed inset-0 z-[100] isolate" data-study-tutor-modal>
       <button type="button" aria-label={t.close} className="absolute inset-0 bg-black/65" onClick={dismiss} />
