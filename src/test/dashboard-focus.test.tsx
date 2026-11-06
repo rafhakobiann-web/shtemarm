@@ -12,6 +12,7 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/lib/lang", () => ({ useLang: () => "en" }));
 
 import { DashboardFocus, progressSummary } from "@/components/DashboardFocus";
+import { DashboardOverview } from "@/components/DashboardOverview";
 
 function makeProgress(overrides: Partial<Progress> = {}): Progress {
   return { answers: {}, xp: 0, streak: 0, lastDay: "", exams: [], mode: "game", ...overrides };
@@ -68,6 +69,25 @@ describe("dashboard focuses on the actual student's work", () => {
     expect(screen.getByRole("link", { name: /Continue learning/ })).toHaveAttribute("href", "/study-plan");
   });
 
+  it("shows only a compact learning start and profile navigation on the dashboard", () => {
+    const { container } = render(<DashboardOverview name="Ada" progress={makeProgress({
+      answers: { one: 1, two: 0, three: 0 }, xp: 200,
+    })} />);
+    expect(screen.getByRole("heading", { name: "What shall we study today?" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Review mistakes/ })).toHaveAttribute("href", "/mistakes");
+    expect(screen.getByRole("link", { name: /My Profile/ })).toHaveAttribute("href", "/profile");
+    expect(screen.getByText("3 questions answered · 2 questions to review")).toBeInTheDocument();
+    expect(container.querySelectorAll(".academy-bento")).toHaveLength(1);
+    expect(container.querySelectorAll("select, [role=progressbar], [data-achievement]")).toHaveLength(0);
+  });
+
+  it("starts with a subject picker when no answers are recorded", () => {
+    render(<DashboardOverview progress={makeProgress()} />);
+    expect(screen.getByText("Your first practice session starts with one question.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Start studying/ })).toHaveAttribute("href", "/dashboard#subjects");
+    expect(screen.getByRole("link", { name: /My Profile/ })).toHaveAttribute("href", "/profile");
+  });
+
   it("keeps book and exam destinations and adds keyboard-accessible subject filters", () => {
     const dashboard = readFileSync("src/routes/dashboard.tsx", "utf8");
     expect(dashboard).toContain("LIBRARY_FILTERS.map");
@@ -79,7 +99,8 @@ describe("dashboard focuses on the actual student's work", () => {
     expect(dashboard).toContain('id="subjects"');
     expect(dashboard).toContain('search={{ mode: "exam" }}');
     expect(dashboard).toContain("sht-dashboard-bento");
-    expect(dashboard).toContain('<DashboardFocus name={name} progress={progress} subjects={savedSubjects} />');
+    expect(dashboard).toContain('<DashboardOverview name={name} progress={progress} />');
+    expect(readFileSync("src/routes/profile.tsx", "utf8")).toContain('<DashboardFocus name={name} progress={progress} subjects={subjects} />');
     expect(readFileSync("src/components/AppHeader.tsx", "utf8")).toContain('<Link to="/"');
   });
 });
