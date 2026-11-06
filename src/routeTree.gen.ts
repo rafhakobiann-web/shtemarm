@@ -20,6 +20,7 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DownloadRouteImport } from './routes/download'
+import { Route as GuestRouteImport } from './routes/guest'
 import { Route as EnglishGrammarRouteImport } from './routes/english-grammar'
 import { Route as EnglishTestsRouteImport } from './routes/english-tests'
 import { Route as FeedbackRouteImport } from './routes/feedback'
@@ -109,6 +110,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const DownloadRoute = DownloadRouteImport.update({
   id: '/download',
   path: '/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestRoute = GuestRouteImport.update({
+  id: '/guest',
+  path: '/guest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnglishGrammarRoute = EnglishGrammarRouteImport.update({
@@ -300,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
+  '/guest': typeof GuestRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
+  '/guest': typeof GuestRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -397,6 +405,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/download': typeof DownloadRoute
+  '/guest': typeof GuestRoute
   '/english-grammar': typeof EnglishGrammarRoute
   '/english-tests': typeof EnglishTestsRoute
   '/feedback': typeof FeedbackRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
+    | '/guest'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -495,6 +505,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
+    | '/guest'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/download'
+    | '/guest'
     | '/english-grammar'
     | '/english-tests'
     | '/feedback'
@@ -592,6 +604,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   DashboardRoute: typeof DashboardRoute
   DownloadRoute: typeof DownloadRoute
+  GuestRoute: typeof GuestRoute
   EnglishGrammarRoute: typeof EnglishGrammarRoute
   EnglishTestsRoute: typeof EnglishTestsRoute
   FeedbackRoute: typeof FeedbackRoute
@@ -706,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/download'
       fullPath: '/download'
       preLoaderRoute: typeof DownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guest': {
+      id: '/guest'
+      path: '/guest'
+      fullPath: '/guest'
+      preLoaderRoute: typeof GuestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/english-grammar': {
@@ -968,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   DashboardRoute: DashboardRoute,
   DownloadRoute: DownloadRoute,
+  GuestRoute: GuestRoute,
   EnglishGrammarRoute: EnglishGrammarRoute,
   EnglishTestsRoute: EnglishTestsRoute,
   FeedbackRoute: FeedbackRoute,
