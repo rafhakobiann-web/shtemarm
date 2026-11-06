@@ -1,0 +1,97 @@
+name: Check live Lovable Biology pages after Production publish
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-biology-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Install Playwright isolated runtime
+        run: |
+          bun add --no-save playwright@1.56.1
+          bunx playwright install --with-deps chromium
+      - name: Check published home and both Biology routes on Android-sized Chromium
+        env:
+          SHTEMARM_SMOKE_ORIGIN: https://shtemarm.lovable.app
+        run: node scripts/diagnose-production-runtime.mjs
+      - name: Assert published page includes new original question text interface
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          try {
+            const page = await browser.newPage({ viewport: { width: 393, height: 852 }, isMobile: true, hasTouch: true });
+            const response = await page.goto("https://shtemarm.lovable.app/biology/original", { waitUntil: "domcontentloaded", timeout: 30000 });
+            await page.getByText("Հարց 1", { exact: true }).waitFor({ timeout: 15000 });
+            await page.getByText("Հաստատիր այս մասի PDF-ը մեկ անգամ", { exact: false }).waitFor({ timeout: 15000 });
+            if (response?.status() !== 200) throw new Error("Published page returned non-200 response");
+            console.log("Live Lovable Production contains original-question text reader and PDF upload prompt.");
+          } finally { await browser.close(); }
+          JS
+      - name: Verify visible Biology subject catalog shows original parts III and IV
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          const page = await browser.newPage({
+            viewport: { width: 393, height: 852 },
+            isMobile: true, hasTouch: true,
+            userAgent: "Mozilla/5.0 (Linux; Android 16; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36",
+          });
+          try {
+            const errors = [];
+            page.on("pageerror", e => errors.push(e.message));
+            await page.goto("https://shtemarm.lovable.app/?subject=biology", { waitUntil: "domcontentloaded", timeout: 35000 });
+            await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
+            const biologyLinks = await page.locator("a").evaluateAll(anchors => anchors
+              .map(a => ({ href: a.getAttribute("href"), text: (a.textContent ?? "").trim().slice(0, 95) }))
+              .filter(item => /biology|կենսաբան/i.test((item.href ?? "") + item.text)));
+            console.log("Live subject links:", JSON.stringify(biologyLinks, null, 2));
+            console.log("Live body contains fourth book:", (await page.locator("body").innerText()).includes("Մաս չորրորդ"));
+            await page.locator('a[href*="/biology/original?volume=3"]').first().waitFor({ timeout: 15000 });
+            await page.locator('a[href*="/biology/original?volume=4"]').first().waitFor({ timeout: 15000 });
+            console.log("Verified distinct links for original 3rd and 4th Biology books in visible subject catalog.");
+            await page.locator('a[href*="/biology/original?volume=4"]').first().click();
+            await page.getByRole("button", { name: /^Մաս IV$/ }).waitFor({ timeout: 15000 });
+            const checked = await page.getByRole("button", { name: /^Մաս IV$/ }).getAttribute("aria-pressed");
+            if (checked !== "true") throw new Error("Original part IV was not selected by its book card");
+            await page.getByText(/1,688 համարակալված առաջադրանք/).waitFor({ timeout: 15000 });
+            if (errors.length) throw new Error("Production browser exceptions: " + errors.join("; "));
+            console.log("Verified volume IV opens as IV, displays 1,688 source-indexed questions and no fatal error.");
+          } finally { await browser.close(); }
+          JS
+      - name: Verify Production book and question interfaces contain no cover or scanned page images
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from "playwright";
+          const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+          try {
+            const page = await browser.newPage({ viewport: { width: 393, height: 852 }, isMobile: true, hasTouch: true });
+            await page.goto("https://shtemarm.lovable.app/?subject=biology", { waitUntil: "domcontentloaded", timeout: 35000 });
+            await page.getByText("Հասանելի շտեմարաններ", { exact: true }).waitFor({ timeout: 20000 });
+            const cards = page.locator('#main-content a[href*="/biology/original"], #main-content a[href*="/book/"]');
+            if (await cards.count() < 4) throw new Error("Missing book links");
+            for (const card of await cards.all()) {
+              if (await card.locator("img").count()) throw new Error("Book cover image is still rendered");
+            }
+            await page.goto("https://shtemarm.lovable.app/biology/original?volume=4", { waitUntil: "domcontentloaded", timeout: 35000 });
+            await page.getByText("Հարց 1", { exact: true }).waitFor({ timeout: 15000 });
+            if (await page.locator("#main-content canvas, #main-content iframe").count())
+              throw new Error("Old image-based PDF viewer still present in original Biology practice");
+            await page.getByText("Ստուգել պատասխանը", { exact: true }).waitFor({ timeout: 15000 });
+            console.log("Verified: text-only book cards and no per-question canvas/iframe in published Biology.");
+          } finally { await browser.close(); }
+          JS
