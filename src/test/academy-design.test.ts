@@ -38,7 +38,7 @@ describe("Shtemarm Academy final design tokens",()=>{
     for (const value of ["sht-hero", "sht-bento-grid", "sht-subject-grid", 'to="/auth"']) {
       expect(home).toContain(value);
     }
-    for (const value of ["academy-hero", "academy-quick-action", "academy-bento",
+    for (const value of ["DashboardOverview", "academy-quick-action", "academy-bento",
       'id="subjects"', 'id="exams"', 'to="/mini-games"',
       'to="/math"', 'to="/history"',
       'to="/subject/$subject"', "PHYSICS_BOOKS.map", "BIO_BOOKS.filter",

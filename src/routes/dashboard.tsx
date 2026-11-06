@@ -4,8 +4,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useLang, useTx } from "@/lib/lang";
-import { DashboardFocus } from "@/components/DashboardFocus";
-import { readOnboarding, type OnboardingSubject } from "@/lib/onboarding";
+import { DashboardOverview } from "@/components/DashboardOverview";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 import { BookCover } from "@/components/BookCover";
@@ -281,7 +280,6 @@ function Index() {
   const progress = useProgress();
   const { subject } = Route.useSearch();
   const [name, setName] = useState<string | null>(null);
-  const [savedSubjects, setSavedSubjects] = useState<OnboardingSubject[]>([]);
   const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
   const showLibrary = (key: LibraryFilter) => libraryFilter === "all" || libraryFilter === key;
   useEffect(() => {
@@ -291,7 +289,6 @@ function Index() {
       .then(({ data, error }) => {
         if (!active || error || !data.user) return;
         setName((data.user.user_metadata?.username as string | undefined) ?? null);
-        setSavedSubjects(readOnboarding(data.user.id)?.subjects ?? []);
       })
       .catch(() => { /* The dashboard remains usable when profile lookup fails. */ });
     return () => { active = false; };
@@ -303,14 +300,8 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   return (
-    <div className="academy-home mx-auto max-w-7xl space-y-8 px-1 py-3 sm:space-y-10 sm:py-6">
-      <DashboardFocus name={name} progress={progress} subjects={savedSubjects} />
-      <section className="academy-hero relative isolate overflow-hidden rounded-[1.5rem] px-5 py-6 text-white sm:px-7" aria-label={tx("Արագ սկսել")}>
-        <div className="relative z-10 space-y-1">
-          <h2 className="text-lg font-black sm:text-xl">{tx("Սովորիր վստահ։ Պատրաստվիր խելացի։")}</h2>
-          <p className="text-sm text-emerald-50/85">{tx("Ընտրիր առարկան և սկսիր՝ կամ ստուգիր պատրաստվածությունդ։")}</p>
-        </div>
-      </section>
+    <div className="academy-home mx-auto max-w-6xl space-y-5 px-1 py-3 sm:space-y-6 sm:py-6">
+      <DashboardOverview name={name} progress={progress} />
       <nav aria-label={tx("Արագ անցումներ")} className="sht-dashboard-shortcuts grid gap-3 sm:grid-cols-2">
         <a href="#subjects" className="academy-quick-action">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><LibraryBig className="size-5"/></span>
@@ -323,67 +314,7 @@ function Index() {
           <ArrowRight className="size-4 text-muted-foreground"/>
         </a>
       </nav>
-      <section className="space-y-7" id="dashboard">
-        <section className="space-y-4" aria-label={tx("Իմ ուսումնական ուղին")}>
-          <h2 className="academy-section-title text-xl font-black sm:text-2xl">{tx("Քո ուսումնական գործիքները")}</h2>
-          <div className="sht-dashboard-bento grid gap-3 sm:grid-cols-3">
-            <Link to="/study-plan" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Target className="size-5" /></span>
-              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Շարունակել ուսուցումը")}</strong><span className="block text-xs text-muted-foreground">{tx("Այսօրվա անհատական պլանը")}</span></span>
-              <ArrowRight className="size-4 shrink-0 text-primary" />
-            </Link>
-            <Link to="/mistakes" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><RotateCcw className="size-5" /></span>
-              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("Իմ սխալները")}</strong><span className="block text-xs text-muted-foreground">{tx("Կրկնիր դժվար հարցերը")}</span></span>
-              <ArrowRight className="size-4 shrink-0 text-primary" />
-            </Link>
-            <Link to="/chat" className="academy-bento group flex min-h-28 items-center gap-3 p-4 text-foreground transition-colors hover:border-primary/40">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><MessageCircle className="size-5" /></span>
-              <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{tx("AI ուսուցիչ")}</strong><span className="block text-xs text-muted-foreground">{tx("Հուշում, բացատրություն կամ ինքնաստուգում")}</span></span>
-              <ArrowRight className="size-4 shrink-0 text-primary" />
-            </Link>
-          </div>
-          <details className="group/progress rounded-[1.35rem] border bg-card shadow-card">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-black hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
-              <span className="flex items-center gap-2"><Trophy className="size-5 text-primary"/>{tx("Մանրամասն առաջընթաց")}</span>
-              <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/progress:rotate-180"/>
-            </summary>
-            <div className="border-t p-3 sm:p-4">
-          {(() => {
-            const values = Object.values(progress.answers);
-            const right = values.filter((v) => v === 1).length;
-            const wrong = values.filter((v) => v === 0).length;
-            const answered = values.length;
-            const accuracy = answered ? Math.round((right / answered) * 100) : 0;
-            return (
-              <section className="rounded-[1.5rem] border border-border/70 bg-card p-5 shadow-sm sm:p-6 lg:p-7" aria-label={tx("Առաջընթացի վերլուծություն")}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="flex items-center gap-2 text-lg font-black"><Trophy className="size-5 text-primary" />{tx("Առաջընթացի վերլուծություն")}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{tx("Տես՝ ինչն է արդեն լավ ստացվում և ինչն է պետք կրկնել։")}</p>
-                  </div>
-                  <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-black text-primary">{accuracy}% {tx("ճշտություն")}</span>
-                </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-success transition-[width] duration-500" style={{ width: String(accuracy) + "%" }} />
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-success/8 p-4">
-                    <p className="flex items-center gap-2 font-bold text-success"><CheckCircle2 className="size-4" />{tx("Ուժեղ կողմեր")}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{answered ? tx("Դու արդեն ճիշտ ես պատասխանել {n} հարցի։ Շարունակի՛ր պահպանել այս արդյունքը։", { n: right }) : tx("Երբ սկսես լուծել հարցեր, այստեղ կերևան ճիշտ պատասխաններդ և ձեռք բերած հմտությունները։")}</p>
-                  </div>
-                  <div className="rounded-2xl bg-amber-500/8 p-4">
-                    <p className="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-300"><RotateCcw className="size-4" />{tx("Կրկնելու կարիք ունեն")}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{wrong ? tx("Կա {n} սխալ պատասխան․ կրկնիր այդ հարցերը և փորձիր նորից։", { n: wrong }) : tx("Առայժմ սխալ պատասխաններ չկան։ Նոր թեստեր լուծիր՝ բացերը բացահայտելու համար։")}</p>
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">{tx("Վերլուծությունը հիմնված է պահված պատասխանների վրա և դեռ չի դասակարգում առանձին թեմաները։")}</p>
-              </section>
-            );
-          })()}
-            </div>
-          </details>
-        </section>
+      <section className="space-y-4" id="dashboard">
         <div id="subjects" className="scroll-mt-24 space-y-3 pt-2">
           <h2 className="academy-section-title text-2xl font-black sm:text-3xl">{tx("Գտիր քո շտեմարանը")}</h2>
           <div className="dashboard-library-filters flex gap-2 overflow-x-auto pb-2" role="group" aria-label={lang === "en" ? "Filter question books by subject" : lang === "ru" ? "Фильтр сборников по предметам" : "Զտել շտեմարանները ըստ առարկայի"}>
@@ -395,7 +326,7 @@ function Index() {
             ))}
           </div>
         </div>
-        {showLibrary("english") && <SubjectRow key={"english-" + libraryFilter} title={tx("Անգլերեն")} defaultOpen>
+        {showLibrary("english") && <SubjectRow key={"english-" + libraryFilter} title={tx("Անգլերեն")} defaultOpen={libraryFilter !== "all"}>
           {BOOKS.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
               <TileBody cover={b.cover} title={b.title} sub={b.sub} />
@@ -403,7 +334,7 @@ function Index() {
           ))}
         </SubjectRow>}
 
-        {showLibrary("math") && <SubjectRow key={"math-" + libraryFilter} title={tx("Մաթեմատիկա")} defaultOpen>
+        {showLibrary("math") && <SubjectRow key={"math-" + libraryFilter} title={tx("Մաթեմատիկա")} defaultOpen={libraryFilter !== "all"}>
           {MATH_BOOKS.map((b) => (
             <Link key={b.id} to="/math/books" search={{ book: b.id } as never} className={TILE}>
               <TileBody cover={b.cover} title={tx(b.title)} sub={b.sub} />
@@ -447,7 +378,7 @@ function Index() {
             </Link>
           ))}
         </SubjectRow>}
-        {showLibrary("other") && <SubjectRow key={"other-" + libraryFilter} title={tx("Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta defaultOpen={libraryFilter !== "all"}>
+        {libraryFilter === "other" && <SubjectRow key={"other-" + libraryFilter} title={tx("Քիմիա · Աշխարհագրություն · Ռուսաց լեզու")} beta defaultOpen={libraryFilter !== "all"}>
           {STARTER_SUBJECT_BOOKS.filter(b=>b.id!==51).map((b) => {
             const subject = ({51:"physics",52:"chemistry",53:"geography",54:"russian"} as Record<number, string>)[b.id]!;
             return (
@@ -476,6 +407,12 @@ function Index() {
           />
           <ExamTile to="/math" search={{ mode: "exam" }} title={tx("Քննություն")} sub={tx("Մաթեմատիկա · 65 հարցանոց փորձնական թեստ")} icon={<Trophy className="size-5" />} />
           <ExamTile to="/history" title={tx("Քննություն")} sub={tx("Հայոց պատմություն · Անհատական թեստ")} icon={<Trophy className="size-5" />} />
+          <details className="col-span-full min-w-0 overflow-hidden rounded-2xl border bg-card" data-dashboard-more-exams>
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-foreground hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
+              {lang === "hy" ? "Բոլոր մյուս քննությունները" : lang === "ru" ? "Другие экзамены" : "More practice exams"}
+              <ChevronDown className="size-4 text-primary" aria-hidden="true" />
+            </summary>
+            <div className="grid gap-3 border-t p-3 sm:grid-cols-2 lg:grid-cols-3">
           <ExamTile to="/biology" title={tx("Կենսաբանություն · Քննություն")} sub={tx("Անհատական թեստ՝ 1-ին և 2-րդ շտեմարաններից")} icon={<Dna className="size-5" />} />
           <ExamTile to="/exam/$subject" params={{ subject: "armenian" }} title={tx("Հայոց լեզու և գրականություն")} sub={tx("70 առաջադրանք · ուսումնական տարբերակ")} icon={<BookOpen className="size-5" />} />
           <ExamTile to="/subject/$subject" params={{subject:"physics"}}
@@ -488,22 +425,25 @@ function Index() {
               title={tx(b.title)} sub={tx("Ուսումնական հարցեր և ԳԹԿ-ի 2027 ուղեցույց")}
               icon={<BookOpen className="size-5" />} />
           ))}
+            </div>
+          </details>
         </div>
       </section>
-      <section className="grid gap-3 sm:grid-cols-3" aria-label={tx("Լրացուցիչ ուսումնական գործիքներ")}>
-        <ExamTile to="/flashcards" title={tx("Հիշողության քարտեր")} sub={tx("Կրկնել իրական հարցերն ու պատասխանները")} icon={<BookOpen className="size-5"/>}/>
-        <ExamTile to="/mini-games" title={tx("Ուսումնական խաղեր")} sub={tx("Վիկտորինա, ճիշտ/սխալ և համապատասխանեցում")} icon={<Trophy className="size-5"/>}/>
-      </section>
-      <section className="academy-bento grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
-        <div>
-          <h2 className="font-display text-lg font-black">{tx("Օգնիր մեզ դառնալ ավելի լավը")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{tx("Սխա՞լ ես գտել կամ ունե՞ս առաջարկ։ Գրիր մեզ՝ մենք կարդում ենք բոլոր հաղորդագրությունները։")}</p>
+      <details className="group/tools rounded-2xl border bg-card">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-bold hover:bg-muted/30 [&::-webkit-details-marker]:hidden">
+          {lang === "hy" ? "Այլ ուսումնական գործիքներ" : lang === "ru" ? "Другие инструменты" : "More study tools"}
+          <ChevronDown className="size-4 text-primary transition-transform group-open/tools:rotate-180" aria-hidden="true" />
+        </summary>
+        <div className="grid gap-3 border-t p-3 sm:grid-cols-3">
+          <Link to="/study-plan" className="sht-dashboard-bento academy-quick-action"><Target className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական պլան" : lang === "ru" ? "План занятий" : "Study plan"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/mistakes" className="academy-quick-action"><RotateCcw className="size-5 text-primary" />{lang === "hy" ? "Իմ սխալները" : lang === "ru" ? "Мои ошибки" : "Review mistakes"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/chat" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "AI ուսուցիչ" : lang === "ru" ? "ИИ-учитель" : "AI teacher"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/flashcards" className="academy-quick-action"><BookOpen className="size-5 text-primary" />{lang === "hy" ? "Բառաքարտեր" : lang === "ru" ? "Карточки" : "Flashcards"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/mini-games" className="academy-quick-action"><Trophy className="size-5 text-primary" />{lang === "hy" ? "Ուսումնական խաղեր" : lang === "ru" ? "Учебные игры" : "Mini games"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/calc" className="academy-quick-action"><Calculator className="size-5 text-primary" />{lang === "hy" ? "Հաշվիչ" : lang === "ru" ? "Калькулятор" : "Calculator"}<ArrowRight className="ml-auto size-4" /></Link>
+          <Link to="/feedback" className="academy-quick-action"><MessageCircle className="size-5 text-primary" />{lang === "hy" ? "Գրել մշակողին" : lang === "ru" ? "Написать разработчику" : "Send feedback"}<ArrowRight className="ml-auto size-4" /></Link>
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <Link to="/feedback" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:shadow-md"><MessageCircle className="size-4" aria-hidden="true" />{tx("Գրել մեզ")}</Link>
-          <Link to="/calc" className="inline-flex items-center gap-2 rounded-2xl border bg-card px-4 py-2.5 text-sm font-bold transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Calculator className="size-4" aria-hidden="true" />{tx("Բացել հաշվիչը")}</Link>
-        </div>
-      </section>
+      </details>
       <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-5 text-sm">
         <Link to="/download" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Smartphone className="size-4" aria-hidden="true" />{tx("Ներբեռնել Android հավելվածը")}</Link>
         <Link to="/changelog" className="inline-flex items-center gap-2 font-semibold text-muted-foreground hover:text-foreground"><Sparkles className="size-4" aria-hidden="true" />{tx("Նորություններ և թարմացումներ")}</Link>
