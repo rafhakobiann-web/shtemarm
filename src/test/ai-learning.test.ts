@@ -78,6 +78,24 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(explanation).toContain("AI-ի կողմից");
   });
 
+  it("prompts all question explanations as individually readable steps in the selected language", () => {
+    const math = read("src/lib/math-explain.functions.ts");
+    const other = read("src/lib/explain.functions.ts");
+    const lesson = read("src/components/RichExplanation.tsx");
+    const css = read("src/explanation-lesson.css");
+    expect(math).toContain('const languageGuide = d.locale === "en"');
+    expect(math).toContain('const stepGuide = d.locale === "en"');
+    expect(math).toContain("Start every step on a new line");
+    expect(other).toContain("Յուրաքանչյուր քայլը սկսիր նոր տողից");
+    expect(lesson).toContain("buildExplanationSteps");
+    expect(lesson).toContain("DialogContent");
+    expect(lesson).toContain("setCurrent(n => Math.max(0, n - 1))");
+    expect(lesson).toContain("setCurrent(n => Math.min(total - 1, n + 1))");
+    expect(css).toContain("height: min(92dvh, 960px)");
+    expect(css).toContain("border: 2px solid");
+    expect(css).toContain("@media (max-width: 640px)");
+  });
+
   it("supports adaptive learning across tutor prompts, API, preferences and UI", () => {
     for (const lang of ["hy", "en", "ru"] as const) {
       const prompt = tutorModeInstructions("adaptive", lang);
