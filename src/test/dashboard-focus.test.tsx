@@ -100,7 +100,7 @@ describe("dashboard focuses on the actual student's work", () => {
     expect(dashboard).toContain('search={{ mode: "exam" }}');
     expect(dashboard).toContain("sht-dashboard-bento");
     expect(dashboard).toContain('<DashboardOverview name={name} progress={progress} />');
-    expect(readFileSync("src/routes/profile.tsx", "utf8")).toContain('<DashboardFocus name={name} progress={progress} subjects={subjects} />');
+    expect(readFileSync("src/routes/profile.tsx", "utf8")).toContain('<DashboardFocus name={name} progress={progress} subjects={subjects} showGreeting={false} />');
     expect(readFileSync("src/components/AppHeader.tsx", "utf8")).toContain('<Link to="/"');
   });
 });
