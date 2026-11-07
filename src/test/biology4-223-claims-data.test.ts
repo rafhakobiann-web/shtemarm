@@ -10,7 +10,7 @@ import { scoreUnit } from "@/components/UnitCard";
  */
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 const source = read("public/data/biology-original-volume4-index.json");
-const draft = read("public/data/biology4-223-gtc-claims.json") as Book & {
+const draft = read("src/lib/biology4-223-gtc-claims.review.json") as Book & {
   source: { sha256: string; complete: boolean; verification: string };
 };
 const core = read("public/data/bio-book4.json") as Book;
