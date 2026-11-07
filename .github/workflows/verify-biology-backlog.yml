@@ -35,7 +35,7 @@ on:
       - 'scripts/audit-biology4-completion.py'
       - 'src/test/biology4-claims-bundles.test.ts'
       - 'src/test/biology4-223-claims-data.test.ts'
-      - 'public/data/biology4-223-gtc-claims.json'
+      - 'src/lib/biology4-223-gtc-claims.review.json'
       - 'src/lib/books.ts'
       - 'docs/biology4-completion-audit-20261107.md'
       - 'docs/biology4-type-review-queue.json'
