@@ -5,7 +5,7 @@ export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[]; grading?: "gtc-claims" }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
-  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[] };
+  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[]; grouping?: "printed-problem" };
 export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
 
 /**
@@ -336,7 +336,7 @@ function expandForTest(item: ExamItem): ExamItem[] {
       unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
     }));
   }
-  if (unit.kind === "num" && unit.questions.length > 1) {
+  if (unit.kind === "num" && unit.questions.length > 1 && unit.grouping !== "printed-problem") {
     return unit.questions.map((question) => ({
       section: item.section,
       unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
