@@ -36,6 +36,7 @@ on:
       - 'src/test/biology4-claims-bundles.test.ts'
       - 'src/lib/books.ts'
       - 'docs/biology4-completion-audit-20261107.md'
+      - 'docs/biology4-type-review-queue.json'
       - 'scripts/audit-biology3-completion.py'
       - 'docs/biology3-completion-audit-20261107.md'
       - 'scripts/verify-biology-final-500-source.py'
