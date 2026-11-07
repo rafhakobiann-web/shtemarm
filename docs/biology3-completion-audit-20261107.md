@@ -18,7 +18,7 @@ All **1,837 printed question-number markers** were found **exactly once** in the
 
 The **372 printed Chapter VI problems** correspond to **515 separately indexed answer entries** across source pages **377–379**, comprising **110 problems with grouped subanswers** and **262 problems with one answer**. All 372 problem numbers have an entry in that answer-key section; no duplicate or malformed subanswer numbering was detected in the independent PDF scan.
 
-These are structural/source-location checks. **They are not a guarantee of accurate question transcription, answer correctness, figures, numeric grading, or copyright permission.** In particular, 615 are still review-only source references, not playable student tasks.
+All **110 grouped-answer problems** are in the **234 still-pending Chapter VI tasks**; the other **124 pending Chapter VI tasks** have one printed answer each. This identifies a concrete missing renderer/importer path: each grouped problem must retain its separate subquestions and their independent answers.\n\nThese are structural/source-location checks. **They are not a guarantee of accurate question transcription, answer correctness, figures, numeric grading, or copyright permission.** In particular, 615 are still review-only source references, not playable student tasks.
 
 ## Reproduce the check without publishing the PDF
 
