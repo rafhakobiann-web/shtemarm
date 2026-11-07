@@ -11,7 +11,7 @@ on:
       - 'scripts/*biology*'
       - 'src/test/biology4-claims-bundles.test.ts'
       - 'src/test/biology4-223-claims-data.test.ts'
-      - 'public/data/biology4-223-gtc-claims.json'
+      - 'src/lib/biology4-223-gtc-claims.review.json'
       - 'src/lib/books.ts'
       - 'src/components/UnitCard.tsx'
       - 'src/test/biology-source-banks.test.ts'
