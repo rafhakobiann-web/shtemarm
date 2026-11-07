@@ -36,28 +36,34 @@ describe("Biology III/IV backlog: every original printed question is accounted f
       expect(book.source.sha256).toBe(index.sourceSha256);
       expect(coverage.sourceSha256).toBe(index.sourceSha256);
       expect(pendingBook.sourceIndexedQuestions).toBe(coverage.indexedQuestions);
-      expect(pendingBook.transcribedQuestions).toBe(coverage.importedQuestions);\n      // Adapted practice exercises are separate from original source transcriptions.\n      expect(pendingBook.sourceAlignedAdaptedQuestions ?? 0).toBeGreaterThanOrEqual(0);
+      expect(pendingBook.transcribedQuestions).toBe(coverage.importedQuestions);
+      // Adapted practice exercises are separate from original source transcriptions.
+      expect(pendingBook.sourceAlignedAdaptedQuestions ?? 0).toBeGreaterThanOrEqual(0);
       expect(pendingBook.remainingQuestions).toBe(coverage.indexedQuestions - coverage.importedQuestions);
       expect(board.sourceSha256).toBe(index.sourceSha256);
       const totalReasons: Record<string, number> = {};
       let indexedTotal = 0;
       let importedTotal = 0;
       let pendingTotal = 0;
+      let adaptedTotal = 0;
       for (const ch of index.chapters) {
         const recorded = coverage.chapters.find((row: { id: number }) => row.id === ch.id);
         const boardChapter = board.chapters.find((row: { chapter: number }) => row.chapter === ch.id);
         expect(recorded, `missing coverage chapter ${ch.id}`).toBeDefined();
         expect(boardChapter).toBeDefined();
         const importedUnits = book.sections.find((s: { n: number }) => s.n === ch.id)?.units ?? [];
-        expect(importedUnits.length, `book ${volume} section ${ch.id}`).toBe(recorded.imported);
+        expect(importedUnits.filter((unit: { sourceAlignedAdapted?: boolean }) => !unit.sourceAlignedAdapted).length,
+          `original source questions in book ${volume} section ${ch.id}`).toBe(recorded.imported);
         const present = new Set<number>();
+        const adapted = new Set<number>();
         for (const unit of importedUnits) {
           expect(unit.kind).toBe("mc");
           expect(unit.questions).toHaveLength(1);
           const n = Number(unit.questions[0].n);
           expect(Number.isInteger(n) && n >= 1 && n <= ch.questionCount).toBe(true);
-          expect(present.has(n), `duplicate imported ${volume}:${ch.id}:${n}`).toBe(false);
-          present.add(n);
+          expect(present.has(n) || adapted.has(n), `duplicate playable ${volume}:${ch.id}:${n}`).toBe(false);
+          if (unit.sourceAlignedAdapted) adapted.add(n);
+          else present.add(n);
         }
         const missing = new Set<number>();
         const reasons: Record<string, number> = {};
@@ -66,7 +72,7 @@ describe("Biology III/IV backlog: every original printed question is accounted f
           expect(present.has(item.n), `question both imported and pending: ${volume}:${ch.id}:${item.n}`).toBe(false);
           expect(missing.has(item.n), `duplicate pending ${volume}:${ch.id}:${item.n}`).toBe(false);
           missing.add(item.n);
-          expect(["answer-type-pending", "figure-review", "formula-review", "encoding-review", "incomplete-text"]).toContain(item.reason);
+          expect(["answer-type-pending", "figure-review", "formula-review", "encoding-review", "incomplete-text", "adapted-not-source"]).toContain(item.reason);
           if (item.page !== undefined) {
             expect(item.page, `book ${volume} section ${ch.id} question ${item.n}`)
               .toBe(pageForBiologyQuestion(ch, item.n));
@@ -74,6 +80,11 @@ describe("Biology III/IV backlog: every original printed question is accounted f
           reasons[item.reason] = (reasons[item.reason] ?? 0) + 1;
           totalReasons[item.reason] = (totalReasons[item.reason] ?? 0) + 1;
         }
+        for (const n of adapted) {
+          expect(missing.has(n), `adapted ${volume}:${ch.id}:${n} remains pending as an original`).toBe(true);
+          expect(recorded.excluded.find((item: { n: number }) => item.n === n)?.reason).toBe("adapted-not-source");
+        }
+        adaptedTotal += adapted.size;
         expect(present.size + missing.size).toBe(ch.questionCount);
         for (let n = 1; n <= ch.questionCount; n++) {
           expect(present.has(n) || missing.has(n), `unaccounted: ${volume}:${ch.id}:${n}`).toBe(true);
@@ -89,6 +100,8 @@ describe("Biology III/IV backlog: every original printed question is accounted f
       expect(board.byReason).toEqual(totalReasons);
       expect(indexedTotal).toBe(coverage.indexedQuestions);
       expect(importedTotal).toBe(coverage.importedQuestions);
+      expect(pendingBook.transcribedQuestions).toBe(importedTotal);
+      expect(pendingBook.sourceAlignedAdaptedQuestions ?? 0).toBe(adaptedTotal);
       expect(pendingTotal).toBe(indexedTotal - importedTotal);
       expect(board.indexed).toBe(indexedTotal);
       expect(board.imported).toBe(importedTotal);
