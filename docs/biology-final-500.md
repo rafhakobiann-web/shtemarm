@@ -30,14 +30,22 @@ The final 500 entries are all currently excluded as `answer-type-pending`, so th
 
 The original supplied Biology IV PDF matches the repository's locked SHA-256. Its chapter-VI pages (312–373) contain a unique printed marker for each of the 303 indexed task numbers, including all 85 tasks in this final batch. No mismatched or missing markers were found in that chapter. This is structural source-location evidence, not complete textual or answer-key verification.
 
-Biology III still needs its matching original PDF to verify the 415 final references independently. No copyrighted source pages, book text, or guessed answer keys are stored in this audit.
+On 2026-11-07, the project owner supplied **both** original PDF files again. Their complete local-file SHA-256 digests match the pinned GitHub source indexes and the source fingerprints already used by this review branch:
+
+| Source | PDF pages | SHA-256 verified against repository |
+| --- | ---: | --- |
+| `kensab-3.pdf` | 384 | `adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93` |
+| `kensab-4.pdf` | 392 | `9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e` |
+
+The earlier **missing Biology III original** blocker is resolved. This confirms file identity and page counts, **not** that the III final-queue markers, complete question text, figures or printed answer keys have all been checked. Run the repository's marker verifier on both PDFs before claiming full source-location verification. No source PDF is committed.
+
+No copyrighted source pages, book text or guessed answer keys are stored in this audit.
 
 Local checks:
 
 ```sh
 node scripts/verify-biology-all-source-coverage.mjs
-python3 scripts/verify-biology-final-500-source.py --volume4 /path/to/kensab-4.pdf
-# Add --volume3 /path/to/kensab-3.pdf once available.
+python3 scripts/verify-biology-final-500-source.py --volume3 /path/to/kensab-3.pdf --volume4 /path/to/kensab-4.pdf
 ```
 
 ## Remaining acceptance criteria

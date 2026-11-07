@@ -9,6 +9,13 @@ on:
       - 'src/routes/biology_.original.tsx'
       - 'src/routes/index.tsx'
       - 'scripts/*biology*'
+      - 'src/test/biology4-claims-bundles.test.ts'
+      - 'src/test/biology4-completion-653-merge.test.ts'
+      - 'src/lib/biology4-completion-653.review.json'
+      - 'src/test/biology4-223-claims-data.test.ts'
+      - 'src/lib/biology4-223-gtc-claims.review.json'
+      - 'src/lib/books.ts'
+      - 'src/components/UnitCard.tsx'
       - 'src/test/biology-source-banks.test.ts'
       - '.github/workflows/verify-biology-source-banks.yml'
   workflow_dispatch:
@@ -26,4 +33,6 @@ jobs:
       - run: node scripts/validate-biology-transcriptions.mjs
       - run: bun install --frozen-lockfile
       - run: bunx vitest run src/test/biology-source-banks.test.ts src/test/biology.test.tsx src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts src/test/biology-production-regression.test.ts src/test/biology-pdf-text.test.ts
+      - run: bunx vitest run src/test/biology4-claims-bundles.test.ts src/test/biology4-223-claims-data.test.ts src/test/biology4-completion-653-merge.test.ts src/test/biology4-223-claims-data.test.ts
+      - run: node scripts/verify-biology4-completion.mjs
       - run: bun run build

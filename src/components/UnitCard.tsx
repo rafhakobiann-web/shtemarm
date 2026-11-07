@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
-import { questionAnswerKey, type Unit, type MCQuestion } from "@/lib/books";
+import { questionAnswerKey, isGtcClaimsBundle, type Unit, type MCQuestion } from "@/lib/books";
+export { isGtcClaimsBundle } from "@/lib/books";
 import { explainAnswer } from "@/lib/explain.functions";
 import { Button } from "@/components/ui/button";
 import { EnglishText, PassageTranslation } from "@/components/EnglishText";
@@ -164,12 +165,6 @@ function Explain(props: { instruction: string; passage: string; question: string
 /* ---------- scoring ---------- */
 /** Numeric answers compare ignoring spaces, so "1 200" and "1200" count the same. */
 export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
-
-export function isGtcClaimsBundle(u: Unit): boolean {
-  return u.kind === "mc" && u.questions.length === 6 &&
-    /վեց պնդում|պնդումների փունջ/i.test(u.passage) &&
-    u.questions.every((q) => q.answer === "1" || q.answer === "2");
-}
 
 export function scoreUnit(u: Unit, a: UnitAnswer | undefined) {
   if (u.kind === "mc" && isGtcClaimsBundle(u)) {
