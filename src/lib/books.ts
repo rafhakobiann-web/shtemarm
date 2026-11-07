@@ -2,7 +2,7 @@ import { mergeBiologyExtended } from "./biology-extended";
 import { fetchBookResponse } from "./fetch-book-response";
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
-  | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
+  | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[]; grading?: "gtc-claims" }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
   | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[] };
@@ -315,9 +315,22 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
   return [];
 }
 
+/**
+ * Printed GTC six-statement bundles are one exam task. Preserve their
+ * optional "Don't know" response and +1/-1/0 scoring even in custom tests.
+ * The explicit grading flag is preferred over legacy passage detection.
+ */
+export function isGtcClaimsBundle(u: Unit): boolean {
+  return u.kind === "mc" && u.questions.length === 6 &&
+    (u.grading === "gtc-claims" ||
+      /վեց պնդում|պնդումների փունջ/i.test(u.passage) ||
+      /ճիշտ է[\\s\\S]*սխալ է[\\s\\S]*չգիտեմ/i.test(u.passage)) &&
+    u.questions.every(q => q.answer === "1" || q.answer === "2");
+}
+
 function expandForTest(item: ExamItem): ExamItem[] {
   const unit = item.unit;
-  if (unit.kind === "mc" && unit.questions.length > 1) {
+  if (unit.kind === "mc" && unit.questions.length > 1 && !isGtcClaimsBundle(unit)) {
     return unit.questions.map((question) => ({
       section: item.section,
       unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
