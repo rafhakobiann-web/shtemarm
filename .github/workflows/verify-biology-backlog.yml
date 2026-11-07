@@ -34,6 +34,8 @@ on:
       - 'scripts/verify-biology4-completion.mjs'
       - 'scripts/audit-biology4-completion.py'
       - 'src/test/biology4-claims-bundles.test.ts'
+      - 'src/test/biology4-completion-653-merge.test.ts'
+      - 'src/lib/biology4-completion-653.review.json'
       - 'src/test/biology4-223-claims-data.test.ts'
       - 'src/lib/biology4-223-gtc-claims.review.json'
       - 'src/lib/books.ts'
@@ -73,6 +75,6 @@ jobs:
           node scripts/verify-biology-all-source-coverage.mjs
           node scripts/verify-biology3-completion.mjs
           node scripts/verify-biology4-completion.mjs
-          bunx vitest run src/test/biology4-claims-bundles.test.ts src/test/biology4-223-claims-data.test.ts
+          bunx vitest run src/test/biology4-claims-bundles.test.ts src/test/biology4-223-claims-data.test.ts src/test/biology4-completion-653-merge.test.ts
           bunx vitest run src/test/biology-native-practice-no-pdf.test.ts
           bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts

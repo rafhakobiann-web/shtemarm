@@ -65,3 +65,40 @@ bunx vitest run src/test/biology4-claims-bundles.test.ts
 5. Merge/deploy only after the above checks succeed. Do **not** mark Book IV complete or change published counts based only on source-index verification.
 
 **Status: 1,035 / 1,688 staged playable, 653 not playable, Draft PR only. Production unchanged.**
+
+## 2026-11-07 follow-up — consolidated 653-task *development-preview* bank
+
+The three independently generated drafts (223 six-statement tasks, 185
+selection/matching/ordering tasks, 245 numeric problems) have been merged into
+one repository file:
+
+`src/lib/biology4-completion-653.review.json`
+
+The consolidated file preserves the source SHA, chapter and printed question
+numbers, individual answer fields and the `complete: false` status. Six
+automatically detected format inconsistencies were resolved before integration:
+four ordering-task answer slot counts were aligned with their printed keyed
+answer lengths, and two *«Նշել սխալ պնդումները»* tasks were reclassified as
+selection questions without changing their answer keys.
+
+The combined **development-preview** book is 1,035 previously staged tasks plus
+653 auto-extracted drafts = **1,688 distinct original question IDs**. There are
+no source-number collisions. The preview-only import in `src/lib/books.ts`
+contains a strict 653/1688 count gate. Production still loads only the
+previously staged 1,035-question bank from its unmerged branches. This is not
+evidence that all 1,688 tasks have been manually checked or safely published.
+
+The old three `public/data/biology-completion-book4-*.json` files and
+redundant 223-task review file were removed on this branch. The combined draft
+is deliberately stored in `src/lib`, dynamically imported only when
+`import.meta.env.DEV` is true. This prevents the unreviewed textbook
+transcription from being served as a public static file or bundled into the
+Production app.
+
+Validation and publication gates: `src/test/biology4-completion-653-merge.test.ts`
+checks the original source ID partition, answer types, grouped scoring,
+source-page references, duplicate prevention and exclusion from Production.
+Actual proofreading of extracted wording, symbols, diagram continuations
+and printed keys, public redistribution permission, successful CI/build and
+browser/device QA are still required before changing production counts or
+releasing the content.

@@ -191,15 +191,19 @@ export function loadBook(id: number): Promise<Book> {
             return await r.json() as Book;
           });
           const merged = mergeBiologyExtended(book, extra);
-          // The original Biology IV six-statement source transcriptions are
-          // automatically parsed and not yet proofread. Permit inspection in
-          // local/Lovable development only, never in a production build.
+          // Book IV's remaining 653 source transcriptions are automated drafts,
+          // not individually proofread or cleared for public distribution.
+          // Keep them out of production builds until review and rights approval.
           if (id !== 34 || !import.meta.env.DEV) return merged;
-          // Dynamic development-only import. The unproofread original text is
-          // never served from /public and production must not ship this data.
-          const claims = (await import("./biology4-223-gtc-claims.review.json")).default as Book;
-          if (claims.id !== 34) throw new Error("Biology IV review data has wrong book identity");
-          return mergeBiologyExtended(merged, claims);
+          const completion = (await import("./biology4-completion-653.review.json")).default as Book;
+          if (completion.id !== 34 || !Array.isArray(completion.sections))
+            throw new Error("Biology IV completion draft has wrong source identity");
+          const reviewUnits = completion.sections.reduce((n, s) => n + s.units.length, 0);
+          if (reviewUnits !== 653) throw new Error("Biology IV draft is incomplete");
+          const combined = mergeBiologyExtended(merged, completion);
+          if (combined.sections.reduce((n, s) => n + s.units.length, 0) !== 1688)
+            throw new Error("Biology IV preview book must contain 1688 distinct printed tasks");
+          return combined;
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {

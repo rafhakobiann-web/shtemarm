@@ -10,8 +10,15 @@ import { scoreUnit } from "@/components/UnitCard";
  */
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 const source = read("public/data/biology-original-volume4-index.json");
-const draft = read("src/lib/biology4-223-gtc-claims.review.json") as Book & {
+const completion = read("src/lib/biology4-completion-653.review.json") as Book & {
   source: { sha256: string; complete: boolean; verification: string };
+};
+const draft = {
+  ...completion,
+  sections: completion.sections.map(section => ({
+    ...section,
+    units: section.units.filter(unit => unit.kind === "mc" && unit.grading === "gtc-claims"),
+  })).filter(section => section.units.length > 0),
 };
 const core = read("public/data/bio-book4.json") as Book;
 const extra = read("public/data/biology-extended-book4.json") as Book;
