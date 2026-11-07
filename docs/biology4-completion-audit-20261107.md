@@ -23,6 +23,20 @@ Chapter VI has **303 numbered original problems** and **486 printed answer entri
 
 These checks are structural: *they do not demonstrate exhaustive transcription accuracy, scientific correctness, completeness of figures, or permission to republish the book text.*
 
+## Review workflow prepared for all remaining tasks
+
+`docs/biology4-type-review-queue.json` now identifies every one of the **653** unimported original tasks by its existing source page and printed answer-key page range. Its non-copyrighted metadata classifications are:
+
+| Pending category | Book IV original tasks |
+|---|---:|
+| Six-statement true/false/unknown grid | 223 |
+| Multi-part problem with independently keyed subquestions | 146 |
+| Single-answer problem | 99 |
+| Other task: original form and printed key still require review | 185 |
+| **Total** | **653** |
+
+This queue is **not a playable bank**, contains no wording or answers, and is not counted as completion. The CI-safe integrity script checks that its source IDs and page references match the three earlier review batches. Tasks are only eligible for migration after human source, answer and publication-rights verification.
+
 ## Implemented on the isolated Draft branch
 
 - Added `scripts/audit-biology4-completion.py`, run locally against the original PDF to verify page count, original SHA, every printed marker, 223 three-state task identities and the Chapter VI printed answer structure. If run from the repository (without `--source-only`), it also reconciles all 653 pending source pages and the staged question banks. The script writes no book text/answer values.
