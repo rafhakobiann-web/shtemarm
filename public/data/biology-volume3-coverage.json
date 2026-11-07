@@ -5,8 +5,28 @@
   "chapters": [
     {
       "id": 1,
-      "imported": 182,
+      "imported": 178,
       "excluded": [
+        {
+          "n": 96,
+          "page": 18,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 111,
+          "page": 20,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 126,
+          "page": 22,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 173,
+          "page": 28,
+          "reason": "adapted-not-source"
+        },
         {
           "n": 183,
           "reason": "answer-type-pending"
@@ -503,8 +523,38 @@
     },
     {
       "id": 2,
-      "imported": 210,
+      "imported": 204,
       "excluded": [
+        {
+          "n": 5,
+          "page": 62,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 139,
+          "page": 81,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 175,
+          "page": 86,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 177,
+          "page": 86,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 185,
+          "page": 87,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 195,
+          "page": 89,
+          "reason": "adapted-not-source"
+        },
         {
           "n": 211,
           "reason": "answer-type-pending"
@@ -909,8 +959,73 @@
     },
     {
       "id": 3,
-      "imported": 227,
+      "imported": 214,
       "excluded": [
+        {
+          "n": 21,
+          "page": 128,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 35,
+          "page": 130,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 50,
+          "page": 132,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 65,
+          "page": 134,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 95,
+          "page": 138,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 124,
+          "page": 142,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 147,
+          "page": 145,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 159,
+          "page": 147,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 164,
+          "page": 148,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 180,
+          "page": 150,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 190,
+          "page": 151,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 194,
+          "page": 152,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 223,
+          "page": 156,
+          "reason": "adapted-not-source"
+        },
         {
           "n": 228,
           "reason": "answer-type-pending"
@@ -1395,8 +1510,63 @@
     },
     {
       "id": 4,
-      "imported": 218,
+      "imported": 207,
       "excluded": [
+        {
+          "n": 17,
+          "page": 194,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 30,
+          "page": 196,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 31,
+          "page": 196,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 57,
+          "page": 199,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 82,
+          "page": 203,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 91,
+          "page": 205,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 96,
+          "page": 206,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 110,
+          "page": 208,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 169,
+          "page": 216,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 200,
+          "page": 221,
+          "reason": "adapted-not-source"
+        },
+        {
+          "n": 213,
+          "page": 223,
+          "reason": "adapted-not-source"
+        },
         {
           "n": 219,
           "reason": "answer-type-pending"
@@ -3608,5 +3778,5 @@
       ]
     }
   ],
-  "importedQuestions": 945
+  "importedQuestions": 911
 }
