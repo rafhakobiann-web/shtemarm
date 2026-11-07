@@ -18,12 +18,12 @@
       "sourcePageIndex": "public/data/biology-original-volume3-index.json",
       "sourceIndexedQuestions": 1837,
       "sourceChoiceAnswerKeys": 945,
-      "transcribedQuestions": 945,
+      "transcribedQuestions": 911,
       "coverageFile": "public/data/biology-volume3-coverage.json",
-      "remainingQuestions": 892,
+      "remainingQuestions": 926,
       "archivedAuthoredFile": "public/data/bio-authored-book3.json",
       "sourceAlignedAdaptedQuestions": 34,
-      "note": "Առկա է 945 բնօրինակ տեքստով ներմուծված հարց (համաձայն bio-book3.json և ծածկույթի հաշվետվության)։ Մնացած 892 առաջադրանքները դեռ պահանջում են բնօրինակային ներմուծում և պատասխանների ստուգում։ 34 թեմատիկ վերաշարադրված հարցերը բնօրինակների հաշվարկում չեն ներառվում։"
+      "note": "Առկա է 911 բնօրինակ տեքստով հարց և առանձին 34 թեմատիկ վերաշարադրված ուսումնական վարժություն՝ բնօրինակ 1–4 բաժինների համարներով։ Բնօրինակ 926 առաջադրանք դեռ չի ներմուծվել։"
     },
     {
       "id": 34,
