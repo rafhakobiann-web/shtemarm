@@ -2,10 +2,10 @@ import { mergeBiologyExtended } from "./biology-extended";
 import { fetchBookResponse } from "./fetch-book-response";
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
-  | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
+  | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[]; grading?: "gtc-claims" }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
   | { id: string; label: string; kind: "match"; passage: string; answer: Record<string, number> }
-  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[] };
+  | { id: string; label: string; kind: "num"; passage: string; questions: { n: string; stem: string; answer: string; explanation?: string }[]; grouping?: "printed-problem" };
 export type Section = { n: number; title?: string; label?: string; instr_en: string; instr_hy: string; units: Unit[] };
 
 /**
@@ -190,7 +190,20 @@ export function loadBook(id: number): Promise<Book> {
             if (!r.ok) throw new Error(`Biology supplement HTTP ${r.status}`);
             return await r.json() as Book;
           });
-          return mergeBiologyExtended(book, extra);
+          const merged = mergeBiologyExtended(book, extra);
+          // Book IV's remaining 653 source transcriptions are automated drafts,
+          // not individually proofread or cleared for public distribution.
+          // Keep them out of production builds until review and rights approval.
+          if (id !== 34 || !import.meta.env.DEV) return merged;
+          const completion = (await import("./biology4-completion-653.review.json")).default as Book;
+          if (completion.id !== 34 || !Array.isArray(completion.sections))
+            throw new Error("Biology IV completion draft has wrong source identity");
+          const reviewUnits = completion.sections.reduce((n, s) => n + s.units.length, 0);
+          if (reviewUnits !== 653) throw new Error("Biology IV draft is incomplete");
+          const combined = mergeBiologyExtended(merged, completion);
+          if (combined.sections.reduce((n, s) => n + s.units.length, 0) !== 1688)
+            throw new Error("Biology IV preview book must contain 1688 distinct printed tasks");
+          return combined;
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
@@ -315,15 +328,28 @@ function pickPoints(sec: Section | undefined, points: number, filter?: (u: Unit)
   return [];
 }
 
+/**
+ * Printed GTC six-statement bundles are one exam task. Preserve their
+ * optional "Don't know" response and +1/-1/0 scoring even in custom tests.
+ * The explicit grading flag is preferred over legacy passage detection.
+ */
+export function isGtcClaimsBundle(u: Unit): boolean {
+  return u.kind === "mc" && u.questions.length === 6 &&
+    (u.grading === "gtc-claims" ||
+      /վեց պնդում|պնդումների փունջ/i.test(u.passage) ||
+      /ճիշտ է.*սխալ է.*չգիտեմ/is.test(u.passage)) &&
+    u.questions.every(q => q.answer === "1" || q.answer === "2");
+}
+
 function expandForTest(item: ExamItem): ExamItem[] {
   const unit = item.unit;
-  if (unit.kind === "mc" && unit.questions.length > 1) {
+  if (unit.kind === "mc" && unit.questions.length > 1 && !isGtcClaimsBundle(unit)) {
     return unit.questions.map((question) => ({
       section: item.section,
       unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },
     }));
   }
-  if (unit.kind === "num" && unit.questions.length > 1) {
+  if (unit.kind === "num" && unit.questions.length > 1 && unit.grouping !== "printed-problem") {
     return unit.questions.map((question) => ({
       section: item.section,
       unit: { ...unit, id: `${unit.id}-q${question.n}`, label: question.n, questions: [question] },

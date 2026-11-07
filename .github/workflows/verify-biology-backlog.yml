@@ -31,6 +31,16 @@ on:
       - 'docs/biology-final-500-source-queue.json'
       - 'scripts/verify-biology-all-source-coverage.mjs'
       - 'scripts/verify-biology3-completion.mjs'
+      - 'scripts/verify-biology4-completion.mjs'
+      - 'scripts/audit-biology4-completion.py'
+      - 'src/test/biology4-claims-bundles.test.ts'
+      - 'src/test/biology4-completion-653-merge.test.ts'
+      - 'src/lib/biology4-completion-653.review.json'
+      - 'src/test/biology4-223-claims-data.test.ts'
+      - 'src/lib/biology4-223-gtc-claims.review.json'
+      - 'src/lib/books.ts'
+      - 'docs/biology4-completion-audit-20261107.md'
+      - 'docs/biology4-type-review-queue.json'
       - 'scripts/audit-biology3-completion.py'
       - 'docs/biology3-completion-audit-20261107.md'
       - 'scripts/verify-biology-final-500-source.py'
@@ -64,5 +74,7 @@ jobs:
           node scripts/verify-biology-next-500.mjs
           node scripts/verify-biology-all-source-coverage.mjs
           node scripts/verify-biology3-completion.mjs
+          node scripts/verify-biology4-completion.mjs
+          bunx vitest run src/test/biology4-claims-bundles.test.ts src/test/biology4-223-claims-data.test.ts src/test/biology4-completion-653-merge.test.ts
           bunx vitest run src/test/biology-native-practice-no-pdf.test.ts
           bunx vitest run src/test/biology-extended.test.ts src/test/biology-november-restorations.test.ts src/test/biology-original-index.test.ts src/test/biology-original-navigation.test.ts
