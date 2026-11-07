@@ -10,7 +10,12 @@ m=SourceFileLoader('m',str(ROOT/'scripts/import-biology-source.py')).load_module
 books=[]
 allrows=[]
 for v in (3,4):
- source=args.sources/f'kensab-{v}({2 if v==3 else 1}).pdf'
+ # Use the exact owner-provided PDF filename first; retain old upload aliases.
+ candidates=[args.sources/f'kensab-{v}.pdf',
+             args.sources/f'kensab-{v}({2 if v==3 else 1}).pdf']
+ source=next((candidate for candidate in candidates if candidate.is_file()),None)
+ if source is None:
+  raise FileNotFoundError(f'Biology {v} PDF not found; tried: {", ".join(map(str,candidates))}')
  idx=json.loads((ROOT/f'public/data/biology-original-volume{v}-index.json').read_text())
  assert hashlib.sha256(source.read_bytes()).hexdigest()==idx['sourceSha256'], 'Source PDF hash mismatch'
  d=fitz.open(source);sections=[];reject={};evidence=[]
