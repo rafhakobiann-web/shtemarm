@@ -36,6 +36,29 @@ describe("Biology IV 3-state and grouped problem readiness", () => {
     expect(isGtcClaimsBundle({ ...bundle, grading: undefined, passage: "Choose an answer" })).toBe(false);
   });
 
+  it("keeps a reviewed multi-part numeric problem together with independent answer fields", () => {
+    const numeric: Unit = {
+      id: "bio4-source-numeric-fixture", label: "1", kind: "num",
+      grouping: "printed-problem",
+      passage: "Invented shared scenario for two calculations",
+      questions: [
+        { n: "1.1", stem: "First calculated value", answer: "12" },
+        { n: "1.2", stem: "Second calculated value", answer: "8" },
+      ],
+    };
+    const b: Book = { id: 34, sections: [
+      { n: 6, label: "Problems", instr_hy: "", instr_en: "", units: [numeric] },
+    ] };
+    const exam = buildCustom(b, [6], 2);
+    expect(exam).toHaveLength(1);
+    expect(exam[0].unit.id).toBe(numeric.id);
+    expect(exam[0].unit.kind === "num" && exam[0].unit.questions).toHaveLength(2);
+    expect(scoreUnit(numeric, { mc: { "1.1": "12", "1.2": "8" } }))
+      .toMatchObject({ got: 2, total: 2 });
+    expect(scoreUnit(numeric, { mc: { "1.1": "12", "1.2": "5" } }))
+      .toMatchObject({ got: 1, total: 2 });
+  });
+
   it("uses +1 correct / -1 wrong / 0 don't know, clamped inside the whole unit", () => {
     const correct: UnitAnswer = { mc: Object.fromEntries(
       bundle.kind === "mc" ? bundle.questions.map(q => [q.n, q.answer]) : [],
