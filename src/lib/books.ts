@@ -195,11 +195,10 @@ export function loadBook(id: number): Promise<Book> {
           // automatically parsed and not yet proofread. Permit inspection in
           // local/Lovable development only, never in a production build.
           if (id !== 34 || !import.meta.env.DEV) return merged;
-          const claims = await fetchBookResponse("/data/biology4-223-gtc-claims.json", async (r) => {
-            if (!r.ok) throw new Error(`Unreviewed Biology IV claims preview HTTP ${r.status}`);
-            return await r.json() as Book;
-          });
-          if (claims.id !== 34) throw new Error("Biology IV preview has wrong book identity");
+          // Dynamic development-only import. The unproofread original text is
+          // never served from /public and production must not ship this data.
+          const claims = (await import("./biology4-223-gtc-claims.review.json")).default as Book;
+          if (claims.id !== 34) throw new Error("Biology IV review data has wrong book identity");
           return mergeBiologyExtended(merged, claims);
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
