@@ -13,7 +13,7 @@ const draft = read("src/lib/biology4-completion-653.review.json") as Book & {
 const source = read("public/data/biology-original-volume4-index.json");
 const queue = read("docs/biology4-type-review-queue.json");
 const list = draft.sections.flatMap(section => section.units.map(unit => ({ section: section.n, unit })));
-const indexedPage = (chapter: typeof source.chapters[number], printed: number): number => {
+const indexedPage = (chapter: any, printed: number): number => {
   let found = chapter.startPage;
   for (const [first, page] of chapter.pageRuns) {
     if (first > printed) break;
