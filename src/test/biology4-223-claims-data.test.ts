@@ -10,7 +10,9 @@ import { scoreUnit } from "@/components/UnitCard";
  */
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 const source = read("public/data/biology-original-volume4-index.json");
-const draft = read("public/data/biology4-223-gtc-claims.json") as Book;
+const draft = read("public/data/biology4-223-gtc-claims.json") as Book & {
+  source: { sha256: string; complete: boolean; verification: string };
+};
 const core = read("public/data/bio-book4.json") as Book;
 const extra = read("public/data/biology-extended-book4.json") as Book;
 const pending = read("docs/biology4-type-review-queue.json");
@@ -49,9 +51,10 @@ describe("Biology IV 223 original six-statement source-review candidate tasks", 
       ids.add(unit.id);
       const chapter = source.chapters.find((ch: any) => ch.id === section.n);
       expect(chapter).toBeDefined();
-      expect(unit.sourcePage).toBe(indexedPages(chapter, Number(unit.label)));
-      expect(unit.sourceAnswerPage).toBeGreaterThanOrEqual(chapter.answerPages[0]);
-      expect(unit.sourceAnswerPage).toBeLessThanOrEqual(chapter.answerPages[1]);
+      const sourced = unit as typeof unit & { sourcePage: number; sourceAnswerPage: number };
+      expect(sourced.sourcePage).toBe(indexedPages(chapter, Number(unit.label)));
+      expect(sourced.sourceAnswerPage).toBeGreaterThanOrEqual(chapter.answerPages[0]);
+      expect(sourced.sourceAnswerPage).toBeLessThanOrEqual(chapter.answerPages[1]);
       for (const [index, question] of unit.questions.entries()) {
         expect(question.n).toBe(String(index + 1));
         expect(question.stem.trim().length).toBeGreaterThan(8);
