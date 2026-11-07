@@ -324,7 +324,7 @@ export function isGtcClaimsBundle(u: Unit): boolean {
   return u.kind === "mc" && u.questions.length === 6 &&
     (u.grading === "gtc-claims" ||
       /վեց պնդում|պնդումների փունջ/i.test(u.passage) ||
-      /ճիշտ է[\\s\\S]*սխալ է[\\s\\S]*չգիտեմ/i.test(u.passage)) &&
+      /ճիշտ է.*սխալ է.*չգիտեմ/is.test(u.passage)) &&
     u.questions.every(q => q.answer === "1" || q.answer === "2");
 }
 
