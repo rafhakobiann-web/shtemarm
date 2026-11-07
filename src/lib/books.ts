@@ -190,7 +190,17 @@ export function loadBook(id: number): Promise<Book> {
             if (!r.ok) throw new Error(`Biology supplement HTTP ${r.status}`);
             return await r.json() as Book;
           });
-          return mergeBiologyExtended(book, extra);
+          const merged = mergeBiologyExtended(book, extra);
+          // The original Biology IV six-statement source transcriptions are
+          // automatically parsed and not yet proofread. Permit inspection in
+          // local/Lovable development only, never in a production build.
+          if (id !== 34 || !import.meta.env.DEV) return merged;
+          const claims = await fetchBookResponse("/data/biology4-223-gtc-claims.json", async (r) => {
+            if (!r.ok) throw new Error(`Unreviewed Biology IV claims preview HTTP ${r.status}`);
+            return await r.json() as Book;
+          });
+          if (claims.id !== 34) throw new Error("Biology IV preview has wrong book identity");
+          return mergeBiologyExtended(merged, claims);
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
