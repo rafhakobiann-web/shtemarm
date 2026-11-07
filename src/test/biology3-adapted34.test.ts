@@ -43,17 +43,18 @@ describe("Biology III: 34 clearly identified adapted exercises", () => {
     expect(all.filter((unit: any) => !unit.sourceAlignedAdapted).length).toBe(911);
     expect(pending.transcribedQuestions).toBe(911);
     expect(pending.sourceAlignedAdaptedQuestions).toBe(34);
-    expect(pending.remainingQuestions).toBe(892);
+    expect(pending.remainingQuestions).toBe(926);
   });
 
-  it("removes all 34 old figure/formula/incomplete-text flags without hiding 892 pending tasks", () => {
-    expect(coverage.importedQuestions).toBe(945);
-    expect(coverage.chapters.map((ch: any) => ch.imported)).toEqual([182, 210, 227, 218, 108, 0]);
+  it("keeps 34 adapted exercises distinct from 926 pending original source tasks", () => {
+    expect(coverage.importedQuestions).toBe(911);
+    expect(coverage.chapters.map((ch: any) => ch.imported)).toEqual([178, 204, 214, 207, 108, 0]);
     const excluded = coverage.chapters.flatMap((ch: any) => ch.excluded);
-    expect(excluded).toHaveLength(892);
-    expect(excluded.every((item: any) => item.reason === "answer-type-pending")).toBe(true);
-    expect(summary.imported).toBe(945);
-    expect(summary.pending).toBe(892);
-    expect(summary.byReason).toEqual({ "answer-type-pending": 892 });
+    expect(excluded).toHaveLength(926);
+    expect(excluded.filter((item: any) => item.reason === "answer-type-pending")).toHaveLength(892);
+    expect(excluded.filter((item: any) => item.reason === "adapted-not-source")).toHaveLength(34);
+    expect(summary.imported).toBe(911);
+    expect(summary.pending).toBe(926);
+    expect(summary.byReason).toEqual({ "answer-type-pending": 892, "adapted-not-source": 34 });
   });
 });
