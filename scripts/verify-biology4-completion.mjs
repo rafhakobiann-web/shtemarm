@@ -72,6 +72,34 @@ check(threeState.length === 223 && new Set(threeState.map(([c,n]) => c+":"+n)).s
 for (const [chapter, number] of threeState)
   check(queued.has(chapter + ":" + number), "three-state task missing review gate " + chapter + ":" + number);
 check(summary[5].pending === 245, "Chapter VI still has 245 unimported problems");
+const review = read("docs/biology4-type-review-queue.json");
+check(review.volume === 4 && review.sourceSha256 === source.sourceSha256,
+  "typed review inventory does not match source edition");
+check(review.entries.length === queued.size && review.counts.total === queued.size,
+  "typed review inventory size changed");
+const threeStateIds = new Set(threeState.map(([c, n]) => c + ":" + n));
+const reviewed = new Set(), actualTypes = {};
+for (const [chapter, number, page, keyStart, keyEnd, reviewType] of review.entries) {
+  const key = chapter + ":" + number;
+  check(!reviewed.has(key) && queued.has(key), "invalid or duplicate typed entry " + key);
+  reviewed.add(key);
+  const ch = source.chapters[chapter - 1];
+  check(queued.get(key).page === page && ch.answerPages[0] === keyStart
+    && ch.answerPages[1] === keyEnd, "wrong source/key page for typed entry " + key);
+  const expected = chapter === 6
+    ? ["multipart-problem", "single-answer-problem"]
+    : threeStateIds.has(key) ? ["three-state-six-claims"] : ["requires-format-key-review"];
+  check(expected.includes(reviewType), "incorrect review category " + key);
+  actualTypes[reviewType] = (actualTypes[reviewType] ?? 0) + 1;
+}
+check(reviewed.size === queued.size, "typed review inventory misses source IDs");
+for (const [name, count] of Object.entries({
+  "requires-format-key-review": 185,
+  "three-state-six-claims": 223,
+  "multipart-problem": 146,
+  "single-answer-problem": 99,
+})) check(actualTypes[name] === count && review.counts[name] === count, "type count mismatch: " + name);
+
 console.log(JSON.stringify({
   volume: 4, indexed: 1688, stagedPlayable: ready.size, pending: queued.size,
   threeStateAwaitingVerifiedSourceKeys: 223, chapter6ProblemsAwaitingImport: 245,
