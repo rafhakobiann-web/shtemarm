@@ -163,6 +163,8 @@ def main():
             "playable": len(ready), "pending": len(pending),
             "pendingWithVerifiedPage": len(pending) - len(wrong_pages),
             "pendingChapter6WithPrintedKey": len(chapter_six_pending) - len(missing_keys),
+            "pendingChapter6Grouped": sum(len(answers.get(n, [])) > 1 for n in chapter_six_pending),
+            "pendingChapter6Single": sum(len(answers.get(n, [])) == 1 for n in chapter_six_pending),
             "manualTextAndAnswerProofreadingComplete": False,
         }
     result["errors"] = errors
