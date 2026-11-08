@@ -65,7 +65,7 @@ describe("2026-11-08 source-based books and responsive UX", () => {
   it("public landing does not automatically download all three English banks", () => {
     const landing = read("src/components/LandingLabV3.tsx");
     expect(landing).toContain('useState<Subject>("math")');
-    expect(landing).toContain('if (subject !== "english" || bookStatus === "ready") return');
+    expect(landing).toContain('if (subject !== "english" || englishLoadedRef.current) return');
     expect(landing).toContain("Promise.all([1, 2, 3].map(id => loadBook(id)))");
     expect(landing).toContain("const question = realEnglish ? undefined : QUESTIONS[subject][index]");
     expect(landing).toContain('bookStatus === "error"');
