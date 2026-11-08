@@ -5,6 +5,8 @@ import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookC
 import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { BookCover } from "@/components/BookCover";
+import { ArmenianSourceChapters } from "@/components/ArmenianSourceChapters";
+import type { ArmenianVolume } from "@/lib/armenian-source-outline";
 import { useProgress } from "@/lib/progress";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
@@ -125,6 +127,10 @@ function BookPage() {
           </div>
         </div>
       </div>
+
+      {id >= 41 && id <= 44 && book && (
+        <ArmenianSourceChapters volume={(id - 40) as ArmenianVolume} book={book} />
+      )}
 
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
