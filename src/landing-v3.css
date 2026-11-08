@@ -377,3 +377,48 @@ html.dark .sht-v3 :is(.sl-section-heading h2,.sl-journey-copy h2,.sl-tile h3,.sl
   html:not(.user-reduced-motion) .sht-v3 .sl-lab-feedback>div {animation:sl-step-in .29s var(--sl-ease) both;}
   html:not(.user-reduced-motion) .sht-v3 .sl-lab-track span {transition:width .32s var(--sl-ease);}
 }
+
+
+/* November 2026: fast, fluid academy surfaces.
+ * Defer paint for below-the-fold sections only; keep the interactive hero live. */
+@supports (content-visibility: auto) {
+  .sht-v3 :is(.sl-experience,.sl-journey,.sl-app-section) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 680px;
+  }
+}
+.sht-v3 :is(.sl-tile,.sl-lab,.sl-app-panel) {
+  border-color: color-mix(in srgb, var(--primary) 12%, var(--border));
+}
+.sht-v3 :is(.sl-lab-subjects button,.sl-lab-options button,.sl-flash-actions button) {
+  touch-action: manipulation;
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .sht-v3 :is(.sl-tile,.sl-app-panel) {
+    transition: border-color 180ms ease, box-shadow 220ms ease;
+  }
+  .sht-v3 .sl-tile:hover {
+    border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+    box-shadow: 0 14px 35px -30px color-mix(in srgb, var(--foreground) 35%, transparent);
+  }
+}
+@media (hover:none), (pointer:coarse) {
+  /* Mobile GPUs should not continuously blend large blurred glass surfaces. */
+  .sht-v3 :is(.sl-journey-visual,.sl-app-panel) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .sht-v3 .sl-tile { box-shadow: none; }
+}
+@media (max-width:640px) {
+  .sht-v3 :is(.sl-lab,.sl-tile,.sl-journey,.sl-app-panel) { min-width:0; }
+  .sht-v3 .sl-lab-stage { overflow-wrap:anywhere; }
+}
+html.dark .sht-v3 :is(.sl-lab-options button,.sl-journey-tabs button) {
+  border-color: var(--border);
+}
+@media (prefers-reduced-motion:reduce) {
+  .sht-v3 :is(.sl-lab-subjects button,.sl-lab-options button,.sl-flash-actions button) {
+    transform:none!important;
+  }
+}
