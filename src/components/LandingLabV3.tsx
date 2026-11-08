@@ -133,9 +133,10 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
   // immediately, and the real question bank replaces it once available.
   const [bookStatus, setBookStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const englishLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (subject !== "english" || bookStatus === "ready") return;
+    if (subject !== "english" || englishLoadedRef.current) return;
     let live = true;
     setBookStatus("loading");
     Promise.all([1, 2, 3].map(id => loadBook(id)))
@@ -144,6 +145,7 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
         const pool = englishDemoQuestions(books);
         setEnglishPool(pool);
         setEnglishRound(drawEnglishDemoQuestions(pool));
+        if (pool.length) englishLoadedRef.current = true;
         setBookStatus(pool.length ? "ready" : "error");
         // The displayed demo and source bank have different questions.
         setIndex(0); setAnswer(null); setSelected([]); setChecked(false); setFinished(false);
