@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useLang, useTx } from "@/lib/lang";
 import { DashboardOverview } from "@/components/DashboardOverview";
+import { BiologySourceProgress } from "@/components/BiologySourceProgress";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
 import { BookCover } from "@/components/BookCover";
@@ -199,6 +200,7 @@ function BiologySubject() {
   return (
     <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
+      <BiologySourceProgress />
       <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -215,7 +217,7 @@ function BiologySubject() {
         </div>
       </section>
       <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
-        {tx("3-րդ մասում հասանելի է 911, իսկ 4-րդում՝ 777 բնօրինակ տեքստային հարց՝ պատասխաններով։ Կարող ես սովորել և կազմել թեստ՝ առանց PDF ընտրելու։ Մնացած առաջադրանքների թվայնացումը շարունակվում է։")}
+        {tx("3-րդ մասում այժմ հասանելի է 945 առաջադրանք (911 բնօրինակ հարց և 34 ուսումնական վարժանք), իսկ 4-րդում՝ 777 բնօրինակ տեքստային հարց։ Լրացուցիչ թվայնացված հարցերը նախնական ստուգման փուլում են և դեռ չեն հաշվվում որպես հասանելի։")}
       </p>
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
@@ -259,7 +261,7 @@ function ArmenianSubject() {
       <section className="rounded-2xl border bg-card p-4 text-sm text-muted-foreground">
         <p className="font-bold text-foreground">{tx("Բաժիններն ու թեմաները")}</p>
         <p className="mt-2">{tx("Հնչյունաբանություն և բառագիտություն · Ձևաբանություն · Շարահյուսություն և կետադրություն · Կապակցված խոսք · Ընդհանուր գիտելիքներ հայոց լեզվի մասին · Ոճագիտություն · Հայ գրականություն")}</p>
-        <p className="mt-3">{tx("Այս էջում առաջադրանքները բացվում են հենց Shtemarm-ում․ արտաքին կայքերին ուղղորդող շտեմարանի հղումներ չեն օգտագործվում։ Ներկայում ավելացված հարցերը ուսումնական վարժություններ են, իսկ PDF-ների մնացած առաջադրանքները պետք է հաջորդաբար թվայնացնել և ստուգել պատասխանների բանալիներով։")}</p>
+        <p className="mt-3">{tx("Այս էջում առաջադրանքները բացվում են հենց Shtemarm-ում․ արտաքին կայքերին ուղղորդող շտեմարանի հղումներ չեն օգտագործվում։ 1-ին մասի որոշ բաժիններ ներմուծված են բնօրինակից, իսկ 2–4-րդ մասերի ներկայիս վարժանքները Shtemarm-ի հեղինակած օրինակներ են։ Մնացած բնօրինակ առաջադրանքները դեռ պետք է ստուգել PDF-ի և պատասխանների բանալու հետ։")}</p>
       </section>
     </div>
   );

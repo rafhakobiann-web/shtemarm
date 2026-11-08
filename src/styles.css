@@ -1377,3 +1377,39 @@ html[data-study-text="large"] { font-size: 112.5%; }
 html[data-study-density="compact"] .academy-bento { padding: 0.75rem; }
 html[data-study-motion="reduced"] *,html[data-study-motion="reduced"] *::before,html[data-study-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+
+/* Shtemarm: more readable exploration-first cards and touch-safe source index. */
+.sht-home-2026 :is(.sht-home-subject-card,.sht-subject-header),
+.explore-subject-card,
+.sht-source-outline {
+  border-color: color-mix(in srgb,var(--primary) 12%,var(--border));
+  background-image:linear-gradient(148deg,var(--card),color-mix(in srgb,var(--primary) 2%,var(--card)));
+}
+.sht-home-2026 .sht-home-subject-mark {
+  border:1px solid color-mix(in srgb,var(--primary) 15%,var(--border));
+  background:color-mix(in srgb,var(--primary) 8%,var(--card));
+}
+.sht-source-outline>summary { -webkit-tap-highlight-color:transparent; }
+.sht-source-outline>summary:hover { background-color:color-mix(in srgb,var(--primary) 4%,transparent); }
+.sht-source-outline>summary:focus-visible { outline-offset:-3px; }
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .sht-home-2026 .sht-home-subject-card,
+  .explore-subject-card {
+    transition:transform 180ms cubic-bezier(.22,1,.36,1),border-color 180ms ease,box-shadow 220ms ease;
+  }
+  .sht-home-2026 .sht-home-subject-card:hover,
+  .explore-subject-card:hover {
+    transform:translateY(-2px);
+    border-color:color-mix(in srgb,var(--primary) 28%,var(--border));
+    box-shadow:0 16px 32px -27px color-mix(in srgb,var(--foreground) 36%,transparent);
+  }
+}
+@media (hover:none), (prefers-reduced-motion:reduce) {
+  .sht-home-2026 .sht-home-subject-card,
+  .explore-subject-card { transform:none!important; }
+}
+@media (max-width:380px) {
+  .sht-source-outline article { padding:.75rem; }
+  .sht-home-2026 .sht-home-subject-card { min-height:6.2rem; padding:.85rem; }
+}

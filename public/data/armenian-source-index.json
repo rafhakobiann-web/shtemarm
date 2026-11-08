@@ -12,56 +12,64 @@
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 26
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 27,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 48
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 49,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 97
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 98,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 172
         },
         {
           "number": 5,
           "title": "Կապակցված խոսք",
           "pdfPage": 173,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 186
         },
         {
           "number": 6,
           "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 187,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 188
         },
         {
           "number": 7,
           "title": "Ոճագիտություն",
           "pdfPage": 189,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 193
         },
         {
           "number": 8,
           "title": "Գրականություն",
           "pdfPage": 194,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 239
         }
       ],
       "sourceEdition": 2017,
@@ -143,7 +151,10 @@
         },
         "totalSourceExercisesIncludingAppendix": 1682,
         "playableExercisesIncludingAppendix": 1673
-      }
+      },
+      "sourcePdfSha256": "5894d996c336a5837c7ce4e7b77eca59bb0cec0ae6c5ab55d468e05cd9356e35",
+      "appendixStartPage": 240,
+      "answerKeyStartPage": 249
     },
     {
       "volume": 2,
@@ -155,60 +166,71 @@
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 29
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 30,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 51
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 52,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 73
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 74,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 169
         },
         {
           "number": 5,
           "title": "Կապակցված խոսք",
           "pdfPage": 170,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 183
         },
         {
           "number": 6,
           "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 184,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 187
         },
         {
           "number": 7,
           "title": "Ոճագիտություն",
           "pdfPage": 188,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 201
         },
         {
           "number": 8,
           "title": "Գրականություն",
           "pdfPage": 202,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 242
         }
       ],
       "sourceEdition": 2017,
-      "examYear": 2018
+      "examYear": 2018,
+      "sourcePdfSha256": "e8b9f7e59326ad3938f9c27f4ff618ed7058bf7bd92844072cdcb1961210034d",
+      "appendixStartPage": 243,
+      "answerKeyStartPage": 250
     },
     {
       "volume": 3,
@@ -220,60 +242,71 @@
           "title": "Հնչյունաբանություն",
           "pdfPage": 5,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 34
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 35,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 60
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 61,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 96
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 97,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 168
         },
         {
           "number": 5,
           "title": "Կապակցված խոսք",
           "pdfPage": 169,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 175
         },
         {
           "number": 6,
           "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 176,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 181
         },
         {
           "number": 7,
           "title": "Ոճագիտություն",
-          "pdfPage": 181,
+          "pdfPage": 182,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 189
         },
         {
           "number": 8,
           "title": "Գրականություն",
           "pdfPage": 190,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 240
         }
       ],
       "sourceEdition": 2017,
-      "examYear": 2018
+      "examYear": 2018,
+      "sourcePdfSha256": "c237c82c6ab4bfb93f786e777e013d9bccc697d51701b8895da30c899f02e3c8",
+      "appendixStartPage": 241,
+      "answerKeyStartPage": 249
     },
     {
       "volume": 4,
@@ -285,60 +318,76 @@
           "title": "Հնչյունաբանություն",
           "pdfPage": 6,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 37
         },
         {
           "number": 2,
           "title": "Բառագիտություն",
           "pdfPage": 38,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 68
         },
         {
           "number": 3,
           "title": "Ձևաբանություն",
           "pdfPage": 69,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 110
         },
         {
           "number": 4,
           "title": "Շարահյուսություն",
           "pdfPage": 111,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 185
         },
         {
           "number": 5,
           "title": "Կապակցված խոսք",
           "pdfPage": 186,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 197
         },
         {
           "number": 6,
           "title": "Ընդհանուր գիտելիքներ հայոց լեզվի մասին",
           "pdfPage": 198,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 202
         },
         {
           "number": 7,
           "title": "Ոճագիտություն",
           "pdfPage": 203,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 209
         },
         {
           "number": 8,
           "title": "Գրականություն",
           "pdfPage": 210,
           "verifiedTitle": true,
-          "source": "PDF բովանդակություն"
+          "source": "PDF բովանդակություն",
+          "endPdfPage": 241
         }
       ],
       "sourceEdition": 2018,
-      "examYear": 2018
+      "examYear": 2018,
+      "sourcePdfSha256": "910266f221729f7b310c8656e1a65caaecca26536f9cfee78419c76286ad38bd",
+      "appendixStartPage": 242,
+      "answerKeyStartPage": 251
     }
-  ]
+  ],
+  "sourceAudit": {
+    "checkedOn": "2026-11-08",
+    "method": "Compared four 256-page user-supplied 2018 examination volume PDFs and each printed table of contents; source hashes identify exact uploaded copies. Structural metadata only; no question text or answers.",
+    "corrected": "Volume III chapter 7 begins on PDF page 182, not 181."
+  }
 }
