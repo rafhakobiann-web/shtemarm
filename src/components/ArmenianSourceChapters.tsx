@@ -40,7 +40,10 @@ export function ArmenianSourceChapters({ volume, book }: { volume: ArmenianVolum
         <p className="mb-4 max-w-3xl text-xs leading-relaxed text-muted-foreground">{words.note}</p>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {chapters.map(chapter => {
-            const units = book?.sections.find(section => section.n === chapter.number)?.units ?? [];
+            // Do not link a generic starter exercise to an unrelated official chapter.
+            const sourceSection = book?.sections.find(section =>
+              section.n === chapter.number && section.title === chapter.title);
+            const units = sourceSection?.units ?? [];
             const playable = units.length > 0;
             return (
               <article key={chapter.number} className="flex min-w-0 flex-col gap-2 rounded-2xl border border-border/70 bg-background p-4">
