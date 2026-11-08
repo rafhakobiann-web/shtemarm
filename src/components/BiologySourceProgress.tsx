@@ -8,13 +8,13 @@ export function BiologySourceProgress() {
   const lang = useLang();
   const t = {
     hy: { title: "Կենսաբանության շտեմարանների վիճակը", available: "Հասանելի հարցեր",
-      review: "Նախնական թվայնացում", note: "Նախնական թվայնացված հարցերը դեռ չեն հրապարակվել․ անհրաժեշտ է ստուգել բնօրինակի տեքստը, պատասխանները և պատկերները։",
+      staged: "Նոր՝ առանձին ճյուղում", waiting: "Աղբյուրի ստուգման փուլում", note: "Նախնական թվայնացված հարցերը դեռ չեն հրապարակվել․ անհրաժեշտ է ստուգել բնօրինակի տեքստը, պատասխանները և պատկերները։",
       open: "Բացել հարցաշարը", original: "Բնօրինակ հարց" },
     en: { title: "Biology workbook coverage", available: "Available now",
-      review: "Review-only transcription", note: "Draft questions are not published: original wording, keys and diagrams must be checked.",
+      staged: "Staged in separate branch", waiting: "Source review pending", note: "Draft questions are not published: original wording, keys and diagrams must be checked.",
       open: "Open practice", original: "Original tasks" },
     ru: { title: "Готовность сборников по биологии", available: "Доступно сейчас",
-      review: "Черновик на проверке", note: "Черновые задания не опубликованы: требуется проверка текстов, ответов и иллюстраций.",
+      staged: "Подготовлено в отдельной ветке", waiting: "Ожидают проверки источника", note: "Черновые задания не опубликованы: требуется проверка текстов, ответов и иллюстраций.",
       open: "Открыть задания", original: "Задания в оригинале" },
   }[lang];
   return (
@@ -38,7 +38,10 @@ export function BiologySourceProgress() {
             <div role="progressbar" aria-valuemin={0} aria-valuemax={row.originalTasks} aria-valuenow={row.availableOnMain} aria-label={t.available + " " + row.volume} className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
               <div className="h-full rounded-full bg-primary" style={{width:percentage+"%"}}/>
             </div>
-            <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-3.5 text-primary" aria-hidden="true"/>{t.review}: {row.reviewBranchCandidates.toLocaleString("en-US")} / {row.originalTasks.toLocaleString("en-US")}</p>
+            <div className="mt-3 grid gap-2 text-xs text-muted-foreground">
+              <p className="flex items-center gap-2"><ShieldCheck className="size-3.5 text-primary" aria-hidden="true"/>{t.staged}: <strong className="tabular-nums text-foreground">{row.stagedInReviewBranch}</strong></p>
+              <p>{t.waiting}: <strong className="tabular-nums text-foreground">{row.sourceReviewOnly}</strong></p>
+            </div>
             <Link to="/book/$bookId" params={{bookId:String(row.bookId)}} className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-bold text-primary focus-visible:outline-2 focus-visible:outline-primary">{t.open}<ArrowRight className="size-4" aria-hidden="true"/></Link>
           </article>;
         })}
