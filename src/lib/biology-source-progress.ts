@@ -3,7 +3,7 @@
  */
 export const BIOLOGY_SOURCE_PROGRESS = [
   { volume: 3, bookId: 33, originalTasks: 1837, availableOnMain: 945,
-    reviewBranchCandidates: 1222, sourceSha256: "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93" },
+    stagedInReviewBranch: 277, sourceReviewOnly: 615, sourceSha256: "adc0ddf59fa1008d6dd50f8d41583e44aa7161d2e23bc83f62b4c482e0722b93" },
   { volume: 4, bookId: 34, originalTasks: 1688, availableOnMain: 777,
-    reviewBranchCandidates: 1688, sourceSha256: "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e" },
+    stagedInReviewBranch: 258, sourceReviewOnly: 653, sourceSha256: "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e" },
 ] as const;
