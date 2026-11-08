@@ -43,8 +43,19 @@ describe("2026-11-08 source-based books and responsive UX", () => {
       expect(total).toBe(volume.originalTasks);
       expect(current).toBe(volume.availableOnMain);
       expect(source.sourceSha256).toBe(volume.sourceSha256);
-      expect(volume.reviewBranchCandidates).toBeGreaterThanOrEqual(current);
-      expect(volume.reviewBranchCandidates).toBeLessThanOrEqual(total);
+      expect(volume.availableOnMain + volume.stagedInReviewBranch + volume.sourceReviewOnly).toBe(total);
+    }
+    const transition = json("docs/biology-main-draft-transition-20261108.json");
+    for (const volume of BIOLOGY_SOURCE_PROGRESS) {
+      const row = transition.books.find((b: {volume:number})=>b.volume===volume.volume);
+      expect(row?.totals).toMatchObject({
+        source:volume.originalTasks,
+        main:volume.availableOnMain,
+        stagedOnly:volume.stagedInReviewBranch,
+        sourceReviewOnly:volume.sourceReviewOnly,
+      });
+      expect(row.pending).toHaveLength(volume.stagedInReviewBranch + volume.sourceReviewOnly);
+      expect(new Set(row.pending.map((x: number[])=>x[0]+":"+x[1])).size).toBe(row.pending.length);
     }
     const dashboard = read("src/routes/dashboard.tsx");
     expect(dashboard).toContain("<BiologySourceProgress />");
