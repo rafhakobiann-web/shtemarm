@@ -120,7 +120,7 @@ const SUBJECTS: { id: Subject; glyph: string }[] = [
 
 export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryTo?: "/auth" | "/dashboard" }) {
   const t = L[lang];
-  const [subject, setSubject] = useState<Subject>("english");
+  const [subject, setSubject] = useState<Subject>("math");
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState<number | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
@@ -128,11 +128,16 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
   const [finished, setFinished] = useState(false);
   const [englishPool, setEnglishPool] = useState<EnglishDemoQuestion[]>([]);
   const [englishRound, setEnglishRound] = useState<EnglishDemoQuestion[]>([]);
-  const [bookStatus, setBookStatus] = useState<"loading" | "ready" | "error">("loading");
+  // Landing visitors should not download all three large English banks until
+  // they explicitly select the English sample. A small original demo is shown
+  // immediately, and the real question bank replaces it once available.
+  const [bookStatus, setBookStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
+    if (subject !== "english" || bookStatus === "ready") return;
     let live = true;
+    setBookStatus("loading");
     Promise.all([1, 2, 3].map(id => loadBook(id)))
       .then(books => {
         if (!live) return;
@@ -140,14 +145,17 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
         setEnglishPool(pool);
         setEnglishRound(drawEnglishDemoQuestions(pool));
         setBookStatus(pool.length ? "ready" : "error");
+        // The displayed demo and source bank have different questions.
+        setIndex(0); setAnswer(null); setSelected([]); setChecked(false); setFinished(false);
       })
       .catch(() => { if (live) setBookStatus("error"); });
     return () => { live = false; };
-  }, [loadAttempt]);
+  }, [subject, loadAttempt]);
 
-  const questionCount = subject === "english" ? englishRound.length : QUESTIONS[subject].length;
-  const englishQuestion = subject === "english" ? englishRound[index] : undefined;
-  const question = subject === "english" ? undefined : QUESTIONS[subject][index];
+  const realEnglish = subject === "english" && bookStatus === "ready";
+  const questionCount = realEnglish ? englishRound.length : QUESTIONS[subject].length;
+  const englishQuestion = realEnglish ? englishRound[index] : undefined;
+  const question = realEnglish ? undefined : QUESTIONS[subject][index];
   const hasAnswer = englishQuestion ? checked : answer !== null;
   const correct = englishQuestion
     ? selected.length === englishQuestion.correct.length && selected.every(i => englishQuestion.correct.includes(i))
@@ -183,13 +191,19 @@ export function LandingHeroLab({ lang, entryTo = "/auth" }: { lang: Lang; entryT
           </button>)}
         </div>
         <div className="sl-lab-stage" role="tabpanel">
-          {subject === "english" && bookStatus !== "ready" ? (
-            <div className="sl-lab-finish" aria-live="polite">
-              <BookOpen size={32} aria-hidden="true" />
-              <p>{bookStatus === "loading" ? t.loadingBook : t.emptyBook}</p>
-              {bookStatus === "error" && <button type="button" onClick={() => { setBookStatus("loading"); setLoadAttempt(n => n + 1); }}><RotateCcw size={16} />{t.retry}</button>}
-            </div>
-          ) : finished ? (
+          {subject === "english" && bookStatus !== "ready" && (
+            <p className="mb-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground" role="status">
+              {bookStatus === "error"
+                ? lang === "hy" ? "Ցուցադրվում են օրինակային հարցերը․ շտեմարանն այժմ հասանելի չէ։"
+                  : lang === "ru" ? "Показаны примеры: сборник сейчас недоступен." : "Showing sample questions while the source bank is unavailable."
+                : lang === "hy" ? "Օրինակային հարցեր․ բնօրինակ շտեմարանը բեռնվում է միայն Անգլերենն ընտրելուց հետո։"
+                  : lang === "ru" ? "Примеры вопросов: сборник загружается только после выбора английского." : "Sample questions; source books load only after you select English."}
+              {bookStatus === "error" && (
+                <button type="button" className="ml-2 font-bold text-primary underline" onClick={() => { setBookStatus("loading"); setLoadAttempt(n => n + 1); }}>{t.retry}</button>
+              )}
+            </p>
+          )}
+          {finished ? (
             <div className="sl-lab-finish" aria-live="polite"><CheckCircle2 size={37} /><h3>{t.finished}</h3><p>{t.finishedText}</p>
               <button type="button" onClick={restart}><RotateCcw size={17} />{subject === "english" ? t.refresh : t.retry}</button>
               <Link to={entryTo}>{t.begin}<ArrowRight size={17} /></Link>
