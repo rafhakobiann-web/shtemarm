@@ -1,0 +1,40 @@
+name: Verify Shtemarm UX, Biology status and Armenian books
+
+on:
+  pull_request:
+    paths:
+      - "src/components/LandingLabV3.tsx"
+      - "src/components/ArmenianSourceChapters.tsx"
+      - "src/components/BiologySourceProgress.tsx"
+      - "src/lib/armenian-source-outline.ts"
+      - "src/lib/biology-source-progress.ts"
+      - "src/routes/book.$bookId.tsx"
+      - "src/routes/dashboard.tsx"
+      - "src/landing-v3.css"
+      - "src/styles.css"
+      - "public/data/armenian-source-index.json"
+      - "src/test/armenian-biology-performance-20261108.test.ts"
+      - ".github/workflows/verify-ux-armenian-biology-20261108.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Focused source, layout and question-bank regression tests
+        run: |
+          bunx vitest run src/test/armenian-biology-performance-20261108.test.ts
+          bunx vitest run src/test/armenian-volumes.test.ts src/test/landing-reference.test.tsx
+      - name: Typecheck
+        run: bunx tsc --noEmit
+      - name: Build without deploying
+        run: bun run build
