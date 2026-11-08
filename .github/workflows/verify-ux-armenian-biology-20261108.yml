@@ -13,6 +13,10 @@ on:
       - "src/landing-v3.css"
       - "src/styles.css"
       - "public/data/armenian-source-index.json"
+      - "public/data/armenian-book2.json"
+      - "public/data/armenian-book3.json"
+      - "public/data/armenian-book4.json"
+      - "src/test/armenian-authored-topics-20261108.test.ts"
       - "src/test/armenian-biology-performance-20261108.test.ts"
       - ".github/workflows/verify-ux-armenian-biology-20261108.yml"
   workflow_dispatch:
@@ -33,7 +37,7 @@ jobs:
       - name: Focused source, layout and question-bank regression tests
         run: |
           bunx vitest run src/test/armenian-biology-performance-20261108.test.ts
-          bunx vitest run src/test/armenian-volumes.test.ts src/test/landing-reference.test.tsx
+          bunx vitest run src/test/armenian-volumes.test.ts src/test/armenian-authored-topics-20261108.test.ts src/test/landing-reference.test.tsx
       - name: Typecheck
         run: bunx tsc --noEmit
       - name: Build without deploying
