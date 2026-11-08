@@ -25,6 +25,24 @@ A stale Volume III stylistics page 181 was corrected to **182**. Source PDF SHA-
 
 Each Armenian workbook page now has an optional expandable **eight-chapter source navigator** with its real page ranges and truthful readiness. It links to an interactive chapter only when a matching content section is present, rather than confusing the II–IV Shtemarm-authored starter practice with verified official questions.
 
+## New Shtemarm-authored Armenian practice (separate from official PDFs)
+
+To make Books II–IV useful while the large official source banks still await
+review, each now has **21 additional, original Shtemarm-written, four-choice
+questions** arranged across seven additional subject sections (vocabulary,
+morphology, syntax, connected text, language knowledge, stylistics, literature).
+The original starter unit and its IDs are preserved. Each book has **31
+playable author-created questions in eight sections** (the original starter
+unit has 10). Every new chapter is explicitly labelled as authored practice,
+**not** an official GTC/PDF transcription.
+
+These questions have unique IDs, four distinct alternatives and explicitly
+recorded answers. `src/test/armenian-authored-topics-20261108.test.ts`
+validates the new sections against the original chapter headings and prevents
+accidental duplicate identifiers or unanswerable questions. Pedagogical
+proofreading and difficulty tuning still remain to be completed. The original
+PDF questions of Books II–IV are not yet transcribed.
+
 **Content limitation:** Book I's active `loadArmenianOriginalBook()` reads its dedicated official-source dataset; the Book I starter file is not the complete active source bank. Books II–IV still have Shtemarm-created starter exercises, not full original transcriptions. The source navigation does not mark their missing official questions playable.
 
 ## Biology III–IV reconciliation
