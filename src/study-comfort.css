@@ -346,3 +346,67 @@ body[data-study-tutor-open="true"] .site-settings-sheet {
 html.user-high-contrast .sht-study-workspace :is(.sht-study-heading,.study-unit,.sht-study-progress-panel) {
   border-color: var(--foreground);
 }
+
+
+/* Workbook library — one cohesive visual language with the practice workspace. */
+.sht-book-workspace { min-width: 0; }
+.sht-book-hero {
+  border-color: color-mix(in srgb, var(--primary) 18%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 58%),
+    var(--card);
+  border-radius: 1.5rem;
+  box-shadow: none;
+}
+.sht-book-hero h1 { overflow-wrap: anywhere; line-height: 1.2; }
+.sht-book-primary-actions > * { min-height: 44px; }
+.sht-book-browser {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+.sht-book-search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.sht-book-search-input {
+  flex: 1 1 260px;
+  min-width: 0;
+  min-height: 48px;
+  padding: .65rem .95rem;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+}
+.sht-book-search-input:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.sht-book-section-card {
+  border-color: color-mix(in srgb, var(--primary) 13%, var(--border));
+  border-radius: 1.15rem;
+  box-shadow: none;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+.sht-book-section-card:hover,
+.sht-book-section-card:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+.sht-book-section-actions { gap: .5rem; }
+.sht-book-section-actions > * {
+  min-width: 0;
+  min-height: 44px;
+  line-height: 1.2;
+  white-space: normal;
+}
+.sht-book-section-actions svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+@media (max-width: 460px) {
+  .sht-book-hero { border-radius: 1.15rem; }
+  .sht-book-section-actions { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-book-section-actions > :first-child { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-book-section-card { transition: none; }
+}
+html.user-high-contrast .sht-book-workspace :is(.sht-book-hero,.sht-book-section-card,.sht-book-browser) {
+  border-color: var(--foreground);
+}
