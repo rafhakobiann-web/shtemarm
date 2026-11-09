@@ -335,8 +335,8 @@ export function UnitCard(props: {
         {keyboardEnabled && !show && <p className="sht-answer-keyboard-tip mt-3 text-xs text-muted-foreground">
           {language === "en" ? `Keyboard: focus this card, use 1–${optionEntries.length} to choose, Enter to check.` : language === "ru" ? `Клавиатура: выбери карточку, нажми 1–${optionEntries.length}, затем Enter.` : `Ստեղնաշարով՝ ընտրիր քարտը, սեղմիր 1–${optionEntries.length}, ապա Enter։`}
         </p>}
-        {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+        {props.onCheck && !show && (
+          <button type="button" disabled={!chosen} onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -400,8 +400,8 @@ export function UnitCard(props: {
           />
           {show && <span role="status" className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
-        {props.onCheck && !show && val.trim() && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+        {props.onCheck && !show && (
+          <button type="button" disabled={!val.trim()} onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50">
             {tx("Ստուգել →")}
           </button>
         )}
