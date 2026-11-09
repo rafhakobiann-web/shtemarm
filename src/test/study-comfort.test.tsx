@@ -65,7 +65,8 @@ describe("comfortable question practice", () => {
 
   it("announces wrong answers, locks checked choices and tracks each question separately", () => {
     render(<Card />);
-    expect(screen.queryByRole("button", {name:"Ստուգել →"})).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", {name:"Ստուգել →"})).toHaveLength(2);
+    expect(screen.getAllByRole("button", {name:"Ստուգել →"}).every(button => button.hasAttribute("disabled"))).toBe(true);
     const first = screen.getByRole("region", {name:"First question"});
     const choices = within(first).getAllByRole("radio");
     fireEvent.click(choices[1]!);
@@ -76,6 +77,27 @@ describe("comfortable question practice", () => {
     expect(choices[0]).toBeDisabled();
     expect(screen.getByText("1 / 2 checked")).toBeInTheDocument();
     expect(within(screen.getByRole("region", {name:"Second question"})).getAllByRole("radio")[0]).not.toBeDisabled();
+  });
+
+  it("supports keyboard-only choice and checking when the question card is focused", () => {
+    render(<Card />);
+    const first = screen.getByRole("region", { name: "First question" });
+    const choices = within(first).getAllByRole("radio");
+    first.focus();
+    fireEvent.keyDown(first, { key: "2" });
+    expect(choices[1]).toBeChecked();
+    fireEvent.keyDown(first, { key: "Enter" });
+    expect(choices[1]).toBeDisabled();
+    expect(within(first).getByRole("status")).toHaveTextContent("Review the correct answer:");
+  });
+
+  it("does not override native input keyboard handling", () => {
+    render(<Card />);
+    const first = screen.getByRole("region", { name: "First question" });
+    const choices = within(first).getAllByRole("radio");
+    fireEvent.click(choices[1]!);
+    fireEvent.keyDown(choices[1]!, { key: "1" });
+    expect(choices[1]).toBeChecked();
   });
 
   it("pages a long section in source order without losing selected or checked answers", () => {

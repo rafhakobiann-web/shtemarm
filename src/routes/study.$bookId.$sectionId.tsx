@@ -7,6 +7,7 @@ import { ALL_BOOKS, questionAnswerKey, questionForAnswerKey, secTitle, type Unit
 import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import { StudyTutorDrawer } from "@/components/StudyTutorDrawer";
+import { StudyScratchpad } from "@/components/StudyScratchpad";
 import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
@@ -94,6 +95,7 @@ function StudyPage() {
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
         {lang==="en"?"Learn rules for this section":lang==="ru"?"Правила этого раздела":"Սովորել այս բաժնի կանոնները"}
       </Link>}
+      {section && section.units.length > 0 && <StudyScratchpad bookId={bookId} sectionId={sectionId} />}
       {error && !book ? (
         <LoadError onRetry={() => void refetch()} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isPending && !book ? (

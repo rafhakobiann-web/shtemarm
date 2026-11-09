@@ -260,9 +260,26 @@ export function UnitCard(props: {
     const answerKey = u.kind === "mc" ? questionAnswerKey(u, index) : q.n;
     const show = revealed(answerKey);
     const chosen = a?.mc?.[answerKey];
+    const optionEntries = Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options);
+    const keyboardEnabled = !!props.onCheck && optionEntries.length > 0 && optionEntries.length <= 9;
     const englishSource = /^([123])-(\d+)-/.exec(u.id);
     return (
-      <section key={answerKey} aria-labelledby={questionId(index)} className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
+      <section key={answerKey} aria-labelledby={questionId(index)} tabIndex={keyboardEnabled ? 0 : undefined}
+        onKeyDown={event => {
+          // Only handle keys while the question card itself has focus.
+          // Native radio/buttons, text inputs, translations and dialogs keep their own shortcuts.
+          if (!keyboardEnabled || show || event.target !== event.currentTarget) return;
+          if (/^[1-9]$/.test(event.key)) {
+            const option = optionEntries[Number(event.key) - 1];
+            if (!option) return;
+            event.preventDefault();
+            onChange({ ...a, mc: { ...a?.mc, [answerKey]: option[0] } });
+          } else if (event.key === "Enter" && chosen) {
+            event.preventDefault();
+            props.onCheck?.(answerKey);
+          }
+        }}
+        className={cn("question-card rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:p-5", show && chosen !== q.answer && "motion-safe:animate-shake")}>
         <div className="mb-3 flex gap-2">
           <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-primary px-1.5 font-display text-xs font-bold text-primary-foreground">
             {q.n}
@@ -271,7 +288,7 @@ export function UnitCard(props: {
         </div>
         {q.diagram && <figure className="mb-4 rounded-xl border bg-white p-3"><img src={q.diagram.src} alt={q.diagram.alt} width={350} height={250} loading="lazy" className="mx-auto h-auto w-full max-w-sm" /></figure>}
         <div role="group" aria-labelledby={questionId(index)} className="study-answer-grid grid gap-2">
-          {Object.entries(isGtcClaimsBundle(u) ? { ...q.options, "3": tx("Չգիտեմ") } : q.options).map(([k, v]) => {
+          {optionEntries.map(([k, v]) => {
             const isC = k === q.answer;
             const isSel = chosen === k;
             return (
@@ -315,8 +332,11 @@ export function UnitCard(props: {
             );
           })}
         </div>
-        {props.onCheck && !show && chosen && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+        {keyboardEnabled && !show && <p className="sht-answer-keyboard-tip mt-3 text-xs text-muted-foreground">
+          {language === "en" ? `Keyboard: focus this card, use 1–${optionEntries.length} to choose, Enter to check.` : language === "ru" ? `Клавиатура: выбери карточку, нажми 1–${optionEntries.length}, затем Enter.` : `Ստեղնաշարով՝ ընտրիր քարտը, սեղմիր 1–${optionEntries.length}, ապա Enter։`}
+        </p>}
+        {props.onCheck && !show && (
+          <button type="button" disabled={!chosen} onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50">
             {tx("Ստուգել →")}
           </button>
         )}
@@ -380,8 +400,8 @@ export function UnitCard(props: {
           />
           {show && <span role="status" className="text-sm font-semibold">{tx("Ճիշտ պատասխանը՝ {answer}", { answer: q.answer })}</span>}
         </div>
-        {props.onCheck && !show && val.trim() && (
-          <button type="button" onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary">
+        {props.onCheck && !show && (
+          <button type="button" disabled={!val.trim()} onClick={() => props.onCheck?.(answerKey)} className="study-check mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-4 text-sm font-bold text-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50">
             {tx("Ստուգել →")}
           </button>
         )}
