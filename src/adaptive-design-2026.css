@@ -491,3 +491,31 @@ html.user-high-contrast[data-surface="liquid"] .sht-palette-panel {
     aspect-ratio: 1;
   }
 }
+
+
+/* 2026-11-09: accessible study navigation and narrow-screen readability. */
+:where(.sht-landing, .academy-home) :is(button, a, input, select, textarea):focus-visible,
+:where(.site-header, .mobile-liquid-dock) :is(button, a):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+:where(.sht-landing, .academy-home) :is(h1, h2, h3, p, strong) {
+  overflow-wrap: break-word;
+}
+@media (max-width: 480px) {
+  .sht-hero-actions > :is(a, button) { min-height: 44px; }
+  .sht-demo-option { min-width: 0; overflow-wrap: anywhere; }
+  .sht-dashboard-bento > * { min-width: 0; }
+  .sht-hero-description { max-width: 100%; }
+}
+@media (max-width: 360px) {
+  .sht-dashboard-bento { grid-template-columns: minmax(0, 1fr); }
+  .sht-dashboard-bento > :first-child { grid-column: auto; }
+  .sht-demo-options { grid-template-columns: minmax(0, 1fr); }
+  .sht-demo-option:first-child { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-dashboard-bento .academy-bento,
+  .sht-demo-option,
+  .sht-subject-card { scroll-behavior: auto; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
