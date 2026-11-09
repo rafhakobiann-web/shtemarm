@@ -93,3 +93,73 @@ html[data-surface] .mobile-liquid-dock .mobile-liquid-tab:focus-visible {
   html[data-surface] .site-mobile-nav.mobile-liquid-dock { border: 2px solid CanvasText; }
   html[data-surface] .mobile-liquid-dock .mobile-liquid-tab[aria-current="page"] { outline: 2px solid Highlight; }
 }
+
+
+/* Focused question solving: clear keyboard affordances and comfortable reading. */
+.sht-study-workspace .question-card:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.sht-study-workspace .study-question-list .question-card h3 {
+  font-size: clamp(.97rem, 1vw + .8rem, 1.08rem);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.sht-study-workspace .study-answer-grid .answer-option {
+  align-items: flex-start;
+  padding: clamp(.7rem, 1.8vw, 1rem);
+  line-height: 1.6;
+}
+.sht-study-workspace .study-answer-grid .answer-option > span:last-of-type {
+  overflow-wrap: anywhere;
+}
+.sht-answer-keyboard-tip {
+  padding: .55rem .75rem;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px dashed var(--border);
+  border-radius: .65rem;
+  background: var(--background);
+  line-height: 1.5;
+}
+.sht-study-scratchpad {
+  min-width: 0;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: var(--card);
+  box-shadow: 0 10px 25px -23px color-mix(in srgb, var(--foreground) 25%, transparent);
+}
+.sht-study-scratchpad > summary { list-style: none; outline-offset: 3px; }
+.sht-study-scratchpad > summary::-webkit-details-marker { display: none; }
+.sht-study-scratchpad > summary:focus-visible {
+  outline: 2px solid var(--ring);
+  border-radius: 1rem;
+}
+.sht-study-scratchpad[open] {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+.sht-scratchpad-trigger:hover { background: color-mix(in srgb, var(--primary) 5%, var(--card)); }
+.sht-scratchpad-chevron { transition: transform .17s ease; }
+.sht-study-scratchpad[open] .sht-scratchpad-chevron { transform: rotate(180deg); }
+.sht-scratchpad-body { border-color: var(--border); }
+.sht-scratchpad-input {
+  min-height: 8rem;
+  max-height: 45dvh;
+  font-family: inherit;
+  line-height: 1.7;
+  tab-size: 2;
+}
+.sht-scratchpad-input::placeholder { color: var(--muted-foreground); opacity: .75; }
+.sht-scratchpad-filled { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 13%, transparent); }
+.sht-scratchpad-clear:focus-visible { outline-offset: 3px; }
+@media (max-width: 767px) {
+  .sht-answer-keyboard-tip { display: none; }
+  .sht-study-scratchpad { border-radius: 1.1rem; }
+  .sht-study-workspace .study-answer-grid .answer-option { min-height: 3.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-scratchpad-chevron { transition: none; }
+}
+@media (forced-colors: active) {
+  .sht-study-scratchpad { border: 1px solid CanvasText; }
+  .sht-study-scratchpad[open] { border-color: Highlight; }
+}
