@@ -190,3 +190,38 @@ html.user-high-contrast .dashboard-focus .academy-bento {
     transition: none !important;
   }
 }
+
+
+/* Dashboard refresh: make the next study action more prominent than secondary tools. */
+.academy-home .dashboard-overview {
+  min-width: 0;
+  border-radius: clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+  background: var(--card);
+  box-shadow: 0 12px 36px -32px color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+.academy-home .academy-quick-action {
+  min-height: 44px;
+  transition: background-color .16s ease, border-color .16s ease;
+}
+.academy-home .academy-quick-action:focus-visible,
+.academy-home .dashboard-library-filters button:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.academy-home .dashboard-library-filters button {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+.academy-home :is(.academy-bento, .dashboard-overview) :is(h1, h2, h3) {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .academy-home .dashboard-overview { padding: 1rem; }
+  .academy-home .academy-quick-action { width: 100%; }
+  .academy-home .dashboard-library-filters { max-width: 100%; overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-home .academy-quick-action { transition: none !important; }
+}
