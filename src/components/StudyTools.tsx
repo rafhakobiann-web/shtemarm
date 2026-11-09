@@ -9,7 +9,7 @@ export function StudyTools() {
   const wrongCount = Object.values(progress.answers).filter((answer) => answer === 0).length;
   const correctCount = Object.values(progress.answers).filter((answer) => answer === 1).length;
   return (
-    <section className="study-tools glass rounded-3xl p-5 sm:p-6" aria-label={tx("Ուսումնական առաջընթաց")}>
+    <section className="study-tools sht-study-tools-summary rounded-3xl border bg-card p-5 sm:p-6" aria-label={tx("Ուսումնական առաջընթաց")}>
       <div className="mb-5 flex items-start gap-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><RotateCcw className="size-5" /></span>
         <div>
@@ -35,7 +35,7 @@ export function StudyTools() {
             <p className="text-sm text-muted-foreground">{wrongCount > 0 ? tx("Կրկնիր սխալ պատասխանած հարցերը, ապա փորձիր նոր թեստ։") : tx("Ընտրիր շտեմարան և սկսիր թեմատիկ վարժություններից։")}</p>
           </div>
         </div>
-        {wrongCount > 0 && <Link to="/auth" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold transition-colors hover:bg-muted">{tx("Իմ առաջընթացը")}</Link>}
+        {wrongCount > 0 && <Link to="/mistakes" className="inline-flex shrink-0 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-bold transition-colors hover:bg-muted">{tx("Իմ առաջընթացը")}</Link>}
       </div>
     </section>
   );
