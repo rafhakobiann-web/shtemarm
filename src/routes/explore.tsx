@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight, Atom, BookOpen, BookText, Brain, Calculator, CheckCircle2,
   Compass, Dna, FlaskConical, GraduationCap, Languages, LibraryBig, RotateCcw,
@@ -106,11 +106,21 @@ export function ExplorePage() {
   const t = UI[lang];
   const { hash } = useLocation();
   const [query,setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const onShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, []);
   const [filter,setFilter] = useState<"all"|"subjects"|"exams"|"tools">("all");
   useEffect(() => {
     const section=hash?.replace(/^#/,"");
     if (section!=="subjects" && section!=="exams" && section!=="tools") return;
-    setQuery("");
     setFilter(section);
     const frame=window.requestAnimationFrame(() => {
       document.getElementById(section)?.scrollIntoView({
@@ -170,7 +180,8 @@ export function ExplorePage() {
         </div>
         <div className="relative mt-6 max-w-3xl">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <input type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
+          <input ref={searchRef} type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
+            onKeyDown={e=>{if(e.key==="Escape"){setQuery("");e.currentTarget.blur();}}}
             onChange={e=>{setQuery(e.target.value);if(e.target.value.trim())setFilter("all");}}
             className="explore-search min-h-14 w-full rounded-2xl border bg-background pl-12 pr-14 text-sm font-semibold text-foreground outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" />
           {query && <button type="button" onClick={()=>setQuery("")} aria-label={t.clear}
@@ -191,7 +202,7 @@ export function ExplorePage() {
 
       {clean && <p role="status" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? matchingExamCount : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
 
-      {clean && !includeSubjects && !includeExams && !includeTools && <div role="status" className="rounded-2xl border bg-card p-5">
+      {clean && ((filter === "subjects" && matches.length === 0) || (filter === "exams" && !includeExams) || (filter === "tools" && !hasMatchingTools) || (filter === "all" && !includeSubjects && !includeExams && !includeTools)) && <div role="status" className="rounded-2xl border bg-card p-5">
         <p className="text-sm text-muted-foreground">{t.noResults}</p>
         <button type="button" onClick={()=>{setQuery("");setFilter("all");}} className="mt-3 min-h-11 rounded-xl border px-4 text-sm font-bold text-primary">{t.clearFilters}</button>
       </div>}
