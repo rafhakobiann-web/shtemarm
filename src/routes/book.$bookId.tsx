@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ArrowLeft, Gamepad2, BookText, ClipboardCheck, Trophy, Loader2, RefreshCw, MessageCircle } from "lucide-react";
 import { ALL_BOOKS, KIND_HY, secNum, secTitle, sectionAnswerIds, invalidateBookCache } from "@/lib/books";
 import { useBook } from "@/lib/useBook";
@@ -35,16 +35,22 @@ function BookPage() {
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
+  const [sectionQuery, setSectionQuery] = useState("");
   // A completed answer updates progress frequently, but source questions do not.
   // Cache the full section response-key lists until the book itself changes.
   const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
+  const cleanQuery = sectionQuery.trim().toLocaleLowerCase();
+  const matchingSections = useMemo(() => (book?.sections ?? [])
+    .map((section, index) => ({ section, index }))
+    .filter(({ section }) => !cleanQuery || [secTitle(section), String(section.n), section.instr_hy]
+      .some(text => text.toLocaleLowerCase().includes(cleanQuery))), [book, cleanQuery]);
 
   return (
-    <div className="space-y-8">
-      <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+    <div className="sht-book-workspace mx-auto max-w-6xl space-y-8">
+      <Link to="/explore" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> {tx("Բոլոր գրքերը")}
       </Link>
-      <div className="rounded-3xl border bg-card p-5 sm:p-7">
+      <div className="sht-book-hero rounded-3xl border bg-card p-5 sm:p-7">
         <div className="space-y-4">
           <div className="flex items-start gap-4">
             <BookCover src={meta.cover} title={meta.title} size="lg" />
@@ -67,7 +73,7 @@ function BookPage() {
             <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} />
             {tx("Թարմացնել գրքի տվյալները")}
           </Button>
-          <div className="flex flex-wrap gap-3">
+          <div className="sht-book-primary-actions flex flex-wrap gap-3">
             <Button variant="game" size="lg" asChild>
               {id >= 21 && id <= 23 ? (
                 <Link to="/history"><Trophy /> {tx("Քննություն")}</Link>
@@ -126,6 +132,15 @@ function BookPage() {
         </div>
       </div>
 
+      {book && book.sections.length > 0 && <div className="sht-book-browser">
+        <label htmlFor={`book-section-search-${id}`} className="text-sm font-black">{lang === "en" ? "Find a section" : lang === "ru" ? "Найти раздел" : "Գտնել բաժինը"}</label>
+        <div className="sht-book-search-row">
+          <input id={`book-section-search-${id}`} type="search" value={sectionQuery} onChange={event => setSectionQuery(event.target.value)}
+            placeholder={lang === "en" ? "Section number or topic" : lang === "ru" ? "Номер или тема раздела" : "Բաժնի համարը կամ թեման"}
+            className="sht-book-search-input" />
+          <span className="text-xs font-semibold text-muted-foreground" aria-live="polite">{matchingSections.length} / {book.sections.length}</span>
+        </div>
+      </div>}
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
       ) : isLoading || !book ? (
@@ -140,13 +155,13 @@ function BookPage() {
           <Button variant="outline" onClick={reload} disabled={isFetching}>{tx("Կրկին բեռնել")}</Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {book.sections.map((s, sectionIndex) => {
+        <div className="sht-book-section-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {matchingSections.map(({ section: s, index: sectionIndex }) => {
             const ids = sectionIds[sectionIndex] ?? [];
             const done = ids.filter((k) => k in p.answers).length;
             const right = ids.filter((k) => p.answers[k] === 1).length;
             return (
-              <div key={s.n} className="shadow-card flex flex-col gap-3 rounded-2xl border bg-card p-5">
+              <div key={s.n} className="sht-book-section-card shadow-card flex flex-col gap-3 rounded-2xl border bg-card p-5">
                 <div className="flex items-start gap-3">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-black text-primary-foreground">{secNum(s.n)}</span>
                   <div className="min-w-0">
@@ -154,7 +169,7 @@ function BookPage() {
                     <p className="text-sm leading-snug text-muted-foreground">{s.instr_hy || KIND_HY[s.units[0]?.kind ?? "mc"]}</p>
                   </div>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                <div role="progressbar" aria-label={lang === "en" ? "Correct answers" : lang === "ru" ? "Правильные ответы" : "Ճիշտ պատասխաններ"} aria-valuemin={0} aria-valuemax={ids.length} aria-valuenow={right} className="h-1.5 overflow-hidden rounded-full bg-muted">
                   <div className="h-full bg-success" style={{ width: `${(right / Math.max(1, ids.length)) * 100}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -164,7 +179,7 @@ function BookPage() {
                   className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3 text-sm font-semibold text-primary hover:bg-primary/10">
                   <BookText className="size-4" />{lang==="en"?"Rules & study tips":lang==="ru"?"Правила и советы":"Կանոններ և ուսուցման հուշումներ"}
                 </Link>}
-                <div className="mt-auto grid grid-cols-3 gap-2">
+                <div className="sht-book-section-actions mt-auto grid grid-cols-3 gap-2">
                   <Button variant="game" className="px-2 text-xs sm:text-sm" asChild>
                     <Link to="/study/$bookId/$sectionId" params={{ bookId, sectionId: String(s.n) }} search={{ mode: "game" }}>
                       <Gamepad2 /> {tx("Խաղալ")}
@@ -212,6 +227,7 @@ function BookPage() {
               </div>
             );
           })}
+          {matchingSections.length === 0 && <div className="col-span-full rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground" role="status">{lang === "en" ? "No matching sections. Try another number or topic." : lang === "ru" ? "Разделы не найдены. Попробуй другой номер или тему." : "Համապատասխան բաժին չի գտնվել։ Փորձիր այլ համար կամ թեմա։"}</div>}
         </div>
       )}
     </div>
