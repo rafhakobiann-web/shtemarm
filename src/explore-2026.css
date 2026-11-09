@@ -200,3 +200,42 @@ html[data-surface="liquid"] .sht-subject-header {
   border-color: var(--border);
   box-shadow: none;
 }
+
+
+/* Explore refresh: clearer hierarchy and calmer, consistent card geometry. */
+.explore-page { --explore-radius: 1.15rem; }
+.explore-page :is(.explore-subject-card, .explore-quick-link, .explore-profile-link) {
+  min-width: 0;
+  border-radius: var(--explore-radius);
+  background: var(--card);
+  color: var(--foreground);
+}
+.explore-page :is(.explore-subject-card, .explore-quick-link, .explore-profile-link) :is(p, span, strong) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.explore-page :is(.explore-subject-card, .explore-quick-link, .explore-profile-link):focus-visible,
+.explore-page :is(.explore-filters button, .explore-search input):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.explore-page .explore-search { min-width: 0; max-width: 100%; }
+.explore-page .explore-search input { min-width: 0; width: 100%; }
+.explore-page .explore-filters { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.explore-page .explore-filters button { flex-shrink: 0; min-height: 44px; }
+@media (max-width: 480px) {
+  .explore-page .explore-hero { border-radius: 1.15rem; }
+  .explore-page .explore-quick-link { min-height: 3.25rem; }
+  .explore-page .explore-subject-card { min-height: 5rem; }
+}
+@media (hover: none) {
+  .explore-page :is(.explore-subject-card, .explore-quick-link, .explore-profile-link):hover {
+    transform: none;
+  }
+}
+html.user-reduced-motion .explore-page *,
+html.user-reduced-motion .explore-page *::before,
+html.user-reduced-motion .explore-page *::after {
+  transition: none !important;
+  animation: none !important;
+}

@@ -40,7 +40,19 @@ describe("exploration-first information architecture",()=>{
     fireEvent.change(input,{target:{value:"biology"}});
     expect(screen.getByRole("heading",{name:"Biology"})).toBeInTheDocument();
     expect(screen.queryByRole("heading",{name:"Mathematics"})).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading",{name:"Practice exams"})).not.toBeInTheDocument();
+    expect(screen.getByRole("heading",{name:"Practice exams"})).toBeInTheDocument();
+    expect(screen.getAllByRole("link",{name:/Biology/}).length).toBeGreaterThan(0);
+  });
+
+  it("keeps search when switching tabs and supports Escape to clear",()=>{
+    render(<ExplorePage/>);
+    const input=screen.getByRole("searchbox",{name:"Search subjects and tools"});
+    fireEvent.change(input,{target:{value:"biology"}});
+    fireEvent.click(screen.getByRole("button",{name:"Exams"}));
+    expect(input).toHaveValue("biology");
+    expect(screen.getByRole("heading",{name:"Practice exams"})).toBeInTheDocument();
+    fireEvent.keyDown(input,{key:"Escape"});
+    expect(input).toHaveValue("");
   });
 
   it("finds tools without forcing students to browse every category",()=>{

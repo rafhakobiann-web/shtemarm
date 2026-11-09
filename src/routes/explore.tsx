@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight, Atom, BookOpen, BookText, Brain, Calculator, CheckCircle2,
   Compass, Dna, FlaskConical, GraduationCap, Languages, LibraryBig, RotateCcw,
@@ -47,6 +47,7 @@ const UI = {
     examHint:"Սկսիր քննության ռեժիմը համապատասխան առարկայից։",
     toolsHeading:"Գործիքներ՝ երբ պետք են", toolsHint:"Բացատրություններ, կրկնություն և կանոններ՝ առանց լրացուցիչ էջերի խառնաշփոթի։",
     yourSpace:"Քո անձնական տարածքը", profile:"Իմ պրոֆիլը", profileHint:"Առաջընթաց, նպատակներ և նվաճումներ",
+    results:"Գտնված արդյունքներ", examSearch:"Քննություն",
     priority:"Սկսելու ամենահեշտ ճանապարհը", step1:"1. Ընտրիր առարկան",step2:"2. Բացիր գիրքը",step3:"3. Պատասխանիր հարցերին",
   },
   en: {
@@ -60,6 +61,7 @@ const UI = {
     examHint:"Choose a subject to enter its exam and practice options.",
     toolsHeading:"Helpful tools, when you need them",toolsHint:"Rules, explanations, and revision in one easy-to-find place.",
     yourSpace:"Your personal space", profile:"My Profile", profileHint:"Progress, goals, and achievements",
+    results:"Search results", examSearch:"Practice exam",
     priority:"The simplest way to begin",step1:"1. Pick a subject",step2:"2. Open a workbook",step3:"3. Answer questions",
   },
   ru: {
@@ -73,6 +75,7 @@ const UI = {
     examHint:"Выбери предмет, чтобы начать тренировку.",
     toolsHeading:"Полезные инструменты",toolsHint:"Правила, объяснения и повторение без лишнего шума.",
     yourSpace:"Личное пространство", profile:"Мой профиль",profileHint:"Прогресс, цели и достижения",
+    results:"Результаты поиска", examSearch:"Пробный экзамен",
     priority:"Простой путь к началу",step1:"1. Выбери предмет",step2:"2. Открой сборник",step3:"3. Ответь на вопросы",
   },
 } satisfies Record<Language, Record<string,string>>;
@@ -103,11 +106,21 @@ export function ExplorePage() {
   const t = UI[lang];
   const { hash } = useLocation();
   const [query,setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const onShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, []);
   const [filter,setFilter] = useState<"all"|"subjects"|"exams"|"tools">("all");
   useEffect(() => {
     const section=hash?.replace(/^#/,"");
     if (section!=="subjects" && section!=="exams" && section!=="tools") return;
-    setQuery("");
     setFilter(section);
     const frame=window.requestAnimationFrame(() => {
       document.getElementById(section)?.scrollIntoView({
@@ -142,7 +155,11 @@ export function ExplorePage() {
     .some(label => label.toLocaleLowerCase().includes(clean));
   const hasMatchingTools = studyTools.some((_,index) => matchesTool(index));
   const includeSubjects = (filter === "all" || filter === "subjects") && (!clean || matches.length > 0);
-  const includeExams = (filter === "all" || filter === "exams") && !clean;
+  const examMatch = !clean || [t.exams, t.examHeading, t.examHint, t.examSearch, ...EXPLORE_SUBJECTS.slice(0,6).flatMap(subject => Object.values(subject.title))]
+      .some(label => label.toLocaleLowerCase().includes(clean));
+  const examSubjectMatches = (index:number) => !clean || [t.exams,t.examHeading,t.examHint,t.examSearch,...Object.values(EXPLORE_SUBJECTS[index].title)].some(label => label.toLocaleLowerCase().includes(clean));
+  const matchingExamCount = EXPLORE_SUBJECTS.slice(0,6).filter((_,index)=>examSubjectMatches(index)).length;
+  const includeExams = (filter === "all" || filter === "exams") && examMatch && matchingExamCount > 0;
   const includeTools = (filter === "all" || filter === "tools") && (!clean || hasMatchingTools);
 
   return (
@@ -163,7 +180,8 @@ export function ExplorePage() {
         </div>
         <div className="relative mt-6 max-w-3xl">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <input type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
+          <input ref={searchRef} type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
+            onKeyDown={e=>{if(e.key==="Escape"){setQuery("");e.currentTarget.blur();}}}
             onChange={e=>{setQuery(e.target.value);if(e.target.value.trim())setFilter("all");}}
             className="explore-search min-h-14 w-full rounded-2xl border bg-background pl-12 pr-14 text-sm font-semibold text-foreground outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" />
           {query && <button type="button" onClick={()=>setQuery("")} aria-label={t.clear}
@@ -171,18 +189,21 @@ export function ExplorePage() {
             <X className="size-5" />
           </button>}
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">{lang==="hy"?"Արագ որոնում՝ Ctrl + K · Մաքրել՝ Esc":lang==="ru"?"Быстрый поиск: Ctrl + K · Очистить: Esc":"Quick search: Ctrl + K · Clear: Esc"}</p>
       </div>
 
       <nav aria-label={t.all} className="explore-filters flex flex-wrap gap-2">
         {filterOptions.map(({id,label,icon:Icon})=><button type="button" key={id}
-          aria-pressed={filter===id} onClick={()=>{setFilter(id);if(id!=="subjects")setQuery("");}}
+          aria-pressed={filter===id} onClick={()=>setFilter(id)}
           className={"inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary "+
             (filter===id?"border-primary bg-primary text-primary-foreground":"bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground")}>
           <Icon className="size-4" aria-hidden="true" />{label}
         </button>)}
       </nav>
 
-      {clean && matches.length===0 && !hasMatchingTools && <div role="status" className="rounded-2xl border bg-card p-5">
+      {clean && <p aria-live="polite" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? matchingExamCount : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
+
+      {clean && ((filter === "subjects" && matches.length === 0) || (filter === "exams" && !includeExams) || (filter === "tools" && !hasMatchingTools) || (filter === "all" && !includeSubjects && !includeExams && !includeTools)) && <div role="status" className="rounded-2xl border bg-card p-5">
         <p className="text-sm text-muted-foreground">{t.noResults}</p>
         <button type="button" onClick={()=>{setQuery("");setFilter("all");}} className="mt-3 min-h-11 rounded-xl border px-4 text-sm font-bold text-primary">{t.clearFilters}</button>
       </div>}
@@ -201,12 +222,12 @@ export function ExplorePage() {
         <div className="space-y-1"><h2 id="explore-exams" className="text-xl font-black sm:text-2xl">{t.examHeading}</h2>
           <p className="text-sm text-muted-foreground">{t.examHint}</p></div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Link to="/exam/$subject" params={{subject:"english"}} className="explore-quick-link"><BookOpen className="size-5 text-primary"/>{EXPLORE_SUBJECTS[0].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/math" search={{mode:"exam"}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{EXPLORE_SUBJECTS[1].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/exam/$subject" params={{subject:"armenian"}} className="explore-quick-link"><BookText className="size-5 text-primary"/>{EXPLORE_SUBJECTS[2].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/history" className="explore-quick-link"><LibraryBig className="size-5 text-primary"/>{EXPLORE_SUBJECTS[3].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/biology" className="explore-quick-link"><Dna className="size-5 text-primary"/>{EXPLORE_SUBJECTS[4].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/subject/$subject" params={{subject:"physics"}} className="explore-quick-link"><Atom className="size-5 text-primary"/>{EXPLORE_SUBJECTS[5].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
+          {examSubjectMatches(0) && <Link to="/exam/$subject" params={{subject:"english"}} className="explore-quick-link"><BookOpen className="size-5 text-primary"/>{EXPLORE_SUBJECTS[0].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(1) && <Link to="/math" search={{mode:"exam"}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{EXPLORE_SUBJECTS[1].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(2) && <Link to="/exam/$subject" params={{subject:"armenian"}} className="explore-quick-link"><BookText className="size-5 text-primary"/>{EXPLORE_SUBJECTS[2].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(3) && <Link to="/history" className="explore-quick-link"><LibraryBig className="size-5 text-primary"/>{EXPLORE_SUBJECTS[3].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(4) && <Link to="/biology" className="explore-quick-link"><Dna className="size-5 text-primary"/>{EXPLORE_SUBJECTS[4].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(5) && <Link to="/subject/$subject" params={{subject:"physics"}} className="explore-quick-link"><Atom className="size-5 text-primary"/>{EXPLORE_SUBJECTS[5].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
         </div>
       </section>}
 
