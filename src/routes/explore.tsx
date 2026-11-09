@@ -47,6 +47,7 @@ const UI = {
     examHint:"Սկսիր քննության ռեժիմը համապատասխան առարկայից։",
     toolsHeading:"Գործիքներ՝ երբ պետք են", toolsHint:"Բացատրություններ, կրկնություն և կանոններ՝ առանց լրացուցիչ էջերի խառնաշփոթի։",
     yourSpace:"Քո անձնական տարածքը", profile:"Իմ պրոֆիլը", profileHint:"Առաջընթաց, նպատակներ և նվաճումներ",
+    results:"Գտնված արդյունքներ", examSearch:"Քննություն",
     priority:"Սկսելու ամենահեշտ ճանապարհը", step1:"1. Ընտրիր առարկան",step2:"2. Բացիր գիրքը",step3:"3. Պատասխանիր հարցերին",
   },
   en: {
@@ -60,6 +61,7 @@ const UI = {
     examHint:"Choose a subject to enter its exam and practice options.",
     toolsHeading:"Helpful tools, when you need them",toolsHint:"Rules, explanations, and revision in one easy-to-find place.",
     yourSpace:"Your personal space", profile:"My Profile", profileHint:"Progress, goals, and achievements",
+    results:"Search results", examSearch:"Practice exam",
     priority:"The simplest way to begin",step1:"1. Pick a subject",step2:"2. Open a workbook",step3:"3. Answer questions",
   },
   ru: {
@@ -73,6 +75,7 @@ const UI = {
     examHint:"Выбери предмет, чтобы начать тренировку.",
     toolsHeading:"Полезные инструменты",toolsHint:"Правила, объяснения и повторение без лишнего шума.",
     yourSpace:"Личное пространство", profile:"Мой профиль",profileHint:"Прогресс, цели и достижения",
+    results:"Результаты поиска", examSearch:"Пробный экзамен",
     priority:"Простой путь к началу",step1:"1. Выбери предмет",step2:"2. Открой сборник",step3:"3. Ответь на вопросы",
   },
 } satisfies Record<Language, Record<string,string>>;
@@ -142,7 +145,9 @@ export function ExplorePage() {
     .some(label => label.toLocaleLowerCase().includes(clean));
   const hasMatchingTools = studyTools.some((_,index) => matchesTool(index));
   const includeSubjects = (filter === "all" || filter === "subjects") && (!clean || matches.length > 0);
-  const includeExams = (filter === "all" || filter === "exams") && !clean;
+  const examMatch = !clean || [t.exams, t.examHeading, t.examHint, t.examSearch, ...EXPLORE_SUBJECTS.slice(0,6).flatMap(subject => Object.values(subject.title))]
+      .some(label => label.toLocaleLowerCase().includes(clean));
+  const includeExams = (filter === "all" || filter === "exams") && examMatch;
   const includeTools = (filter === "all" || filter === "tools") && (!clean || hasMatchingTools);
 
   return (
@@ -175,14 +180,16 @@ export function ExplorePage() {
 
       <nav aria-label={t.all} className="explore-filters flex flex-wrap gap-2">
         {filterOptions.map(({id,label,icon:Icon})=><button type="button" key={id}
-          aria-pressed={filter===id} onClick={()=>{setFilter(id);if(id!=="subjects")setQuery("");}}
+          aria-pressed={filter===id} onClick={()=>setFilter(id)}
           className={"inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary "+
             (filter===id?"border-primary bg-primary text-primary-foreground":"bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground")}>
           <Icon className="size-4" aria-hidden="true" />{label}
         </button>)}
       </nav>
 
-      {clean && matches.length===0 && !hasMatchingTools && <div role="status" className="rounded-2xl border bg-card p-5">
+      {clean && <p role="status" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? 6 : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
+
+      {clean && !includeSubjects && !includeExams && !includeTools && <div role="status" className="rounded-2xl border bg-card p-5">
         <p className="text-sm text-muted-foreground">{t.noResults}</p>
         <button type="button" onClick={()=>{setQuery("");setFilter("all");}} className="mt-3 min-h-11 rounded-xl border px-4 text-sm font-bold text-primary">{t.clearFilters}</button>
       </div>}
