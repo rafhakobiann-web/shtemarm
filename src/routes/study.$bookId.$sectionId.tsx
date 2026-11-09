@@ -49,10 +49,10 @@ function StudyPage() {
   const signedIn = useSignedIn();
   const trialKey = sectionTrialKey(bookId, sectionId);
   const trialCount = useGuestTrialCount(trialKey);
-  const guestLocked = signedIn === false && trialCount >= GUEST_TRIAL_LIMIT;
+  const guestLocked = signedIn !== true && trialCount >= GUEST_TRIAL_LIMIT;
   const guest: GuestGate = {
     locked: guestLocked,
-    onAnswered: () => { if (signedIn === false) bumpGuestTrial(trialKey); },
+    onAnswered: () => { if (signedIn !== true) bumpGuestTrial(trialKey); },
   };
 
   useEffect(() => {
@@ -177,9 +177,9 @@ function PhysicsSourceJump({unit}:{unit:Unit}){
 }
 
 const GUEST_PROMPT = {
-  hy: { title: "Շարունակելու համար մուտք գործիր", body: "Այս բաժնում դու արդեն ստուգել ես 3 հարց։ Մուտք գործիր՝ շարունակելու և առաջընթացդ բոլոր սարքերում պահելու համար։", action: "Մուտք գործել" },
+  hy: { title: "Շարունակելու համար մուտք գործիր", body: "Այս բաժնում դու արդեն ստուգել ես 2 հարց։ Մուտք գործիր՝ շարունակելու և առաջընթացդ բոլոր սարքերում պահելու համար։", action: "Մուտք գործել" },
   en: { title: "Sign in to keep going", body: "You've checked 3 questions in this section. Sign in to continue and keep your progress on all your devices.", action: "Sign in" },
-  ru: { title: "Войди, чтобы продолжить", body: "Ты проверил 3 вопроса в этом разделе. Войди, чтобы продолжить и сохранить прогресс на всех устройствах.", action: "Войти" },
+  ru: { title: "Войди, чтобы продолжить", body: "Ты проверил 2 вопроса в этом разделе. Войди, чтобы продолжить и сохранить прогресс на всех устройствах.", action: "Войти" },
 };
 
 /** Shown once a signed-out visitor has used their free answers for this section. */
