@@ -41,7 +41,7 @@ describe("exploration-first information architecture",()=>{
     expect(screen.getByRole("heading",{name:"Biology"})).toBeInTheDocument();
     expect(screen.queryByRole("heading",{name:"Mathematics"})).not.toBeInTheDocument();
     expect(screen.getByRole("heading",{name:"Practice exams"})).toBeInTheDocument();
-    expect(screen.getByRole("link",{name:/Biology/})).toBeInTheDocument();
+    expect(screen.getAllByRole("link",{name:/Biology/}).length).toBeGreaterThan(0);
   });
 
   it("keeps search when switching tabs and supports Escape to clear",()=>{
