@@ -34,7 +34,8 @@ export function StudyScratchpad({ bookId, sectionId }: { bookId: string; section
   const t = COPY[useLang()];
   const inputId = useId();
   const key = scratchpadKey(bookId, sectionId);
-  const [note, setNote] = useState(() => readScratchpad(key));
+  // Read browser storage after hydration so server and client render the same initial markup.
+  const [note, setNote] = useState("");
   const [saved, setSaved] = useState(true);
 
   useEffect(() => {
