@@ -78,6 +78,27 @@ describe("comfortable question practice", () => {
     expect(within(screen.getByRole("region", {name:"Second question"})).getAllByRole("radio")[0]).not.toBeDisabled();
   });
 
+  it("supports keyboard-only choice and checking when the question card is focused", () => {
+    render(<Card />);
+    const first = screen.getByRole("region", { name: "First question" });
+    const choices = within(first).getAllByRole("radio");
+    first.focus();
+    fireEvent.keyDown(first, { key: "2" });
+    expect(choices[1]).toBeChecked();
+    fireEvent.keyDown(first, { key: "Enter" });
+    expect(choices[1]).toBeDisabled();
+    expect(within(first).getByRole("status")).toHaveTextContent("Review the correct answer:");
+  });
+
+  it("does not override native input keyboard handling", () => {
+    render(<Card />);
+    const first = screen.getByRole("region", { name: "First question" });
+    const choices = within(first).getAllByRole("radio");
+    fireEvent.click(choices[1]!);
+    fireEvent.keyDown(choices[1]!, { key: "1" });
+    expect(choices[1]).toBeChecked();
+  });
+
   it("pages a long section in source order without losing selected or checked answers", () => {
     const units:Unit[] = Array.from({length:25}, (_,i) => ({id:`demo-${i}`,label:String(i+1),kind:"mc",passage:"",questions:[
       {n:String(i+1),stem:`Question ${i+1}`,options:{A:"Yes",B:"No"},answer:"A"},
