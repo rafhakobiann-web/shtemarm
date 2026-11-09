@@ -65,7 +65,8 @@ describe("comfortable question practice", () => {
 
   it("announces wrong answers, locks checked choices and tracks each question separately", () => {
     render(<Card />);
-    expect(screen.queryByRole("button", {name:"Ստուգել →"})).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", {name:"Ստուգել →"})).toHaveLength(2);
+    expect(screen.getAllByRole("button", {name:"Ստուգել →"}).every(button => button.hasAttribute("disabled"))).toBe(true);
     const first = screen.getByRole("region", {name:"First question"});
     const choices = within(first).getAllByRole("radio");
     fireEvent.click(choices[1]!);
