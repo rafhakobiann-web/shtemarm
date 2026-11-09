@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, RotateCcw, UserRound } from "lucide-react";
+import { ArrowRight, BookOpen, RotateCcw, UserRound, Target, CheckCircle2 } from "lucide-react";
 import type { Progress } from "@/lib/progress";
 import { progressSummary } from "@/lib/dashboard-summary";
 import { useLang } from "@/lib/lang";
@@ -17,6 +17,7 @@ const COPY = {
     answered:"պատասխանված հարց",
     pending:"կրկնելու հարց",
     empty:"Քո առաջին պարապմունքը սկսվում է մեկ հարցից։",
+    answeredLabel:"Լուծված",reviewLabel:"Կրկնելու",next:"Քո հաջորդ քայլը",
   },
   en: {
     heading:"What shall we study today?",
@@ -28,6 +29,7 @@ const COPY = {
     answered:"questions answered",
     pending:"questions to review",
     empty:"Your first practice session starts with one question.",
+    answeredLabel:"Answered",reviewLabel:"To review",next:"Your next step",
   },
   ru: {
     heading:"Что будем изучать сегодня?",
@@ -39,6 +41,7 @@ const COPY = {
     answered:"ответов",
     pending:"вопросов для повторения",
     empty:"Первое занятие начинается с одного вопроса.",
+    answeredLabel:"Решено",reviewLabel:"Повторить",next:"Следующий шаг",
   },
 } as const;
 
@@ -51,7 +54,7 @@ export function DashboardOverview({ name, progress }: Props) {
   return (
     <section className="dashboard-overview academy-bento min-w-0 rounded-2xl border bg-card p-4 sm:p-6"
       aria-label={t.heading}>
-      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="sht-dashboard-overview-layout">
         <div className="min-w-0 space-y-2">
           <p className="text-xs font-bold text-primary">{t.greeting}{name ? `, ${name}` : ""}</p>
           <h1 className="text-balance text-xl font-black leading-tight text-foreground sm:text-3xl">{t.heading}</h1>
@@ -62,7 +65,9 @@ export function DashboardOverview({ name, progress }: Props) {
             {details}
           </p>
         </div>
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:shrink-0 sm:flex-col">
+        <div className="sht-dashboard-next">
+          <p className="sht-dashboard-next-label"><Target className="size-4" aria-hidden="true"/>{t.next}</p>
+          <div className="sht-dashboard-next-actions">
           {summary.review > 0
             ? <Link to="/mistakes" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
                 {t.review}<ArrowRight className="size-4" aria-hidden="true" />
@@ -73,7 +78,12 @@ export function DashboardOverview({ name, progress }: Props) {
           <Link to="/profile" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-bold text-foreground hover:bg-muted sm:flex-none">
             <UserRound className="size-4 text-primary" aria-hidden="true" />{t.profile}
           </Link>
+          </div>
         </div>
+      </div>
+      <div className="sht-dashboard-stats" aria-label={t.heading}>
+        <div><CheckCircle2 className="size-4" aria-hidden="true"/><strong>{summary.answered}</strong><span>{t.answeredLabel}</span></div>
+        <div><RotateCcw className="size-4" aria-hidden="true"/><strong>{summary.review}</strong><span>{t.reviewLabel}</span></div>
       </div>
     </section>
   );

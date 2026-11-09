@@ -140,7 +140,7 @@ body[data-study-tutor-open="true"] .site-settings-sheet {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-.study-answer-grid .answer-option:has(input:checked) {
+.study-answer-grid .answer-option:has(input:checked:not(:disabled)) {
   border-color: var(--primary);
   background: color-mix(in srgb, var(--primary) 10%, var(--card));
 }
@@ -157,4 +157,297 @@ body[data-study-tutor-open="true"] .site-settings-sheet {
     animation: none !important;
     transition: none !important;
   }
+}
+
+
+/* 2026 student workspace — scoped to active practice, shared across book subjects. */
+.sht-study-workspace {
+  min-width: 0;
+  --study-line: color-mix(in srgb, var(--primary) 16%, var(--border));
+  --study-tint: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+.sht-study-heading {
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.45rem);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--study-line);
+  border-radius: 1.55rem;
+  background:
+    radial-gradient(ellipse at 95% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 56%),
+    var(--card);
+}
+.sht-study-toolbar {
+  padding-bottom: .85rem;
+  border-bottom: 1px solid var(--study-line);
+}
+.sht-study-breadcrumb {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  padding-inline: .55rem;
+  border-radius: .65rem;
+}
+.sht-study-breadcrumb:hover { background: var(--muted); }
+.sht-study-mode-switch {
+  border: 1px solid var(--study-line);
+  background: var(--muted);
+}
+.sht-study-mode-switch > a {
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  transition: color .16s ease, background-color .16s ease;
+}
+.sht-study-mode-switch > a[aria-current="page"] {
+  color: var(--primary);
+  border: 1px solid var(--study-line);
+  background: var(--card);
+  box-shadow: 0 2px 6px -4px rgb(0 0 0 / .3);
+}
+.sht-study-mode-switch > a:focus-visible,
+.sht-study-breadcrumb:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.sht-study-title { min-width: 0; max-width: 54rem; }
+.sht-study-title h1 { overflow-wrap: anywhere; line-height: 1.22; }
+.sht-study-eyebrow {
+  margin-bottom: .55rem;
+  font-size: .75rem;
+  font-weight: 850;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.sht-study-subtitle {
+  max-width: 60ch;
+  margin-top: .75rem;
+  color: var(--muted-foreground);
+  font-size: .9rem;
+  line-height: 1.65;
+}
+.sht-study-progress-panel,
+.sht-study-round-progress {
+  border: 1px solid var(--study-line);
+  background: var(--card);
+  border-radius: 1.15rem;
+  box-shadow: none;
+}
+.sht-study-progress-panel { padding: clamp(.85rem, 2vw, 1.2rem); }
+.sht-study-round { min-width: 0; }
+.sht-study-round-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: .3rem .7rem;
+  border: 1px solid var(--study-line);
+  border-radius: 100px;
+  background: var(--study-tint);
+}
+.sht-study-round-progress { padding: .9rem 1rem; }
+.sht-study-round-progress [role="progressbar"] {
+  height: .6rem;
+  background: var(--muted);
+}
+.sht-study-workspace .study-unit {
+  padding: clamp(1rem, 2.5vw, 1.65rem);
+  border: 1px solid var(--study-line);
+  border-radius: 1.4rem;
+  box-shadow: 0 16px 42px -36px color-mix(in srgb, var(--foreground) 32%, transparent);
+}
+.sht-study-unit-eyebrow {
+  width: fit-content;
+  max-width: 100%;
+  padding: .35rem .7rem;
+  border-radius: .5rem;
+  font-size: .75rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--study-tint);
+}
+.sht-study-workspace .study-unit-status { row-gap: .7rem; }
+.sht-study-unit-meter {
+  position: relative;
+  flex: 1 1 140px;
+  height: .5rem;
+  max-width: 270px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--muted);
+}
+.sht-study-unit-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width .2s ease;
+}
+.sht-study-workspace .study-passage {
+  border-color: var(--study-line);
+  background: var(--background);
+  border-radius: 1rem;
+  overflow: clip;
+}
+.sht-study-workspace .study-passage-toolbar {
+  border-bottom: 1px solid var(--study-line);
+  background: var(--study-tint);
+}
+.sht-study-workspace .study-passage .passage {
+  background: transparent;
+  line-height: 1.8;
+}
+.sht-study-workspace .study-question-list > div > .question-card {
+  border-color: var(--study-line);
+  box-shadow: none;
+}
+.sht-study-workspace .study-answer-grid .answer-option {
+  min-height: 3.6rem;
+  border-width: 1.5px;
+  border-radius: .9rem;
+  background: var(--card);
+  transition: border-color .16s ease, background-color .16s ease;
+}
+.sht-study-workspace .study-answer-grid .answer-option:hover:has(input:not(:disabled)) {
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+  background: var(--study-tint);
+}
+.sht-study-workspace .study-answer-grid .answer-option:has(input:checked:not(:disabled)) {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+.sht-study-workspace .study-answer-grid .answer-option:has(input:disabled) {
+  cursor: default;
+}
+.sht-study-workspace .study-answer-grid .answer-option:has(input:disabled):has(svg.text-success) {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 8%, var(--card));
+}
+.sht-study-workspace .study-answer-grid .answer-option:has(input:disabled):has(svg.text-destructive) {
+  border-color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 8%, var(--card));
+}
+.sht-study-workspace :is(.study-check,.study-action-bar button) { min-height: 46px; border-radius: .8rem; }
+.sht-study-workspace .study-check:focus-visible,
+.sht-study-workspace .study-answer-grid input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  .sht-study-heading { border-radius: 1.2rem; }
+  .sht-study-toolbar { display: flex; flex-direction: column; align-items: stretch; }
+  .sht-study-breadcrumb { align-self: flex-start; }
+  .sht-study-workspace .study-unit { border-radius: 1.1rem; }
+  .sht-study-workspace .study-answer-grid .answer-option { min-height: 3.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-study-workspace *,
+  .sht-study-workspace *::before,
+  .sht-study-workspace *::after { transition: none !important; animation: none !important; }
+}
+html.user-high-contrast .sht-study-workspace :is(.sht-study-heading,.study-unit,.sht-study-progress-panel) {
+  border-color: var(--foreground);
+}
+
+
+/* Workbook library — one cohesive visual language with the practice workspace. */
+.sht-book-workspace { min-width: 0; }
+.sht-book-hero {
+  border-color: color-mix(in srgb, var(--primary) 18%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 58%),
+    var(--card);
+  border-radius: 1.5rem;
+  box-shadow: none;
+}
+.sht-book-hero h1 { overflow-wrap: anywhere; line-height: 1.2; }
+.sht-book-primary-actions > * { min-height: 44px; }
+.sht-book-browser {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+.sht-book-search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.sht-book-search-input {
+  flex: 1 1 260px;
+  min-width: 0;
+  min-height: 48px;
+  padding: .65rem .95rem;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+}
+.sht-book-search-input:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.sht-book-section-card {
+  border-color: color-mix(in srgb, var(--primary) 13%, var(--border));
+  border-radius: 1.15rem;
+  box-shadow: none;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+.sht-book-section-card:hover,
+.sht-book-section-card:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+.sht-book-section-actions { gap: .5rem; }
+.sht-book-section-actions > * {
+  min-width: 0;
+  min-height: 44px;
+  line-height: 1.2;
+  white-space: normal;
+}
+.sht-book-section-actions svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+@media (max-width: 460px) {
+  .sht-book-hero { border-radius: 1.15rem; }
+  .sht-book-section-actions { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sht-book-section-actions > :first-child { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-book-section-card { transition: none; }
+}
+html.user-high-contrast .sht-book-workspace :is(.sht-book-hero,.sht-book-section-card,.sht-book-browser) {
+  border-color: var(--foreground);
+}
+
+
+/* Tool directory and progress summary. */
+.sht-tools-workspace { min-width: 0; }
+.sht-tools-hero {
+  padding: clamp(1.15rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  border-radius: 1.4rem;
+  background:
+    radial-gradient(ellipse at 100% 5%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 56%),
+    var(--card);
+}
+.sht-tools-hero h1 { line-height: 1.2; }
+.sht-tools-grid { min-width: 0; }
+.sht-tool-link {
+  min-width: 0;
+  min-height: 115px;
+  align-items: flex-start;
+  border-color: color-mix(in srgb, var(--primary) 15%, var(--border));
+  border-radius: 1.1rem;
+  box-shadow: none;
+}
+.sht-tool-link:hover,.sht-tool-link:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+.sht-tool-link > span:last-child { min-width: 0; }
+.sht-tool-link :is(span,p) { overflow-wrap: anywhere; }
+.sht-study-tools-summary {
+  border-color: color-mix(in srgb, var(--primary) 15%, var(--border));
+  border-radius: 1.2rem;
+  box-shadow: none;
+}
+.sht-study-tools-summary > div:last-child { border: 1px solid var(--border); }
+@media (max-width: 640px) {
+  .sht-tools-hero { border-radius: 1.1rem; }
+  .sht-tool-link { min-height: 104px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-tools-workspace * { transition: none !important; }
 }

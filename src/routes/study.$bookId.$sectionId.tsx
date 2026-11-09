@@ -59,28 +59,35 @@ function StudyPage() {
   }, [mode]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
-      <div className="grid min-w-0 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <Link to="/book/$bookId" params={{ bookId }} className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
+    <div className="sht-study-workspace mx-auto max-w-3xl space-y-6 lg:max-w-6xl">
+      <header className="sht-study-heading">
+      <div className="sht-study-toolbar grid min-w-0 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <Link to="/book/$bookId" params={{ bookId }} className="sht-study-breadcrumb inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 shrink-0" /> <span className="truncate">{section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}</span>
         </Link>
-        <div className="grid grid-cols-2 rounded-xl bg-muted p-1 text-center text-sm font-semibold">
+        <nav aria-label={lang === "en" ? "Practice mode" : lang === "ru" ? "Режим занятий" : "Պարապմունքի ձև"} className="sht-study-mode-switch grid grid-cols-2 rounded-xl bg-muted p-1 text-center text-sm font-semibold">
           {(["game", "classic"] as const).map((m) => (
             <Link
               key={m}
               to="/study/$bookId/$sectionId"
               params={{ bookId, sectionId }}
               search={{ mode: m }}
+              aria-current={mode === m ? "page" : undefined}
               className={cn("flex min-h-11 items-center justify-center rounded-lg px-3 py-2", mode === m ? "bg-card shadow-sm" : "text-muted-foreground")}
             >
               {m === "game" ? tx("Խաղային") : tx("Դասական")}
             </Link>
           ))}
-        </div>
+        </nav>
       </div>
+      <div className="sht-study-title">
+        <p className="sht-study-eyebrow">{lang === "en" ? "Your learning space" : lang === "ru" ? "Место для занятий" : "Քո ուսումնական միջավայրը"}</p>
       <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">
         {section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}
       </h1>
+        <p className="sht-study-subtitle">{lang === "en" ? "Practice at your own pace. Check answers and learn from every mistake." : lang === "ru" ? "Решай в своём темпе, проверяй ответы и учись на ошибках." : "Պարապիր քեզ հարմար տեմպով, ստուգիր պատասխաններդ և սովորիր սխալներից։"}</p>
+      </div>
+      </header>
       {guestLocked && <GuestSignupPrompt bookId={bookId} sectionId={sectionId} />}
       {[1, 2, 3].includes(Number(bookId)) && <Link to="/english-grammar"
         search={{book:Number(bookId),section:Number(sectionId),topic:undefined}}
@@ -223,7 +230,7 @@ function Classic({ units, instr, instrEn, bookId, guest }: { units: Unit[]; inst
   </div>;
   return (
     <div className="space-y-5">
-      <section className="space-y-3 rounded-2xl border bg-card p-4 shadow-sm">
+      <section className="sht-study-progress-panel space-y-3 rounded-2xl border bg-card p-4 shadow-sm">
         <h2 ref={heading} tabIndex={-1} className="study-section-heading text-sm font-bold">
           {tx("Առաջադրանքներ")} · {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, units.length)} / {units.length}
         </h2>
@@ -324,11 +331,11 @@ function Game({ units, instr, instrEn, bookId, guest }: { units: Unit[]; instr: 
   const keys = u.kind === "mc" || u.kind === "num" ? u.questions.map((_, i) => questionAnswerKey(u, i)) : ["unit"];
   const allRevealed = keys.every((k) => revealed[qKey(u, k)]);
   return (
-    <div className="space-y-4">
-      <p role="status" className="text-sm font-semibold text-muted-foreground">
+    <div className="sht-study-round space-y-4">
+      <p role="status" className="sht-study-round-label text-sm font-semibold text-muted-foreground">
         {tx("Առաջադրանքներ")} · {idx + 1} / {round.length}
       </p>
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+      <div className="sht-study-round-progress grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
         <div role="img" aria-label={`${hearts} / 3 ${lang === "en" ? "lives" : lang === "ru" ? "жизни" : "կյանք"}`} className="flex gap-0.5">
           {[0, 1, 2].map((i) => (
             <Heart aria-hidden="true" key={i} className={cn("size-5", i < hearts ? "fill-destructive text-destructive" : "text-muted-foreground/40")} />
