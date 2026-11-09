@@ -455,10 +455,13 @@ export function UnitCard(props: {
 
   return (
     <article aria-label={`${words.group} · ${u.label}`} className="study-unit question-card shadow-card space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
-      {props.header}
+      {props.header ?? <p className="sht-study-unit-eyebrow">{language === "en" ? "Task" : language === "ru" ? "Задание" : "Առաջադրանք"} {u.label}</p>}
       {keys.length > 1 && <div className="study-unit-status flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground">
         <span>{answeredCount} / {keys.length} {words.answered}</span>
-        <span role="status">{checkedCount} / {keys.length} {words.checked}</span>
+        <span>{checkedCount} / {keys.length} {words.checked}</span>
+        <div role="progressbar" aria-label={words.checked} aria-valuemin={0} aria-valuemax={keys.length} aria-valuenow={checkedCount} className="sht-study-unit-meter">
+          <span style={{width:`${(checkedCount / keys.length) * 100}%`}} />
+        </div>
       </div>}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-primary">{props.instruction}</p>
