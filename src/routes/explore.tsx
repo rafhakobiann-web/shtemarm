@@ -147,7 +147,9 @@ export function ExplorePage() {
   const includeSubjects = (filter === "all" || filter === "subjects") && (!clean || matches.length > 0);
   const examMatch = !clean || [t.exams, t.examHeading, t.examHint, t.examSearch, ...EXPLORE_SUBJECTS.slice(0,6).flatMap(subject => Object.values(subject.title))]
       .some(label => label.toLocaleLowerCase().includes(clean));
-  const includeExams = (filter === "all" || filter === "exams") && examMatch;
+  const examSubjectMatches = (index:number) => !clean || [t.exams,t.examHeading,t.examHint,t.examSearch,...Object.values(EXPLORE_SUBJECTS[index].title)].some(label => label.toLocaleLowerCase().includes(clean));
+  const matchingExamCount = EXPLORE_SUBJECTS.slice(0,6).filter((_,index)=>examSubjectMatches(index)).length;
+  const includeExams = (filter === "all" || filter === "exams") && examMatch && matchingExamCount > 0;
   const includeTools = (filter === "all" || filter === "tools") && (!clean || hasMatchingTools);
 
   return (
@@ -187,7 +189,7 @@ export function ExplorePage() {
         </button>)}
       </nav>
 
-      {clean && <p role="status" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? 6 : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
+      {clean && <p role="status" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? matchingExamCount : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
 
       {clean && !includeSubjects && !includeExams && !includeTools && <div role="status" className="rounded-2xl border bg-card p-5">
         <p className="text-sm text-muted-foreground">{t.noResults}</p>
@@ -208,12 +210,12 @@ export function ExplorePage() {
         <div className="space-y-1"><h2 id="explore-exams" className="text-xl font-black sm:text-2xl">{t.examHeading}</h2>
           <p className="text-sm text-muted-foreground">{t.examHint}</p></div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Link to="/exam/$subject" params={{subject:"english"}} className="explore-quick-link"><BookOpen className="size-5 text-primary"/>{EXPLORE_SUBJECTS[0].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/math" search={{mode:"exam"}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{EXPLORE_SUBJECTS[1].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/exam/$subject" params={{subject:"armenian"}} className="explore-quick-link"><BookText className="size-5 text-primary"/>{EXPLORE_SUBJECTS[2].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/history" className="explore-quick-link"><LibraryBig className="size-5 text-primary"/>{EXPLORE_SUBJECTS[3].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/biology" className="explore-quick-link"><Dna className="size-5 text-primary"/>{EXPLORE_SUBJECTS[4].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
-          <Link to="/subject/$subject" params={{subject:"physics"}} className="explore-quick-link"><Atom className="size-5 text-primary"/>{EXPLORE_SUBJECTS[5].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>
+          {examSubjectMatches(0) && <Link to="/exam/$subject" params={{subject:"english"}} className="explore-quick-link"><BookOpen className="size-5 text-primary"/>{EXPLORE_SUBJECTS[0].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(1) && <Link to="/math" search={{mode:"exam"}} className="explore-quick-link"><Calculator className="size-5 text-primary"/>{EXPLORE_SUBJECTS[1].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(2) && <Link to="/exam/$subject" params={{subject:"armenian"}} className="explore-quick-link"><BookText className="size-5 text-primary"/>{EXPLORE_SUBJECTS[2].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(3) && <Link to="/history" className="explore-quick-link"><LibraryBig className="size-5 text-primary"/>{EXPLORE_SUBJECTS[3].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(4) && <Link to="/biology" className="explore-quick-link"><Dna className="size-5 text-primary"/>{EXPLORE_SUBJECTS[4].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
+          {examSubjectMatches(5) && <Link to="/subject/$subject" params={{subject:"physics"}} className="explore-quick-link"><Atom className="size-5 text-primary"/>{EXPLORE_SUBJECTS[5].title[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
         </div>
       </section>}
 
