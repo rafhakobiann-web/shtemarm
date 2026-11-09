@@ -18,28 +18,28 @@ function StudyToolsPage() {
   const tx = useTx();
   const lang = useLang();
   return (
-    <div className="mx-auto max-w-4xl space-y-6 py-4">
+    <div className="sht-tools-workspace mx-auto max-w-4xl space-y-6 py-4">
       <Link to="/explore" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="size-4" />{tx("Գլխավոր էջ")}
       </Link>
-      <header className="space-y-3">
+      <header className="sht-tools-hero space-y-3">
         <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary"><BookOpen className="size-4" />{tx("Ուսումնական կենտրոն")}</span>
         <h1 className="text-3xl font-black sm:text-4xl">{tx("Ուսումնական գործիքներ և առաջընթաց")}</h1>
         <p className="max-w-2xl leading-relaxed text-muted-foreground">{tx("Հետևիր քո առաջընթացին, կրկնիր սխալ պատասխանները և օգտվիր հիշողության քարտերից ու մինի խաղերից։")}</p>
       </header>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <nav aria-label={lang === "en" ? "Learning tools" : lang === "ru" ? "Учебные инструменты" : "Ուսումնական գործիքներ"} className="sht-tools-grid grid gap-3 sm:grid-cols-2">
         {[
           {to:"/achievements",title:lang === "en" ? "Achievements & daily quests" : lang === "ru" ? "Достижения и задания" : "Նվաճումներ և օրվա առաջադրանքներ",desc:lang === "en" ? "Daily goals, XP, levels and badges" : lang === "ru" ? "Ежедневные цели, XP и награды" : "Ամենօրյա նպատակներ, XP, մակարդակներ ու մեդալներ",Icon:Trophy},
           {to:"/study-plan",title:lang === "en" ? "My study plan" : lang === "ru" ? "Мой учебный план" : "Իմ ուսումնական պլանը",desc:lang === "en" ? "A daily plan based on your mistakes and progress" : lang === "ru" ? "Ежедневный план по ошибкам и прогрессу" : "Օրվա առաջադրանքներ՝ ըստ սխալների ու առաջընթացի",Icon:CalendarCheck},
           {to:"/mistakes",title:lang === "en" ? "My mistakes" : lang === "ru" ? "Мои ошибки" : "Իմ սխալները",desc:lang === "en" ? "All mistakes and step-by-step review" : lang === "ru" ? "Все ошибки и последовательное повторение" : "Բոլոր սխալներն ու հերթական կրկնությունը",Icon:ListChecks},
-          {to:"/flashcards",title:"Հիշողության քարտեր",desc:"Կրկնել տերմինները և թեմաները",Icon:Layers},
-          {to:"/mini-games",title:"Մինի խաղեր",desc:"Արագ հարցեր, ճիշտ/սխալ, համապատասխանեցում",Icon:Gamepad2},
-          {to:"/vocabulary",title:"Իմ բառապաշարը",desc:"Սովորել և կրկնել բառերը",Icon:Languages},
-        ].map(item=><Link key={item.to} to={item.to} className="group flex items-start gap-3 rounded-2xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-muted/40">
+          {to:"/flashcards",title:lang === "en" ? "Flashcards" : lang === "ru" ? "Карточки" : "Հիշողության քարտեր",desc:lang === "en" ? "Review key terms and topics" : lang === "ru" ? "Повторяй термины и темы" : "Կրկնել տերմինները և թեմաները",Icon:Layers},
+          {to:"/mini-games",title:lang === "en" ? "Mini games" : lang === "ru" ? "Мини-игры" : "Մինի խաղեր",desc:lang === "en" ? "Quick quizzes and matching" : lang === "ru" ? "Быстрые вопросы и соответствия" : "Արագ հարցեր, ճիշտ/սխալ, համապատասխանեցում",Icon:Gamepad2},
+          {to:"/vocabulary",title:lang === "en" ? "My vocabulary" : lang === "ru" ? "Мой словарь" : "Իմ բառապաշարը",desc:lang === "en" ? "Learn and revisit words" : lang === "ru" ? "Учи и повторяй слова" : "Սովորել և կրկնել բառերը",Icon:Languages},
+        ].map(item=><Link key={item.to} to={item.to} className="sht-tool-link group flex items-start gap-3 rounded-2xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-primary">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><item.Icon className="size-5"/></span>
           <span><span className="block font-bold">{tx(item.title)}</span><span className="mt-1 block text-sm text-muted-foreground">{tx(item.desc)}</span></span>
         </Link>)}
-      </div>
+      </nav>
       <StudyTools />
       <Link to="/explore" className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm font-bold transition-colors hover:bg-muted"><BookOpen className="size-4" />{tx("Ընտրել շտեմարան")}</Link>
     </div>
