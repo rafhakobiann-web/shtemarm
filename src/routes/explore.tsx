@@ -201,7 +201,7 @@ export function ExplorePage() {
         </button>)}
       </nav>
 
-      {clean && <p role="status" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? matchingExamCount : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
+      {clean && <p aria-live="polite" className="text-sm font-semibold text-muted-foreground">{t.results}: {(includeSubjects ? matches.length : 0) + (includeExams ? matchingExamCount : 0) + (includeTools ? studyTools.filter((_,index) => matchesTool(index)).length : 0)}</p>}
 
       {clean && ((filter === "subjects" && matches.length === 0) || (filter === "exams" && !includeExams) || (filter === "tools" && !hasMatchingTools) || (filter === "all" && !includeSubjects && !includeExams && !includeTools)) && <div role="status" className="rounded-2xl border bg-card p-5">
         <p className="text-sm text-muted-foreground">{t.noResults}</p>
