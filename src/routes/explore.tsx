@@ -189,6 +189,7 @@ export function ExplorePage() {
             <X className="size-5" />
           </button>}
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">{lang==="hy"?"Արագ որոնում՝ Ctrl + K · Մաքրել՝ Esc":lang==="ru"?"Быстрый поиск: Ctrl + K · Очистить: Esc":"Quick search: Ctrl + K · Clear: Esc"}</p>
       </div>
 
       <nav aria-label={t.all} className="explore-filters flex flex-wrap gap-2">
