@@ -7,7 +7,7 @@
  * security boundary: clearing site data resets it, and server-side AI quotas
  * remain the protection for paid requests.
  */
-export const GUEST_TRIAL_LIMIT = 3;
+export const GUEST_TRIAL_LIMIT = 2;
 
 export type GuestTrialCounts = Record<string, number>;
 
