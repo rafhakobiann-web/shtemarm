@@ -228,13 +228,13 @@ function ChangelogPage() {
             <article key={update.date} className="relative grid gap-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-6">
               <div className="pt-2 sm:text-right">
                 <p className="text-sm font-black">{update.date}</p>
-                <p className="mt-1 text-xs font-semibold text-muted-foreground">{en ? update.label : ru ? update.titleRu ?? update.title : index === 0 ? "Վերջին թարմացում" : update.titleHy}</p>
+                <p className="mt-1 text-xs font-semibold text-muted-foreground">{en ? update.label : ru ? ("titleRu" in update ? update.titleRu : update.title) : index === 0 ? "Վերջին թարմացում" : update.titleHy}</p>
               </div>
               <div className="rounded-3xl border bg-card p-5 shadow-sm sm:p-6">
                 <div className="flex items-start gap-3">
                   <span className={`grid size-11 shrink-0 place-items-center rounded-2xl ${update.tone}`}><Icon className="size-5" /></span>
                   <div className="min-w-0">
-                    <h2 className="text-lg font-black sm:text-xl">{en ? update.title : ru ? update.titleRu ?? update.title : update.titleHy}</h2>
+                    <h2 className="text-lg font-black sm:text-xl">{en ? update.title : ru ? ("titleRu" in update ? update.titleRu : update.title) : update.titleHy}</h2>
                     <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{en ? "Update log" : ru ? "История изменений" : "Փոփոխությունների մատյան"}</p>
                   </div>
                 </div>
@@ -242,7 +242,7 @@ function ChangelogPage() {
                   {update.items.map((item) => (
                     <li key={item.en} className="flex gap-3 text-sm leading-relaxed sm:text-[15px]">
                       <span className="mt-0.5 shrink-0 text-base" aria-hidden="true">{item.emoji}</span>
-                      <span>{en ? item.en : ru ? item.ru ?? item.en : item.hy}</span>
+                      <span>{en ? item.en : ru ? ("ru" in item ? item.ru : item.en) : item.hy}</span>
                     </li>
                   ))}
                 </ul>

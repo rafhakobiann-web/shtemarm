@@ -29,7 +29,7 @@ describe("guest section trial", () => {
 
   it("never counts past the limit", () => {
     const key = "33:1";
-    let counts = {};
+    let counts: Record<string, number> = {};
     for (let i = 0; i < 10; i += 1) counts = recordGuestAnswer(counts, key);
     expect(counts[key]).toBe(GUEST_TRIAL_LIMIT);
   });

@@ -236,6 +236,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
   const [card, setCard] = useState(0);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const words = [{ front: "curious", back: "eager to learn" }, { front: "improve", back: "to make better" }, { front: "achieve", back: "to reach a goal" }];
+  const currentCard = words[card] ?? words[0]!;
   const nextCard = () => setCard(current => (current + 1) % words.length);
   const previousCard = () => setCard(current => (current + words.length - 1) % words.length);
   const handleCardDown = (event: PointerEvent<HTMLDivElement>) => { if (event.pointerType === "touch") swipeStart.current = { x: event.clientX, y: event.clientY }; };
@@ -297,8 +298,8 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
           <div className="ref-story-visual ref-flashcard-stage" onPointerDown={handleCardDown} onPointerUp={handleCardUp} onPointerCancel={() => { swipeStart.current = null; }}>
             <div className="ref-flashcard">
               <span><BookMarked size={17} />{w.flashcards}</span>
-              <strong key={card}>{words[card].front}</strong>
-              <p>{words[card].back}</p>
+              <strong key={card}>{currentCard.front}</strong>
+              <p>{currentCard.back}</p>
               <div className="ref-flashcard-nav"><button type="button" onClick={previousCard} aria-label="Previous flashcard"><ChevronLeft size={20} /></button><span>{card + 1} / 3</span><button type="button" onClick={nextCard} aria-label="Next flashcard"><ChevronRight size={20} /></button></div>
             </div>
             <span className="ref-flashcard-tip">{w.preview}</span>
