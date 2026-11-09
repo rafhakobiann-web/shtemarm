@@ -8,8 +8,8 @@ import {
 } from "../lib/guest-trial-core";
 
 describe("guest section trial", () => {
-  it("allows three answered questions per section", () => {
-    expect(GUEST_TRIAL_LIMIT).toBe(3);
+  it("allows two answered questions per section", () => {
+    expect(GUEST_TRIAL_LIMIT).toBe(2);
   });
 
   it("keys each book section separately", () => {
@@ -21,8 +21,6 @@ describe("guest section trial", () => {
     const key = sectionTrialKey("31", "4");
     let counts = {};
     counts = recordGuestAnswer(counts, key);
-    counts = recordGuestAnswer(counts, key);
-    expect(isGuestTrialExhausted(counts, key)).toBe(false);
     counts = recordGuestAnswer(counts, key);
     expect(isGuestTrialExhausted(counts, key)).toBe(true);
   });
