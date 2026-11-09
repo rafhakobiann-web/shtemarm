@@ -239,3 +239,75 @@ html.user-reduced-motion .explore-page *::after {
   transition: none !important;
   animation: none !important;
 }
+
+
+/* Unified learning workspace: hierarchy, clear next action, calm progress feedback. */
+.sht-home-2026 { --workspace-radius: 1.25rem; }
+.sht-home-2026 .dashboard-overview {
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border-radius: var(--workspace-radius);
+  background: var(--card);
+}
+.sht-dashboard-overview-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+}
+.sht-dashboard-next {
+  display: grid;
+  gap: .75rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+.sht-dashboard-next-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--primary);
+  font-size: .75rem;
+  font-weight: 800;
+}
+.sht-dashboard-next-actions { display: grid; gap: .6rem; }
+.sht-dashboard-next-actions a { width: 100%; min-height: 44px; }
+.sht-dashboard-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.sht-dashboard-stats > div {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 42px;
+  padding: .5rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: var(--background);
+  font-size: .8rem;
+  color: var(--muted-foreground);
+}
+.sht-dashboard-stats strong { font-size: 1rem; color: var(--foreground); font-variant-numeric: tabular-nums; }
+.sht-dashboard-stats svg { color: var(--primary); }
+.sht-home-2026 .sht-home-subject-card {
+  border-radius: var(--workspace-radius);
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.sht-home-2026 .sht-home-subject-card:focus-visible,
+.sht-dashboard-next-actions a:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .sht-dashboard-overview-layout { grid-template-columns: minmax(0,1fr); }
+  .sht-dashboard-next { padding: .85rem; }
+}
+@media (max-width: 420px) {
+  .sht-dashboard-stats > div { flex: 1 1 120px; }
+  .sht-dashboard-next-actions a { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-home-2026 .sht-home-subject-card { transition: none; }
+}
