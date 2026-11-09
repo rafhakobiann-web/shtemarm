@@ -146,11 +146,11 @@ export function PersonalizationControls({ inline = false }: { inline?: boolean }
                     <span aria-hidden="true" className={"relative block h-16 overflow-hidden rounded-xl " +
                       (surface === "classic" ? "bg-slate-100" : surface === "soft" ? "bg-amber-50" : "bg-gradient-to-br from-sky-200 via-indigo-100 to-rose-100")}>
                       <span className={"absolute left-2 right-2 top-2 h-3 rounded-lg " +
-                        (surface === "liquid" ? "border border-white/80 bg-white/50 shadow-sm backdrop-blur" : "bg-white")} />
+                        (surface === "soft" ? "bg-white/95" : "bg-white")} />
                       <span className={"absolute bottom-2 left-2 h-8 w-[45%] rounded-lg " +
                         (surface === "classic" ? "bg-white shadow" : surface === "soft" ? "bg-white/95" : "border border-white/80 bg-white/50 shadow-md backdrop-blur")} />
                       <span className={"absolute bottom-2 right-2 h-8 w-[35%] rounded-lg " +
-                        (surface === "liquid" ? "border border-white/80 bg-white/50 shadow-md backdrop-blur" : "bg-white/90")} />
+                        (surface === "soft" ? "bg-white/95" : "bg-white")} />
                     </span>
                     <span className="mt-2 flex items-center justify-center gap-1 text-xs font-bold">
                       {t[surface]}
