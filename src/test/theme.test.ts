@@ -26,7 +26,8 @@ describe("persisted user appearance", () => {
     })).toEqual(DEFAULT_APPEARANCE);
   });
   it("migrates retired Liquid Glass surface to academy style", () => {
-    setAppearance({ mode: "dark", surface: "liquid", glass: "vivid", blur: false });
+    localStorage.setItem(APPEARANCE_KEY, JSON.stringify({ mode: "dark", surface: "liquid", glass: "vivid", blur: false }));
+    const cleanup = initAppearance();
     expect(readAppearance()).toEqual({ mode: "dark", surface: "soft", glass: "vivid", blur: false });
     const root = document.documentElement;
     expect(root.classList.contains("dark")).toBe(true);
@@ -34,6 +35,7 @@ describe("persisted user appearance", () => {
     expect(root.dataset.glass).toBe("vivid");
     expect(root.dataset.glassBlur).toBe("off");
     expect(JSON.parse(localStorage.getItem(APPEARANCE_KEY) ?? "null").glass).toBe("vivid");
+    cleanup();
   });
   it("restores saved settings without forcing them after reset", () => {
     localStorage.setItem(APPEARANCE_KEY, JSON.stringify({ mode: "light", surface: "soft", glass: "subtle", blur: true }));
