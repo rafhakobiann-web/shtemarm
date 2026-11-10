@@ -8,9 +8,9 @@ type Props = { name?: string | null; progress: Progress };
 
 const COPY = {
   hy: {
-    heading:"Ի՞նչ ենք սովորում այսօր",
-    greeting:"Բարի վերադարձ",
-    subtitle:"Պարապմունքները սկսվում են առարկայից։ Գտիր գիրքը, թեստը կամ կրկնության թեման՝ մի քանի հպումով։",
+    heading:"Այսօրվա պարապմունքը",
+    greeting:"Ուսումնական տարածք",
+    subtitle:"Ընտրիր առարկան և շարունակիր այնտեղից, որտեղ կանգ էիր առել։ Սխալ պատասխանները միշտ կարող ես կրկնել։",
     start:"Ընտրել առարկա",
     review:"Կրկնել սխալները",
     profile:"Իմ պրոֆիլը",
@@ -20,9 +20,9 @@ const COPY = {
     answeredLabel:"Լուծված",reviewLabel:"Կրկնելու",next:"Քո հաջորդ քայլը",
   },
   en: {
-    heading:"What shall we study today?",
-    greeting:"Welcome back",
-    subtitle:"Pick a subject, find your workbook, and start learning in a few taps.",
+    heading:"Your study desk",
+    greeting:"Study space",
+    subtitle:"Choose a subject, continue your workbook, or revisit questions you missed. Everything starts with the next task.",
     start:"Explore subjects",
     review:"Review mistakes",
     profile:"My Profile",
@@ -32,9 +32,9 @@ const COPY = {
     answeredLabel:"Answered",reviewLabel:"To review",next:"Your next step",
   },
   ru: {
-    heading:"Что будем изучать сегодня?",
-    greeting:"С возвращением",
-    subtitle:"Выбери предмет, найди сборник и начни заниматься за пару нажатий.",
+    heading:"Твои занятия",
+    greeting:"Учебное пространство",
+    subtitle:"Выбери предмет, продолжи сборник или повтори вопросы, в которых ошибался.",
     start:"Выбрать предмет",
     review:"Повторить ошибки",
     profile:"Мой профиль",
