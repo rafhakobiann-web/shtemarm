@@ -42,7 +42,7 @@ describe("Biology III/IV missing original task imports", () => {
       for (const unit of imported) {
         expect(unit.passage.length, unit.id).toBeGreaterThan(20);
         if (unit.kind === "mc" && unit.questions.length === 6) {
-          expect(unit.questions.every((q) => q.stem.length > 8 && !/^Պնդում \\d+$/.test(q.stem)), unit.id).toBe(true);
+          expect(unit.questions.every((q) => q.stem.length > 8 && !/^Պնդում \d+$/.test(q.stem)), unit.id).toBe(true);
           expect(unit.questions.every((q) => q.options["1"] === "Ճիշտ է" && q.options["2"] === "Սխալ է"), unit.id).toBe(true);
         }
         expect(JSON.stringify(unit), unit.id).not.toContain("\\ufffd");
