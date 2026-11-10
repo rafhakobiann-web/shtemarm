@@ -41,6 +41,10 @@ describe("Biology III/IV missing original task imports", () => {
     it(`volume ${volume}: every added task has a keyed, scoreable answer and visible source text`, () => {
       for (const unit of imported) {
         expect(unit.passage.length, unit.id).toBeGreaterThan(20);
+        if (unit.kind === "mc" && unit.questions.length === 6) {
+          expect(unit.questions.every((q) => q.stem.length > 8 && !/^Պնդում \\d+$/.test(q.stem)), unit.id).toBe(true);
+          expect(unit.questions.every((q) => q.options["1"] === "Ճիշտ է" && q.options["2"] === "Սխալ է"), unit.id).toBe(true);
+        }
         expect(JSON.stringify(unit), unit.id).not.toContain("\\ufffd");
         const response = unit.kind === "mc" || unit.kind === "num"
           ? { mc: Object.fromEntries(unit.questions.map((q) => [q.n, q.answer])) }
