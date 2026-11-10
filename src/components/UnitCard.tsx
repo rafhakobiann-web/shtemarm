@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { ArmenianSentenceDiagram } from "@/components/ArmenianSentenceDiagram";
 import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -180,7 +181,11 @@ export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
 
 export function isGtcClaimsBundle(u: Unit): boolean {
   return u.kind === "mc" && u.questions.length === 6 &&
-    /վեց պնդում|պնդումների փունջ/i.test(u.passage) &&
+    (
+      /վեց պնդում|6 պնդում|պնդումների փունջ/i.test(u.passage) ||
+      (/^bio[34]-s\d+-q\d+$/.test(u.id) &&
+        u.questions.every((q) => q.options["1"] === "Ճիշտ է" && q.options["2"] === "Սխալ է"))
+    ) &&
     u.questions.every((q) => q.answer === "1" || q.answer === "2");
 }
 
@@ -323,7 +328,15 @@ export function UnitCard(props: {
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
                 <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 leading-relaxed">
-                  {v.trim() ? v
+                  {q.diagramOptions?.[k] ? (
+                    <span className="flex flex-col items-start gap-2">
+                      <span className="text-xs font-medium text-muted-foreground">{v}</span>
+                      <ArmenianSentenceDiagram
+                        graph={q.diagramOptions[k]}
+                        label={`Հարց ${q.n}, գծապատկեր ${k}`}
+                      />
+                    </span>
+                  ) : v.trim() ? v
                     : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
                 </span>
                 {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}
