@@ -136,10 +136,14 @@ export const adminSetExplanationReviewed = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-/** Public: a reviewed explanation for one question, or null if none is available. */
+/** Authenticated-only reviewed explanations; do not leak arbitrary answer keys
+ * through a public RPC. Guest demonstrations use their own limited content.
+ */
 export const getReviewedExplanation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ bank: Bank, id: z.string().min(3).max(200) }).parse(input))
   .handler(async ({ data }) => {
+    const { verifiedStudentId } = await import("./student-session.server");
+    if (!await verifiedStudentId()) throw new Error("unauthorized");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin.from("question_explanations")
       .select("explanation, correct")

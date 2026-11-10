@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({ authorization: "", getUser: vi.fn() }));
 vi.mock("@tanstack/react-start/server", () => ({ getRequest: () => new Request("https://shtemarm.example", {headers:{authorization:mocks.authorization}}) }));
 vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: {auth:{getUser:mocks.getUser}} }));
 beforeEach(() => {
-  vi.stubEnv("ADMIN_ALLOWED_USER_IDS", "");
+  vi.stubEnv("ADMIN_ALLOWED_USER_IDS", "owner");
   mocks.authorization = "Bearer " + "a".repeat(40);
   mocks.getUser.mockReset().mockResolvedValue({data:{user:{id:"owner"}},error:null});
 });
@@ -19,6 +19,12 @@ describe("server-verified admin identity", () => {
   });
   it("rejects an expired or forged session even if it looks like a token", async () => {
     mocks.getUser.mockResolvedValue({data:{user:null},error:{message:"expired"}});
+    await expect(requireVerifiedAdminSession()).rejects.toThrow("unauthorized");
+  });
+  it("fails closed when admin identity allowlist is unset or empty", async () => {
+    vi.stubEnv("ADMIN_ALLOWED_USER_IDS", "");
+    await expect(requireVerifiedAdminSession()).rejects.toThrow("unauthorized");
+    vi.stubEnv("ADMIN_ALLOWED_USER_IDS", " , ");
     await expect(requireVerifiedAdminSession()).rejects.toThrow("unauthorized");
   });
   it("uses the Auth-verified identity and applies the configured admin allowlist", async () => {
