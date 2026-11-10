@@ -40,7 +40,7 @@ describe("last 61 original Biology III/IV tasks", () => {
     it(`volume ${volume} preserves actual task content and printed answer keys`, () => {
       for (const section of last.sections) for (const unit of section.units) {
         expect(unit.id).toBe(`bio${volume}-s${section.n}-q${unit.label}`);
-        expect(JSON.stringify(unit), unit.id).not.toMatch(/\\ufffd|www\\.atc\\.am/);
+        expect(JSON.stringify(unit), unit.id).not.toMatch(/\ufffd|www\.atc\.am/);
         const source = unit as Unit & { sourcePage: number; sourceAnswerPage: number };
         expect(source.sourcePage, unit.id).toBeGreaterThan(0);
         expect(source.sourceAnswerPage, unit.id).toBeGreaterThan(source.sourcePage);
