@@ -291,16 +291,16 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   const words = {
-    hy:{heading:"Ընտրիր առարկան", hint:"Միայն մեկ ընտրություն՝ բացելու գրքերը, հարցերն ու թեստերը։",all:"Բոլոր առարկաները",
-      actions:"Արագ անցումներ",exams:"Փորձնական քննություններ",examInfo:"Ընտրիր քննությունը և սկսիր փորձնական թեստը։",
+    hy:{heading:"Առարկաներ", hint:"Բացիր շտեմարանը և շարունակիր լուծել առաջադրանքները։",all:"Բոլոր առարկաները",
+      actions:"Այլ բաժիններ",exams:"Փորձնական քննություններ",examInfo:"Ընտրիր քննությունը և սկսիր փորձնական թեստը։",
       tools:"Ուսումնական գործիքներ",toolsInfo:"Կանոններ, AI ուսուցիչ և կրկնություն։",profile:"Իմ պրոֆիլը",profileInfo:"Նպատակներն ու ամբողջ առաջընթացը։",
       first:"Շտեմարաններ",second:"Ընտրել առարկա",downloads:"Ներբեռնել հավելվածը",news:"Թարմացումներ"},
-    en:{heading:"Choose your subject",hint:"One tap to find its workbooks, questions, and tests.",all:"Browse all subjects",
-      actions:"Quick destinations",exams:"Practice exams",examInfo:"Find your exam and begin practice.",
+    en:{heading:"Subjects",hint:"Open a question book and carry on practising.",all:"Browse all subjects",
+      actions:"More to explore",exams:"Practice exams",examInfo:"Find your exam and begin practice.",
       tools:"Study tools",toolsInfo:"Rules, AI tutor, and revision.",profile:"My Profile",profileInfo:"Goals, progress, and achievements.",
       first:"Workbooks",second:"Find a subject",downloads:"Download app",news:"What's new"},
-    ru:{heading:"Выбери предмет",hint:"Один шаг до сборников, заданий и тестов.",all:"Все предметы",
-      actions:"Быстрые переходы",exams:"Пробные экзамены",examInfo:"Найди экзамен и начни подготовку.",
+    ru:{heading:"Предметы",hint:"Открой сборник и продолжай решать задания.",all:"Все предметы",
+      actions:"Другие разделы",exams:"Пробные экзамены",examInfo:"Найди экзамен и начни подготовку.",
       tools:"Инструменты",toolsInfo:"Правила, ИИ-учитель и повторение.",profile:"Мой профиль",profileInfo:"Цели, прогресс и награды.",
       first:"Сборники",second:"Выбрать предмет",downloads:"Скачать приложение",news:"Что нового"},
   }[lang];
@@ -313,7 +313,7 @@ function Index() {
   ];
 
   return (
-    <main className="sht-home-2026 mx-auto w-full max-w-6xl space-y-8 pb-10 pt-3 sm:space-y-9 sm:pt-6">
+    <main className="sht-home-2026 sht-editorial-dashboard mx-auto w-full max-w-6xl space-y-8 pb-10 pt-3 sm:space-y-9 sm:pt-6">
       <DashboardOverview name={name} progress={progress} />
 
       <section id="subjects" className="scroll-mt-24 space-y-4" aria-label={words.heading}>
