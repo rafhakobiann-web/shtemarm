@@ -1,5 +1,6 @@
 import { fetchBookResponse } from "./fetch-book-response";
 import { loadArmenianOriginalBook } from "./armenian-original";
+import { mergeBiologyExtended } from "./biology-extended";
 export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
@@ -82,8 +83,8 @@ export const HISTORY_BOOKS = [
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
   { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց + 34 վերաշարադրված · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
-  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 1 837 բնօրինակ առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-3.svg", locked: false },
+  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 1 688 բնօրինակ առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
 /** Volume I loads PDF-transcribed source material; volumes II–IV remain
@@ -186,6 +187,20 @@ export function loadBook(id: number): Promise<Book> {
           return data as Book;
         })
         )
+        .then(async (book: Book) => {
+          if (id !== 33 && id !== 34) return book;
+          const files = ["biology-extended", "biology-pending", "biology-last61"];
+          const supplements = await Promise.all(files.map((name) =>
+            fetchBookResponse(`/data/${name}-book${id - 30}.json`, async (response) => {
+              if (!response.ok) throw new Error(`Biology supplement ${name} HTTP ${response.status}`);
+              const mime = response.headers.get("content-type") ?? "";
+              if (mime && !/json|text\\/plain|octet-stream/i.test(mime))
+                throw new Error(`Biology supplement ${name} returned non-JSON content`);
+              return await response.json() as Book;
+            })
+          ));
+          return supplements.reduce((merged, supplement) => mergeBiologyExtended(merged, supplement), book);
+        })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
           if (cache.get(id) === request) cache.delete(id);
