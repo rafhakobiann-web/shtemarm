@@ -167,7 +167,11 @@ export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
 
 export function isGtcClaimsBundle(u: Unit): boolean {
   return u.kind === "mc" && u.questions.length === 6 &&
-    /վեց պնդում|պնդումների փունջ/i.test(u.passage) &&
+    (
+      /վեց պնդում|6 պնդում|պնդումների փունջ/i.test(u.passage) ||
+      (/^bio[34]-s\\d+-q\\d+$/.test(u.id) &&
+        u.questions.every((q) => q.options["1"] === "Ճիշտ է" && q.options["2"] === "Սխալ է"))
+    ) &&
     u.questions.every((q) => q.answer === "1" || q.answer === "2");
 }
 
