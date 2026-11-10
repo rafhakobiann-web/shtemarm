@@ -1,6 +1,13 @@
 import { fetchBookResponse } from "./fetch-book-response";
 import { loadArmenianOriginalBook } from "./armenian-original";
-export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
+import { mergeBiologyExtended } from "./biology-extended";
+export type SentenceDiagram = {
+  /** Each node is [printed clause number, horizontal position, vertical position]. */
+  nodes: [number, number, number][];
+  branches: [number, number][];
+  equals: [number, number][];
+};
+export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string }; diagramOptions?: Record<string, SentenceDiagram> };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
@@ -82,8 +89,8 @@ export const HISTORY_BOOKS = [
 export const BIO_BOOKS = [
   { id: 31, title: "Կենսաբանություն", sub: "Մաս առաջին", cover: "/covers/bio-1.svg", locked: false },
   { id: 32, title: "Կենսաբանություն", sub: "Մաս երկրորդ", cover: "/covers/bio-2.svg", locked: false },
-  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց + 34 վերաշարադրված · լրացվում է", cover: "/covers/bio-3.svg", locked: false },
-  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg", locked: false },
+  { id: 33, title: "Կենսաբանություն", sub: "Մաս III · 1 837 համարակալված առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-3.svg", locked: false },
+  { id: 34, title: "Կենսաբանություն", sub: "Մաս IV · 1 688 համարակալված առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-4.svg", locked: false },
 ] as const;
 
 /** Volume I loads PDF-transcribed source material; volumes II–IV remain
@@ -186,6 +193,26 @@ export function loadBook(id: number): Promise<Book> {
           return data as Book;
         })
         )
+        .then(async (book: Book): Promise<Book> => {
+          if (id !== 33 && id !== 34) return book;
+          const volume = id - 30;
+          const banks = await Promise.all(
+            ["biology-extended-book", "biology-pending-book", "biology-last61-book"].map((prefix) =>
+              fetchBookResponse(`/data/${prefix}${volume}.json`, async (response) => {
+                if (!response.ok) throw new Error(`Biology source supplement HTTP ${response.status}`);
+                const type = response.headers.get("content-type") ?? "";
+                if (type && !/json|text\/plain|octet-stream/i.test(type))
+                  throw new Error("Biology source supplement returned non-JSON content");
+                const data: unknown = await response.json();
+                if (!data || typeof data !== "object" || !("id" in data) || data.id !== id ||
+                    !("sections" in data) || !Array.isArray(data.sections))
+                  throw new Error("Invalid Biology source supplement");
+                return data as Book;
+              }),
+            ),
+          );
+          return banks.reduce((merged, extra) => mergeBiologyExtended(merged, extra), book);
+        })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
           if (cache.get(id) === request) cache.delete(id);
