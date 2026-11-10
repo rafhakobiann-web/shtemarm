@@ -326,3 +326,135 @@ html .sht-v3 button:focus-visible {
   .sht-v3 :is(a, button, .sl-flashcard),
   .sht-home-2026 a { animation: none !important; transition: none !important; }
 }
+
+
+/* The catalogue, book reader and exercises share the same product identity. */
+html[data-surface] .site-header.sht-explore-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: none;
+}
+.sht-explore-header nav a { border-radius: .35rem; font-weight: 650; }
+.sht-explore-header nav a[aria-current="page"] {
+  background: color-mix(in srgb, var(--primary) 7%, var(--card));
+}
+html[data-surface] .site-mobile-nav.mobile-liquid-dock {
+  border-color: var(--border);
+  border-radius: .8rem;
+  box-shadow: 0 5px 18px -18px var(--foreground);
+}
+html[data-surface] .mobile-liquid-dock .mobile-liquid-indicator {
+  border-color: transparent;
+  border-radius: .5rem;
+  box-shadow: none;
+}
+.explore-page .explore-hero {
+  padding: clamp(1.4rem, 3vw, 2.5rem) 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+}
+.explore-page .explore-hero::before,
+.explore-page .explore-hero::after { content: none; }
+.explore-page .explore-hero h1,
+.sht-book-workspace .sht-book-hero h1,
+.sht-study-workspace .sht-study-title h1 {
+  font-family: "Noto Serif Armenian", "Literata", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  line-height: 1.3;
+}
+.explore-page :is(#explore-subjects, #explore-exams, #explore-tools) h2,
+.sht-book-workspace .sht-book-browser > label {
+  font-family: "Noto Serif Armenian", "Literata", Georgia, serif;
+  font-weight: 600;
+}
+.explore-page .explore-kicker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--primary);
+  letter-spacing: .055em;
+}
+.explore-page .explore-search {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: .5rem;
+  box-shadow: none;
+  font-weight: 500;
+}
+.explore-page .explore-filters a,
+.explore-page .explore-filters button { border-radius: .4rem; }
+.explore-page .explore-subject-card,
+.explore-page .explore-quick-link,
+.explore-page .explore-profile-link {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  box-shadow: none;
+}
+.explore-page .explore-subject-card:hover,
+.explore-page .explore-quick-link:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  background: color-mix(in srgb, var(--primary) 4%, var(--card));
+  transform: none;
+}
+.explore-page .explore-subject-mark {
+  border: 1px solid var(--border);
+  border-radius: .4rem;
+  background: var(--background);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.sht-book-workspace .sht-book-hero {
+  background: var(--card);
+  border-color: var(--border);
+  border-radius: .65rem;
+  box-shadow: none;
+}
+.sht-book-workspace .sht-book-section-grid { gap: .8rem; }
+.sht-book-workspace .sht-book-section-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  box-shadow: none;
+}
+.sht-book-workspace .sht-book-section-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+.sht-book-workspace .sht-book-search-input { border-radius: .5rem; }
+.sht-study-workspace .sht-study-eyebrow {
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+.sht-study-workspace .sht-study-progress-panel {
+  border-color: var(--border);
+  border-radius: .55rem;
+  background: var(--card);
+  box-shadow: none;
+}
+.sht-study-workspace :is(.question-card, .study-active-unit, .sht-study-scratchpad) {
+  border-color: var(--border);
+  border-radius: .6rem;
+  box-shadow: none;
+}
+.sht-study-workspace .study-answer-grid .answer-option {
+  border-radius: .45rem;
+  background: var(--card);
+  line-height: 1.7;
+}
+.sht-study-workspace .study-answer-grid .answer-option:hover:not(:disabled) {
+  border-color: var(--primary);
+}
+.sht-study-workspace .study-answer-grid .answer-option:focus-visible,
+.sht-book-workspace a:focus-visible,
+.explore-page a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .explore-page .explore-hero { padding-block: 1.25rem; }
+  .sht-book-workspace .sht-book-hero { padding: 1rem; }
+  .sht-book-workspace .sht-book-section-grid { gap: .6rem; }
+  .sht-study-workspace .study-answer-grid .answer-option { min-height: 3.2rem; }
+}
