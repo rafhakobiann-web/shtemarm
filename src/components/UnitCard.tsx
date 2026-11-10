@@ -50,7 +50,9 @@ function PassageContent({ text, kind }: { text: string; kind: Unit["kind"] }) {
     );
   }
   if (kind === "match") {
-    const cols = splitColumns(lines);
+    const tableStart = lines.findIndex((line) => /^\s*A[.)]\s/.test(line));
+    const preamble = tableStart > 0 ? lines.slice(0, tableStart).join(" ").trim() : "";
+    const cols = splitColumns(tableStart < 0 ? lines : lines.slice(tableStart));
     if (!cols) {
       return (
         <div className="overflow-x-auto rounded-xl bg-muted/60 p-4 sm:p-6">
@@ -59,8 +61,10 @@ function PassageContent({ text, kind }: { text: string; kind: Unit["kind"] }) {
       );
     }
     return (
-      <div className="grid gap-3 md:grid-cols-2">
-        {[cols.left, cols.right].map((items, ci) => (
+      <div className="space-y-3">
+        {preamble && <p className="leading-relaxed"><EnglishText text={preamble} /></p>}
+        <div className="grid gap-3 md:grid-cols-2">
+          {[cols.left, cols.right].map((items, ci) => (
           <ul key={ci} className="space-y-2 rounded-xl bg-muted/60 p-3 sm:p-4">
             {items.map((it, i) => (
               <li key={i} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 text-[0.95rem] leading-snug">
@@ -69,7 +73,8 @@ function PassageContent({ text, kind }: { text: string; kind: Unit["kind"] }) {
               </li>
             ))}
           </ul>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }
@@ -167,7 +172,11 @@ export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
 
 export function isGtcClaimsBundle(u: Unit): boolean {
   return u.kind === "mc" && u.questions.length === 6 &&
-    /վեց պնդում|պնդումների փունջ/i.test(u.passage) &&
+    (
+      /վեց պնդում|6 պնդում|պնդումների փունջ/i.test(u.passage) ||
+      (/^bio[34]-s\d+-q\d+$/.test(u.id) &&
+        u.questions.every((q) => q.options["1"] === "Ճիշտ է" && q.options["2"] === "Սխալ է"))
+    ) &&
     u.questions.every((q) => q.answer === "1" || q.answer === "2");
 }
 
@@ -589,7 +598,7 @@ function splitColumns(lines: string[]) {
     else { const last = arr[arr.length - 1]; if (last) last.text += " " + s; }
   };
   for (const l of lines) {
-    push(left, l.slice(0, col), /^([A-E])\s?[.)]\s*/);
+    push(left, l.slice(0, col), /^([A-H])\s?[.)]\s*/);
     push(right, l.slice(col), /^(\d)\s?[.)]\s*/);
   }
   if (left.length < 3 || right.length < 3) return null;

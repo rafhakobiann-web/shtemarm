@@ -186,11 +186,21 @@ export function loadBook(id: number): Promise<Book> {
         })
         .then(async (book: Book) => {
           if (id !== 33 && id !== 34) return book;
-          const extra = await fetchBookResponse(`/data/biology-extended-book${id - 30}.json`, async (r) => {
-            if (!r.ok) throw new Error(`Biology supplement HTTP ${r.status}`);
-            return await r.json() as Book;
-          });
-          return mergeBiologyExtended(book, extra);
+          const [extra, pending, last] = await Promise.all([
+            fetchBookResponse(`/data/biology-extended-book${id - 30}.json`, async (r) => {
+              if (!r.ok) throw new Error(`Biology supplement HTTP ${r.status}`);
+              return await r.json() as Book;
+            }),
+            fetchBookResponse(`/data/biology-pending-book${id - 30}.json`, async (r) => {
+              if (!r.ok) throw new Error(`Biology original task import HTTP ${r.status}`);
+              return await r.json() as Book;
+            }),
+            fetchBookResponse(`/data/biology-last61-book${id - 30}.json`, async (r) => {
+              if (!r.ok) throw new Error(`Biology final original tasks HTTP ${r.status}`);
+              return await r.json() as Book;
+            }),
+          ]);
+          return mergeBiologyExtended(mergeBiologyExtended(mergeBiologyExtended(book, extra), pending), last);
         })
         .then((book: Book) => id === 32 ? normalizeBiologySecondBook(book) : id === 31 ? normalizeBiologyFirstBook(book) : book)
         .catch((error: unknown) => {
