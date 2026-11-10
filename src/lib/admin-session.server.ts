@@ -3,8 +3,9 @@
  * TanStack client navigation guard is bypassed.
  *
  * Supabase Auth verifies the bearer token server-side. The existing distinct
- * ADMIN_PASSWORD remains required as a second factor. Optional
- * ADMIN_ALLOWED_USER_IDS is an additional strict allowlist if configured.
+ * ADMIN_PASSWORD remains required as a second factor. The explicit
+ * ADMIN_ALLOWED_USER_IDS allowlist MUST be configured; an unset/empty value
+ * fails closed instead of allowing every signed-in account to try the password.
  */
 export async function requireVerifiedAdminSession(): Promise<string> {
   const { getRequest } = await import("@tanstack/react-start/server");
@@ -19,8 +20,10 @@ export async function requireVerifiedAdminSession(): Promise<string> {
   if (error || !data.user?.id) throw new Error("unauthorized");
 
   const allowedIds = process.env["ADMIN_ALLOWED_USER_IDS"]?.split(",")
-    .map(id=>id.trim()).filter(Boolean) ?? [];
-  if (allowedIds.length > 0 && !allowedIds.includes(data.user.id))
+    .map(id => id.trim()).filter(Boolean) ?? [];
+  // A shared admin password must never elevate an arbitrary registered student.
+  // Configure the exact Supabase Auth UUID(s) in Lovable's server-only secrets.
+  if (!allowedIds.length || !allowedIds.includes(data.user.id))
     throw new Error("unauthorized");
 
   return data.user.id;
