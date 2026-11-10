@@ -194,7 +194,7 @@ export function loadBook(id: number): Promise<Book> {
             fetchBookResponse(`/data/${name}-book${id - 30}.json`, async (response) => {
               if (!response.ok) throw new Error(`Biology supplement ${name} HTTP ${response.status}`);
               const mime = response.headers.get("content-type") ?? "";
-              if (mime && !/json|text\\/plain|octet-stream/i.test(mime))
+              if (mime && !/json|text|octet-stream/i.test(mime))
                 throw new Error(`Biology supplement ${name} returned non-JSON content`);
               return await response.json() as Book;
             })
