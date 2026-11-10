@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { ArmenianSentenceDiagram } from "@/components/ArmenianSentenceDiagram";
 import { Link } from "@tanstack/react-router";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -323,7 +324,15 @@ export function UnitCard(props: {
                   isSel ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground",
                 )}>{k}</span>
                 <span id={`${questionId(index)}-option-${k}`} className="min-w-0 flex-1 leading-relaxed">
-                  {v.trim() ? v
+                  {q.diagramOptions?.[k] ? (
+                    <span className="flex flex-col items-start gap-2">
+                      <span className="text-xs font-medium text-muted-foreground">{v}</span>
+                      <ArmenianSentenceDiagram
+                        graph={q.diagramOptions[k]}
+                        label={`Հարց ${q.n}, գծապատկեր ${k}`}
+                      />
+                    </span>
+                  ) : v.trim() ? v
                     : <span className="text-xs font-medium text-destructive">{tx("Տարբերակի տեքստը բացակայում է․ ստուգում է պահանջվում")}</span>}
                 </span>
                 {show && isC && <Check aria-hidden="true" className="size-4 shrink-0 text-success" />}

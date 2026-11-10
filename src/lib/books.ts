@@ -1,6 +1,12 @@
 import { fetchBookResponse } from "./fetch-book-response";
 import { loadArmenianOriginalBook } from "./armenian-original";
-export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string } };
+export type SentenceDiagram = {
+  /** Each node is [printed clause number, horizontal position, vertical position]. */
+  nodes: [number, number, number][];
+  branches: [number, number][];
+  equals: [number, number][];
+};
+export type MCQuestion = { n: string; stem: string; options: Record<string, string>; answer: string; explanation?: string; diagram?: { src: string; alt: string }; diagramOptions?: Record<string, SentenceDiagram> };
 export type Unit =
   | { id: string; label: string; kind: "mc"; passage: string; questions: MCQuestion[] }
   | { id: string; label: string; kind: "set" | "seq"; passage: string; answer: number[]; count?: number }
