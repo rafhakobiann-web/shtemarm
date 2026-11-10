@@ -78,24 +78,19 @@
       "volume": 4,
       "sourceSha256": "9e0ec096451705d5a5b80da9c0c4ca405f888a7a39c6572b5f63aac180ce597e",
       "indexed": 1688,
-      "imported": 777,
-      "pending": 911,
+      "imported": 812,
+      "pending": 876,
       "byReason": {
-        "figure-review": 22,
-        "incomplete-text": 2,
-        "answer-type-pending": 876,
-        "formula-review": 11
+        "answer-type-pending": 876
       },
       "chapters": [
         {
           "chapter": 1,
           "title": "Կենդանի օրգանիզմների բազմազանությունը",
           "indexed": 232,
-          "imported": 176,
-          "pending": 56,
+          "imported": 183,
+          "pending": 49,
           "byReason": {
-            "figure-review": 6,
-            "incomplete-text": 1,
             "answer-type-pending": 49
           }
         },
@@ -103,11 +98,9 @@
           "chapter": 2,
           "title": "Մարդ",
           "indexed": 300,
-          "imported": 133,
-          "pending": 167,
+          "imported": 142,
+          "pending": 158,
           "byReason": {
-            "figure-review": 4,
-            "formula-review": 5,
             "answer-type-pending": 158
           }
         },
@@ -115,11 +108,9 @@
           "chapter": 3,
           "title": "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
           "indexed": 301,
-          "imported": 182,
-          "pending": 119,
+          "imported": 187,
+          "pending": 114,
           "byReason": {
-            "figure-review": 3,
-            "formula-review": 2,
             "answer-type-pending": 114
           }
         },
@@ -127,12 +118,9 @@
           "chapter": 4,
           "title": "Բազմացում, ժառանգականություն և փոփոխականություն",
           "indexed": 338,
-          "imported": 158,
-          "pending": 180,
+          "imported": 169,
+          "pending": 169,
           "byReason": {
-            "formula-review": 3,
-            "figure-review": 7,
-            "incomplete-text": 1,
             "answer-type-pending": 169
           }
         },
@@ -140,11 +128,9 @@
           "chapter": 5,
           "title": "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
           "indexed": 214,
-          "imported": 128,
-          "pending": 86,
+          "imported": 131,
+          "pending": 83,
           "byReason": {
-            "figure-review": 2,
-            "formula-review": 1,
             "answer-type-pending": 83
           }
         },
