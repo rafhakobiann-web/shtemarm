@@ -48,6 +48,7 @@ function StudyPage() {
   const lang = useLang();
   const { bookId, sectionId } = Route.useParams();
   const biologyTitle = biologyBookTitle(Number(bookId), lang);
+  const bookTitle = biologyTitle ?? ALL_BOOKS.find(book => String(book.id) === bookId)?.title ?? (lang === "en" ? "Workbook" : lang === "ru" ? "Сборник" : "Շտեմարան");
   const { mode } = Route.useSearch();
   const { data: book, error, isPending, isFetching, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
@@ -93,7 +94,7 @@ function StudyPage() {
         </nav>
       </div>
       <div className="sht-study-title">
-        <p className="sht-study-eyebrow">{biologyTitle ?? (lang === "en" ? "Your learning space" : lang === "ru" ? "Место для занятий" : "Քո ուսումնական միջավայրը")}</p>
+        <p className="sht-study-eyebrow">{bookTitle}</p>
       <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">
         {section ? secTitle(section) : tx("Բաժին {n}", { n: sectionId })}
       </h1>
