@@ -31,8 +31,8 @@ const TILE =
 
 /** Original source volumes remain separate from the authored Biology III exercises. */
 const BIOLOGY_ORIGINAL_BOOKS = [
-  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 911 բնօրինակ հարց + 34 վերաշարադրված · լրացվում է", cover: "/covers/bio-3.svg" },
-  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 777 բնօրինակ հարց · լրացվում է", cover: "/covers/bio-4.svg" },
+  { volume: 3 as const, title: "Կենսաբանություն", sub: "Մաս III · 1 837 բնօրինակ առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-3.svg" },
+  { volume: 4 as const, title: "Կենսաբանություն", sub: "Մաս IV · 1 688 բնօրինակ առաջադրանք · սրբագրման փուլ", cover: "/covers/bio-4.svg" },
 ];
 
 const MATH_BOOKS = [
@@ -198,7 +198,7 @@ function BiologySubject() {
   const importedBooks = BIO_BOOKS.filter((b) => b.id === 31 || b.id === 32);
   return (
     <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
-      <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} beta />
+      <SubjectHeader title={tx("Կենսաբանություն")} sub={tx("Հարցաշարեր, ինքնաստուգում և փորձնական թեստեր")} />
       <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Հասանելի շտեմարաններ")}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">

@@ -58,7 +58,7 @@ describe("Biology III/IV missing original task imports", () => {
     });
   }
 
-  it("restores 1,207 printed exercises; only 61 of the 3,525 indexed exercises remain unimported", () => {
+  it("records the historical checkpoint: 61 questions remained before the final supplement", () => {
     expect(scenarios.reduce((n, x) => n + x.added, 0)).toBe(1207);
     expect(scenarios.reduce((n, x) => n + x.playable, 0)).toBe(3464);
     expect(scenarios.reduce((n, x) => n + x.indexed - x.playable, 0)).toBe(61);
