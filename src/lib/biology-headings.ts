@@ -25,8 +25,19 @@ export function biologyBookSubtitle(bookId: number, lang: Lang = "hy"): string |
   return `${number} առաջադրանք · բնօրինակի հետ ստուգումը շարունակվում է`;
 }
 
+/** Exactly the printed chapter headings used in the 2018 III/IV source indexes. */
+const ORIGINAL_BIOLOGY_CHAPTERS: Record<number, string> = {
+  1: "Կենդանի օրգանիզմների բազմազանությունը",
+  2: "Մարդ",
+  3: "Բջջի կառուցվածքը, նյութափոխանակությունը և էներգիան",
+  4: "Բազմացում, ժառանգականություն և փոփոխականություն",
+  5: "Էվոլյուցիա, էկոլոգիա և կենսոլորտ",
+  6: "Խնդիրներ",
+};
+
 export function biologySectionPageTitle(bookId: number, sectionNumber: number): string | null {
   const book = biologyBookTitle(bookId);
   if (!book || !Number.isSafeInteger(sectionNumber) || sectionNumber < 1) return null;
-  return `${book} · Բաժին ${sectionNumber} | Shtemarm`;
+  const printedName = (bookId === 33 || bookId === 34) ? ORIGINAL_BIOLOGY_CHAPTERS[sectionNumber] : null;
+  return `${book} · ${printedName ?? `Բաժին ${sectionNumber}`} | Shtemarm`;
 }
