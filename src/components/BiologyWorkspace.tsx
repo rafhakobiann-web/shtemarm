@@ -103,11 +103,11 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link to="/book/$bookId" params={{ bookId: "33" }}
             className="inline-flex min-h-12 items-center justify-between gap-3 rounded-xl border border-primary/25 bg-card px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
-            <span>{tx("Մաս III · 911 հարց")}</span><span aria-hidden="true">→</span>
+            <span>{tx("Մաս III · 1 837 առաջադրանք")}</span><span aria-hidden="true">→</span>
           </Link>
           <Link to="/book/$bookId" params={{ bookId: "34" }}
             className="inline-flex min-h-12 items-center justify-between gap-3 rounded-xl border border-primary/25 bg-card px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10">
-            <span>{tx("Մաս IV · 777 հարց")}</span><span aria-hidden="true">→</span>
+            <span>{tx("Մաս IV · 1 688 առաջադրանք")}</span><span aria-hidden="true">→</span>
           </Link>
         </div>
       </section>
