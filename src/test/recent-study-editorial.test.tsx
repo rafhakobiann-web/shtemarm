@@ -7,18 +7,21 @@ import {
 } from "@/lib/recent-study";
 
 vi.mock("@/lib/lang", () => ({ useLang: () => "en" }));
-vi.mock("@tanstack/react-router", () => ({
-  Link: ({ to, params, search: _search, children, ...rest }: {
-    to: string;
-    params?: Record<string,string>;
-    search?: unknown;
-    children: ReactNode;
-    [key: string]: unknown;
-  }) => createElement("a", {
-    ...rest,
-    href: to.replace(/\$bookId|\$sectionId/g, key => params?.[key.slice(1)] ?? key),
-  }, children),
-}));
+vi.mock("@tanstack/react-router", async () => {
+  const React = await import("react");
+  return {
+    Link: ({ to, params, search: _search, children, ...rest }: {
+      to: string;
+      params?: Record<string,string>;
+      search?: unknown;
+      children: ReactNode;
+      [key: string]: unknown;
+    }) => React.createElement("a", {
+      ...rest,
+      href: to.replace(/\$bookId|\$sectionId/g, key => params?.[key.slice(1)] ?? key),
+    }, children),
+  };
+});
 import { DashboardOverview } from "@/components/DashboardOverview";
 
 function progress(answers: Progress["answers"] = {}): Progress {
