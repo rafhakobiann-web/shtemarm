@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, BookOpen, RotateCcw, UserRound, Target, CheckCircle2 } from "lucide-react";
 import type { Progress } from "@/lib/progress";
 import { progressSummary } from "@/lib/dashboard-summary";
 import { useLang } from "@/lib/lang";
+import { ALL_BOOKS } from "@/lib/books";
+import { readRecentStudy, RECENT_STUDY_EVENT, RECENT_STUDY_KEY, type RecentStudy } from "@/lib/recent-study";
 
 type Props = { name?: string | null; progress: Progress };
 
@@ -18,6 +21,7 @@ const COPY = {
     pending:"կրկնելու հարց",
     empty:"Քո առաջին պարապմունքը սկսվում է մեկ հարցից։",
     answeredLabel:"Լուծված",reviewLabel:"Կրկնելու",next:"Քո հաջորդ քայլը",
+    continue:"Շարունակել պարապմունքը",last:"Վերջին բացված բաժինը",
   },
   en: {
     heading:"What shall we study today?",
@@ -30,6 +34,7 @@ const COPY = {
     pending:"questions to review",
     empty:"Your first practice session starts with one question.",
     answeredLabel:"Answered",reviewLabel:"To review",next:"Your next step",
+    continue:"Continue studying",last:"Last opened section",
   },
   ru: {
     heading:"Что будем изучать сегодня?",
@@ -42,11 +47,29 @@ const COPY = {
     pending:"вопросов для повторения",
     empty:"Первое занятие начинается с одного вопроса.",
     answeredLabel:"Решено",reviewLabel:"Повторить",next:"Следующий шаг",
+    continue:"Продолжить занятие",last:"Последний открытый раздел",
   },
 } as const;
 
 export function DashboardOverview({ name, progress }: Props) {
   const t = COPY[useLang()];
+  const [recent, setRecent] = useState<RecentStudy | null>(null);
+  useEffect(() => {
+    const refresh = () => {
+      const saved = readRecentStudy();
+      setRecent(saved && ALL_BOOKS.some(book => String(book.id) === saved.bookId) ? saved : null);
+    };
+    refresh();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === RECENT_STUDY_KEY || event.key === null) refresh();
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(RECENT_STUDY_EVENT, refresh);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(RECENT_STUDY_EVENT, refresh);
+    };
+  }, []);
   const summary = progressSummary(progress);
   const details = summary.answered
     ? `${summary.answered} ${t.answered} · ${summary.review} ${t.pending}`
@@ -68,16 +91,33 @@ export function DashboardOverview({ name, progress }: Props) {
         <div className="sht-dashboard-next">
           <p className="sht-dashboard-next-label"><Target className="size-4" aria-hidden="true"/>{t.next}</p>
           <div className="sht-dashboard-next-actions">
-          {summary.review > 0
-            ? <Link to="/mistakes" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
-                {t.review}<ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-            : <Link to="/explore" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 sm:flex-none">
-                {t.start}<ArrowRight className="size-4" aria-hidden="true" />
-              </Link>}
-          <Link to="/profile" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-bold text-foreground hover:bg-muted sm:flex-none">
-            <UserRound className="size-4 text-primary" aria-hidden="true" />{t.profile}
-          </Link>
+            {recent
+              ? <Link to="/study/$bookId/$sectionId"
+                  params={{ bookId: recent.bookId, sectionId: recent.sectionId }}
+                  search={{ mode: recent.mode }}
+                  className="sht-dashboard-primary-action">
+                  <span className="sht-dashboard-action-caption">{t.last}</span>
+                  <span className="sht-dashboard-action-title">{t.continue}<ArrowRight className="size-4 shrink-0" aria-hidden="true" /></span>
+                  <span className="sht-dashboard-action-context">{recent.title}</span>
+                </Link>
+              : summary.review > 0
+                ? <Link to="/mistakes" className="sht-dashboard-primary-action">
+                    <span className="sht-dashboard-action-title">{t.review}<ArrowRight className="size-4 shrink-0" aria-hidden="true" /></span>
+                    <span className="sht-dashboard-action-context">{summary.review} {t.pending}</span>
+                  </Link>
+                : <Link to="/explore" className="sht-dashboard-primary-action">
+                    <span className="sht-dashboard-action-title">{t.start}<ArrowRight className="size-4 shrink-0" aria-hidden="true" /></span>
+                    <span className="sht-dashboard-action-context">{t.empty}</span>
+                  </Link>}
+            {recent && summary.review > 0 && <Link to="/mistakes" className="sht-dashboard-secondary-action">
+              <RotateCcw className="size-4" aria-hidden="true" />{t.review}<span className="sht-dashboard-review-count">{summary.review}</span>
+            </Link>}
+            {(recent || summary.review > 0) && <Link to="/explore" className="sht-dashboard-secondary-action">
+              <BookOpen className="size-4" aria-hidden="true" />{t.start}
+            </Link>}
+            <Link to="/profile" className="sht-dashboard-profile-action">
+              <UserRound className="size-4" aria-hidden="true" />{t.profile}
+            </Link>
           </div>
         </div>
       </div>
