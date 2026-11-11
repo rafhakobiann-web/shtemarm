@@ -37,8 +37,8 @@ export const EXPLORE_SUBJECTS: readonly SubjectEntry[] = [
 
 const UI = {
   hy: {
-    kicker:"Ամեն ինչ՝ իր տեղում",title:"Բացահայտիր ուսումնական աշխարհդ",
-    intro:"Գտիր առարկան, բացիր շտեմարանը կամ սկսիր քննությունը։ Այստեղ այլևս հարկավոր չէ փնտրել երկար վահանակներում։",
+    kicker:"Առարկաներ · քննություններ · գործիքներ",title:"Ընտրիր առարկա կամ քննություն",
+    intro:"Որոնիր առարկաներ, քննություններ և ուսումնական գործիքներ՝ ըստ անվան։",
     back:"Վահանակ", search:"Որոնել առարկա կամ գործիք", clear:"Մաքրել որոնումը",
     all:"Բոլորը", subjects:"Առարկաներ", exams:"Քննություններ", tools:"Գործիքներ",
     subjectHeading:"Ընտրիր առարկան", subjectHint:"Սկզբում ընտրիր առարկան․ հաջորդ էջում՝ գիրքը կամ թեստը։",
@@ -51,8 +51,8 @@ const UI = {
     priority:"Սկսելու ամենահեշտ ճանապարհը", step1:"1. Ընտրիր առարկան",step2:"2. Բացիր գիրքը",step3:"3. Պատասխանիր հարցերին",
   },
   en: {
-    kicker:"Everything in its place",title:"Find your next learning step",
-    intro:"Explore subjects, open a workbook, or start a practice exam. No more hunting through long dashboards.",
+    kicker:"Subjects · exams · tools",title:"Find a subject, exam, or tool",
+    intro:"Search available subjects and go directly to practice, exams, or review.",
     back:"Dashboard", search:"Search subjects and tools", clear:"Clear search",
     all:"All", subjects:"Subjects", exams:"Exams", tools:"Tools",
     subjectHeading:"Choose a subject", subjectHint:"Pick a subject first, then its workbook or practice test.",
@@ -65,8 +65,8 @@ const UI = {
     priority:"The simplest way to begin",step1:"1. Pick a subject",step2:"2. Open a workbook",step3:"3. Answer questions",
   },
   ru: {
-    kicker:"Всё на своих местах",title:"Найди следующий шаг в учёбе",
-    intro:"Выбирай предмет, открывай сборник или начинай пробный экзамен. Больше не нужно искать нужное в длинном кабинете.",
+    kicker:"Предметы · экзамены · инструменты",title:"Найди предмет, экзамен или инструмент",
+    intro:"Ищи предметы, экзамены и учебные инструменты по названию.",
     back:"Кабинет", search:"Поиск предметов и инструментов", clear:"Очистить поиск",
     all:"Все",subjects:"Предметы",exams:"Экзамены",tools:"Инструменты",
     subjectHeading:"Выбери предмет",subjectHint:"Сначала предмет, потом сборник или тест.",
