@@ -75,3 +75,86 @@ for (const volume of [3, 4]) {
 }
 assert(total > 1600);
 console.log(`Validated ${total} distinct questions, printed keys, source pages, and complete coverage accounting.`);
+
+ 
+// Current learner coverage includes all four stage files. The earlier
+// single-file coverage above is a reproducible historical checkpoint only.
+let finalIndexed = 0;
+let finalAvailable = 0;
+for (const volume of [3,4]) {
+  const idx = read('public/data/biology-original-volume' + volume + '-index.json');
+  const names = ['bio','biology-extended','biology-pending','biology-last61'];
+  const stages = names.map((prefix) => read('public/data/' + prefix + '-book' + volume + '.json'));
+  const last = stages.at(-1);
+  assert.equal(last.id, 30 + volume);
+  assert.equal(last.source.sha256, idx.sourceSha256);
+  assert.equal(last.source.complete, false, 'Manual proofreading is not certified');
+
+  const coverage = new Map(idx.chapters.map(chapter => [chapter.id, new Set()]));
+  for (const stage of stages) {
+    assert.equal(stage.id, 30 + volume);
+    for (const section of stage.sections) {
+      const present = coverage.get(section.n);
+      assert(present, 'Unknown Biology chapter ' + section.n);
+      const chapter = idx.chapters.find(row => row.id === section.n);
+      for (const unit of section.units) {
+        const n = Number(unit.label);
+        assert(Number.isInteger(n) && n > 0 && n <= chapter.questionCount);
+        assert.equal(unit.id, 'bio' + volume + '-s' + section.n + '-q' + n);
+        assert(!present.has(n), 'Duplicate Biology ' + volume + ':' + section.n + ':' + n);
+        present.add(n);
+      }
+    }
+  }
+
+  let indexed = 0;
+  let imported = 0;
+  for (const chapter of idx.chapters) {
+    const present = coverage.get(chapter.id);
+    indexed += chapter.questionCount;
+    imported += present.size;
+    assert.equal(present.size, chapter.questionCount,
+      'Biology ' + volume + ' chapter ' + chapter.id + ' missing imports');
+    for (let n = 1; n <= chapter.questionCount; n++)
+      assert(present.has(n), 'Missing Biology ' + volume + ':' + chapter.id + ':' + n);
+  }
+  assert.equal(indexed, volume === 3 ? 1837 : 1688);
+  assert.equal(imported, indexed);
+
+  const restored = last.sections.flatMap(section => section.units);
+  assert.equal(restored.length, volume === 3 ? 28 : 33);
+  for (const section of last.sections) {
+    const chapter = idx.chapters.find(row => row.id === section.n);
+    for (const unit of section.units) {
+      const n = Number(unit.label);
+      const page = chapter.pageRuns.filter(([start]) => start <= n).at(-1)?.[1];
+      assert.equal(unit.sourcePage, page, 'Wrong source page for ' + unit.id);
+      assert(Number.isInteger(unit.sourceAnswerPage) && unit.sourceAnswerPage > page);
+      if (unit.kind === 'mc') {
+        assert(unit.questions.length > 0);
+        for (const question of unit.questions) {
+          assert(question.stem?.trim(), 'Blank question for ' + unit.id);
+          assert(question.options?.[question.answer]?.trim(), 'Missing answer option for ' + unit.id);
+        }
+      } else if (unit.kind === 'match') {
+        assert(unit.passage?.trim());
+        assert(Object.keys(unit.answer).length > 0);
+        assert(Object.values(unit.answer).every(value => Number.isInteger(value) && value > 0));
+      } else if (unit.kind === 'seq' || unit.kind === 'set') {
+        assert(unit.passage?.trim());
+        assert(unit.answer.length > 0);
+        assert(Number.isInteger(unit.count) && unit.count > 0);
+        assert(unit.answer.every(value => Number.isInteger(value) && value >= 1 && value <= unit.count));
+      } else {
+        assert.fail('Unsupported final Biology format: ' + unit.id);
+      }
+    }
+  }
+  finalIndexed += indexed;
+  finalAvailable += imported;
+  console.log('Biology ' + volume + ': ' + imported + '/' + indexed +
+    ' indexed tasks available; manual review still pending');
+}
+assert.equal(finalIndexed, 3525);
+assert.equal(finalAvailable, 3525);
+console.log('Biology III/IV final import audit: 3,525 / 3,525 IDs present; 0 missing.');
