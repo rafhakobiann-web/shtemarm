@@ -15,7 +15,7 @@ describe("Biology titles and chapter headings", () => {
   });
 
   it("describes full imported coverage without claiming complete source proofreading", () => {
-    expect(biologyBookSubtitle(33, "hy")).toContain("1837");
+    expect(biologyBookSubtitle(33, "hy")?.replace(/\\D/g, "")).toBe("1837");
     expect(biologyBookSubtitle(34, "en")).toContain("1,688");
     expect(biologyBookSubtitle(33, "en")).toContain("proofreading in progress");
     expect(biologyBookSubtitle(31, "hy")).toBeNull();
