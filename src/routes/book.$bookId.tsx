@@ -6,6 +6,7 @@ import { useBook } from "@/lib/useBook";
 import { LoadError } from "@/components/LoadError";
 import { BookCover } from "@/components/BookCover";
 import { useProgress } from "@/lib/progress";
+import { matchesWorkbookProgressFilter, sectionProgressStatus, type WorkbookProgressFilter } from "@/lib/workbook-progress-filter";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
 
@@ -36,7 +37,7 @@ function BookPage() {
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
   const [sectionQuery, setSectionQuery] = useState("");
-  const [sectionFilter, setSectionFilter] = useState<"all" | "unfinished" | "review">("all");
+  const [sectionFilter, setSectionFilter] = useState<WorkbookProgressFilter>("all");
   // A completed answer updates progress frequently, but source questions do not.
   // Cache the full section response-key lists until the book itself changes.
   const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
@@ -45,25 +46,18 @@ function BookPage() {
     .map((section, index) => ({ section, index }))
     .filter(({ section }) => !cleanQuery || [secTitle(section), String(section.n), section.instr_hy]
       .some(text => text.toLocaleLowerCase().includes(cleanQuery))), [book, cleanQuery]);
-  const sectionStatuses = useMemo(() => sectionIds.map(ids => ({
-    total: ids.length,
-    answered: ids.filter(key => key in p.answers).length,
-    needsReview: ids.some(key => p.answers[key] === 0),
-  })), [sectionIds, p.answers]);
+  const sectionStatuses = useMemo(() => sectionIds.map(ids => sectionProgressStatus(ids, p.answers)), [sectionIds, p.answers]);
   const matchingSections = searchedSections.filter(({ index }) => {
     const status = sectionStatuses[index];
-    if (!status) return false;
-    return sectionFilter === "all" ||
-      (sectionFilter === "unfinished" && status.total > 0 && status.answered < status.total) ||
-      (sectionFilter === "review" && status.needsReview);
+    return !!status && matchesWorkbookProgressFilter(status, sectionFilter);
   });
   const filterChoices = [
     { id: "all" as const, label: lang === "en" ? "All" : lang === "ru" ? "Все" : "Բոլորը", count: searchedSections.length },
     { id: "unfinished" as const, label: lang === "en" ? "Unfinished" : lang === "ru" ? "Не завершены" : "Անավարտ", count: searchedSections.filter(({ index }) => {
       const status = sectionStatuses[index];
-      return !!status && status.total > 0 && status.answered < status.total;
+      return !!status && matchesWorkbookProgressFilter(status, "unfinished");
     }).length },
-    { id: "review" as const, label: lang === "en" ? "Needs review" : lang === "ru" ? "Повторить" : "Կրկնել", count: searchedSections.filter(({ index }) => sectionStatuses[index]?.needsReview).length },
+    { id: "review" as const, label: lang === "en" ? "Needs review" : lang === "ru" ? "Повторить" : "Կրկնել", count: searchedSections.filter(({ index }) => !!sectionStatuses[index] && matchesWorkbookProgressFilter(sectionStatuses[index]!, "review")).length },
   ];
 
   return (
@@ -186,8 +180,9 @@ function BookPage() {
         <div className="sht-book-section-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {matchingSections.map(({ section: s, index: sectionIndex }) => {
             const ids = sectionIds[sectionIndex] ?? [];
-            const done = ids.filter((k) => k in p.answers).length;
-            const right = ids.filter((k) => p.answers[k] === 1).length;
+            const status = sectionStatuses[sectionIndex] ?? sectionProgressStatus(ids, p.answers);
+            const done = status.answered;
+            const right = status.correct;
             return (
               <div key={s.n} className="sht-book-section-card shadow-card flex flex-col gap-3 rounded-2xl border bg-card p-5">
                 <div className="flex items-start gap-3">
