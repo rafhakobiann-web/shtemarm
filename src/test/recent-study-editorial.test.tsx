@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createElement, type ReactNode } from "react";
 import type { Progress } from "@/lib/progress";
 import {
@@ -74,7 +74,7 @@ describe("purposeful recent study navigation", () => {
   it("refreshes the dashboard after the same browser opens a different section", () => {
     render(createElement(DashboardOverview, { progress: progress() }));
     expect(screen.queryByRole("link", { name: /Continue studying/ })).not.toBeInTheDocument();
-    saveRecentStudy(current);
+    act(() => { saveRecentStudy(current); });
     expect(screen.getByRole("link", { name: /Continue studying/ })).toHaveAttribute("href", "/study/1/3");
     window.localStorage.removeItem(RECENT_STUDY_KEY);
     fireEvent(window, new StorageEvent("storage", { key: RECENT_STUDY_KEY }));
