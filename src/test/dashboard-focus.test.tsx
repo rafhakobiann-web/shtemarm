@@ -73,7 +73,7 @@ describe("dashboard focuses on the actual student's work", () => {
     const { container } = render(<DashboardOverview name="Ada" progress={makeProgress({
       answers: { one: 1, two: 0, three: 0 }, xp: 200,
     })} />);
-    expect(screen.getByRole("heading", { name: "What shall we study today?" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Your study dashboard" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Review mistakes/ })).toHaveAttribute("href", "/mistakes");
     expect(screen.getByRole("link", { name: /My Profile/ })).toHaveAttribute("href", "/profile");
     expect(screen.getByText("3 questions answered · 2 questions to review")).toBeInTheDocument();
