@@ -8,6 +8,7 @@ import { recordAnswer, useProgress, update } from "@/lib/progress";
 import { UnitCard, scoreUnit, normNum, isAnswered, type UnitAnswer } from "@/components/UnitCard";
 import { StudyTutorDrawer } from "@/components/StudyTutorDrawer";
 import { StudyScratchpad } from "@/components/StudyScratchpad";
+import { saveRecentStudy } from "@/lib/recent-study";
 import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,15 @@ function StudyPage() {
   const signedIn = useSignedIn();
   const previewUnits = section ? guestPreviewUnits(section.units, signedIn === true) : [];
   const showGuestSignup = signedIn !== true && !!section && section.units.length > previewUnits.length;
+
+  // A navigation hint only: no answer payloads, progress values or account details.
+  // Save after a real section has loaded, never for broken or empty book links.
+  const loadedSectionTitle = section ? secTitle(section) : "";
+  useEffect(() => {
+    if (section && section.units.length > 0 && previewUnits.length > 0) {
+      saveRecentStudy({ bookId, sectionId, title: loadedSectionTitle, mode });
+    }
+  }, [bookId, sectionId, loadedSectionTitle, mode, section?.units.length, previewUnits.length]);
 
   useEffect(() => {
     update((p) => (p.mode === mode ? p : { ...p, mode }));

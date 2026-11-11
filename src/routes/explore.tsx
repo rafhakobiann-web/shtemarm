@@ -37,8 +37,8 @@ export const EXPLORE_SUBJECTS: readonly SubjectEntry[] = [
 
 const UI = {
   hy: {
-    kicker:"Ամեն ինչ՝ իր տեղում",title:"Բացահայտիր ուսումնական աշխարհդ",
-    intro:"Գտիր առարկան, բացիր շտեմարանը կամ սկսիր քննությունը։ Այստեղ այլևս հարկավոր չէ փնտրել երկար վահանակներում։",
+    kicker:"Առարկաներ · քննություններ · գործիքներ",title:"Ընտրիր առարկա կամ քննություն",
+    intro:"Որոնիր առարկաներ, քննություններ և ուսումնական գործիքներ՝ ըստ անվան։",
     back:"Վահանակ", search:"Որոնել առարկա կամ գործիք", clear:"Մաքրել որոնումը",
     all:"Բոլորը", subjects:"Առարկաներ", exams:"Քննություններ", tools:"Գործիքներ",
     subjectHeading:"Ընտրիր առարկան", subjectHint:"Սկզբում ընտրիր առարկան․ հաջորդ էջում՝ գիրքը կամ թեստը։",
@@ -51,8 +51,8 @@ const UI = {
     priority:"Սկսելու ամենահեշտ ճանապարհը", step1:"1. Ընտրիր առարկան",step2:"2. Բացիր գիրքը",step3:"3. Պատասխանիր հարցերին",
   },
   en: {
-    kicker:"Everything in its place",title:"Find your next learning step",
-    intro:"Explore subjects, open a workbook, or start a practice exam. No more hunting through long dashboards.",
+    kicker:"Subjects · exams · tools",title:"Find a subject, exam, or tool",
+    intro:"Search available subjects and go directly to practice, exams, or review.",
     back:"Dashboard", search:"Search subjects and tools", clear:"Clear search",
     all:"All", subjects:"Subjects", exams:"Exams", tools:"Tools",
     subjectHeading:"Choose a subject", subjectHint:"Pick a subject first, then its workbook or practice test.",
@@ -65,8 +65,8 @@ const UI = {
     priority:"The simplest way to begin",step1:"1. Pick a subject",step2:"2. Open a workbook",step3:"3. Answer questions",
   },
   ru: {
-    kicker:"Всё на своих местах",title:"Найди следующий шаг в учёбе",
-    intro:"Выбирай предмет, открывай сборник или начинай пробный экзамен. Больше не нужно искать нужное в длинном кабинете.",
+    kicker:"Предметы · экзамены · инструменты",title:"Найди предмет, экзамен или инструмент",
+    intro:"Ищи предметы, экзамены и учебные инструменты по названию.",
     back:"Кабинет", search:"Поиск предметов и инструментов", clear:"Очистить поиск",
     all:"Все",subjects:"Предметы",exams:"Экзамены",tools:"Инструменты",
     subjectHeading:"Выбери предмет",subjectHint:"Сначала предмет, потом сборник или тест.",
@@ -136,12 +136,6 @@ export function ExplorePage() {
     Object.values(subject.detail).some(text => text.toLocaleLowerCase().includes(clean)) ||
     subject.id.includes(clean)
   ), [clean]);
-  const filterOptions = [
-    {id:"all" as const, label:t.all,icon:Compass},
-    {id:"subjects" as const,label:t.subjects,icon:LibraryBig},
-    {id:"exams" as const,label:t.exams,icon:Trophy},
-    {id:"tools" as const,label:t.tools,icon:Wrench},
-  ];
   const studyTools = [
     { to:"/study-plan", label:l("Ուսումնական պլան","Study plan","План занятий"), Icon:GraduationCap },
     { to:"/mistakes", label:l("Իմ սխալները","Review mistakes","Повторение ошибок"), Icon:RotateCcw },
@@ -153,7 +147,8 @@ export function ExplorePage() {
   ] as const;
   const matchesTool = (index:number) => !clean || Object.values(studyTools[index].label)
     .some(label => label.toLocaleLowerCase().includes(clean));
-  const hasMatchingTools = studyTools.some((_,index) => matchesTool(index));
+  const matchingToolCount = studyTools.filter((_,index) => matchesTool(index)).length;
+  const hasMatchingTools = matchingToolCount > 0;
   const includeSubjects = (filter === "all" || filter === "subjects") && (!clean || matches.length > 0);
   const examMatch = !clean || [t.exams, t.examHeading, t.examHint, t.examSearch, ...EXPLORE_SUBJECTS.slice(0,6).flatMap(subject => Object.values(subject.title))]
       .some(label => label.toLocaleLowerCase().includes(clean));
@@ -161,6 +156,12 @@ export function ExplorePage() {
   const matchingExamCount = EXPLORE_SUBJECTS.slice(0,6).filter((_,index)=>examSubjectMatches(index)).length;
   const includeExams = (filter === "all" || filter === "exams") && examMatch && matchingExamCount > 0;
   const includeTools = (filter === "all" || filter === "tools") && (!clean || hasMatchingTools);
+  const filterOptions = [
+    {id:"all" as const,label:t.all,count:matches.length + matchingExamCount + matchingToolCount},
+    {id:"subjects" as const,label:t.subjects,count:matches.length},
+    {id:"exams" as const,label:t.exams,count:matchingExamCount},
+    {id:"tools" as const,label:t.tools,count:matchingToolCount},
+  ];
 
   return (
     <div className="explore-page mx-auto max-w-6xl space-y-8 pb-12 pt-3 sm:space-y-10 sm:pt-6">
@@ -175,12 +176,9 @@ export function ExplorePage() {
         </div>
         <h1 className="mt-6 max-w-3xl text-balance text-3xl font-black leading-tight tracking-tight text-foreground sm:text-5xl">{t.title}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{t.intro}</p>
-        <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground" aria-label={t.priority}>
-          {[t.step1,t.step2,t.step3].map((label,i)=><span key={i} className="rounded-full border bg-card/80 px-3 py-2">{label}</span>)}
-        </div>
         <div className="relative mt-6 max-w-3xl">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <input ref={searchRef} type="search" autoComplete="off" aria-label={t.search} placeholder={t.search} value={query}
+          <input ref={searchRef} type="search" autoComplete="off" aria-label={t.search} aria-describedby="explore-search-shortcuts" placeholder={t.search} value={query}
             onKeyDown={e=>{if(e.key==="Escape"){setQuery("");e.currentTarget.blur();}}}
             onChange={e=>{setQuery(e.target.value);if(e.target.value.trim())setFilter("all");}}
             className="explore-search min-h-14 w-full rounded-2xl border bg-background pl-12 pr-14 text-sm font-semibold text-foreground outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" />
@@ -189,15 +187,15 @@ export function ExplorePage() {
             <X className="size-5" />
           </button>}
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">{lang==="hy"?"Արագ որոնում՝ Ctrl + K · Մաքրել՝ Esc":lang==="ru"?"Быстрый поиск: Ctrl + K · Очистить: Esc":"Quick search: Ctrl + K · Clear: Esc"}</p>
+        <p id="explore-search-shortcuts" className="mt-2 text-xs text-muted-foreground">{lang==="hy"?"Արագ որոնում՝ Ctrl + K · Մաքրել՝ Esc":lang==="ru"?"Быстрый поиск: Ctrl + K · Очистить: Esc":"Quick search: Ctrl + K · Clear: Esc"}</p>
       </div>
 
       <nav aria-label={t.all} className="explore-filters flex flex-wrap gap-2">
-        {filterOptions.map(({id,label,icon:Icon})=><button type="button" key={id}
-          aria-pressed={filter===id} onClick={()=>setFilter(id)}
-          className={"inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary "+
-            (filter===id?"border-primary bg-primary text-primary-foreground":"bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground")}>
-          <Icon className="size-4" aria-hidden="true" />{label}
+        {filterOptions.map(({id,label,count})=><button type="button" key={id}
+          aria-label={label} aria-pressed={filter===id} onClick={()=>setFilter(id)}
+          className="explore-filter-tab inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary">
+          <span>{label}</span>
+          {id !== "all" && <span aria-hidden="true" className="explore-filter-count tabular-nums">{count}</span>}
         </button>)}
       </nav>
 
