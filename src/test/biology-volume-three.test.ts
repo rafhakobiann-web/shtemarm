@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import { BIO_BOOKS } from "@/lib/books";
 const read = (path: string) => JSON.parse(readFileSync(path, "utf8"));
 describe("Biology III source bank and archived starter practice", () => {
-  it("unlocks the source book with a truthful partial label", () => {
+  it("unlocks the source book with a truthful proofreading status", () => {
     const book = BIO_BOOKS.find(b => b.id === 33);
     expect(book?.locked).toBe(false);
     expect(book?.sub).toContain("բնօրինակ");
-    expect(book?.sub).toContain("լրացվում է");
+    expect(book?.sub).toContain("սրբագրման փուլ");
     expect(read("public/data/bio-book3.json").source.complete).toBe(false);
   });
   it("preserves the 36 authored exercises outside the source dataset", () => {
