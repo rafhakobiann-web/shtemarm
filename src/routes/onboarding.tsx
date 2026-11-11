@@ -63,7 +63,7 @@ function OnboardingPage() {
         </div>
       </aside>
 
-      <main className="sht-onboard-form">
+      <section className="sht-onboard-form" aria-label={tr("Ուսուցման կարգավորումներ","Learning setup","Настройка обучения")}>
         <div className="sht-onboard-mobile-label">SHTEMARM <span>01 / 02</span></div>
         <section className="sht-onboard-step" aria-labelledby="sht-onboard-subjects-title">
           <div className="sht-onboard-step-head">
@@ -123,7 +123,7 @@ function OnboardingPage() {
             <ArrowRight className="size-4" aria-hidden="true" />
           </button>
         </div>
-      </main>
+      </section>
     </div>
   );
 }
