@@ -410,7 +410,7 @@ function AuthPage() {
         </ol>
       </aside>
 
-      <main className="sht-auth-form-panel">
+      <section className="sht-auth-form-panel" aria-label={lang === "en" ? "Account access" : lang === "ru" ? "Вход в аккаунт" : "Հաշվի մուտք"}>
         <div className="sht-auth-form-top">
           <span className="sht-auth-form-edition">SHTEMARM / ACCOUNT</span>
           <Link to="/" className="sht-auth-back">{ui.back}<ArrowRight size={15} aria-hidden="true" /></Link>
@@ -492,7 +492,7 @@ function AuthPage() {
           <p className="sht-auth-privacy-note"><LockKeyhole size={15} aria-hidden="true" />{ui.privacy}</p>
         </div>
         <div className="sht-auth-form-bottom">SHTEMARM <span aria-hidden="true">—</span> 2026</div>
-      </main>
+      </section>
     </div>
   );
 }
