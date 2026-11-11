@@ -35,7 +35,7 @@ describe("exploration-first information architecture",()=>{
 
   it("lets students search directly for a subject",()=>{
     render(<ExplorePage/>);
-    expect(screen.getByRole("heading",{name:"Find your next learning step"})).toBeInTheDocument();
+    expect(screen.getByRole("heading",{name:"Find a subject, exam, or tool"})).toBeInTheDocument();
     const input=screen.getByRole("searchbox",{name:"Search subjects and tools"});
     fireEvent.change(input,{target:{value:"biology"}});
     expect(screen.getByRole("heading",{name:"Biology"})).toBeInTheDocument();
