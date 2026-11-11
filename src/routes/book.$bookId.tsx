@@ -36,14 +36,35 @@ function BookPage() {
   const reload = () => { invalidateBookCache(id); void refetch(); };
   const p = useProgress();
   const [sectionQuery, setSectionQuery] = useState("");
+  const [sectionFilter, setSectionFilter] = useState<"all" | "unfinished" | "review">("all");
   // A completed answer updates progress frequently, but source questions do not.
   // Cache the full section response-key lists until the book itself changes.
   const sectionIds = useMemo(() => book?.sections.map(sectionAnswerIds) ?? [], [book]);
   const cleanQuery = sectionQuery.trim().toLocaleLowerCase();
-  const matchingSections = useMemo(() => (book?.sections ?? [])
+  const searchedSections = useMemo(() => (book?.sections ?? [])
     .map((section, index) => ({ section, index }))
     .filter(({ section }) => !cleanQuery || [secTitle(section), String(section.n), section.instr_hy]
       .some(text => text.toLocaleLowerCase().includes(cleanQuery))), [book, cleanQuery]);
+  const sectionStatuses = useMemo(() => sectionIds.map(ids => ({
+    total: ids.length,
+    answered: ids.filter(key => key in p.answers).length,
+    needsReview: ids.some(key => p.answers[key] === 0),
+  })), [sectionIds, p.answers]);
+  const matchingSections = searchedSections.filter(({ index }) => {
+    const status = sectionStatuses[index];
+    if (!status) return false;
+    return sectionFilter === "all" ||
+      (sectionFilter === "unfinished" && status.total > 0 && status.answered < status.total) ||
+      (sectionFilter === "review" && status.needsReview);
+  });
+  const filterChoices = [
+    { id: "all" as const, label: lang === "en" ? "All" : lang === "ru" ? "Все" : "Բոլորը", count: searchedSections.length },
+    { id: "unfinished" as const, label: lang === "en" ? "Unfinished" : lang === "ru" ? "Не завершены" : "Անավարտ", count: searchedSections.filter(({ index }) => {
+      const status = sectionStatuses[index];
+      return !!status && status.total > 0 && status.answered < status.total;
+    }).length },
+    { id: "review" as const, label: lang === "en" ? "Needs review" : lang === "ru" ? "Повторить" : "Կրկնել", count: searchedSections.filter(({ index }) => sectionStatuses[index]?.needsReview).length },
+  ];
 
   return (
     <div className="sht-book-workspace mx-auto max-w-6xl space-y-8">
@@ -140,6 +161,13 @@ function BookPage() {
             className="sht-book-search-input" />
           <span className="text-xs font-semibold text-muted-foreground" aria-live="polite">{matchingSections.length} / {book.sections.length}</span>
         </div>
+        <div className="sht-book-progress-filters" role="group" aria-label={lang === "en" ? "Filter sections by progress" : lang === "ru" ? "Фильтр разделов по прогрессу" : "Բաժինները ըստ առաջընթացի"}>
+          {filterChoices.map(({ id: choice, label, count }) => <button key={choice} type="button"
+            aria-label={label} aria-pressed={sectionFilter === choice} onClick={() => setSectionFilter(choice)}
+            className="sht-book-progress-filter">
+            <span>{label}</span><span aria-hidden="true" className="sht-book-progress-filter-count tabular-nums">{count}</span>
+          </button>)}
+        </div>
       </div>}
       {error && !book ? (
         <LoadError onRetry={reload} retrying={isFetching} detail={error instanceof Error ? error.message : String(error)} />
@@ -227,7 +255,12 @@ function BookPage() {
               </div>
             );
           })}
-          {matchingSections.length === 0 && <div className="col-span-full rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground" role="status">{lang === "en" ? "No matching sections. Try another number or topic." : lang === "ru" ? "Разделы не найдены. Попробуй другой номер или тему." : "Համապատասխան բաժին չի գտնվել։ Փորձիր այլ համար կամ թեմա։"}</div>}
+          {matchingSections.length === 0 && <div className="sht-book-empty col-span-full rounded-xl border bg-card p-6 text-center" role="status">
+            <p className="text-sm text-muted-foreground">{lang === "en" ? "No sections match this search and progress filter." : lang === "ru" ? "По этому запросу и фильтру разделы не найдены." : "Այս որոնմամբ և զտիչով բաժիններ չկան։"}</p>
+            <button type="button" className="mt-3 min-h-11 rounded-lg border px-4 text-sm font-semibold" onClick={() => { setSectionQuery(""); setSectionFilter("all"); }}>
+              {lang === "en" ? "Show all sections" : lang === "ru" ? "Показать все разделы" : "Ցույց տալ բոլոր բաժինները"}
+            </button>
+          </div>}
         </div>
       )}
     </div>
