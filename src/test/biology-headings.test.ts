@@ -19,8 +19,8 @@ describe("Biology titles and chapter headings", () => {
     expect(biologyBookSubtitle(34, "en")).toContain("1,688");
     expect(biologyBookSubtitle(33, "en")).toContain("proofreading in progress");
     expect(biologyBookSubtitle(31, "hy")).toBeNull();
-    expect(biologySectionPageTitle(33, 1)).toBe("Կենսաբանություն · Մաս III · Բաժին 1 | Shtemarm");
-    expect(biologySectionPageTitle(34, 6)).toBe("Կենսաբանություն · Մաս IV · Բաժին 6 | Shtemarm");
+    expect(biologySectionPageTitle(33, 1)).toBe("Կենսաբանություն · Մաս III · Կենդանի օրգանիզմների բազմազանությունը | Shtemarm");
+    expect(biologySectionPageTitle(34, 6)).toBe("Կենսաբանություն · Մաս IV · Խնդիրներ | Shtemarm");
     expect(biologySectionPageTitle(99, 2)).toBeNull();
     expect(biologySectionPageTitle(33, 0)).toBeNull();
   });
