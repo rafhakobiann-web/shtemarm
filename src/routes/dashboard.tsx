@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
 import { useLang, useTx } from "@/lib/lang";
+import { biologyBookTitle, biologyBookSubtitle } from "@/lib/biology-headings";
 import { DashboardOverview } from "@/components/DashboardOverview";
 import { ARMENIAN_BOOKS, BIO_BOOKS, BOOKS, HISTORY_BOOKS, PHYSICS_BOOKS, STARTER_SUBJECT_BOOKS } from "@/lib/books";
 import { useProgress, level } from "@/lib/progress";
@@ -195,6 +196,7 @@ function HistorySubject() {
 
 function BiologySubject() {
   const tx = useTx();
+  const lang = useLang();
   const importedBooks = BIO_BOOKS.filter((b) => b.id === 31 || b.id === 32);
   return (
     <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
@@ -204,18 +206,18 @@ function BiologySubject() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {importedBooks.map((b) => (
             <Link key={b.id} to="/book/$bookId" params={{ bookId: String(b.id) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              <TileBody cover={b.cover} title={biologyBookTitle(b.id, lang) ?? b.title} sub={lang === "en" ? "Practice questions" : lang === "ru" ? "Учебные задания" : "Ուսումնական առաջադրանքներ"} />
             </Link>
           ))}
           {BIOLOGY_ORIGINAL_BOOKS.map((b) => (
             <Link key={b.volume} to="/book/$bookId" params={{ bookId: String(30 + b.volume) }} className={TILE}>
-              <TileBody cover={b.cover} title={b.title} sub={b.sub} />
+              <TileBody cover={b.cover} title={biologyBookTitle(30 + b.volume, lang) ?? b.title} sub={biologyBookSubtitle(30 + b.volume, lang) ?? b.sub} />
             </Link>
           ))}
         </div>
       </section>
       <p className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm text-muted-foreground">
-        {tx("3-րդ մասում հասանելի է 911, իսկ 4-րդում՝ 777 բնօրինակ տեքստային հարց՝ պատասխաններով։ Կարող ես սովորել և կազմել թեստ՝ առանց PDF ընտրելու։ Մնացած առաջադրանքների թվայնացումը շարունակվում է։")}
+        {lang === "en" ? "All 3,525 indexed exercises from Parts III and IV are available for practice without selecting a PDF. Final source proofreading is ongoing." : lang === "ru" ? "Все 3 525 пронумерованных заданий из частей III и IV доступны без PDF. Сверка с оригиналами продолжается." : "III և IV մասերի բոլոր 3 525 համարակալված առաջադրանքները հասանելի են՝ առանց PDF ընտրելու։ Բնօրինակի հետ վերջնական սրբագրումը շարունակվում է։"}
       </p>
       <section className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Փորձնական թեստեր")}</h2>
@@ -234,7 +236,7 @@ function BiologySubject() {
           <ExamTile href="https://www.olymp.am/hy/node/1465" title={tx("Կենսաբանության օլիմպիադա · 2026")} sub={tx("Լրացուցիչ բարդ առաջադրանքներ և պաշտոնական լուծումներ")} icon={<Trophy className="size-5" />} />
         </div>
       </section>
-      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{tx("Նշում․ 1-ին և 2-րդ մասերն ունեն կայքում ներմուծված հարցեր։ 3-րդ և 4-րդ մասերի բնօրինակ հարցերը հասանելի են տեքստով՝ առանց PDF ընտրելու․ ամբողջական, առանձին ձեռքով ստուգված տեքստային բազա դեռ չկա։")}</p>
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">{lang === "en" ? "Note: Parts III and IV have complete indexed question coverage, but not every question has been manually verified against the printed source." : lang === "ru" ? "Примечание: все задания частей III и IV внесены, однако не каждое задание вручную сверено с печатным оригиналом." : "Նշում․ III և IV մասերի բոլոր համարակալված առաջադրանքները ներմուծված են, սակայն դրանցից ոչ բոլորն են առանձին ձեռքով համեմատվել տպագիր բնօրինակի հետ։"}</p>
     </div>
   );
 }
