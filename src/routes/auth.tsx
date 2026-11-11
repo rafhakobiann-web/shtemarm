@@ -244,13 +244,13 @@ function AuthPage() {
   };
 
   if (configured === null) return (
-    <div role="status" className="mx-auto max-w-md rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
+    <div role="status" className="sht-auth-system-state mx-auto max-w-md rounded-xl border bg-card p-6 text-sm text-muted-foreground">
       {tx("Բացվում է մուտքի էջը…")}
     </div>
   );
 
   if (!configured) return (
-    <div className="mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6">
+    <div className="sht-auth-system-state mx-auto max-w-md space-y-4 rounded-xl border bg-card p-6">
       <h1 className="text-2xl font-black">{tx("Մուտքը ժամանակավորապես անհասանելի է")}</h1>
       <p role="alert" className="text-sm text-muted-foreground">
         {tx("Այս կայքի մուտքի ծառայությունը դեռ կարգավորված չէ։ Քո նախկին առաջընթացը չի ջնջվել։ Փորձիր կրկին ավելի ուշ։")}
@@ -268,7 +268,7 @@ function AuthPage() {
   );
 
   if (user && mode !== "recovery") return (
-    <div className="mx-auto max-w-md space-y-4 rounded-2xl border bg-card p-6 shadow-card">
+    <div className="sht-auth-account mx-auto max-w-md space-y-4 rounded-xl border bg-card p-6">
       <h1 className="text-2xl font-black">{tx("Ձեր հաշիվը")}</h1>
       <p className="break-all text-sm text-muted-foreground">{user}</p>
       <p className="text-sm">
