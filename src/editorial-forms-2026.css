@@ -544,3 +544,90 @@
   .sht-onboard-subject[aria-pressed="true"],
   .sht-onboard-goal[aria-pressed="true"] { outline: 2px solid Highlight; }
 }
+
+
+/* Landing refinement — remove the generic gradient / floating-pill vocabulary.
+ * The interactive learning demo stays exactly as built. */
+html .sht-landing.sht-v3 { gap: clamp(3.5rem, 7vw, 5.75rem); }
+html .sht-v3 .sht-landing-nav {
+  border-radius: .85rem;
+  box-shadow: 0 8px 25px -23px color-mix(in srgb, var(--foreground) 35%, transparent);
+}
+html[data-surface="liquid"] .sht-v3 .sht-landing-nav {
+  background: var(--card);
+  border-color: var(--border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html .sht-v3 .sht-hero {
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, var(--border));
+  border-radius: 1.2rem;
+  box-shadow: none;
+}
+html .sht-v3 .sht-hero::before { display: none; }
+html .sht-v3 .sht-eyebrow {
+  width: fit-content;
+  gap: .6rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .085em;
+}
+html .sht-v3 .sht-hero h1 {
+  max-width: 13ch;
+  letter-spacing: -.065em;
+  line-height: 1.08;
+  font-weight: 850;
+}
+html .sht-v3 .sht-hero-description {
+  max-width: 34rem;
+  font-size: clamp(.94rem,1.18vw,1.07rem);
+  line-height: 1.75;
+}
+html .sht-v3 .sht-button-primary {
+  color: var(--background);
+  background: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: .7rem;
+  box-shadow: none;
+  font-weight: 800;
+}
+html .sht-v3 .sht-button-primary:hover {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+html .sht-v3 .sht-button-secondary {
+  border-radius: .7rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+html .sht-v3 .sht-feature-featured {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+html .sht-v3 .sht-step,
+html .sht-v3 .sht-subject-card,
+html .sht-v3 .sht-feature,
+html .sht-v3 .sht-faq-item {
+  border-color: color-mix(in srgb, var(--foreground) 12%, var(--border));
+  box-shadow: none;
+}
+html .sht-v3 .sl-lab {
+  border-radius: 1rem;
+  box-shadow: 0 16px 45px -40px color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+html .sht-v3 .sht-steps-section {
+  background: var(--card);
+  border-color: var(--border);
+}
+html .sht-v3 .sht-bottom-cta { border-radius: 1rem; }
+@media (max-width: 767px) {
+  html .sht-v3 .sht-hero { border-radius: 1rem; }
+  html .sht-v3 .sht-hero h1 { line-height: 1.15; letter-spacing: -.05em; }
+  html .sht-v3 .sl-lab { border-radius: .9rem; }
+}
