@@ -410,3 +410,97 @@
 @media (forced-colors: active) {
   .sht-book-progress-filter[aria-pressed="true"] { outline: 2px solid Highlight; }
 }
+
+
+/* Practice is the product. Keep the question, not the decorative frame, in focus. */
+.sht-study-workspace {
+  --sht-study-editorial-line: color-mix(in srgb, var(--foreground) 13%, var(--border));
+}
+.sht-study-workspace .sht-study-heading {
+  background: var(--card);
+  border: 1px solid var(--sht-study-editorial-line);
+  border-radius: 1rem;
+  box-shadow: none;
+}
+.sht-study-workspace .sht-study-title h1 {
+  max-width: 34ch;
+  font-weight: 850;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  letter-spacing: -.046em;
+  line-height: 1.2;
+}
+.sht-study-workspace .sht-study-eyebrow {
+  font-size: .7rem;
+  letter-spacing: .09em;
+}
+.sht-study-workspace .sht-study-toolbar {
+  border-color: var(--sht-study-editorial-line);
+  padding-bottom: 1rem;
+}
+.sht-study-workspace .sht-study-mode-switch {
+  border-color: var(--sht-study-editorial-line);
+  background: var(--muted);
+  border-radius: .7rem;
+}
+.sht-study-workspace .sht-study-mode-switch a {
+  border-radius: .55rem;
+  box-shadow: none;
+  font-size: .82rem;
+  font-weight: 750;
+}
+.sht-study-workspace .sht-study-mode-switch a[aria-current="page"] {
+  border-color: var(--sht-study-editorial-line);
+  color: var(--foreground);
+}
+.sht-study-workspace .sht-study-progress-panel,
+.sht-study-workspace .sht-study-round-progress,
+.sht-study-workspace .study-unit {
+  background: var(--card);
+  border-color: var(--sht-study-editorial-line);
+  border-radius: .8rem;
+  box-shadow: none;
+}
+.sht-study-workspace .study-unit > .sht-study-unit-eyebrow {
+  background: transparent;
+  border-left: 2px solid var(--primary);
+  border-radius: 0;
+  padding: .25rem .6rem;
+  font-size: .73rem;
+  font-weight: 850;
+}
+.sht-study-workspace .study-question-list .question-card {
+  border-color: var(--sht-study-editorial-line);
+  border-radius: .7rem;
+  box-shadow: none;
+  background: var(--card);
+}
+.sht-study-workspace .study-question-list .question-card > div:first-child > span:first-child {
+  font-variant-numeric: tabular-nums;
+  border-radius: .45rem;
+}
+.sht-study-workspace .study-answer-grid .answer-option {
+  border-radius: .6rem;
+  box-shadow: none;
+  line-height: 1.65;
+}
+.sht-study-workspace .sht-answer-keyboard-tip {
+  border-radius: .5rem;
+  background: var(--background);
+}
+.sht-study-workspace :is(.study-check, .study-action-bar button) {
+  border-radius: .55rem;
+  box-shadow: none;
+}
+.sht-study-workspace .sht-study-scratchpad,
+.sht-study-workspace .sht-scratchpad-input {
+  border-radius: .8rem;
+  box-shadow: none;
+}
+.sht-study-workspace .sht-scratchpad-trigger:hover {
+  background: color-mix(in srgb, var(--primary) 4%, var(--card));
+}
+@media (max-width: 640px) {
+  .sht-study-workspace .sht-study-heading { border-radius: .8rem; }
+  .sht-study-workspace .study-unit { border-radius: .8rem; }
+  .sht-study-workspace .sht-study-title h1 { font-size: 1.75rem; }
+}
