@@ -39,6 +39,18 @@ describe("video-led editorial forms", () => {
     expect(onboarding).not.toContain('<main className="sht-onboard-form">');
   });
 
+  it("keeps the interactive landing demo and makes its core copy precise", () => {
+    const landing = read("src/routes/index.tsx");
+    expect(landing).toContain("<LandingHeroLab");
+    expect(landing).toContain("<LandingExperiences");
+    expect(landing).toContain('hero:"Սկսիր հարցից։ Ավարտիր՝ հասկանալով"');
+    expect(landing).toContain('hero:"Practice the question. Understand the answer"');
+    const css = read("src/editorial-forms-2026.css");
+    expect(css).toContain("html .sht-v3 .sht-hero");
+    expect(css).toContain("html .sht-v3 .sht-feature-featured");
+    expect(css).toContain("html .sht-v3 .sl-lab");
+  });
+
   it("uses typography, contrast and restrained state transitions rather than faux glass", () => {
     const css = read("src/editorial-forms-2026.css");
     expect(css).toContain(".sht-auth-story-content h2");
