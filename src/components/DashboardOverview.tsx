@@ -11,9 +11,9 @@ type Props = { name?: string | null; progress: Progress };
 
 const COPY = {
   hy: {
-    heading:"Ի՞նչ ենք սովորում այսօր",
+    heading:"Իմ ուսումնական վահանակը",
     greeting:"Բարի վերադարձ",
-    subtitle:"Պարապմունքները սկսվում են առարկայից։ Գտիր գիրքը, թեստը կամ կրկնության թեման՝ մի քանի հպումով։",
+    subtitle:"Շարունակիր վերջին բաժնից, կրկնիր սխալներդ կամ ընտրիր նոր առարկա։",
     start:"Ընտրել առարկա",
     review:"Կրկնել սխալները",
     profile:"Իմ պրոֆիլը",
@@ -24,9 +24,9 @@ const COPY = {
     continue:"Շարունակել պարապմունքը",last:"Վերջին բացված բաժինը",
   },
   en: {
-    heading:"What shall we study today?",
+    heading:"Your study dashboard",
     greeting:"Welcome back",
-    subtitle:"Pick a subject, find your workbook, and start learning in a few taps.",
+    subtitle:"Return to a recent section, review mistakes, or choose a subject.",
     start:"Explore subjects",
     review:"Review mistakes",
     profile:"My Profile",
@@ -37,9 +37,9 @@ const COPY = {
     continue:"Continue studying",last:"Last opened section",
   },
   ru: {
-    heading:"Что будем изучать сегодня?",
+    heading:"Твоя учебная панель",
     greeting:"С возвращением",
-    subtitle:"Выбери предмет, найди сборник и начни заниматься за пару нажатий.",
+    subtitle:"Вернись к последнему разделу, повтори ошибки или выбери предмет.",
     start:"Выбрать предмет",
     review:"Повторить ошибки",
     profile:"Мой профиль",
