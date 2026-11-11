@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, BookOpen, GraduationCap, ListChecks, Target } from "lucide-react";
+import { ArrowRight, BookOpen, Check, GraduationCap, ListChecks, Target } from "lucide-react";
 import { useLang } from "@/lib/lang";
 import { supabase, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
 import { ONBOARDING_SUBJECTS, saveOnboarding, type OnboardingSubject, type OnboardingProfile } from "@/lib/onboarding";
@@ -38,17 +38,92 @@ function OnboardingPage() {
     if (!ok) {setProblem(tr("Չհաջողվեց պահպանել ընտրությունը։ Ստուգիր դիտարկչի հիշողությունը։","Could not save your choices. Check browser storage.","Не удалось сохранить выбор. Проверь память браузера."));return;}
     void nav({to:"/dashboard",replace:true});
   }
-  return <div className="mx-auto max-w-3xl space-y-7 py-6">
-    <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary"><GraduationCap className="size-4"/>{tr("Բարի գալուստ Shtemarm","Welcome to Shtemarm","Добро пожаловать в Shtemarm")}</span>
-    <h1 className="text-3xl font-black sm:text-4xl">{tr("Կազմենք քո ուսումնական միջավայրը","Set up your learning space","Настроим твоё обучение")}</h1>
-    <p className="text-sm text-muted-foreground">{tr("Սա չի փոխի քո նախկին առաջընթացը։","Your previous progress will remain unchanged.","Твой предыдущий прогресс сохранится.")}</p>
-    <section className="rounded-3xl border bg-card p-5 sm:p-7"><h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary"/>{tr("Ի՞նչ առարկաներ ես սովորում։","Which subjects are you studying?","Какие предметы ты изучаешь?")}</h2><div className="mt-5 flex flex-wrap gap-2">{ONBOARDING_SUBJECTS.map(s=><button type="button" key={s} aria-pressed={subjects.includes(s)} onClick={()=>setSubjects(old=>old.includes(s)?old.filter(x=>x!==s):[...old,s])} className={`min-h-11 rounded-xl border px-4 py-2 text-sm font-bold transition-colors ${subjects.includes(s)?"border-primary bg-primary/10 text-primary":"hover:bg-muted"}`}>{NAMES[s][i]}</button>)}</div></section>
-    <section className="rounded-3xl border bg-card p-5 sm:p-7"><h2 className="flex items-center gap-2 text-lg font-black"><Target className="size-5 text-primary"/>{tr("Ո՞րն է քո նպատակը։","What's your goal?","Какова твоя цель?")}</h2><div className="mt-4 grid gap-3">{([
-      ["exam",tr("Պատրաստվել քննություններին","Prepare for exams","Подготовиться к экзаменам"),GraduationCap],
-      ["practice",tr("Ամեն օր սովորել","Practice daily","Учиться каждый день"),BookOpen],
-      ["review",tr("Ուղղել սխալները","Review mistakes","Повторять ошибки"),ListChecks],
-    ] as const).map(([id,label,Icon])=><button key={id} type="button" aria-pressed={goal===id} onClick={()=>setGoal(id)} className={`flex min-h-12 items-center gap-3 rounded-xl border px-4 text-left text-sm font-bold ${goal===id?"border-primary bg-primary/10":"hover:bg-muted"}`}><Icon className="size-5 text-primary"/>{label}</button>)}</div></section>
-    {problem&&<p role="alert" className="text-sm text-destructive">{problem}</p>}
-    <button type="button" disabled={!userId||subjects.length===0} onClick={finish} className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-primary px-6 font-bold text-primary-foreground disabled:opacity-50">{tr("Անցնել իմ Dashboard","Go to my dashboard","Перейти в кабинет")}<ArrowRight className="size-4"/></button>
-  </div>;
+  const chosen = subjects.length;
+  const complete = chosen > 0;
+  return (
+    <div className="sht-onboard-layout">
+      <aside className="sht-onboard-intro">
+        <div className="sht-onboard-brandline">
+          <span>SHTEMARM / SETUP</span>
+          <span>01 — 02</span>
+        </div>
+        <div className="sht-onboard-intro-main">
+          <span className="sht-onboard-overline">{tr("Քո ուսումնառության ուղղությունը", "Your learning direction", "Твой учебный маршрут")}</span>
+          <h1>{tr("Սկսենք քեզ անհրաժեշտից։", "Start with what matters to you.", "Начнём с важного для тебя.")}</h1>
+          <p>{tr("Ընտրիր առարկաներդ ու հիմնական նպատակը։ Հետո ամեն ինչ կարող ես փոխել։", "Choose your subjects and your main goal. You can change them later.", "Выбери предметы и главную цель. Позже всё можно изменить.")}</p>
+        </div>
+        <div className="sht-onboard-live-summary" aria-live="polite">
+          <div><span>{tr("ԸՆՏՐՎԱԾ ԱՌԱՐԿԱՆԵՐ", "SUBJECTS SELECTED", "ВЫБРАНО ПРЕДМЕТОВ")}</span><strong>{String(chosen).padStart(2, "0")}</strong></div>
+          <div className="sht-onboard-track" role="progressbar"
+            aria-label={tr("Լրացման առաջընթաց", "Setup progress", "Прогресс настройки")}
+            aria-valuemin={0} aria-valuemax={2} aria-valuenow={complete ? 2 : 1}>
+            <span style={{ width: complete ? "100%" : "50%" }}/>
+          </div>
+          <p>{tr("Նախկին առաջընթացդ չի ջնջվի։", "Your existing progress stays intact.", "Твой прежний прогресс сохранится.")}</p>
+        </div>
+      </aside>
+
+      <main className="sht-onboard-form">
+        <div className="sht-onboard-mobile-label">SHTEMARM <span>01 / 02</span></div>
+        <section className="sht-onboard-step" aria-labelledby="sht-onboard-subjects-title">
+          <div className="sht-onboard-step-head">
+            <span className="sht-onboard-step-num">01</span>
+            <div>
+              <p className="sht-onboard-step-overline">{tr("Քայլ առաջին", "First step", "Первый шаг")}</p>
+              <h2 id="sht-onboard-subjects-title">{tr("Ո՞ր առարկաներն ես սովորում։", "What are you studying?", "Какие предметы ты изучаешь?")}</h2>
+              <p>{tr("Կարող ես ընտրել մի քանիսը։", "Pick as many as you need.", "Можно выбрать несколько.")}</p>
+            </div>
+          </div>
+          <div role="group" aria-labelledby="sht-onboard-subjects-title" className="sht-onboard-subjects">
+            {ONBOARDING_SUBJECTS.map((subject, index) => {
+              const active = subjects.includes(subject);
+              return (
+                <button type="button" key={subject} aria-pressed={active}
+                  onClick={() => setSubjects(old => old.includes(subject) ? old.filter(x => x !== subject) : [...old, subject])}
+                  className="sht-onboard-subject">
+                  <span className="sht-onboard-subject-index">{String(index + 1).padStart(2, "0")}</span>
+                  <span>{NAMES[subject][i]}</span>
+                  <span aria-hidden="true" className="sht-onboard-selection-mark">{active ? <Check size={15} /> : null}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="sht-onboard-step" aria-labelledby="sht-onboard-goal-title">
+          <div className="sht-onboard-step-head">
+            <span className="sht-onboard-step-num">02</span>
+            <div>
+              <p className="sht-onboard-step-overline">{tr("Քայլ երկրորդ", "Second step", "Второй шаг")}</p>
+              <h2 id="sht-onboard-goal-title">{tr("Ի՞նչ արդյունք ես ուզում։", "What's your main goal?", "Какова твоя главная цель?")}</h2>
+              <p>{tr("Ընտրիր քեզ առավել համապատասխանող տարբերակը։", "Choose the one that fits best.", "Выбери подходящий вариант.")}</p>
+            </div>
+          </div>
+          <div role="group" aria-labelledby="sht-onboard-goal-title" className="sht-onboard-goals">
+            {([
+              ["exam", tr("Պատրաստվել քննություններին", "Prepare for exams", "Подготовиться к экзаменам"), GraduationCap],
+              ["practice", tr("Ամեն օր սովորել", "Practice daily", "Учиться каждый день"), BookOpen],
+              ["review", tr("Ուղղել սխալները", "Review mistakes", "Повторять ошибки"), ListChecks],
+            ] as const).map(([id, label, Icon], index) => (
+              <button key={id} type="button" aria-pressed={goal === id} onClick={() => setGoal(id)}
+                className="sht-onboard-goal">
+                <span className="sht-onboard-goal-number">{String(index + 1).padStart(2, "0")}</span>
+                <Icon size={20} aria-hidden="true" />
+                <span>{label}</span>
+                <span className="sht-onboard-goal-choice" aria-hidden="true">{goal === id && <Check size={14} />}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+        {problem && <p role="alert" className="sht-onboard-error">{problem}</p>}
+        <div className="sht-onboard-footer">
+          <p>{tr("Քո ընտրությունները կարող ես փոխել ավելի ուշ։", "You can change your choices later.", "Ты сможешь изменить свой выбор позже.")}</p>
+          <button type="button" disabled={!userId || !complete} onClick={finish} className="sht-onboard-continue">
+            {tr("Շարունակել", "Continue", "Продолжить")}
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      </main>
+    </div>
+  );
 }
