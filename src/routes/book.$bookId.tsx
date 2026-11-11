@@ -9,20 +9,26 @@ import { useProgress } from "@/lib/progress";
 import { matchesWorkbookProgressFilter, sectionProgressStatus, type WorkbookProgressFilter } from "@/lib/workbook-progress-filter";
 import { Button } from "@/components/ui/button";
 import { useLang, useTx } from "@/lib/lang";
+import { biologyBookTitle, biologyBookSubtitle } from "@/lib/biology-headings";
 
 export const Route = createFileRoute("/book/$bookId")({
   staticData: { sitemap: true },
   beforeLoad: ({ params }) => {
     if (!ALL_BOOKS.some((b) => String(b.id) === params.bookId)) throw notFound();
   },
-  head: ({ params }) => ({
-    meta: [
-      { title: `Շտեմարան ${params.bookId} · Բաժիններ` },
-      { name: "description", content: `Շտեմարան ${params.bookId}՝ բաժիններ, ուսուցում և թեստեր։` },
-      { property: "og:title", content: `Շտեմարան ${params.bookId} · Shtemarm` },
-      { property: "og:description", content: "Ընտրեք բաժինը, սովորեք կամ անցեք թեստ։" },
-    ],
-  }),
+  head: ({ params }) => {
+    const metadata = ALL_BOOKS.find(book => String(book.id) === params.bookId);
+    const name = biologyBookTitle(Number(params.bookId)) ?? metadata?.title ?? "Շտեմարան";
+    const volume = biologyBookTitle(Number(params.bookId)) ? "" : metadata?.sub ?? "";
+    const title = `${name}${volume ? ` · ${volume}` : ""} · Բաժիններ | Shtemarm`;
+    const description = `${name}․ ընտրիր բաժինը, լուծիր առաջադրանքներ և ստուգիր պատասխաններդ։`;
+    return { meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+    ] };
+  },
   component: BookPage,
 });
 
@@ -32,6 +38,9 @@ function BookPage() {
   const { bookId } = Route.useParams();
   const id = Number(bookId);
   const meta = ALL_BOOKS.find((b) => b.id === id)!;
+  const biologyTitle = biologyBookTitle(id, lang);
+  const displayTitle = biologyTitle ?? meta.title;
+  const displaySubtitle = biologyBookSubtitle(id, lang) ?? meta.sub;
   const sourceReviewPending = [1, 2, 3, 21, 22, 23, 31, 32, 33, 34, 63, 64].includes(id);
   const { data: book, isLoading, isFetching, error, refetch } = useBook(id);
   const reload = () => { invalidateBookCache(id); void refetch(); };
@@ -68,11 +77,11 @@ function BookPage() {
       <div className="sht-book-hero rounded-3xl border bg-card p-5 sm:p-7">
         <div className="space-y-4">
           <div className="flex items-start gap-4">
-            <BookCover src={meta.cover} title={meta.title} size="lg" />
+            <BookCover src={meta.cover} title={displayTitle} size="lg" />
             <div className="min-w-0 flex-1 space-y-2">
               <p className="text-xs font-bold uppercase tracking-wider text-primary">{tx("Ուսուցման շտեմարան · Shtemarm")}</p>
-              <h1 className="text-2xl font-black sm:text-4xl">{meta.title}</h1>
-              <p className="text-muted-foreground">{meta.sub}</p>
+              <h1 className="text-balance text-2xl font-black leading-tight tracking-tight sm:text-4xl">{displayTitle}</h1>
+              <p className="text-sm leading-relaxed text-muted-foreground">{displaySubtitle}</p>
             </div>
           </div>
           {sourceReviewPending && (

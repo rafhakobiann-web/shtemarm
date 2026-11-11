@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { LoadError } from "@/components/LoadError";
 import { cn } from "@/lib/utils";
 import { useLang, useTx } from "@/lib/lang";
+import { biologyBookTitle, biologySectionPageTitle } from "@/lib/biology-headings";
 import { recordUnitMistakes, subjectForBookId } from "@/lib/unitMistakes";
 import { useSignedIn } from "@/lib/guest-trial";
 import { guestPreviewUnits } from "@/lib/guest-preview";
@@ -26,14 +27,19 @@ export const Route = createFileRoute("/study/$bookId/$sectionId")({
         !Number.isSafeInteger(Number(params.sectionId))) throw notFound();
   },
   validateSearch: z.object({ mode: z.enum(["game", "classic"]).catch("game") }),
-  head: ({ params }) => ({
-    meta: [
-      { title: `Շտեմարան ${params.bookId} · Բաժին ${params.sectionId} · Ուսուցում` },
-      { name: "description", content: `Բաժին ${params.sectionId}-ի առաջադրանքները՝ բացատրություններով։` },
-      { property: "og:title", content: `Բաժին ${params.sectionId} · Ուսուցում` },
-      { property: "og:description", content: "Խաղային կամ դասական ուսուցում։" },
-    ],
-  }),
+  head: ({ params }) => {
+    const id = Number(params.bookId);
+    const metadata = ALL_BOOKS.find(book => book.id === id);
+    const title = biologySectionPageTitle(id, Number(params.sectionId))
+      ?? `${metadata?.title ?? "Շտեմարան"} · Բաժին ${params.sectionId} | Shtemarm`;
+    const description = `Բաժին ${params.sectionId}․ լուծիր առաջադրանքները և ստուգիր պատասխաններդ։`;
+    return { meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+    ] };
+  },
   component: StudyPage,
 });
 
@@ -41,6 +47,8 @@ function StudyPage() {
   const tx = useTx();
   const lang = useLang();
   const { bookId, sectionId } = Route.useParams();
+  const biologyTitle = biologyBookTitle(Number(bookId), lang);
+  const bookTitle = biologyTitle ?? ALL_BOOKS.find(book => String(book.id) === bookId)?.title ?? (lang === "en" ? "Workbook" : lang === "ru" ? "Сборник" : "Շտեմարան");
   const { mode } = Route.useSearch();
   const { data: book, error, isPending, isFetching, refetch } = useBook(Number(bookId));
   const section = book?.sections.find((s) => s.n === Number(sectionId));
@@ -52,7 +60,7 @@ function StudyPage() {
 
   // A navigation hint only: no answer payloads, progress values or account details.
   // Save after a real section has loaded, never for broken or empty book links.
-  const loadedSectionTitle = section ? secTitle(section) : "";
+  const loadedSectionTitle = section ? (biologyTitle ? `${biologyTitle} · ${secTitle(section)}` : secTitle(section)) : "";
   useEffect(() => {
     if (section && section.units.length > 0 && previewUnits.length > 0) {
       saveRecentStudy({ bookId, sectionId, title: loadedSectionTitle, mode });
@@ -86,9 +94,9 @@ function StudyPage() {
         </nav>
       </div>
       <div className="sht-study-title">
-        <p className="sht-study-eyebrow">{lang === "en" ? "Your learning space" : lang === "ru" ? "Место для занятий" : "Քո ուսումնական միջավայրը"}</p>
+        <p className="sht-study-eyebrow">{bookTitle}</p>
       <h1 className="text-balance text-2xl font-black tracking-tight sm:text-3xl">
-        {section ? tx("Շտեմարան {book} · {title}", { book: bookId, title: secTitle(section) }) : tx("Շտեմարան {book} · Բաժին {n}", { book: bookId, n: sectionId })}
+        {section ? secTitle(section) : tx("Բաժին {n}", { n: sectionId })}
       </h1>
         <p className="sht-study-subtitle">{lang === "en" ? "Practice at your own pace. Check answers and learn from every mistake." : lang === "ru" ? "Решай в своём темпе, проверяй ответы и учись на ошибках." : "Պարապիր քեզ հարմար տեմպով, ստուգիր պատասխաններդ և սովորիր սխալներից։"}</p>
       </div>

@@ -53,7 +53,7 @@ describe("Biology original book navigation from screenshot", () => {
     expect(reader).toContain('navigate({ to: "/biology/original", search: { volume: next }, replace: true })');
   });
   it("explains that text is available without selecting a PDF", () => {
-    expect(homepage).toContain('հարցերը հասանելի են տեքստով՝ առանց PDF ընտրելու');
+    expect(homepage).toContain('հասանելի են՝ առանց PDF ընտրելու');
   });
 });
 

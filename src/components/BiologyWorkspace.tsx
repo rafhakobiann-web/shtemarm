@@ -89,7 +89,7 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
     <div className="mx-auto max-w-6xl space-y-6 pb-12">
       <ExamHero
         subject={tx("Կենսաբանություն")}
-        title={tx("Կենսաբանություն · Քննությունների կազմիչ")}
+        title={tx("Կազմիր կենսաբանության թեստ")}
         description={tx("Ընտրիր շտեմարանները, բաժինները, հարցերի քանակն ու տեսակները, ժամանակն ու ռեժիմը։ Ավարտելուց հետո վերանայիր պատասխանները։")}
         sources={tx("4 շտեմարան")}
         available={data.data?.length}
@@ -97,8 +97,8 @@ export function BiologyWorkspace({ initialBook, initialSection }: { initialBook?
       />
       <section className="space-y-4 rounded-3xl border border-primary/25 bg-primary/5 p-5">
         <div className="space-y-1">
-          <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 text-primary" />{tx("Կենսաբանության բնօրինակ շտեմարաններ · III և IV")}</h2>
-          <p className="text-sm text-muted-foreground">{tx("1,688 տեքստային առաջադրանք՝ տպագիր պատասխանների բանալիներով · մնացածի ստուգումը շարունակվում է")}</p>
+          <h2 className="flex items-center gap-2 text-lg font-black"><BookOpen className="size-5 shrink-0 text-primary" aria-hidden="true" />{tx("Բնօրինակ շտեմարաններ · Մաս III և IV")}</h2>
+          <p className="text-sm text-muted-foreground">{tx("III և IV մասերում առկա է 3 525 առաջադրանք։ Բնօրինակի հետ վերջնական սրբագրումը շարունակվում է։")}</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link to="/book/$bookId" params={{ bookId: "33" }}
