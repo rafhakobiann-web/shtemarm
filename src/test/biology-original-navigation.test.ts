@@ -23,6 +23,22 @@ describe("Biology original book navigation from screenshot", () => {
     expect(homepage).toContain('1 837 բնօրինակ առաջադրանք');
     expect(homepage).toContain('1 688 բնօրինակ առաջադրանք');
   });
+  it("shows final printed-task coverage without a BETA label for Biology", () => {
+    const biologyHeader = homepage.match(/<SubjectHeader title=\{tx\("Կենսաբանություն"\)\}[^>]*\/>/)?.[0];
+    expect(biologyHeader).toBeDefined();
+    expect(biologyHeader).not.toMatch(/\bbeta\b/);
+    const workspace = readFileSync("src/components/BiologyWorkspace.tsx", "utf8");
+    expect(workspace).toContain("Մաս III · 1 837 առաջադրանք");
+    expect(workspace).toContain("Մաս IV · 1 688 առաջադրանք");
+    const loader = readFileSync("src/lib/books.ts", "utf8");
+    expect(loader).toContain('"biology-last61"');
+    expect(loader).toContain('return supplements.reduce((merged, supplement) => mergeBiologyExtended(merged, supplement), book)');
+    const docs = readFileSync("docs/BIOLOGY_3_4_TEXT_IMPORT.md", "utf8");
+    expect(docs).toContain("3,525");
+    expect(docs).toContain("Manual editorial verification");
+    expect(homepage).toContain("սրբագրման փուլ");
+  });
+
   it("uses URL volume 4 when student opens the fourth source book, with a safe default", () => {
     expect(route).toContain('volume: z.coerce.number().int().min(3).max(4).catch(3)');
     expect(route).toContain('search.volume === 4 ? "34" : "33"');
