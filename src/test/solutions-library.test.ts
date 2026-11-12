@@ -38,6 +38,9 @@ describe("solutions library and diagrams",()=>{
   it("offers source-numbered question lookup and on-demand explanations without grading attempts",()=>{
     const source=read("src/components/MathSourceSolutions.tsx");
     expect(source).toContain("useMathBookIndex()");
+    expect(source).toContain("useSignedIn()");
+    expect(source).toContain("Math.min(subs,2-previous)");
+    expect(source).toContain('to="/auth"');
     expect(source).toContain("<MathDemandReference");
     expect(source).toContain("<MathExplain");
     expect(source).toContain("chosen={null}");
