@@ -1,4 +1,5 @@
 import type { GrammarLanguage } from "./grammarHandbookTypes";
+import { EXPANDED_GRAMMAR_DEEP_DIVES } from "./grammarDeepDivesExpanded";
 
 export type GrammarDeepDive = {
   steps: readonly string[];
@@ -48,5 +49,6 @@ export const GRAMMAR_DEEP_DIVES: Readonly<Record<string, Three>> = {
     hy: {steps:["Ստուգիր՝ գոյականը եզակի հաշվելի՞ է, հոգնակի՞, թե անհաշվելի։","Each/every-ի հետ սովորաբար ընտրիր եզակի հաշվելի գոյական։","All-ի հետ համաձայնեցրու բայը իրական գոյականի թվին։"],contrast:"Every student has a book։ All students have books։ All the water is clean։",caution:"Every-ն անհաշվելի գոյականի հետ ուղղակի չի գործածվում. օգտագործիր համապատասխան այլ որոշիչ։"},
     en: {steps:["Identify whether the noun is singular countable, plural, or uncountable.","Use each/every with singular countable nouns.","With all, agree the verb with the actual noun phrase."],contrast:"Every student has a book; all students have books; all the water is clean.",caution:"Do not place every directly before an uncountable noun."},
     ru: {steps:["Определите тип существительного: единственное исчисляемое, множественное или неисчисляемое.","С each/every обычно нужно единственное исчисляемое существительное.","После all согласуйте глагол с существительным."],contrast:"Every student has; all students have; all the water is.",caution:"Every нельзя напрямую ставить перед неисчисляемым существительным."}
-  }
+  },
+  ...EXPANDED_GRAMMAR_DEEP_DIVES,
 };
