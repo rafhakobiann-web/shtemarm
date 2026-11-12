@@ -87,6 +87,9 @@ export function MathExplain(props: Props) {
   const handbookUrl = /^matem-[12]$/.test(parts[0]??"") && /^\d+$/.test(parts[1]??"") && /^\d+$/.test(parts[2]??"")
     ? `/math-handbook?book=${parts[0]}&chapter=${parts[1]}&section=${parts[2]}` : null;
   return <div className="min-w-0">
+    <a href="/solutions" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-xl border px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
+      {lang==="en"?"Solutions library with drawings":lang==="ru"?"Библиотека решений с чертежами":"Լուծումների գրադարան՝ գծագրերով"}
+    </a>
     {handbookUrl && <a href={handbookUrl}
       className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
       {lang==="en"?"Study methods and worked examples (no AI)":lang==="ru"?"Правила и примеры решений (без ИИ)":"Սովորել բանաձևերը և լուծված օրինակները (առանց AI-ի)"}
