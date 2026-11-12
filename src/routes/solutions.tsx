@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, BookOpenCheck, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenCheck, Search, Calculator, LibraryBig, Languages, ChevronRight } from "lucide-react";
 import { MathSourceSolutions } from "@/components/MathSourceSolutions";
 import { useLang } from "@/lib/lang";
 import { MATH_HANDBOOK_TOPICS } from "@/lib/mathHandbook";
@@ -10,8 +11,16 @@ import { MathDiagram } from "@/components/MathDiagram";
 import { diagramForWorkedExample } from "@/lib/math-worked-diagrams";
 import { MathContent } from "@/components/MathText";
 
+const navigationSchema = z.object({
+  view: z.enum(["math", "source", "english"]).optional(),
+  book: z.enum(["matem-1", "matem-2"]).optional(),
+  chapter: z.coerce.number().int().min(1).max(3).optional(),
+  section: z.coerce.number().int().min(1).max(13).optional(),
+  englishBook: z.coerce.number().int().min(1).max(3).optional(),
+});
 export const Route = createFileRoute("/solutions")({
   staticData: { sitemap: true },
+  validateSearch: navigationSchema,
   head: () => ({ meta: [
     { title: "Լուծումների գրադարան · Shtemarm" },
     { name: "description", content: "Մաթեմատիկայի լուծված օրինակներ՝ քայլերով և գծագրերով, անգլերենի կանոններ՝ նախքան վարժությունները։" },
@@ -56,13 +65,63 @@ const COPY = {
     pattern:"Структура",correct:"Правильный пример",wrong:"Типичная ошибка",why:"Объяснение",section:"Раздел",seeRules:"Открыть правила",start:"Практика раздела" },
 } as const;
 
+
+const HUB_COPY = {
+  hy: {
+    home:"Ընդհանուր", intro:"Ընտրիր՝ ինչ ես ուզում անել", introNote:"Մի էջում միաժամանակ չենք ցուցադրում բոլոր կանոնները, օրինակներն ու հարցերը։ Յուրաքանչյուր ուղղություն ունի իր առանձին միջավայրը։",
+    examples:"Սովորել օրինակներով", examplesDesc:"Մաթեմատիկայի բանաձևեր, լուծման քայլեր և համապատասխան գծագրեր։",
+    source:"Դիտել շտեմարանի լուծումները", sourceDesc:"Ընտրիր իրական առաջադրանքը, բացիր պատասխանը և անհրաժեշտության դեպքում՝ բացատրությունը։",
+    rules:"Սովորել անգլերենի կանոնները", rulesDesc:"Ընտրիր բաժինը, սովորիր կանոնը և հետո անցիր վարժություններին։",
+    open:"Բացել բաժինը", next:"Հետո կարող ես ինքնուրույն լուծել",
+    mathPractice:"Մաթեմատիկայի շտեմարաններ", englishPractice:"Անգլերենի առաջադրանքներ",
+    book:"Գիրք", moreTopics:"Ցույց տալ հաջորդ թեմաները", showing:"Ցուցադրված",
+    library:"Սովորելու ուղղություններ", shared:"Կանոնները բաժինների ուղեցույցներ են, ոչ յուրաքանչյուր հարցի ստուգված անհատական լուծում։",
+  },
+  en: {
+    home:"Overview", intro:"Choose what you want to do", introNote:"Rules, examples and questions are kept separate. Each path has its own focused workspace.",
+    examples:"Learn with worked examples", examplesDesc:"Math methods, clear steps and diagrams matched to each example.",
+    source:"Browse workbook solutions", sourceDesc:"Choose a real task, reveal its key and request an explanation when needed.",
+    rules:"Study English rules", rulesDesc:"Pick a section, learn the rule, then practise.",
+    open:"Open workspace", next:"Ready to practise independently?",
+    mathPractice:"Math workbooks", englishPractice:"English questions",
+    book:"Book", moreTopics:"Show more topics", showing:"Showing",
+    library:"Learning paths", shared:"Section guides are not verified individual solutions for every question.",
+  },
+  ru: {
+    home:"Обзор", intro:"Выбери, что хочешь сделать", introNote:"Правила, примеры и задачи не смешиваются на одном экране: у каждого режима своё пространство.",
+    examples:"Разобрать примеры", examplesDesc:"Математические методы, шаги решений и подходящие чертежи.",
+    source:"Решения из сборника", sourceDesc:"Найди задачу, открой ключ и при необходимости объяснение.",
+    rules:"Выучить правила английского", rulesDesc:"Выбери раздел, изучи правило, затем решай самостоятельно.",
+    open:"Открыть раздел", next:"Теперь можно решать самостоятельно",
+    mathPractice:"Сборники математики", englishPractice:"Задания английского",
+    book:"Книга", moreTopics:"Показать ещё темы", showing:"Показано",
+    library:"Направления обучения", shared:"Рекомендованные правила не являются проверенным решением к каждому заданию.",
+  },
+} as const;
+
 function SolutionsPage() {
   const lang = useLang();
   const t = COPY[lang];
-  const [subject, setSubject] = useState<"math" | "source" | "english">("math");
+  const { view, book: sourceBook, chapter: sourceChapter, section: linkedSection, englishBook: linkedEnglishBook } = Route.useSearch();
+  const subject = view ?? "home";
+  const hub = HUB_COPY[lang];
   const [category, setCategory] = useState<MathCategory | "all">("all");
-  const [section, setSection] = useState(3);
+  const [section, setSection] = useState(linkedSection ?? 3);
+  const [englishBook, setEnglishBook] = useState(linkedEnglishBook ?? 1);
+  const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
+  // Changing learning paths must not leave an invisible filter from another subject.
+  useEffect(()=>{
+    setQuery("");
+    setVisibleLimit(8);
+    setCategory("all");
+  },[subject]);
+  // Deep links from a chosen English section should open that section, not stale local UI.
+  useEffect(()=>{
+    if(subject!=="english")return;
+    if(linkedSection!==undefined)setSection(linkedSection);
+    if(linkedEnglishBook!==undefined)setEnglishBook(linkedEnglishBook);
+  },[subject,linkedSection,linkedEnglishBook]);
   const q=query.trim().toLocaleLowerCase();
   const mathTopics = useMemo(() => MATH_HANDBOOK_TOPICS.filter(topic =>
     (category === "all" || category === topic.category) &&
@@ -71,6 +130,8 @@ function SolutionsPage() {
   const englishTopics = useMemo(() => getSectionTopics(section).filter(topic =>
     !q || [topic.title,topic.formula,topic.content[lang].summary,topic.id].some(text=>text.toLocaleLowerCase().includes(q))
   ),[section,lang,q]);
+  const visibleMathTopics=mathTopics.slice(0,visibleLimit);
+  const visibleEnglishTopics=englishTopics.slice(0,visibleLimit);
   const sectionGuide = getSectionGuide(section);
 
   return <main className="sht-solutions mx-auto max-w-6xl space-y-6 pb-28">
@@ -79,39 +140,92 @@ function SolutionsPage() {
       <div className="flex items-center gap-3"><BookOpenCheck className="size-7 text-primary" aria-hidden="true" />
         <h1 className="text-2xl font-black tracking-tight sm:text-4xl">{t.title}</h1></div>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.lead}</p>
-      <div role="group" aria-label={t.title} className="sht-solutions-tabs mt-6 flex flex-wrap gap-2">
-        {(["math","source","english"] as const).map(key=><button key={key} type="button" aria-pressed={subject===key}
-          className="min-h-11 rounded-lg border px-4 py-2 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary"
-          onClick={()=>{setSubject(key);setQuery("");}}>{key==="math"?t.math:key==="source"?t.source:t.english}</button>)}
-      </div>
+      <nav aria-label={hub.library} className="sht-solutions-tabs mt-6 flex flex-wrap gap-2">
+        <Link to="/solutions" search={{view:undefined}} aria-current={subject==="home"?"page":undefined}
+          className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold">{hub.home}</Link>
+        {(["math","source","english"] as const).map(key=><Link key={key} to="/solutions" search={{view:key}}
+          aria-current={subject===key?"page":undefined}
+          className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold">
+          {key==="math"?t.math:key==="source"?t.source:t.english}</Link>)}
+      </nav>
     </header>
-    {subject==="source" ? <MathSourceSolutions/> : <>
+    {subject==="home" ? <section className="space-y-5" aria-labelledby="sht-learning-paths-title">
+      <div>
+        <h2 id="sht-learning-paths-title" className="text-balance text-xl font-black tracking-tight sm:text-2xl">{hub.intro}</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{hub.introNote}</p>
+      </div>
+      <div className="sht-solutions-overview grid gap-3 md:grid-cols-3">
+        {([
+          {view:"math" as const,title:hub.examples,detail:hub.examplesDesc,Icon:Calculator,number:"01"},
+          {view:"source" as const,title:hub.source,detail:hub.sourceDesc,Icon:LibraryBig,number:"02"},
+          {view:"english" as const,title:hub.rules,detail:hub.rulesDesc,Icon:Languages,number:"03"},
+        ]).map(item=><Link key={item.view} to="/solutions" search={{view:item.view}}
+          className="sht-solutions-overview-card group flex min-h-56 flex-col justify-between rounded-xl border bg-card p-5 focus-visible:outline-2 focus-visible:outline-primary">
+          <div>
+            <div className="mb-5 flex items-center justify-between gap-2">
+              <item.Icon aria-hidden="true" className="size-6 text-primary"/>
+              <span className="font-mono text-xs text-muted-foreground">{item.number}</span>
+            </div>
+            <h3 className="text-balance text-lg font-extrabold tracking-tight">{item.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+          </div>
+          <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-primary">{hub.open}<ChevronRight className="size-4" aria-hidden="true"/></span>
+        </Link>)}
+      </div>
+      <div className="sht-solutions-practice rounded-xl border bg-card p-5">
+        <h2 className="text-base font-bold">{hub.next}</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {mathTopics.length>visibleLimit && <button type="button" onClick={()=>setVisibleLimit(n=>n+8)}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border px-4 py-2 text-sm font-bold hover:bg-muted">
+            {hub.moreTopics} ({visibleMathTopics.length}/{mathTopics.length})
+          </button>}
+          <Link to="/math/books" className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.mathPractice}<ArrowRight className="size-4"/></Link>
+          <Link to="/book/$bookId" params={{bookId:"1"}} className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.englishPractice}<ArrowRight className="size-4"/></Link>
+        </div>
+      </div>
+    </section> : subject==="source" ? <MathSourceSolutions initialBookId={sourceBook} initialChapter={sourceChapter} initialSection={linkedSection}/> : <>
     <p className="sht-solutions-note rounded-lg border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground" role="note">{subject==="math"?t.disclaimer:t.englishNote}</p>
     <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
       <aside className="space-y-4 rounded-xl border bg-card p-4 lg:sticky lg:top-24">
         <label htmlFor="solutions-search" className="text-sm font-bold">{t.search}</label>
         <div className="relative">
           <Search className="absolute left-3 top-3.5 size-4 text-muted-foreground" aria-hidden="true" />
-          <input id="solutions-search" type="search" value={query} onChange={e=>setQuery(e.target.value)}
+          <input id="solutions-search" type="search" value={query} onChange={e=>{setQuery(e.target.value);setVisibleLimit(8);}}
             placeholder={t.search} className="min-h-11 w-full rounded-lg border bg-background pl-9 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"/>
         </div>
-        {subject==="math" ? <nav aria-label={t.all} className="grid max-h-96 gap-1 overflow-y-auto">
-          <button type="button" aria-pressed={category==="all"} onClick={()=>setCategory("all")} className="sht-solutions-filter">{t.all}</button>
-          {CATEGORIES.map(c=><button type="button" key={c.id} aria-pressed={category===c.id}
-            onClick={()=>setCategory(c.id)} className="sht-solutions-filter">{c[lang]}</button>)}
-        </nav> : <div className="space-y-2">
-          <label htmlFor="solution-section" className="text-sm font-bold">{t.section}</label>
+        {subject==="math" ? <div className="space-y-2">
+          <label htmlFor="solutions-category" className="text-sm font-bold">{hub.library}</label>
+          <select id="solutions-category" value={category}
+            onChange={e=>{setCategory(e.target.value as MathCategory | "all");setVisibleLimit(8);}}
+            className="min-h-11 w-full rounded-lg border bg-background px-3 py-2 lg:hidden">
+            <option value="all">{t.all}</option>
+            {CATEGORIES.map(c=><option value={c.id} key={c.id}>{c[lang]}</option>)}
+          </select>
+          <nav aria-label={t.all} className="hidden max-h-96 gap-1 overflow-y-auto lg:grid">
+            <button type="button" aria-pressed={category==="all"} onClick={()=>{setCategory("all");setVisibleLimit(8);}} className="sht-solutions-filter">{t.all}</button>
+            {CATEGORIES.map(c=><button type="button" key={c.id} aria-pressed={category===c.id}
+              onClick={()=>{setCategory(c.id);setVisibleLimit(8);}} className="sht-solutions-filter">{c[lang]}</button>)}
+          </nav>
+        </div> : <div className="space-y-3">
+          <label className="grid gap-1 text-sm font-bold">{hub.book}
+            <select value={englishBook} onChange={e=>setEnglishBook(Number(e.target.value))}
+              className="min-h-11 w-full rounded-lg border bg-background px-3">
+              {[1,2,3].map(n=><option key={n} value={n}>{hub.book} {n}</option>)}
+            </select>
+          </label>
+          <label htmlFor="solution-section" className="block text-sm font-bold">{t.section}</label>
           <select id="solution-section" className="min-h-11 w-full rounded-lg border bg-background p-2"
-            value={section} onChange={e=>setSection(Number(e.target.value))}>
+            value={section} onChange={e=>{setSection(Number(e.target.value));setVisibleLimit(8);}}>
             {Array.from({length:13},(_,i)=>i+1).map(n=><option key={n} value={n}>{t.section} {n}</option>)}
           </select>
           <p className="text-sm leading-relaxed text-muted-foreground">{sectionGuide?.title[lang]}</p>
+          <p className="border-t pt-3 text-xs leading-relaxed text-muted-foreground">{hub.shared}</p>
         </div>}
       </aside>
       <div className="min-w-0 space-y-4">
         {subject==="math" ? <>
           <h2 className="text-lg font-black">{t.math} · {mathTopics.length}</h2>
-          {mathTopics.map(topic=>{
+          {visibleMathTopics.map(topic=>{
             const diagram=diagramForWorkedExample(topic.id);
             return <details key={topic.id} id={`solution-${topic.id}`} className="sht-solutions-card group rounded-xl border bg-card">
               <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-bold focus-visible:outline-2 focus-visible:outline-primary">
@@ -138,7 +252,7 @@ function SolutionsPage() {
           {!mathTopics.length && <p role="status" className="p-6 text-muted-foreground">{t.noResults}</p>}
         </> : <>
           <h2 className="text-lg font-black">{sectionGuide?.title[lang]} · {englishTopics.length}</h2>
-          {englishTopics.map(topic=>{
+          {visibleEnglishTopics.map(topic=>{
             const info=topic.content[lang];
             return <details key={topic.id} className="sht-solutions-card rounded-xl border bg-card">
               <summary className="min-h-16 cursor-pointer list-none px-5 py-4 font-bold focus-visible:outline-2 focus-visible:outline-primary">{topic.title} · {topic.level}</summary>
@@ -147,12 +261,16 @@ function SolutionsPage() {
                 <p><strong>{t.correct}: </strong>{topic.correct}</p>
                 <p><strong>{t.wrong}: </strong>{topic.incorrect}</p>
                 <p className="text-muted-foreground"><strong>{t.why}: </strong>{info.why}</p>
-                <Link to="/english-grammar" search={{book:1,section,topic:topic.id}}
+                <Link to="/english-grammar" search={{book:englishBook,section,topic:topic.id}}
                   className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary">{t.seeRules}<ArrowRight className="size-4"/></Link>
               </div>
             </details>;
           })}
-          <Link to="/study/$bookId/$sectionId" params={{bookId:"1",sectionId:String(section)}} search={{mode:"classic"}}
+          {englishTopics.length>visibleLimit && <button type="button" onClick={()=>setVisibleLimit(n=>n+8)}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border px-4 py-2 text-sm font-bold hover:bg-muted">
+            {hub.moreTopics} ({visibleEnglishTopics.length}/{englishTopics.length})
+          </button>}
+          <Link to="/study/$bookId/$sectionId" params={{bookId:String(englishBook),sectionId:String(section)}} search={{mode:"classic"}}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold">{t.start}<ArrowRight className="size-4"/></Link>
           {!englishTopics.length && <p role="status" className="p-6 text-muted-foreground">{t.noResults}</p>}
         </>}

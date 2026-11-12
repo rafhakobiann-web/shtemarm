@@ -139,9 +139,7 @@ export function ExplorePage() {
   const studyTools = [
     { to:"/study-plan", label:l("Ուսումնական պլան","Study plan","План занятий"), Icon:GraduationCap },
     { to:"/mistakes", label:l("Իմ սխալները","Review mistakes","Повторение ошибок"), Icon:RotateCcw },
-    { to:"/solutions", label:l("Լուծումների գրադարան","Worked solutions library","Библиотека решений"), Icon:BookOpen },
-    { to:"/math-handbook", label:l("Մաթեմատիկայի կանոններ","Math formulas and rules","Правила математики"), Icon:Calculator },
-    { to:"/english-grammar", label:l("Անգլերենի կանոններ","English grammar","Английская грамматика"), Icon:Languages },
+    { to:"/solutions", label:l("Սովորել՝ կանոններ և լուծումներ","Learn: rules and solutions","Обучение: правила и решения"), Icon:BookOpen },
     { to:"/chat", label:l("AI ուսուցիչ","AI tutor","ИИ-учитель"), Icon:Brain },
     { to:"/flashcards", label:l("Հիշողության քարտեր","Flashcards","Карточки"), Icon:BookText },
     { to:"/mini-games", label:l("Ուսումնական խաղեր","Learning games","Учебные игры"), Icon:Sparkles },

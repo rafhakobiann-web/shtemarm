@@ -322,8 +322,9 @@ function BooksPage() {
         )}
       </div>
 
-      <Link to="/solutions" className="mr-2 inline-flex min-h-11 items-center rounded-xl border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
-        {lang==="en"?"Learn from worked solutions first":lang==="ru"?"Сначала изучить решения":"Նախ սովորել լուծումները"}
+      <Link to="/solutions" search={{view:"source",book:bookId==="matem-2"?"matem-2":"matem-1",chapter:section?.chapter,section:section?.section}}
+        className="mr-2 inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
+        {lang==="en"?"View this section's solutions":lang==="ru"?"Решения этого раздела":"Այս բաժնի լուծումները"}
       </Link>
       <Link to="/math-handbook"
         search={{book:bookId==="matem-2"?"matem-2":"matem-1",chapter:section?.chapter??1,section:section?.section??1,topic:undefined}}

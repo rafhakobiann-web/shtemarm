@@ -143,8 +143,9 @@ function EnglishGrammarHandbook() {
             <h2 className="mt-1 text-xl font-black">{guide?.title[lang]}</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{guide?.description[lang]}</p>
           </div>
-          <Link to="/solutions" className="mr-2 inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold text-primary hover:bg-muted">
-            {lang==="en"?"Solutions and rules library":lang==="ru"?"Библиотека решений и правил":"Լուծումների և կանոնների գրադարան"}
+          <Link to="/solutions" search={{view:"english",englishBook:book,section}}
+            className="mr-2 inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-primary hover:bg-muted">
+            {lang==="en"?"Learn this section first":lang==="ru"?"Разбор правил раздела":"Այս բաժնի կանոններն ու օրինակները"}
           </Link>
           <Link to="/study/$bookId/$sectionId" params={{bookId:String(book),sectionId:String(section)}} search={{mode:"classic"}}
             className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90">

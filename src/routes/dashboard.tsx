@@ -112,10 +112,10 @@ function EnglishSubject() {
   return (
     <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Անգլերեն")} sub={tx("Շտեմարաններ և քննություններ")} />
-      <div className="flex flex-wrap gap-2">
-        <Link to="/english-grammar" className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">{tx("Նախ սովորել բաժինների կանոնները")}</Link>
-        <Link to="/solutions" className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">{tx("Լուծումների և կանոնների գրադարան")}</Link>
-      </div>
+      <Link to="/solutions" search={{view:"english"}}
+        className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
+        {tx("Նախ սովորել անգլերենի կանոնները")} <ArrowRight className="size-4" aria-hidden="true"/>
+      </Link>
       <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -153,10 +153,10 @@ function MathSubject() {
   return (
     <div className="mx-auto max-w-6xl space-y-7 py-4 sm:space-y-9 sm:py-6">
       <SubjectHeader title={tx("Մաթեմատիկա")} sub={tx("Շտեմարաններ և քննություն")} />
-      <div className="flex flex-wrap gap-2">
-        <Link to="/solutions" className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">{tx("Նախ նայել լուծումները՝ գծագրերով")}</Link>
-        <Link to="/math-handbook" search={{book:"matem-1",chapter:1,section:1,topic:undefined}} className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">{tx("Բանաձևեր և կանոններ")}</Link>
-      </div>
+      <Link to="/solutions" search={{view:"math"}}
+        className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
+        {tx("Նախ սովորել լուծման մեթոդներն ու գծագրերը")} <ArrowRight className="size-4" aria-hidden="true"/>
+      </Link>
       <section id="subject-books" className="space-y-6">
         <h2 className="text-xl font-black sm:text-2xl">{tx("Շտեմարաններ")}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

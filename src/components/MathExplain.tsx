@@ -19,6 +19,7 @@ type Props = {
   options?: string[] | undefined;
   /** Native-source math contains geometry/formulas absent from simplified prompts. */
   nativeSource?: boolean | undefined;
+  showRelatedLinks?: boolean | undefined;
 };
 
 export function taskPages(segments: Segment[]) {
@@ -86,14 +87,17 @@ export function MathExplain(props: Props) {
   const parts = props.item.split(":");
   const handbookUrl = /^matem-[12]$/.test(parts[0]??"") && /^\d+$/.test(parts[1]??"") && /^\d+$/.test(parts[2]??"")
     ? `/math-handbook?book=${parts[0]}&chapter=${parts[1]}&section=${parts[2]}` : null;
+  const sourceUrl=handbookUrl ? `/solutions?view=source&book=${parts[0]}&chapter=${parts[1]}&section=${parts[2]}` : "/solutions?view=source";
   return <div className="min-w-0">
-    <a href="/solutions" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-xl border px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
-      {lang==="en"?"Solutions library with drawings":lang==="ru"?"Библиотека решений с чертежами":"Լուծումների գրադարան՝ գծագրերով"}
-    </a>
-    {handbookUrl && <a href={handbookUrl}
-      className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
-      {lang==="en"?"Study methods and worked examples (no AI)":lang==="ru"?"Правила и примеры решений (без ИИ)":"Սովորել բանաձևերը և լուծված օրինակները (առանց AI-ի)"}
-    </a>}
+    {props.showRelatedLinks!==false && <div className="mt-3 flex flex-wrap gap-2" aria-label={lang==="en"?"Related learning resources":lang==="ru"?"Связанные учебные материалы":"Կապակցված ուսումնական նյութեր"}>
+      <a href={sourceUrl} className="inline-flex min-h-11 items-center rounded-lg border px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
+        {lang==="en"?"Source question solutions":lang==="ru"?"Решения заданий":"Շտեմարանի լուծումները"}
+      </a>
+      {handbookUrl && <a href={handbookUrl}
+        className="inline-flex min-h-11 items-center rounded-lg border px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
+        {lang==="en"?"Methods for this section":lang==="ru"?"Методы раздела":"Այս բաժնի կանոնները"}
+      </a>}
+    </div>}
     {active && !active.error && <p role="status" className="my-2 text-xs font-semibold text-muted-foreground">
       {active.offline
         ? lang==="en"?"Local explanation (no AI)":lang==="ru"?"Локальное объяснение (без ИИ)":"Տեղային բացատրություն (առանց AI-ի)"

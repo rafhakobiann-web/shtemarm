@@ -5,15 +5,34 @@
   box-shadow: none;
 }
 .sht-solutions-header h1 { letter-spacing: -.055em; line-height: 1.15; text-wrap: balance; }
-.sht-solutions-tabs button {
+.sht-solutions-tabs a {
   background: var(--card); color: var(--muted-foreground);
   border-color: var(--border); transition: color .16s ease, background-color .16s ease;
+  text-decoration: none;
 }
-.sht-solutions-tabs button[aria-pressed="true"] {
+.sht-solutions-tabs a:hover { background: var(--muted); color: var(--foreground); }
+.sht-solutions-tabs a[aria-current="page"] {
   color: var(--primary);
   border-color: var(--primary);
   background: color-mix(in srgb, var(--primary) 7%, var(--card));
 }
+.sht-solutions-overview-card {
+  border-color: var(--border);
+  box-shadow: none;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.sht-solutions-overview-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  background: color-mix(in srgb, var(--primary) 3%, var(--card));
+}
+.sht-solutions-overview-card:focus-visible,
+.sht-solutions-tabs a:focus-visible {
+  outline: 2px solid var(--ring); outline-offset: 3px;
+}
+.sht-solutions-overview-card h3 { letter-spacing: -.025em; }
+.sht-solutions-practice { box-shadow: none; }
 .sht-solutions-filter {
   min-height: 43px; border: 1px solid transparent;
   display: flex; align-items: center; width: 100%; padding: .55rem .75rem;
@@ -53,12 +72,13 @@
 @media (max-width: 600px) {
   .sht-solutions-header { padding: 1.1rem; }
   .sht-solutions-header h1 { font-size: 1.65rem; }
-  .sht-solutions-tabs button { flex: 1 1 8.5rem; }
+  .sht-solutions-tabs a { flex: 1 1 8.5rem; justify-content: center; text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sht-solutions *, .sht-prestudy-explanation * { animation: none !important; transition: none !important; }
 }
 @media (forced-colors: active) {
-  .sht-solutions-tabs button[aria-pressed="true"],
+  .sht-solutions-tabs a[aria-current="page"],
   .sht-solutions-filter[aria-pressed="true"] { outline: 2px solid Highlight; }
+  .sht-solutions-overview-card:hover { border-color: Highlight; }
 }
