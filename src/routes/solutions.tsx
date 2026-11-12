@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { z } from "zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, BookOpenCheck, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenCheck, Search, Calculator, LibraryBig, Languages, ChevronRight } from "lucide-react";
 import { MathSourceSolutions } from "@/components/MathSourceSolutions";
 import { useLang } from "@/lib/lang";
 import { MATH_HANDBOOK_TOPICS } from "@/lib/mathHandbook";
@@ -10,8 +11,10 @@ import { MathDiagram } from "@/components/MathDiagram";
 import { diagramForWorkedExample } from "@/lib/math-worked-diagrams";
 import { MathContent } from "@/components/MathText";
 
+const navigationSchema = z.object({ view: z.enum(["math", "source", "english"]).optional() });
 export const Route = createFileRoute("/solutions")({
   staticData: { sitemap: true },
+  validateSearch: navigationSchema,
   head: () => ({ meta: [
     { title: "Լուծումների գրադարան · Shtemarm" },
     { name: "description", content: "Մաթեմատիկայի լուծված օրինակներ՝ քայլերով և գծագրերով, անգլերենի կանոններ՝ նախքան վարժությունները։" },
@@ -56,12 +59,50 @@ const COPY = {
     pattern:"Структура",correct:"Правильный пример",wrong:"Типичная ошибка",why:"Объяснение",section:"Раздел",seeRules:"Открыть правила",start:"Практика раздела" },
 } as const;
 
+
+const HUB_COPY = {
+  hy: {
+    home:"Ընդհանուր", intro:"Ընտրիր՝ ինչ ես ուզում անել", introNote:"Մի էջում միաժամանակ չենք ցուցադրում բոլոր կանոնները, օրինակներն ու հարցերը։ Յուրաքանչյուր ուղղություն ունի իր առանձին միջավայրը։",
+    examples:"Սովորել օրինակներով", examplesDesc:"Մաթեմատիկայի բանաձևեր, լուծման քայլեր և համապատասխան գծագրեր։",
+    source:"Դիտել շտեմարանի լուծումները", sourceDesc:"Ընտրիր իրական առաջադրանքը, բացիր պատասխանը և անհրաժեշտության դեպքում՝ բացատրությունը։",
+    rules:"Սովորել անգլերենի կանոնները", rulesDesc:"Ընտրիր բաժինը, սովորիր կանոնը և հետո անցիր վարժություններին։",
+    open:"Բացել բաժինը", next:"Հետո կարող ես ինքնուրույն լուծել",
+    mathPractice:"Մաթեմատիկայի շտեմարաններ", englishPractice:"Անգլերենի առաջադրանքներ",
+    book:"Գիրք", moreTopics:"Ցույց տալ հաջորդ թեմաները", showing:"Ցուցադրված",
+    library:"Սովորելու ուղղություններ", shared:"Կանոնները բաժինների ուղեցույցներ են, ոչ յուրաքանչյուր հարցի ստուգված անհատական լուծում։",
+  },
+  en: {
+    home:"Overview", intro:"Choose what you want to do", introNote:"Rules, examples and questions are kept separate. Each path has its own focused workspace.",
+    examples:"Learn with worked examples", examplesDesc:"Math methods, clear steps and diagrams matched to each example.",
+    source:"Browse workbook solutions", sourceDesc:"Choose a real task, reveal its key and request an explanation when needed.",
+    rules:"Study English rules", rulesDesc:"Pick a section, learn the rule, then practise.",
+    open:"Open workspace", next:"Ready to practise independently?",
+    mathPractice:"Math workbooks", englishPractice:"English questions",
+    book:"Book", moreTopics:"Show more topics", showing:"Showing",
+    library:"Learning paths", shared:"Section guides are not verified individual solutions for every question.",
+  },
+  ru: {
+    home:"Обзор", intro:"Выбери, что хочешь сделать", introNote:"Правила, примеры и задачи не смешиваются на одном экране: у каждого режима своё пространство.",
+    examples:"Разобрать примеры", examplesDesc:"Математические методы, шаги решений и подходящие чертежи.",
+    source:"Решения из сборника", sourceDesc:"Найди задачу, открой ключ и при необходимости объяснение.",
+    rules:"Выучить правила английского", rulesDesc:"Выбери раздел, изучи правило, затем решай самостоятельно.",
+    open:"Открыть раздел", next:"Теперь можно решать самостоятельно",
+    mathPractice:"Сборники математики", englishPractice:"Задания английского",
+    book:"Книга", moreTopics:"Показать ещё темы", showing:"Показано",
+    library:"Направления обучения", shared:"Рекомендованные правила не являются проверенным решением к каждому заданию.",
+  },
+} as const;
+
 function SolutionsPage() {
   const lang = useLang();
   const t = COPY[lang];
-  const [subject, setSubject] = useState<"math" | "source" | "english">("math");
+  const { view } = Route.useSearch();
+  const subject = view ?? "home";
+  const hub = HUB_COPY[lang];
   const [category, setCategory] = useState<MathCategory | "all">("all");
   const [section, setSection] = useState(3);
+  const [englishBook, setEnglishBook] = useState(1);
+  const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
   const q=query.trim().toLocaleLowerCase();
   const mathTopics = useMemo(() => MATH_HANDBOOK_TOPICS.filter(topic =>
