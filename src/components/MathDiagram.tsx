@@ -6,6 +6,7 @@ export type DiagramSpec =
   | { type: "triangle"; labels?: [string, string, string]; sides?: [string, string, string]; title?: string }
   | { type: "circle"; radius?: string; title?: string }
   | { type: "right-triangle"; legA: string; legB: string; hypotenuse?: string; title?: string }
+  | { type: "triangle-height"; base: string; height: string; title?: string }
   | { type: "vectors"; ax: number; ay: number; bx: number; by: number; title?: string }
   | { type: "solid"; shape: "cylinder" | "cone"; radius: number; height: number; title?: string };
 const bounded = (v: unknown, low: number, high: number) => typeof v === "number" && Number.isFinite(v) && v >= low && v <= high;
@@ -37,6 +38,8 @@ export function readDiagram(source: string): DiagramSpec | null {
     if (x.type === "right-triangle" && short(x.legA) && short(x.legB) && (x.hypotenuse === undefined || short(x.hypotenuse)))
       return { type:"right-triangle",legA:x.legA as string,legB:x.legB as string,
         hypotenuse:x.hypotenuse as string | undefined,title:x.title as string | undefined };
+    if (x.type === "triangle-height" && short(x.base) && short(x.height))
+      return {type:"triangle-height",base:x.base as string,height:x.height as string,title:x.title as string | undefined};
     if (x.type === "vectors" && [x.ax,x.ay,x.bx,x.by].every(n=>bounded(n,-12,12)))
       return { type:"vectors",ax:x.ax as number,ay:x.ay as number,bx:x.bx as number,by:x.by as number,title:x.title as string | undefined };
     if (x.type === "solid" && (x.shape === "cylinder" || x.shape === "cone") &&
@@ -96,6 +99,17 @@ function RightTriangleDiagram({spec}:{spec:Extract<DiagramSpec,{type:"right-tria
     <g fontSize="13" fill="currentColor"><text x="94" y="278">A</text><text x="411" y="272">B</text><text x="95" y="52">C</text></g>
   </svg>;
 }
+function TriangleHeightDiagram({spec}:{spec:Extract<DiagramSpec,{type:"triangle-height"}>}) {
+  return <svg viewBox="0 0 520 315" role="img" className="block w-full" aria-label={spec.title || "Եռանկյան հիմք և բարձրություն"}>
+    <path d="M75 262L449 262L251 56Z" stroke="var(--primary)" strokeWidth="3" fill="var(--primary)" fillOpacity=".05"/>
+    <path d="M251 56V262" stroke="currentColor" strokeDasharray="6 5" strokeWidth="2"/>
+    <path d="M251 241H272V262" stroke="currentColor" fill="none" strokeWidth="1.6"/>
+    <g fontSize="18" fill="currentColor"><text x="260" y="292" textAnchor="middle">{spec.base}</text>
+      <text x="265" y="151">{spec.height}</text></g>
+    <g fill="currentColor" fontSize="14"><text x="56" y="276">A</text><text x="455" y="275">B</text>
+      <text x="248" y="42">C</text><text x="258" y="278">H</text></g>
+  </svg>;
+}
 function VectorDiagram({spec}:{spec:Extract<DiagramSpec,{type:"vectors"}>}) {
   const id=useId();
   const pts=[[0,0],[spec.ax,spec.ay],[spec.ax+spec.bx,spec.ay+spec.by]];
@@ -153,6 +167,7 @@ export function MathDiagram({ spec }: { spec: DiagramSpec }) {
     </div>
     {spec.type === "function" ? <FunctionDiagram spec={spec}/>
       : spec.type === "right-triangle" ? <RightTriangleDiagram spec={spec}/>
+      : spec.type === "triangle-height" ? <TriangleHeightDiagram spec={spec}/>
       : spec.type === "vectors" ? <VectorDiagram spec={spec}/>
       : spec.type === "solid" ? <SolidDiagram spec={spec}/>
       : <GeometryDiagram spec={spec}/>}
