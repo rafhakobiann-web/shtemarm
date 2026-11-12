@@ -1,0 +1,120 @@
+import { useMemo, useState } from "react";
+import { useMathBookIndex } from "@/lib/math-bank";
+import { isShortAnswer, isOpenTask } from "@/lib/math-progress";
+import { useLang } from "@/lib/lang";
+import { MathQuestionText } from "@/components/MathQuestionText";
+import { MathDemandReference } from "@/components/MathDemandReference";
+import { MathExplain, taskPages } from "@/components/MathExplain";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Loader2 } from "lucide-react";
+
+const PAGE_SIZE=8;
+const COPY={
+  hy:{title:"Շտեմարանային առաջադրանքների լուծումներ",book:"Գիրք",chapter:"Գլուխ",section:"Բաժին",
+    tasks:"Առաջադրանքներ",question:"Ենթահարց",show:"Բացել պատասխանը և բացատրությունը",
+    answer:"Բնօրինակի պատասխանի բանալին",noKey:"Այս ենթահարցի ստուգված պատասխանը դեռ հասանելի չէ։",
+    noText:"Առաջադրանքի ամբողջական տեքստը դեռ թվայնացված չէ։ Ստուգիր բնօրինակի հատվածը։",
+    next:"Հաջորդ էջը",prev:"Նախորդ էջը",loading:"Շտեմարանները բեռնվում են…",error:"Չհաջողվեց բեռնել գրքերը։",
+    note:"Ընտրիր գիրքը, գլուխը և բաժինը։ Ստորև կարող ես բացել պատասխանը՝ առանց փորձնական պատասխան գրելու։ Մանրամասն լուծումը ստեղծվում է ըստ հասանելի նյութերի և կարող է պահանջել լրացուցիչ ստուգում։",
+    practice:"Անցնել ինքնուրույն լուծմանը"},
+  en:{title:"Solutions by workbook question",book:"Book",chapter:"Chapter",section:"Section",
+    tasks:"Tasks",question:"Sub-question",show:"View answer and explanation",answer:"Printed answer key",
+    noKey:"A verified answer is not available for this sub-question.",noText:"This question has not been fully transcribed yet. Compare the source excerpt.",
+    next:"Next page",prev:"Previous page",loading:"Loading workbooks…",error:"Could not load workbooks.",
+    note:"Select a book, chapter and section. View the answer without submitting a guess. Detailed explanations depend on available source material and may require verification.",
+    practice:"Try independently"},
+  ru:{title:"Решения заданий из сборников",book:"Сборник",chapter:"Глава",section:"Раздел",
+    tasks:"Задания",question:"Подвопрос",show:"Показать ответ и объяснение",answer:"Ключ из сборника",
+    noKey:"Проверенного ответа пока нет.",noText:"Текст задания ещё не полностью оцифрован. Сверьтесь с оригиналом.",
+    next:"Следующая страница",prev:"Предыдущая страница",loading:"Загрузка сборников…",error:"Не удалось загрузить сборники.",
+    note:"Выбери сборник, главу и раздел. Ответ можно посмотреть без случайной попытки. Подробные объяснения могут требовать дополнительной проверки.",
+    practice:"Решать самостоятельно"},
+} as const;
+
+export function MathSourceSolutions() {
+  const lang=useLang(),t=COPY[lang];
+  const data=useMathBookIndex();
+  const [bookId,setBookId]=useState<"matem-1"|"matem-2">("matem-1");
+  const [chapter,setChapter]=useState(1);
+  const [section,setSection]=useState(1);
+  const [page,setPage]=useState(0);
+  const sections=data.data?.books[bookId]?.sections ?? [];
+  const chapters=useMemo(()=>[...new Set(sections.map(s=>s.chapter))].sort((a,b)=>a-b),[sections]);
+  const activeChapter=chapters.includes(chapter)?chapter:chapters[0];
+  const sectionOptions=sections.filter(s=>s.chapter===activeChapter);
+  const activeSection=sectionOptions.some(s=>s.section===section)?section:sectionOptions[0]?.section;
+  const target=sections.find(s=>s.chapter===activeChapter&&s.section===activeSection);
+  const lastPage=target?Math.max(0,Math.ceil(target.tasks.length/PAGE_SIZE)-1):0;
+  const visiblePage=Math.min(page,lastPage);
+  const visibleTasks=target?.tasks.slice(visiblePage*PAGE_SIZE,(visiblePage+1)*PAGE_SIZE) ?? [];
+
+  if(data.isLoading)return <p role="status" className="flex items-center gap-2 py-5 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin"/>{t.loading}</p>;
+  if(data.isError||!data.data)return <p role="alert" className="rounded-lg border p-4 text-destructive">{t.error}</p>;
+  return <section className="space-y-5">
+    <div className="rounded-xl border bg-card p-4 sm:p-6">
+      <h2 className="text-xl font-black">{t.title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.note}</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <label className="grid gap-1 text-sm font-semibold">{t.book}
+          <select value={bookId} onChange={e=>{setBookId(e.target.value as "matem-1"|"matem-2");setChapter(1);setSection(1);setPage(0);}}
+            className="min-h-11 rounded-lg border bg-background px-3">
+            <option value="matem-1">{t.book} I</option><option value="matem-2">{t.book} II</option>
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-semibold">{t.chapter}
+          <select value={activeChapter} onChange={e=>{setChapter(Number(e.target.value));setSection(1);setPage(0);}}
+            className="min-h-11 rounded-lg border bg-background px-3">
+            {chapters.map(n=><option key={n} value={n}>{t.chapter} {n}</option>)}
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-semibold">{t.section}
+          <select value={activeSection} onChange={e=>{setSection(Number(e.target.value));setPage(0);}}
+            className="min-h-11 rounded-lg border bg-background px-3">
+            {sectionOptions.map(s=><option key={s.section} value={s.section}>{t.section} {s.section}</option>)}
+          </select>
+        </label>
+      </div>
+      {target&&<div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-4">
+        <h3 className="font-bold">{target.title} · {t.tasks}: {target.tasks.length}</h3>
+        <Link to="/math/books" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">{t.practice}<ArrowRight className="size-4"/></Link>
+      </div>}
+    </div>
+    {visibleTasks.map(task=>{
+      const subs=task.answers?.length ?? task.sub_count;
+      return <article key={`${bookId}:${activeChapter}:${activeSection}:${task.task}`} className="space-y-3 rounded-xl border bg-card p-4 sm:p-6">
+        <h3 className="font-bold">{t.tasks} {task.task}</h3>
+        <MathDemandReference bookId={bookId} segments={task.segments}/>
+        {Array.from({length:subs},(_,i)=>{
+          const q=task.questions?.[i];
+          const answer=task.answers?.[i];
+          const segments=task.sub_segments?.[i]??task.segments;
+          const id=`${bookId}:${activeChapter}:${activeSection}:${task.task}:${i+1}`;
+          const kind: "choice"|"tf"|"open"=answer==="T"||answer==="F"?"tf":isOpenTask(task)||!answer||isShortAnswer(answer)?"open":"choice";
+          return <div key={id} className="space-y-2 border-t pt-4">
+            <h4 className="text-sm font-bold">{t.question} {i+1}</h4>
+            {q?.prompt ? <MathQuestionText question={q}/> : <p className="text-sm text-muted-foreground">{t.noText}</p>}
+            <details className="rounded-lg border bg-muted/20">
+              <summary className="min-h-11 cursor-pointer p-3 text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-primary">{t.show}</summary>
+              <div className="space-y-2 border-t p-3">
+                {answer===undefined?<p className="text-sm text-muted-foreground">{t.noKey}</p>:<>
+                  <p className="text-sm font-bold">{t.answer}: {answer}</p>
+                  <MathExplain item={id} bookId={bookId} pages={taskPages(segments)} kind={kind}
+                    task={`${t.tasks} ${task.task}, ${t.question} ${i+1}`}
+                    correct={answer} chosen={null} question={q?.prompt}
+                    options={q?.options} nativeSource={!!q?.transcription}/>
+                </>}
+              </div>
+            </details>
+          </div>;
+        })}
+      </article>;
+    })}
+    {target&&lastPage>0&&<nav aria-label={t.tasks} className="flex items-center justify-between gap-3">
+      <button type="button" disabled={visiblePage===0} onClick={()=>setPage(n=>Math.max(0,n-1))}
+        className="min-h-11 rounded-lg border px-4 text-sm font-bold disabled:opacity-45">{t.prev}</button>
+      <span className="text-sm tabular-nums">{visiblePage+1} / {lastPage+1}</span>
+      <button type="button" disabled={visiblePage===lastPage} onClick={()=>setPage(n=>Math.min(lastPage,n+1))}
+        className="min-h-11 rounded-lg border px-4 text-sm font-bold disabled:opacity-45">{t.next}</button>
+    </nav>}
+  </section>;
+}
