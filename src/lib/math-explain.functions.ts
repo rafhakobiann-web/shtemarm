@@ -60,6 +60,9 @@ ${stepGuide}
 Ֆունկցիայի գրաֆիկի JSON՝ {"type":"function","shape":"linear","a":2,"b":1,"c":0,"xmin":-5,"xmax":5,"title":"y=2x+1"}։ shape=linear նշանակում է y=ax+b, quadratic՝ y=ax^2+bx+c, sine՝ y=a*sin(bx)+c։
 Եռանկյան JSON՝ {"type":"triangle","labels":["A","B","C"],"sides":["c","a","b"],"title":"ABC եռանկյուն"}։
 Շրջանագծի JSON՝ {"type":"circle","radius":"r","title":"Շրջանագիծ"}։
+Ուղղանկյուն եռանկյան JSON՝ {"type":"right-triangle","legA":"6","legB":"8","hypotenuse":"10","title":"Ուղղանկյուն եռանկյուն"}։ Օգտագործիր միայն երբ հայտնի է ուղիղ անկյունը։
+Վեկտորների գումարման JSON՝ {"type":"vectors","ax":2,"ay":-1,"bx":3,"by":4,"title":"a+b"}։ Թվային կոորդինատները պետք է բխեն խնդրից։
+Տարածաչափության JSON՝ {"type":"solid","shape":"cylinder","radius":2,"height":5,"title":"Գլան"} կամ shape="cone"։ Օգտագործիր միայն երբ հայտնի են շառավիղը և բարձրությունը։
 Մի ավելացրու գծագիր, եթե խնդրի տվյալներից այն ճշգրիտ չի բխում։ Այլ ձևաչափերով HTML, SVG կամ կատարվող կոդ մի գրիր։
 
 Ճիշտ պատասխան: ${valueLabel(d.kind, d.correct)}

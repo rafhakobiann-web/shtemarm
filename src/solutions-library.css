@@ -1,0 +1,64 @@
+/* Source-first study library: hierarchy and reliable response states over ornament. */
+.sht-solutions { min-width: 0; }
+.sht-solutions-header {
+  border-color: color-mix(in srgb, var(--foreground) 14%, var(--border));
+  box-shadow: none;
+}
+.sht-solutions-header h1 { letter-spacing: -.055em; line-height: 1.15; text-wrap: balance; }
+.sht-solutions-tabs button {
+  background: var(--card); color: var(--muted-foreground);
+  border-color: var(--border); transition: color .16s ease, background-color .16s ease;
+}
+.sht-solutions-tabs button[aria-pressed="true"] {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 7%, var(--card));
+}
+.sht-solutions-filter {
+  min-height: 43px; border: 1px solid transparent;
+  display: flex; align-items: center; width: 100%; padding: .55rem .75rem;
+  border-radius: .65rem; text-align: left; font-size: .86rem; font-weight: 650;
+  color: var(--muted-foreground);
+}
+.sht-solutions-filter:hover { background: var(--muted); color: var(--foreground); }
+.sht-solutions-filter[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--primary) 27%, var(--border));
+  background: color-mix(in srgb, var(--primary) 7%, var(--card));
+  color: var(--foreground);
+}
+.sht-solutions-filter:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.sht-solutions-card {
+  border-color: color-mix(in srgb, var(--foreground) 13%, var(--border));
+  box-shadow: none; overflow: hidden;
+}
+.sht-solutions-card > summary { list-style: none; line-height: 1.45; }
+.sht-solutions-card > summary::-webkit-details-marker { display: none; }
+.sht-solutions-card[open] { border-color: color-mix(in srgb, var(--primary) 36%, var(--border)); }
+.sht-solutions-card[open] > summary { color: var(--primary); }
+.sht-solutions-card :is(a,button,summary,input,select):focus-visible {
+  outline: 2px solid var(--ring); outline-offset: 3px;
+}
+.sht-solutions :is(.sht-solutions-note,.sht-prestudy-explanation) {
+  border-color: var(--border); box-shadow: none;
+}
+.sht-solutions .sht-solutions-card .math-diagram,
+.sht-solutions .sht-solutions-card figure {
+  max-width: 100%; overflow: hidden; border-radius: .75rem; box-shadow: none;
+}
+.sht-prestudy-explanation {
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  box-shadow: none;
+}
+.sht-prestudy-explanation button:hover { background: var(--muted); }
+@media (max-width: 600px) {
+  .sht-solutions-header { padding: 1.1rem; }
+  .sht-solutions-header h1 { font-size: 1.65rem; }
+  .sht-solutions-tabs button { flex: 1 1 8.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sht-solutions *, .sht-prestudy-explanation * { animation: none !important; transition: none !important; }
+}
+@media (forced-colors: active) {
+  .sht-solutions-tabs button[aria-pressed="true"],
+  .sht-solutions-filter[aria-pressed="true"] { outline: 2px solid Highlight; }
+}

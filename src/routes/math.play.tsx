@@ -387,7 +387,7 @@ function PlayPage() {
               <p className="font-bold">{tx("Առաջադրանք {t} · Հարց {n} / {k}", { t: it.task, n: it.sub, k: it.subs })}</p>
             </div>
             <AnswerBlock key={it.id} item={it} value={current} locked={false} onAnswer={onAnswer} />
-            {current !== undefined && (
+            {it.answer !== undefined && (
               <MathExplain
                 item={it.id}
                 bookId={it.bookId}
@@ -395,7 +395,7 @@ function PlayPage() {
                 kind={it.open ? "open" : it.answer === "T" || it.answer === "F" ? "tf" : "choice"}
                 task={tx("Առաջադրանք {task}, հարց {sub}", { task: it.task, sub: it.sub })}
                 correct={it.answer ?? ""}
-                chosen={current}
+                chosen={current ?? null}
                 question={it.prompt}
                 options={it.options}
                 nativeSource={!!it.transcription}

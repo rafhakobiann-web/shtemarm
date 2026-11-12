@@ -175,6 +175,29 @@ function Explain(props: { instruction: string; passage: string; question: string
   );
 }
 
+/** Optional pre-study view: reading a solution does not submit or score an answer. */
+function PeekExplanation(props: {
+  instruction: string; passage: string; question: string; correct: string;
+  chosen: string | null; explanation?: string | null;
+}) {
+  const lang = useLang();
+  const [open, setOpen] = useState(false);
+  const label = lang === "en" ? "See the explanation before answering" :
+    lang === "ru" ? "Посмотреть объяснение до ответа" : "Դիտել բացատրությունը՝ առանց պատասխան գրելու";
+  return <div className="sht-prestudy-explanation mt-3 rounded-lg border border-primary/20 bg-card">
+    <button type="button" aria-expanded={open} onClick={() => setOpen(x => !x)}
+      className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-primary">
+      <span>{label}</span><span aria-hidden="true">{open ? "−" : "+"}</span>
+    </button>
+    {open && <div className="space-y-3 border-t px-3 py-3">
+      {props.explanation && <p role="note" className="text-sm leading-relaxed">{props.explanation}</p>}
+      <p className="text-sm font-semibold">{lang === "en" ? "Correct answer" : lang === "ru" ? "Правильный ответ" : "Ճիշտ պատասխանը"}: {props.correct}</p>
+      {!props.explanation && <Explain instruction={props.instruction} passage={props.passage}
+        question={props.question} correct={props.correct} chosen={props.chosen}/>}
+    </div>}
+  </div>;
+}
+
 /* ---------- scoring ---------- */
 /** Numeric answers compare ignoring spaces, so "1 200" and "1200" count the same. */
 export const normNum = (x: string | undefined) => (x ?? "").replace(/\s/g, "");
@@ -345,6 +368,19 @@ export function UnitCard(props: {
             );
           })}
         </div>
+        {englishSource && <Link to="/english-grammar"
+          search={{book:Number(englishSource[1]),section:Number(englishSource[2]),topic:undefined}}
+          className="mt-3 inline-flex min-h-11 items-center rounded-lg border px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
+          {language==="en"?"Study this section's rules":language==="ru"?"Правила этого раздела":"Նախ սովորել այս բաժնի կանոնները"}
+        </Link>}
+        {!show && <PeekExplanation
+          instruction={props.instructionEn ?? props.instruction}
+          passage={u.passage}
+          question={`${q.stem}\n${Object.entries(q.options).map(([k,v]) => `${k}) ${v}`).join("\n")}`}
+          correct={`${q.answer}) ${q.options[q.answer] ?? ""}`}
+          chosen={chosen ? `${chosen}) ${q.options[chosen] ?? ""}` : null}
+          explanation={q.explanation || getOfflineEnglishExplanation(u.id,q.n,language)}
+        />}
         {keyboardEnabled && !show && <p className="sht-answer-keyboard-tip mt-3 text-xs text-muted-foreground">
           {language === "en" ? `Keyboard: focus this card, use 1–${optionEntries.length} to choose, Enter to check.` : language === "ru" ? `Клавиатура: выбери карточку, нажми 1–${optionEntries.length}, затем Enter.` : `Ստեղնաշարով՝ ընտրիր քարտը, սեղմիր 1–${optionEntries.length}, ապա Enter։`}
         </p>}
@@ -360,11 +396,7 @@ export function UnitCard(props: {
         {show && (q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)) && <div role="note" className="mt-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-3 text-sm leading-relaxed">
           <span className="font-black">{tx("Բացատրություն")}․ </span>{q.explanation || getOfflineEnglishExplanation(u.id, q.n, language)}
         </div>}
-        {show && chosen !== q.answer && englishSource && <Link to="/english-grammar"
-          search={{book:Number(englishSource[1]),section:Number(englishSource[2]),topic:undefined}}
-          className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/20 bg-primary/5 px-3 text-sm font-semibold text-primary">
-          {language==="en"?"Relearn this section":language==="ru"?"Повторить правила раздела":"Վերուսումնասիրել բաժնի կանոնները"}
-        </Link>}
+
         {show && chosen === q.answer && (
           <div role="status" className="animate-pop mt-3 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-3 py-2 text-sm font-black text-success">
             <Sparkles className="size-4" /> {words.correct}

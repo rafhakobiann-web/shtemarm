@@ -9,6 +9,8 @@ import {
 import type { MathLocale, MathCategory, MathTopic, MathText } from "@/lib/mathHandbookTypes";
 import type { MathHandbookSection } from "@/lib/mathHandbookSections";
 import { MathContent } from "@/components/MathText";
+import { MathDiagram } from "@/components/MathDiagram";
+import { diagramForWorkedExample } from "@/lib/math-worked-diagrams";
 import { useLang } from "@/lib/lang";
 import { getMathMistakes, MATH_MISTAKES_CHANGED } from "@/lib/mathMistakes";
 
@@ -77,6 +79,7 @@ function sectionTitle(section:MathHandbookSection,lang:MathLocale) {
 
 function MathTopicCard({topic,lang,selected}:{topic:MathTopic;lang:MathLocale;selected:boolean}) {
   const t=LABELS[lang];
+  const workedDiagram=diagramForWorkedExample(topic.id);
   return <details id={`math-topic-${topic.id}`} key={topic.id} open={selected ? true : undefined}
     className="group scroll-mt-28 overflow-hidden rounded-2xl border bg-card shadow-sm open:border-primary/35">
     <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 focus-visible:outline-2 focus-visible:outline-primary sm:px-5">
@@ -93,6 +96,7 @@ function MathTopicCard({topic,lang,selected}:{topic:MathTopic;lang:MathLocale;se
       <section className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
         <h4 className="flex items-center gap-2 text-sm font-bold"><Calculator className="size-4 text-primary"/>{t.problem}</h4>
         <p className="font-semibold"><MathContent text={topic.problem[lang]}/></p>
+        {workedDiagram && <MathDiagram spec={workedDiagram}/>}
         <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t.steps}</p>
         <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed">
           {topic.steps[lang].map((step,i)=><li key={i}><MathContent text={step}/></li>)}
@@ -145,6 +149,9 @@ function MathHandbookPage() {
         <div><h1 className="text-2xl font-black sm:text-3xl">{t.title}</h1><p className="text-sm text-muted-foreground">{t.subtitle}</p></div>
       </div>
       <p className="text-sm leading-relaxed text-muted-foreground">{t.tip}</p>
+      <Link to="/solutions" className="mr-2 inline-flex min-h-11 items-center rounded-xl border border-primary/20 bg-card px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
+        {lang==="en"?"Worked solutions library":lang==="ru"?"Библиотека решений":"Լուծումների գրադարան"}
+      </Link>
       <Link to="/math-review" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10">
         <CheckCircle2 className="size-4"/>{t.review}{pendingCount>0?` · ${pendingCount}`:""}
       </Link>

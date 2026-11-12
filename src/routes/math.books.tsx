@@ -177,8 +177,10 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
           const explainFor = () => {
+            // A learner may open the explanation before answering.
+            // This never writes an answer or records a mistake.
             const chosenValue = saved[id];
-            if (chosenValue === undefined || correct === undefined) return null;
+            if (correct === undefined) return null;
             const kind = isTF ? "tf" : shortSection || isShortAnswer(correct) ? "open" : "choice";
             return (
               <MathExplain
@@ -188,7 +190,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                 kind={kind}
                 task={`Առաջադրանք ${task.task}, հարց ${n}`}
                 correct={correct}
-                chosen={chosenValue}
+                chosen={chosenValue ?? null}
                 question={task.questions?.[i]?.prompt}
                 options={task.questions?.[i]?.options}
                 nativeSource={!!task.questions?.[i]?.transcription}
@@ -320,6 +322,9 @@ function BooksPage() {
         )}
       </div>
 
+      <Link to="/solutions" className="mr-2 inline-flex min-h-11 items-center rounded-xl border px-4 py-2 text-sm font-bold text-primary hover:bg-muted">
+        {lang==="en"?"Learn from worked solutions first":lang==="ru"?"Сначала изучить решения":"Նախ սովորել լուծումները"}
+      </Link>
       <Link to="/math-handbook"
         search={{book:bookId==="matem-2"?"matem-2":"matem-1",chapter:section?.chapter??1,section:section?.section??1,topic:undefined}}
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10">
