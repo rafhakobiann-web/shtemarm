@@ -39,7 +39,7 @@ describe("solutions library and diagrams",()=>{
     const source=read("src/components/MathSourceSolutions.tsx");
     expect(source).toContain("useMathBookIndex()");
     expect(source).toContain("useSignedIn()");
-    expect(source).toContain("Math.min(subs,2-previous)");
+    expect(source).toContain("guestSubQuestionLimit(visibleTasks,taskIndex)");
     expect(source).toContain('to="/auth"');
     expect(source).toContain("<MathDemandReference");
     expect(source).toContain("<MathExplain");
