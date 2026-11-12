@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, BookOpenCheck, Compass, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenCheck, Search } from "lucide-react";
+import { MathSourceSolutions } from "@/components/MathSourceSolutions";
 import { useLang } from "@/lib/lang";
 import { MATH_HANDBOOK_TOPICS } from "@/lib/mathHandbook";
 import type { MathCategory } from "@/lib/mathHandbookTypes";
-import { getGrammarTopic, getSectionGuide, getSectionTopics } from "@/lib/grammarHandbook";
+import { getSectionGuide, getSectionTopics } from "@/lib/grammarHandbook";
 import { MathDiagram } from "@/components/MathDiagram";
 import { diagramForWorkedExample } from "@/lib/math-worked-diagrams";
 import { MathContent } from "@/components/MathText";
@@ -33,21 +34,21 @@ const CATEGORIES: readonly { id: MathCategory; hy: string; en: string; ru: strin
 ];
 const COPY = {
   hy: { back:"Գլխավոր էջ",title:"Լուծումների գրադարան",lead:"Նախ սովորիր լուծման մեթոդը, հետո փորձիր առաջադրանքները։",
-    math:"Մաթեմատիկայի լուծված օրինակներ",english:"Անգլերենի կանոններ",search:"Փնտրել թեմա…",all:"Բոլոր թեմաները",
+    math:"Մաթեմատիկայի լուծված օրինակներ",source:"Շտեմարանի հարցերի լուծումներ",english:"Անգլերենի կանոններ",search:"Փնտրել թեմա…",all:"Բոլոր թեմաները",
     worked:"Լուծված օրինակ",steps:"Լուծման քայլերը",answer:"Պատասխան",pitfall:"Ուշադրություն",
     more:"Բացել ամբողջական ձեռնարկը",practice:"Անցնել շտեմարաններին",noResults:"Նման թեմա չգտնվեց։",
     disclaimer:"Այս էջում ներկայացված են ձեռնարկի ուսուցողական օրինակները։ Դրանք դեռ բոլոր տպագիր առաջադրանքների անհատական լուծումները չեն․ գծագրերը վերաբերում են միայն նշված օրինակներին։",
     englishNote:"Ստորև թեմաները կապված են բաժնի ուսուցման նպատակների հետ։ Ոչ բոլոր առանձին առաջադրանքների համար է կանոնը միարժեք որոշված։",
     pattern:"Կառուցվածք",correct:"Ճիշտ օրինակ",wrong:"Տիպիկ սխալ",why:"Բացատրություն",section:"Բաժին",seeRules:"Բացել բաժնի կանոնները",start:"Սկսել վարժությունները" },
   en: { back:"Home",title:"Solutions library",lead:"Study a method first. Then practise on your own.",
-    math:"Math worked examples",english:"English rules",search:"Find a topic…",all:"All topics",
+    math:"Math worked examples",source:"Workbook question solutions",english:"English rules",search:"Find a topic…",all:"All topics",
     worked:"Worked example",steps:"Solution steps",answer:"Answer",pitfall:"Watch out",
     more:"Open the complete handbook",practice:"Open the workbooks",noResults:"No matching topics.",
     disclaimer:"These are curated handbook examples, not individual solutions to every printed question. Diagrams illustrate only the stated examples.",
     englishNote:"Topics are associated with each section's learning goals; they are not verified one-to-one rules for every question.",
     pattern:"Pattern",correct:"Correct example",wrong:"Common mistake",why:"Explanation",section:"Section",seeRules:"Open section rules",start:"Practise this section" },
   ru: { back:"Главная",title:"Библиотека решений",lead:"Сначала изучи метод, затем решай самостоятельно.",
-    math:"Решённые примеры по математике",english:"Правила английского",search:"Поиск темы…",all:"Все темы",
+    math:"Решённые примеры по математике",source:"Решения задач сборника",english:"Правила английского",search:"Поиск темы…",all:"Все темы",
     worked:"Разобранный пример",steps:"Шаги решения",answer:"Ответ",pitfall:"Обрати внимание",
     more:"Открыть полный справочник",practice:"Перейти к сборникам",noResults:"Таких тем нет.",
     disclaimer:"Здесь собраны учебные примеры из справочника, а не решения каждого печатного задания. Чертежи относятся только к указанным примерам.",
@@ -58,7 +59,7 @@ const COPY = {
 function SolutionsPage() {
   const lang = useLang();
   const t = COPY[lang];
-  const [subject, setSubject] = useState<"math" | "english">("math");
+  const [subject, setSubject] = useState<"math" | "source" | "english">("math");
   const [category, setCategory] = useState<MathCategory | "all">("all");
   const [section, setSection] = useState(3);
   const [query, setQuery] = useState("");
@@ -79,11 +80,12 @@ function SolutionsPage() {
         <h1 className="text-2xl font-black tracking-tight sm:text-4xl">{t.title}</h1></div>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.lead}</p>
       <div role="group" aria-label={t.title} className="sht-solutions-tabs mt-6 flex flex-wrap gap-2">
-        {(["math","english"] as const).map(key=><button key={key} type="button" aria-pressed={subject===key}
+        {(["math","source","english"] as const).map(key=><button key={key} type="button" aria-pressed={subject===key}
           className="min-h-11 rounded-lg border px-4 py-2 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary"
-          onClick={()=>{setSubject(key);setQuery("");}}>{key==="math"?t.math:t.english}</button>)}
+          onClick={()=>{setSubject(key);setQuery("");}}>{key==="math"?t.math:key==="source"?t.source:t.english}</button>)}
       </div>
     </header>
+    {subject==="source" ? <MathSourceSolutions/> : <>
     <p className="sht-solutions-note rounded-lg border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground" role="note">{subject==="math"?t.disclaimer:t.englishNote}</p>
     <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
       <aside className="space-y-4 rounded-xl border bg-card p-4 lg:sticky lg:top-24">
@@ -156,5 +158,6 @@ function SolutionsPage() {
         </>}
       </div>
     </div>
+    </>}
   </main>;
 }
