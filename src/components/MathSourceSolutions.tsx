@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMathBookIndex } from "@/lib/math-bank";
 import { isShortAnswer, isOpenTask } from "@/lib/math-progress";
 import { useLang } from "@/lib/lang";
@@ -41,17 +41,33 @@ const COPY={
     guestLimit:"Войдите, чтобы просмотреть остальные задания.",count:"В этом разделе"},
 } as const;
 
-export function MathSourceSolutions() {
+type SourceEntry = {
+  initialBookId?: "matem-1" | "matem-2";
+  initialChapter?: number;
+  initialSection?: number;
+};
+/** Entry context is passed from a book's current section, never inferred from answers. */
+export function MathSourceSolutions({
+  initialBookId="matem-1", initialChapter=1, initialSection=1,
+}: SourceEntry) {
   const lang=useLang(),t=COPY[lang];
   const signedIn=useSignedIn();
   const isGuest=signedIn!==true;
   const data=useMathBookIndex();
-  const [bookId,setBookId]=useState<"matem-1"|"matem-2">("matem-1");
-  const [chapter,setChapter]=useState(1);
-  const [section,setSection]=useState(1);
+  const [bookId,setBookId]=useState<"matem-1"|"matem-2">(initialBookId);
+  const [chapter,setChapter]=useState(initialChapter);
+  const [section,setSection]=useState(initialSection);
   const [page,setPage]=useState(0);
   const [taskNumber,setTaskNumber]=useState("");
   const [findStatus,setFindStatus]=useState<"missing"|"guest"|null>(null);
+  useEffect(()=>{
+    setBookId(initialBookId);
+    setChapter(initialChapter);
+    setSection(initialSection);
+    setPage(0);
+    setTaskNumber("");
+    setFindStatus(null);
+  },[initialBookId,initialChapter,initialSection]);
   const sections=data.data?.books[bookId]?.sections ?? [];
   const chapters=useMemo(()=>[...new Set(sections.map(s=>s.chapter))].sort((a,b)=>a-b),[sections]);
   const activeChapter=chapters.includes(chapter)?chapter:chapters[0];
