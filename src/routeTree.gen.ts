@@ -44,6 +44,7 @@ import { Route as StudyPlanRouteImport } from './routes/study-plan'
 import { Route as StudyPreferencesRouteImport } from './routes/study-preferences'
 import { Route as StudyToolsRouteImport } from './routes/study-tools'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as VocabularyRouteImport } from './routes/vocabulary'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminExplanationsRouteImport } from './routes/admin.explanations'
@@ -239,6 +240,11 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VocabularyRoute = VocabularyRouteImport.update({
   id: '/vocabulary',
   path: '/vocabulary',
@@ -372,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
+  '/solutions': typeof SolutionsRoute
   '/vocabulary': typeof VocabularyRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
@@ -428,6 +435,7 @@ export interface FileRoutesByTo {
   '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
+  '/solutions': typeof SolutionsRoute
   '/vocabulary': typeof VocabularyRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/study-preferences': typeof StudyPreferencesRoute
   '/study-tools': typeof StudyToolsRoute
   '/support': typeof SupportRoute
+  '/solutions': typeof SolutionsRoute
   '/vocabulary': typeof VocabularyRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/explanations': typeof AdminExplanationsRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/study-preferences'
     | '/study-tools'
     | '/support'
+    | '/solutions'
     | '/vocabulary'
     | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
@@ -599,6 +609,7 @@ export interface FileRouteTypes {
     | '/study-preferences'
     | '/study-tools'
     | '/support'
+    | '/solutions'
     | '/vocabulary'
     | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
@@ -655,6 +666,7 @@ export interface FileRouteTypes {
     | '/study-preferences'
     | '/study-tools'
     | '/support'
+    | '/solutions'
     | '/vocabulary'
     | '/.well-known/oauth-protected-resource'
     | '/admin/explanations'
@@ -712,6 +724,7 @@ export interface RootRouteChildren {
   StudyPreferencesRoute: typeof StudyPreferencesRoute
   StudyToolsRoute: typeof StudyToolsRoute
   SupportRoute: typeof SupportRoute
+  SolutionsRoute: typeof SolutionsRoute
   VocabularyRoute: typeof VocabularyRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminExplanationsRoute: typeof AdminExplanationsRoute
@@ -980,6 +993,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vocabulary': {
       id: '/vocabulary'
       path: '/vocabulary'
@@ -1152,6 +1172,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudyPreferencesRoute: StudyPreferencesRoute,
   StudyToolsRoute: StudyToolsRoute,
   SupportRoute: SupportRoute,
+  SolutionsRoute: SolutionsRoute,
   VocabularyRoute: VocabularyRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
