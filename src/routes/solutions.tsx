@@ -105,8 +105,6 @@ function SolutionsPage() {
   const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
   const q=query.trim().toLocaleLowerCase();
-  const visibleMathTopics=mathTopics.slice(0,visibleLimit);
-  const visibleEnglishTopics=englishTopics.slice(0,visibleLimit);
   const mathTopics = useMemo(() => MATH_HANDBOOK_TOPICS.filter(topic =>
     (category === "all" || category === topic.category) &&
     (!q || [topic.title[lang],topic.title.en,topic.title.hy,topic.summary[lang],topic.problem[lang],topic.id].some(text=>text.toLocaleLowerCase().includes(q)))
@@ -114,6 +112,8 @@ function SolutionsPage() {
   const englishTopics = useMemo(() => getSectionTopics(section).filter(topic =>
     !q || [topic.title,topic.formula,topic.content[lang].summary,topic.id].some(text=>text.toLocaleLowerCase().includes(q))
   ),[section,lang,q]);
+  const visibleMathTopics=mathTopics.slice(0,visibleLimit);
+  const visibleEnglishTopics=englishTopics.slice(0,visibleLimit);
   const sectionGuide = getSectionGuide(section);
 
   return <main className="sht-solutions mx-auto max-w-6xl space-y-6 pb-28">
