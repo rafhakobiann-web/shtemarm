@@ -8,8 +8,7 @@ import { MathExplain, taskPages } from "@/components/MathExplain";
 import { Link } from "@tanstack/react-router";
 import { useSignedIn } from "@/lib/guest-trial";
 import { ArrowRight, Loader2 } from "lucide-react";
-
-const PAGE_SIZE=3;
+import { SOURCE_TASK_PAGE_SIZE as PAGE_SIZE, findSourceTaskIndex, guestSubQuestionLimit, sourceTaskPage } from "@/lib/source-solutions-navigation";
 const COPY={
   hy:{title:"Շտեմարանային առաջադրանքների լուծումներ",book:"Գիրք",chapter:"Գլուխ",section:"Բաժին",
     tasks:"Առաջադրանքներ",question:"Ենթահարց",show:"Բացել պատասխանը և բացատրությունը",
@@ -78,13 +77,11 @@ export function MathSourceSolutions({
   const visiblePage=isGuest?0:Math.min(page,lastPage);
   const visibleTasks=isGuest ? (target?.tasks.slice(0,2) ?? []) : (target?.tasks.slice(visiblePage*PAGE_SIZE,(visiblePage+1)*PAGE_SIZE) ?? []);
   const jumpToTask = () => {
-    const requested=Number(taskNumber.trim());
-    const index=Number.isSafeInteger(requested) && requested>0 ? target?.tasks.findIndex(task=>task.task===requested) ?? -1 : -1;
+    const index=findSourceTaskIndex(target?.tasks ?? [],taskNumber);
     if(index<0){setFindStatus("missing");return;}
-    const earlier=target!.tasks.slice(0,index).reduce((count,task)=>count+(task.answers?.length??task.sub_count),0);
-    if(isGuest && earlier>=2){setFindStatus("guest");return;}
+    if(isGuest && guestSubQuestionLimit(target!.tasks,index)===0){setFindStatus("guest");return;}
     setFindStatus(null);
-    setPage(Math.floor(index/PAGE_SIZE));
+    setPage(sourceTaskPage(index));
     document.getElementById("math-source-task-results")?.scrollIntoView({block:"start",behavior:"smooth"});
   };
 
@@ -140,8 +137,7 @@ export function MathSourceSolutions({
     <div id="math-source-task-results" className="scroll-mt-24" />
     {visibleTasks.map((task,taskIndex)=>{
       const subs=task.answers?.length ?? task.sub_count;
-      const previous=visibleTasks.slice(0,taskIndex).reduce((n,t)=>n+(t.answers?.length??t.sub_count),0);
-      const shownSubs=isGuest?Math.max(0,Math.min(subs,2-previous)):subs;
+      const shownSubs=isGuest?guestSubQuestionLimit(visibleTasks,taskIndex):subs;
       if(!shownSubs)return null;
       return <article key={`${bookId}:${activeChapter}:${activeSection}:${task.task}`} className="space-y-3 rounded-xl border bg-card p-4 sm:p-6">
         <h3 className="font-bold">{t.tasks} {task.task}</h3>
