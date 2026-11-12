@@ -83,7 +83,27 @@ export const GRAMMAR_SECTION_GUIDES: readonly SectionGuide[] = [
       "adjective-order",
       "determiners",
       "dependent-prepositions",
-      "vocabulary-context"
+      "vocabulary-context",
+      "prepositions",
+      "since-for",
+      "phrasal-verbs",
+      "word-formation",
+      "collocations",
+      "present-simple",
+      "present-perfect",
+      "past-simple",
+      "future-forms",
+      "passive",
+      "reported-speech",
+      "relative-clauses",
+      "comparison",
+      "countable-uncountable",
+      "questions",
+      "zero-first-conditional",
+      "third-conditional",
+      "wish-if-only",
+      "linking-words",
+      "used-to"
     ]
   },
   {
@@ -228,7 +248,22 @@ export const GRAMMAR_SECTION_GUIDES: readonly SectionGuide[] = [
       "comparison",
       "subject-verb",
       "articles",
-      "questions"
+      "questions",
+      "to-be",
+      "present-simple",
+      "present-perfect",
+      "past-simple",
+      "passive",
+      "prepositions",
+      "relative-clauses",
+      "quantifiers",
+      "modals",
+      "determiners",
+      "so-such",
+      "gerund-infinitive",
+      "used-to",
+      "since-for",
+      "question-tags"
     ]
   },
   {
