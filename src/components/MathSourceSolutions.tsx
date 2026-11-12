@@ -6,6 +6,7 @@ import { MathQuestionText } from "@/components/MathQuestionText";
 import { MathDemandReference } from "@/components/MathDemandReference";
 import { MathExplain, taskPages } from "@/components/MathExplain";
 import { Link } from "@tanstack/react-router";
+import { useSignedIn } from "@/lib/guest-trial";
 import { ArrowRight, Loader2 } from "lucide-react";
 
 const PAGE_SIZE=8;
@@ -16,23 +17,28 @@ const COPY={
     noText:"Առաջադրանքի ամբողջական տեքստը դեռ թվայնացված չէ։ Ստուգիր բնօրինակի հատվածը։",
     next:"Հաջորդ էջը",prev:"Նախորդ էջը",loading:"Շտեմարանները բեռնվում են…",error:"Չհաջողվեց բեռնել գրքերը։",
     note:"Ընտրիր գիրքը, գլուխը և բաժինը։ Ստորև կարող ես բացել պատասխանը՝ առանց փորձնական պատասխան գրելու։ Մանրամասն լուծումը ստեղծվում է ըստ հասանելի նյութերի և կարող է պահանջել լրացուցիչ ստուգում։",
-    practice:"Անցնել ինքնուրույն լուծմանը"},
+    practice:"Անցնել ինքնուրույն լուծմանը",signIn:"Մուտք գործել՝ բոլոր լուծումները տեսնելու համար",
+    guest:"Հյուրերին հասանելի են այս բաժնի առաջին երկու ենթահարցերը։"},
   en:{title:"Solutions by workbook question",book:"Book",chapter:"Chapter",section:"Section",
     tasks:"Tasks",question:"Sub-question",show:"View answer and explanation",answer:"Printed answer key",
     noKey:"A verified answer is not available for this sub-question.",noText:"This question has not been fully transcribed yet. Compare the source excerpt.",
     next:"Next page",prev:"Previous page",loading:"Loading workbooks…",error:"Could not load workbooks.",
     note:"Select a book, chapter and section. View the answer without submitting a guess. Detailed explanations depend on available source material and may require verification.",
-    practice:"Try independently"},
+    practice:"Try independently",signIn:"Sign in to view the full question library",
+    guest:"Guests can preview only the first two sub-questions in a section."},
   ru:{title:"Решения заданий из сборников",book:"Сборник",chapter:"Глава",section:"Раздел",
     tasks:"Задания",question:"Подвопрос",show:"Показать ответ и объяснение",answer:"Ключ из сборника",
     noKey:"Проверенного ответа пока нет.",noText:"Текст задания ещё не полностью оцифрован. Сверьтесь с оригиналом.",
     next:"Следующая страница",prev:"Предыдущая страница",loading:"Загрузка сборников…",error:"Не удалось загрузить сборники.",
     note:"Выбери сборник, главу и раздел. Ответ можно посмотреть без случайной попытки. Подробные объяснения могут требовать дополнительной проверки.",
-    practice:"Решать самостоятельно"},
+    practice:"Решать самостоятельно",signIn:"Войти для доступа ко всем решениям",
+    guest:"Гостям доступны первые два подвопроса раздела."},
 } as const;
 
 export function MathSourceSolutions() {
   const lang=useLang(),t=COPY[lang];
+  const signedIn=useSignedIn();
+  const isGuest=signedIn!==true;
   const data=useMathBookIndex();
   const [bookId,setBookId]=useState<"matem-1"|"matem-2">("matem-1");
   const [chapter,setChapter]=useState(1);
@@ -45,8 +51,8 @@ export function MathSourceSolutions() {
   const activeSection=sectionOptions.some(s=>s.section===section)?section:sectionOptions[0]?.section;
   const target=sections.find(s=>s.chapter===activeChapter&&s.section===activeSection);
   const lastPage=target?Math.max(0,Math.ceil(target.tasks.length/PAGE_SIZE)-1):0;
-  const visiblePage=Math.min(page,lastPage);
-  const visibleTasks=target?.tasks.slice(visiblePage*PAGE_SIZE,(visiblePage+1)*PAGE_SIZE) ?? [];
+  const visiblePage=isGuest?0:Math.min(page,lastPage);
+  const visibleTasks=isGuest ? (target?.tasks.slice(0,2) ?? []) : (target?.tasks.slice(visiblePage*PAGE_SIZE,(visiblePage+1)*PAGE_SIZE) ?? []);
 
   if(data.isLoading)return <p role="status" className="flex items-center gap-2 py-5 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin"/>{t.loading}</p>;
   if(data.isError||!data.data)return <p role="alert" className="rounded-lg border p-4 text-destructive">{t.error}</p>;
@@ -79,12 +85,15 @@ export function MathSourceSolutions() {
         <Link to="/math/books" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">{t.practice}<ArrowRight className="size-4"/></Link>
       </div>}
     </div>
-    {visibleTasks.map(task=>{
+    {visibleTasks.map((task,taskIndex)=>{
       const subs=task.answers?.length ?? task.sub_count;
+      const previous=visibleTasks.slice(0,taskIndex).reduce((n,t)=>n+(t.answers?.length??t.sub_count),0);
+      const shownSubs=isGuest?Math.max(0,Math.min(subs,2-previous)):subs;
+      if(!shownSubs)return null;
       return <article key={`${bookId}:${activeChapter}:${activeSection}:${task.task}`} className="space-y-3 rounded-xl border bg-card p-4 sm:p-6">
         <h3 className="font-bold">{t.tasks} {task.task}</h3>
         <MathDemandReference bookId={bookId} segments={task.segments}/>
-        {Array.from({length:subs},(_,i)=>{
+        {Array.from({length:shownSubs},(_,i)=>{
           const q=task.questions?.[i];
           const answer=task.answers?.[i];
           const segments=task.sub_segments?.[i]??task.segments;
@@ -109,7 +118,11 @@ export function MathSourceSolutions() {
         })}
       </article>;
     })}
-    {target&&lastPage>0&&<nav aria-label={t.tasks} className="flex items-center justify-between gap-3">
+    {isGuest&&target&&<div className="space-y-2 rounded-xl border bg-card p-4 text-sm" role="note">
+      <p className="text-muted-foreground">{t.guest}</p>
+      <Link to="/auth" className="inline-flex min-h-11 items-center gap-2 font-bold text-primary">{t.signIn}<ArrowRight className="size-4"/></Link>
+    </div>}
+    {!isGuest&&target&&lastPage>0&&<nav aria-label={t.tasks} className="flex items-center justify-between gap-3">
       <button type="button" disabled={visiblePage===0} onClick={()=>setPage(n=>Math.max(0,n-1))}
         className="min-h-11 rounded-lg border px-4 text-sm font-bold disabled:opacity-45">{t.prev}</button>
       <span className="text-sm tabular-nums">{visiblePage+1} / {lastPage+1}</span>
