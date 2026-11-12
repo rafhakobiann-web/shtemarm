@@ -11,7 +11,13 @@ import { MathDiagram } from "@/components/MathDiagram";
 import { diagramForWorkedExample } from "@/lib/math-worked-diagrams";
 import { MathContent } from "@/components/MathText";
 
-const navigationSchema = z.object({ view: z.enum(["math", "source", "english"]).optional() });
+const navigationSchema = z.object({
+  view: z.enum(["math", "source", "english"]).optional(),
+  book: z.enum(["matem-1", "matem-2"]).optional(),
+  chapter: z.coerce.number().int().min(1).max(3).optional(),
+  section: z.coerce.number().int().min(1).max(13).optional(),
+  englishBook: z.coerce.number().int().min(1).max(3).optional(),
+});
 export const Route = createFileRoute("/solutions")({
   staticData: { sitemap: true },
   validateSearch: navigationSchema,
@@ -96,12 +102,12 @@ const HUB_COPY = {
 function SolutionsPage() {
   const lang = useLang();
   const t = COPY[lang];
-  const { view } = Route.useSearch();
+  const { view, book: sourceBook, chapter: sourceChapter, section: linkedSection, englishBook: linkedEnglishBook } = Route.useSearch();
   const subject = view ?? "home";
   const hub = HUB_COPY[lang];
   const [category, setCategory] = useState<MathCategory | "all">("all");
-  const [section, setSection] = useState(3);
-  const [englishBook, setEnglishBook] = useState(1);
+  const [section, setSection] = useState(linkedSection ?? 3);
+  const [englishBook, setEnglishBook] = useState(linkedEnglishBook ?? 1);
   const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
   const q=query.trim().toLocaleLowerCase();
@@ -165,7 +171,7 @@ function SolutionsPage() {
           <Link to="/book/$bookId" params={{bookId:"1"}} className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.englishPractice}<ArrowRight className="size-4"/></Link>
         </div>
       </div>
-    </section> : subject==="source" ? <MathSourceSolutions/> : <>
+    </section> : subject==="source" ? <MathSourceSolutions initialBookId={sourceBook} initialChapter={sourceChapter} initialSection={linkedSection}/> : <>
     <p className="sht-solutions-note rounded-lg border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground" role="note">{subject==="math"?t.disclaimer:t.englishNote}</p>
     <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
       <aside className="space-y-4 rounded-xl border bg-card p-4 lg:sticky lg:top-24">
