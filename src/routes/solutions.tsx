@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BookOpenCheck, Search, Calculator, LibraryBig, Languages, ChevronRight } from "lucide-react";
@@ -110,6 +110,18 @@ function SolutionsPage() {
   const [englishBook, setEnglishBook] = useState(linkedEnglishBook ?? 1);
   const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
+  // Changing learning paths must not leave an invisible filter from another subject.
+  useEffect(()=>{
+    setQuery("");
+    setVisibleLimit(8);
+    setCategory("all");
+  },[subject]);
+  // Deep links from a chosen English section should open that section, not stale local UI.
+  useEffect(()=>{
+    if(subject!=="english")return;
+    if(linkedSection!==undefined)setSection(linkedSection);
+    if(linkedEnglishBook!==undefined)setEnglishBook(linkedEnglishBook);
+  },[subject,linkedSection,linkedEnglishBook]);
   const q=query.trim().toLocaleLowerCase();
   const mathTopics = useMemo(() => MATH_HANDBOOK_TOPICS.filter(topic =>
     (category === "all" || category === topic.category) &&
