@@ -105,6 +105,8 @@ function SolutionsPage() {
   const [visibleLimit, setVisibleLimit] = useState(8);
   const [query, setQuery] = useState("");
   const q=query.trim().toLocaleLowerCase();
+  const visibleMathTopics=mathTopics.slice(0,visibleLimit);
+  const visibleEnglishTopics=englishTopics.slice(0,visibleLimit);
   const mathTopics = useMemo(() => MATH_HANDBOOK_TOPICS.filter(topic =>
     (category === "all" || category === topic.category) &&
     (!q || [topic.title[lang],topic.title.en,topic.title.hy,topic.summary[lang],topic.problem[lang],topic.id].some(text=>text.toLocaleLowerCase().includes(q)))
@@ -120,13 +122,46 @@ function SolutionsPage() {
       <div className="flex items-center gap-3"><BookOpenCheck className="size-7 text-primary" aria-hidden="true" />
         <h1 className="text-2xl font-black tracking-tight sm:text-4xl">{t.title}</h1></div>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.lead}</p>
-      <div role="group" aria-label={t.title} className="sht-solutions-tabs mt-6 flex flex-wrap gap-2">
-        {(["math","source","english"] as const).map(key=><button key={key} type="button" aria-pressed={subject===key}
-          className="min-h-11 rounded-lg border px-4 py-2 text-sm font-bold focus-visible:outline-2 focus-visible:outline-primary"
-          onClick={()=>{setSubject(key);setQuery("");}}>{key==="math"?t.math:key==="source"?t.source:t.english}</button>)}
-      </div>
+      <nav aria-label={hub.library} className="sht-solutions-tabs mt-6 flex flex-wrap gap-2">
+        <Link to="/solutions" search={{view:undefined}} aria-current={subject==="home"?"page":undefined}
+          className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold">{hub.home}</Link>
+        {(["math","source","english"] as const).map(key=><Link key={key} to="/solutions" search={{view:key}}
+          aria-current={subject===key?"page":undefined}
+          className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-bold">
+          {key==="math"?t.math:key==="source"?t.source:t.english}</Link>)}
+      </nav>
     </header>
-    {subject==="source" ? <MathSourceSolutions/> : <>
+    {subject==="home" ? <section className="space-y-5" aria-labelledby="sht-learning-paths-title">
+      <div>
+        <h2 id="sht-learning-paths-title" className="text-balance text-xl font-black tracking-tight sm:text-2xl">{hub.intro}</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{hub.introNote}</p>
+      </div>
+      <div className="sht-solutions-overview grid gap-3 md:grid-cols-3">
+        {([
+          {view:"math" as const,title:hub.examples,detail:hub.examplesDesc,Icon:Calculator,number:"01"},
+          {view:"source" as const,title:hub.source,detail:hub.sourceDesc,Icon:LibraryBig,number:"02"},
+          {view:"english" as const,title:hub.rules,detail:hub.rulesDesc,Icon:Languages,number:"03"},
+        ]).map(item=><Link key={item.view} to="/solutions" search={{view:item.view}}
+          className="sht-solutions-overview-card group flex min-h-56 flex-col justify-between rounded-xl border bg-card p-5 focus-visible:outline-2 focus-visible:outline-primary">
+          <div>
+            <div className="mb-5 flex items-center justify-between gap-2">
+              <item.Icon aria-hidden="true" className="size-6 text-primary"/>
+              <span className="font-mono text-xs text-muted-foreground">{item.number}</span>
+            </div>
+            <h3 className="text-balance text-lg font-extrabold tracking-tight">{item.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+          </div>
+          <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-primary">{hub.open}<ChevronRight className="size-4" aria-hidden="true"/></span>
+        </Link>)}
+      </div>
+      <div className="sht-solutions-practice rounded-xl border bg-card p-5">
+        <h2 className="text-base font-bold">{hub.next}</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link to="/math/books" className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.mathPractice}<ArrowRight className="size-4"/></Link>
+          <Link to="/book/$bookId" params={{bookId:"1"}} className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.englishPractice}<ArrowRight className="size-4"/></Link>
+        </div>
+      </div>
+    </section> : subject==="source" ? <MathSourceSolutions/> : <>
     <p className="sht-solutions-note rounded-lg border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground" role="note">{subject==="math"?t.disclaimer:t.englishNote}</p>
     <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
       <aside className="space-y-4 rounded-xl border bg-card p-4 lg:sticky lg:top-24">
