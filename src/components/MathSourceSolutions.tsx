@@ -163,7 +163,7 @@ export function MathSourceSolutions({
                   <MathExplain item={id} bookId={bookId} pages={taskPages(segments)} kind={kind}
                     task={`${t.tasks} ${task.task}, ${t.question} ${i+1}`}
                     correct={answer} chosen={null} question={q?.prompt}
-                    options={q?.options} nativeSource={!!q?.transcription}/>
+                    options={q?.options} nativeSource={!!q?.transcription} showRelatedLinks={false}/>
                 </>}
               </div>
             </details>
