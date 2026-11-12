@@ -157,6 +157,10 @@ function SolutionsPage() {
       <div className="sht-solutions-practice rounded-xl border bg-card p-5">
         <h2 className="text-base font-bold">{hub.next}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
+          {mathTopics.length>visibleLimit && <button type="button" onClick={()=>setVisibleLimit(n=>n+8)}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border px-4 py-2 text-sm font-bold hover:bg-muted">
+            {hub.moreTopics} ({visibleMathTopics.length}/{mathTopics.length})
+          </button>}
           <Link to="/math/books" className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.mathPractice}<ArrowRight className="size-4"/></Link>
           <Link to="/book/$bookId" params={{bookId:"1"}} className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">{hub.englishPractice}<ArrowRight className="size-4"/></Link>
         </div>
@@ -168,26 +172,42 @@ function SolutionsPage() {
         <label htmlFor="solutions-search" className="text-sm font-bold">{t.search}</label>
         <div className="relative">
           <Search className="absolute left-3 top-3.5 size-4 text-muted-foreground" aria-hidden="true" />
-          <input id="solutions-search" type="search" value={query} onChange={e=>setQuery(e.target.value)}
+          <input id="solutions-search" type="search" value={query} onChange={e=>{setQuery(e.target.value);setVisibleLimit(8);}}
             placeholder={t.search} className="min-h-11 w-full rounded-lg border bg-background pl-9 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"/>
         </div>
-        {subject==="math" ? <nav aria-label={t.all} className="grid max-h-96 gap-1 overflow-y-auto">
-          <button type="button" aria-pressed={category==="all"} onClick={()=>setCategory("all")} className="sht-solutions-filter">{t.all}</button>
-          {CATEGORIES.map(c=><button type="button" key={c.id} aria-pressed={category===c.id}
-            onClick={()=>setCategory(c.id)} className="sht-solutions-filter">{c[lang]}</button>)}
-        </nav> : <div className="space-y-2">
-          <label htmlFor="solution-section" className="text-sm font-bold">{t.section}</label>
+        {subject==="math" ? <div className="space-y-2">
+          <label htmlFor="solutions-category" className="text-sm font-bold">{hub.library}</label>
+          <select id="solutions-category" value={category}
+            onChange={e=>{setCategory(e.target.value as MathCategory | "all");setVisibleLimit(8);}}
+            className="min-h-11 w-full rounded-lg border bg-background px-3 py-2 lg:hidden">
+            <option value="all">{t.all}</option>
+            {CATEGORIES.map(c=><option value={c.id} key={c.id}>{c[lang]}</option>)}
+          </select>
+          <nav aria-label={t.all} className="hidden max-h-96 gap-1 overflow-y-auto lg:grid">
+            <button type="button" aria-pressed={category==="all"} onClick={()=>{setCategory("all");setVisibleLimit(8);}} className="sht-solutions-filter">{t.all}</button>
+            {CATEGORIES.map(c=><button type="button" key={c.id} aria-pressed={category===c.id}
+              onClick={()=>{setCategory(c.id);setVisibleLimit(8);}} className="sht-solutions-filter">{c[lang]}</button>)}
+          </nav>
+        </div> : <div className="space-y-3">
+          <label className="grid gap-1 text-sm font-bold">{hub.book}
+            <select value={englishBook} onChange={e=>setEnglishBook(Number(e.target.value))}
+              className="min-h-11 w-full rounded-lg border bg-background px-3">
+              {[1,2,3].map(n=><option key={n} value={n}>{hub.book} {n}</option>)}
+            </select>
+          </label>
+          <label htmlFor="solution-section" className="block text-sm font-bold">{t.section}</label>
           <select id="solution-section" className="min-h-11 w-full rounded-lg border bg-background p-2"
-            value={section} onChange={e=>setSection(Number(e.target.value))}>
+            value={section} onChange={e=>{setSection(Number(e.target.value));setVisibleLimit(8);}}>
             {Array.from({length:13},(_,i)=>i+1).map(n=><option key={n} value={n}>{t.section} {n}</option>)}
           </select>
           <p className="text-sm leading-relaxed text-muted-foreground">{sectionGuide?.title[lang]}</p>
+          <p className="border-t pt-3 text-xs leading-relaxed text-muted-foreground">{hub.shared}</p>
         </div>}
       </aside>
       <div className="min-w-0 space-y-4">
         {subject==="math" ? <>
           <h2 className="text-lg font-black">{t.math} · {mathTopics.length}</h2>
-          {mathTopics.map(topic=>{
+          {visibleMathTopics.map(topic=>{
             const diagram=diagramForWorkedExample(topic.id);
             return <details key={topic.id} id={`solution-${topic.id}`} className="sht-solutions-card group rounded-xl border bg-card">
               <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-bold focus-visible:outline-2 focus-visible:outline-primary">
@@ -214,7 +234,7 @@ function SolutionsPage() {
           {!mathTopics.length && <p role="status" className="p-6 text-muted-foreground">{t.noResults}</p>}
         </> : <>
           <h2 className="text-lg font-black">{sectionGuide?.title[lang]} · {englishTopics.length}</h2>
-          {englishTopics.map(topic=>{
+          {visibleEnglishTopics.map(topic=>{
             const info=topic.content[lang];
             return <details key={topic.id} className="sht-solutions-card rounded-xl border bg-card">
               <summary className="min-h-16 cursor-pointer list-none px-5 py-4 font-bold focus-visible:outline-2 focus-visible:outline-primary">{topic.title} · {topic.level}</summary>
@@ -223,12 +243,16 @@ function SolutionsPage() {
                 <p><strong>{t.correct}: </strong>{topic.correct}</p>
                 <p><strong>{t.wrong}: </strong>{topic.incorrect}</p>
                 <p className="text-muted-foreground"><strong>{t.why}: </strong>{info.why}</p>
-                <Link to="/english-grammar" search={{book:1,section,topic:topic.id}}
+                <Link to="/english-grammar" search={{book:englishBook,section,topic:topic.id}}
                   className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary">{t.seeRules}<ArrowRight className="size-4"/></Link>
               </div>
             </details>;
           })}
-          <Link to="/study/$bookId/$sectionId" params={{bookId:"1",sectionId:String(section)}} search={{mode:"classic"}}
+          {englishTopics.length>visibleLimit && <button type="button" onClick={()=>setVisibleLimit(n=>n+8)}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border px-4 py-2 text-sm font-bold hover:bg-muted">
+            {hub.moreTopics} ({visibleEnglishTopics.length}/{englishTopics.length})
+          </button>}
+          <Link to="/study/$bookId/$sectionId" params={{bookId:String(englishBook),sectionId:String(section)}} search={{mode:"classic"}}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold">{t.start}<ArrowRight className="size-4"/></Link>
           {!englishTopics.length && <p role="status" className="p-6 text-muted-foreground">{t.noResults}</p>}
         </>}
