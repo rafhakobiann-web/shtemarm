@@ -4,7 +4,10 @@ import { useTx } from "@/lib/lang";
 export type DiagramSpec =
   | { type: "function"; shape: "linear" | "quadratic" | "sine"; a: number; b: number; c: number; xmin?: number; xmax?: number; title?: string }
   | { type: "triangle"; labels?: [string, string, string]; sides?: [string, string, string]; title?: string }
-  | { type: "circle"; radius?: string; title?: string };
+  | { type: "circle"; radius?: string; title?: string }
+  | { type: "right-triangle"; legA: string; legB: string; hypotenuse?: string; title?: string }
+  | { type: "vectors"; ax: number; ay: number; bx: number; by: number; title?: string }
+  | { type: "solid"; shape: "cylinder" | "cone"; radius: number; height: number; title?: string };
 const bounded = (v: unknown, low: number, high: number) => typeof v === "number" && Number.isFinite(v) && v >= low && v <= high;
 const short = (v: unknown) => typeof v === "string" && v.length <= 50 && !/[<>]/.test(v);
 export function readDiagram(source: string): DiagramSpec | null {
@@ -31,6 +34,14 @@ export function readDiagram(source: string): DiagramSpec | null {
     }
     if (x.type === "circle" && (x.radius === undefined || short(x.radius)))
       return { type: "circle", radius: x.radius as string | undefined, title: x.title as string | undefined };
+    if (x.type === "right-triangle" && short(x.legA) && short(x.legB) && (x.hypotenuse === undefined || short(x.hypotenuse)))
+      return { type:"right-triangle",legA:x.legA as string,legB:x.legB as string,
+        hypotenuse:x.hypotenuse as string | undefined,title:x.title as string | undefined };
+    if (x.type === "vectors" && [x.ax,x.ay,x.bx,x.by].every(n=>bounded(n,-12,12)))
+      return { type:"vectors",ax:x.ax as number,ay:x.ay as number,bx:x.bx as number,by:x.by as number,title:x.title as string | undefined };
+    if (x.type === "solid" && (x.shape === "cylinder" || x.shape === "cone") &&
+        bounded(x.radius,0.1,20) && bounded(x.height,0.1,30))
+      return { type:"solid",shape:x.shape,radius:x.radius as number,height:x.height as number,title:x.title as string | undefined };
     return null;
   } catch { return null; }
 }
@@ -73,15 +84,78 @@ function GeometryDiagram({ spec }: { spec: Extract<DiagramSpec,{type:"triangle"|
     <g fill="var(--primary)" fontSize="17"><text x="250" y="292" textAnchor="middle">{ab}</text><text x="367" y="139">{bc}</text><text x="146" y="134">{ca}</text></g>
   </svg>;
 }
+
+/** Schematic right-angle construction. Numeric labels belong to the worked example, not book scans. */
+function RightTriangleDiagram({spec}:{spec:Extract<DiagramSpec,{type:"right-triangle"}>}) {
+  return <svg className="block w-full" viewBox="0 0 520 315" role="img" aria-label={spec.title || "Ուղղանկյուն եռանկյուն"}>
+    <path d="M112 258H405L112 62Z" fill="var(--primary)" fillOpacity=".05" stroke="var(--primary)" strokeWidth="3"/>
+    <path d="M112 226H144V258" fill="none" stroke="currentColor" strokeWidth="2"/>
+    <g fontSize="18" fill="currentColor"><text x="245" y="286" textAnchor="middle">{spec.legA}</text>
+      <text x="85" y="162" textAnchor="middle">{spec.legB}</text>
+      <text x="286" y="135" textAnchor="middle">{spec.hypotenuse || "c"}</text></g>
+    <g fontSize="13" fill="currentColor"><text x="94" y="278">A</text><text x="411" y="272">B</text><text x="95" y="52">C</text></g>
+  </svg>;
+}
+function VectorDiagram({spec}:{spec:Extract<DiagramSpec,{type:"vectors"}>}) {
+  const id=useId();
+  const pts=[[0,0],[spec.ax,spec.ay],[spec.ax+spec.bx,spec.ay+spec.by]];
+  const xVals=[...pts.map(p=>p[0]),spec.bx], yVals=[...pts.map(p=>p[1]),spec.by];
+  const maxX=Math.max(2,...xVals.map(Math.abs)), maxY=Math.max(2,...yVals.map(Math.abs));
+  const scale=Math.min(168/maxX,110/maxY,35);
+  const xy=(x:number,y:number)=>[260+x*scale,160-y*scale] as const;
+  const [ox,oy]=xy(0,0),[ax,ay]=xy(spec.ax,spec.ay),[sx,sy]=xy(spec.ax+spec.bx,spec.ay+spec.by);
+  return <svg viewBox="0 0 520 325" className="block w-full" role="img" aria-label={spec.title || "Վեկտորների գումարման գծագիր"}>
+    <defs><marker id={id} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="context-stroke" strokeWidth="1.4"/></marker></defs>
+    <g stroke="currentColor" strokeOpacity=".2"><path d="M38 160H482 M260 25V300"/></g>
+    <g fill="none" strokeWidth="3.2" strokeLinecap="round" markerEnd={`url(#${id})`}>
+      <line x1={ox} y1={oy} x2={ax} y2={ay} stroke="var(--primary)"/>
+      <line x1={ax} y1={ay} x2={sx} y2={sy} stroke="#c07832"/>
+      <line x1={ox} y1={oy} x2={sx} y2={sy} stroke="#29917b" strokeDasharray="6 4"/>
+    </g>
+    <g fill="currentColor" fontSize="16" fontWeight="600">
+      <text x={ax+8} y={ay-8}>a</text><text x={sx+9} y={sy+15}>a+b</text><text x="268" y="177">O</text>
+      <text x="485" y="155">x</text><text x="269" y="24">y</text>
+      <text x={Math.max(35,Math.min(455,(ax+sx)/2+8))} y={(ay+sy)/2-10}>b</text>
+    </g>
+  </svg>;
+}
+function SolidDiagram({spec}:{spec:Extract<DiagramSpec,{type:"solid"}>}) {
+  const cylinder=spec.shape==="cylinder";
+  return <svg viewBox="0 0 520 315" className="block w-full" role="img" aria-label={spec.title || "Մարմնի ծավալի սխեմատիկ գծագիր"}>
+    {cylinder
+      ? <g stroke="var(--primary)" strokeWidth="2.8" fill="var(--primary)" fillOpacity=".05">
+          <path d="M140 80V240C140 274 380 274 380 240V80"/>
+          <ellipse cx="260" cy="80" rx="120" ry="33"/>
+          <path d="M140 240C140 207 380 207 380 240" strokeDasharray="5 6" fill="none"/>
+          <path d="M140 240C140 273 380 273 380 240" fill="none"/>
+        </g>
+      : <g stroke="var(--primary)" strokeWidth="2.8" fill="var(--primary)" fillOpacity=".05">
+          <path d="M260 36L140 244Q260 310 380 244Z"/>
+          <ellipse cx="260" cy="244" rx="120" ry="33"/>
+        </g>}
+    <g stroke="currentColor" strokeWidth="1.8" strokeDasharray="5 4" fill="none">
+      <path d={cylinder?"M260 80V240":"M260 36V244"}/>
+      <path d="M260 244H380"/>
+    </g>
+    <g fontSize="17" fontWeight="600" fill="currentColor">
+      <text x="273" y="164">h = {spec.height}</text>
+      <text x="303" y="234">r = {spec.radius}</text>
+    </g>
+  </svg>;
+}
 /** Educational SVG with safe numeric data, no executable or AI-generated markup. */
 export function MathDiagram({ spec }: { spec: DiagramSpec }) {
   const tx = useTx();
   const id=useId();
   return <figure aria-describedby={id} className="my-4 overflow-hidden rounded-3xl border border-primary/15 bg-card p-3 shadow-sm sm:p-5">
     <div className="mb-3 flex items-center justify-between gap-3 text-xs font-bold text-primary">
-      <span>{tx("Գծագիր")}</span><span className="rounded-full bg-primary/10 px-3 py-1">{spec.type === "function" ? tx("Գրաֆիկ") : tx("Երկրաչափություն")}</span>
+      <span>{tx("Գծագիր")}</span><span className="rounded-full bg-primary/10 px-3 py-1">{spec.type === "function" ? tx("Գրաֆիկ") : spec.type === "vectors" ? tx("Վեկտորներ") : tx("Երկրաչափություն")}</span>
     </div>
-    {spec.type === "function" ? <FunctionDiagram spec={spec}/> : <GeometryDiagram spec={spec}/>}
+    {spec.type === "function" ? <FunctionDiagram spec={spec}/>
+      : spec.type === "right-triangle" ? <RightTriangleDiagram spec={spec}/>
+      : spec.type === "vectors" ? <VectorDiagram spec={spec}/>
+      : spec.type === "solid" ? <SolidDiagram spec={spec}/>
+      : <GeometryDiagram spec={spec}/>}
     <figcaption id={id} className="mt-2 text-xs leading-relaxed text-muted-foreground">
       {spec.title || (spec.type === "function" ? tx("Ֆունկցիայի գրաֆիկ՝ ըստ նշված գործակիցների") : tx("Սխեմատիկ պատկեր․ չափերը մասշտաբով չեն"))}
     </figcaption>
