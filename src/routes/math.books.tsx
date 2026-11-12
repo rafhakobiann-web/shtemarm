@@ -177,8 +177,10 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
           const id = `${bookId}:${sec.chapter}:${sec.section}:${task.task}:${n}`;
           const correct = task.answers?.[i];
           const explainFor = () => {
+            // A learner may open the explanation before answering.
+            // This never writes an answer or records a mistake.
             const chosenValue = saved[id];
-            if (chosenValue === undefined || correct === undefined) return null;
+            if (correct === undefined) return null;
             const kind = isTF ? "tf" : shortSection || isShortAnswer(correct) ? "open" : "choice";
             return (
               <MathExplain
@@ -188,7 +190,7 @@ function TaskCard({ bookId, bookNo, sec, task, saved, onAnswer, shortSection }: 
                 kind={kind}
                 task={`Առաջադրանք ${task.task}, հարց ${n}`}
                 correct={correct}
-                chosen={chosenValue}
+                chosen={chosenValue ?? null}
                 question={task.questions?.[i]?.prompt}
                 options={task.questions?.[i]?.options}
                 nativeSource={!!task.questions?.[i]?.transcription}
