@@ -1,0 +1,137 @@
+/* Shtemarm / Atlas — editorial learning interface experiment.
+   Scoped to landing only; no auth, progress, or question logic is changed. */
+.sht-landing.sht-v3 {
+  --atlas-ink:#202b29;
+  --atlas-paper:#f5f1e7;
+  --atlas-acid:#e1ed76;
+  --atlas-rust:#b94d37;
+  background:var(--atlas-paper);
+  color:var(--atlas-ink);
+  font-family:"Noto Sans Armenian","Noto Sans",system-ui,sans-serif;
+}
+.sht-landing.sht-v3 .sht-landing-nav {
+  background:color-mix(in srgb,var(--atlas-paper) 95%,transparent);
+  border-bottom:1px solid currentColor;
+  box-shadow:none;
+  backdrop-filter:blur(12px);
+}
+.sht-landing.sht-v3 .sht-hero {
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  align-items:center;
+  gap:clamp(28px,5vw,80px);
+  max-width:1440px;
+  margin-inline:auto;
+  padding:clamp(38px,6vw,104px) clamp(20px,5vw,80px);
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.sht-landing.sht-v3 .sht-hero::before {
+  content:"S / 01   —   LEARNING ATLAS";
+  position:absolute;
+  top:15px;
+  left:clamp(20px,5vw,80px);
+  font:700 10px/1.5 ui-monospace,SFMono-Regular,monospace;
+  letter-spacing:.22em;
+  opacity:.55;
+}
+.sht-landing.sht-v3 .sht-hero-copy {max-width:720px}
+.sht-landing.sht-v3 #sht-hero-title {
+  font-size:clamp(3.1rem,6.6vw,7.7rem);
+  line-height:1.06;
+  font-weight:850;
+  letter-spacing:-.065em;
+  text-wrap:balance;
+  color:var(--atlas-ink);
+}
+.sht-landing.sht-v3 .sht-hero-period {color:var(--atlas-rust)}
+.sht-landing.sht-v3 .sht-hero-description {
+  max-width:48ch;
+  font-size:clamp(1rem,1.4vw,1.25rem);
+  line-height:1.8;
+}
+.sht-landing.sht-v3 .sht-hero-visual {
+  transform:rotate(1deg);
+  border:1px solid var(--atlas-ink);
+  border-radius:6px;
+  box-shadow:14px 14px 0 var(--atlas-acid);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.sht-landing.sht-v3 .sht-hero-visual:hover {
+  transform:rotate(0);
+  box-shadow:8px 8px 0 var(--atlas-acid);
+}
+.sht-landing.sht-v3 .sht-button-primary {
+  border-radius:3px;
+  background:var(--atlas-ink);
+  color:#fff;
+  box-shadow:none;
+}
+.sht-landing.sht-v3 .sht-button-primary:hover {
+  background:var(--atlas-rust);
+}
+.sht-landing.sht-v3 .sht-button-secondary {
+  border-radius:3px;
+  border:1px solid currentColor;
+  box-shadow:none;
+}
+.sht-landing.sht-v3 .sht-info-band {
+  border-block:1px solid var(--atlas-ink);
+  border-radius:0;
+  background:var(--atlas-acid);
+  color:var(--atlas-ink);
+}
+.sht-landing.sht-v3 .sht-section-heading h2 {
+  letter-spacing:-.055em;
+  font-weight:850;
+  text-wrap:balance;
+}
+.sht-landing.sht-v3 .sht-feature,
+.sht-landing.sht-v3 .sht-subject-card,
+.sht-landing.sht-v3 .sht-step,
+.sht-landing.sht-v3 .sht-faq-item {
+  border-radius:4px;
+  box-shadow:none;
+  border:1px solid color-mix(in srgb,var(--atlas-ink) 26%,transparent);
+}
+.sht-landing.sht-v3 .sht-feature:nth-child(2) {
+  background:var(--atlas-acid);
+  color:var(--atlas-ink);
+}
+.sht-landing.sht-v3 .sht-feature-number,
+.sht-landing.sht-v3 .sht-step-number,
+.sht-landing.sht-v3 .sht-faq-index {
+  font-family:ui-monospace,SFMono-Regular,monospace;
+  letter-spacing:-.07em;
+}
+.sht-landing.sht-v3 .sht-bottom-cta {
+  border-radius:5px;
+  background:var(--atlas-ink);
+  color:#f7f4ea;
+}
+.sht-landing.sht-v3 .sht-landing-footer {border-top:1px solid currentColor}
+.dark .sht-landing.sht-v3 {
+  --atlas-paper:#171f1e;
+  --atlas-ink:#e8e8d8;
+  --atlas-acid:#c7d968;
+  --atlas-rust:#ff9476;
+}
+.dark .sht-landing.sht-v3 .sht-button-primary,
+.dark .sht-landing.sht-v3 .sht-bottom-cta {background:#d7e3aa;color:#182321}
+.dark .sht-landing.sht-v3 .sht-feature:nth-child(2),
+.dark .sht-landing.sht-v3 .sht-info-band {color:#182321}
+@media(max-width:900px){
+  .sht-landing.sht-v3 .sht-hero {grid-template-columns:1fr;gap:45px}
+  .sht-landing.sht-v3 .sht-hero-visual {transform:none;box-shadow:7px 7px 0 var(--atlas-acid)}
+}
+@media(max-width:480px){
+  .sht-landing.sht-v3 #sht-hero-title {font-size:clamp(2.7rem,11vw,4rem)}
+  .sht-landing.sht-v3 .sht-hero {padding-top:55px}
+  .sht-landing.sht-v3 .sht-hero-visual {box-shadow:4px 4px 0 var(--atlas-acid)}
+}
+@media(prefers-reduced-motion:reduce){
+  .sht-landing.sht-v3 .sht-hero-visual {transition:none}
+}
