@@ -135,3 +135,68 @@
 @media(prefers-reduced-motion:reduce){
   .sht-landing.sht-v3 .sht-hero-visual {transition:none}
 }
+
+/* Atlas v2: deliberate type hierarchy and dark-mode legibility. */
+.sht-landing.sht-v3 {
+  --atlas-surface:#fffdf7;
+  --atlas-muted:#485a55;
+  --atlas-stroke:#73847c;
+}
+.sht-landing.sht-v3 .sht-section-heading p,
+.sht-landing.sht-v3 .sht-hero-description,
+.sht-landing.sht-v3 .sht-feature p,
+.sht-landing.sht-v3 .sht-faq-item p {
+  color:var(--atlas-muted);
+  line-height:1.8;
+}
+.sht-landing.sht-v3 :is(.sht-feature,.sht-subject-card,.sht-faq-item) {
+  background:var(--atlas-surface);
+  color:var(--atlas-ink);
+}
+.sht-landing.sht-v3 :is(a,button,summary):focus-visible {
+  outline:3px solid var(--atlas-rust);
+  outline-offset:3px;
+}
+.sht-landing.sht-v3 .sht-feature:nth-child(2) p {color:#26352e}
+.dark .sht-landing.sht-v3 {
+  --atlas-paper:#111b1a;
+  --atlas-surface:#22302d;
+  --atlas-ink:#f5f7ee;
+  --atlas-muted:#d3dfd6;
+  --atlas-stroke:#81978d;
+  --atlas-acid:#dce986;
+  --atlas-rust:#ffae95;
+  color-scheme:dark;
+}
+.dark .sht-landing.sht-v3 .sht-landing-nav {
+  color:var(--atlas-ink);
+  border-color:var(--atlas-stroke);
+}
+.dark .sht-landing.sht-v3 :is(.sht-feature,.sht-subject-card,.sht-faq-item) {
+  border-color:var(--atlas-stroke);
+}
+.dark .sht-landing.sht-v3 .sht-feature:nth-child(2) {
+  background:var(--atlas-acid);
+  color:#172521;
+}
+.dark .sht-landing.sht-v3 .sht-feature:nth-child(2) :is(h3,p,span) {
+  color:#172521;
+}
+.dark .sht-landing.sht-v3 .sht-info-band :is(span,svg) {color:#172521}
+.dark .sht-landing.sht-v3 .sht-bottom-cta {
+  background:#dce986;
+  color:#172521;
+}
+.dark .sht-landing.sht-v3 .sht-bottom-cta :is(h2,p,span) {color:#172521}
+.dark .sht-landing.sht-v3 .sht-bottom-cta .sht-button-primary {
+  background:#172521;
+  color:#f5f7ee;
+}
+.dark .sht-landing.sht-v3 .sht-button-secondary {
+  color:var(--atlas-ink);
+  border-color:var(--atlas-stroke);
+}
+@media(max-width:480px){
+  .sht-landing.sht-v3 .sht-hero-description {font-size:1rem}
+  .sht-landing.sht-v3 .sht-hero-actions {gap:12px}
+}
