@@ -3,7 +3,7 @@ import { applyAccent, readSavedAccent, DISPLAY_PREFERENCES_KEY } from "@/lib/acc
 
 export type Theme = "light" | "dark";
 export type ColorMode = Theme | "system";
-export type SurfaceTheme = "classic" | "soft";
+export type SurfaceTheme = "classic" | "soft" | "atlas";
 export type GlassIntensity = "adaptive" | "subtle" | "balanced" | "vivid";
 export type GlassQuality = "lite" | "balanced" | "rich";
 export type Appearance = {
@@ -22,7 +22,7 @@ export const DEFAULT_APPEARANCE: Readonly<Appearance> = Object.freeze({
   blur: true,
 });
 const modes: readonly ColorMode[] = ["system", "light", "dark"];
-const surfaces: readonly SurfaceTheme[] = ["classic", "soft"];
+const surfaces: readonly SurfaceTheme[] = ["classic", "soft", "atlas"];
 const glasses: readonly GlassIntensity[] = ["adaptive", "subtle", "balanced", "vivid"];
 
 function valid<T extends string>(value: unknown, options: readonly T[], fallback: T): T {
@@ -167,7 +167,7 @@ function startupAppearance() {
     const legacy = localStorage.getItem("shtemarm-theme") ?? "";
     const mode = ["light", "dark", "system"].includes(v.mode)
       ? v.mode : (["light", "dark"].includes(legacy) ? legacy : "system");
-    const surface = ["classic", "soft"].includes(v.surface) ? v.surface : "soft";
+    const surface = ["classic", "soft", "atlas"].includes(v.surface) ? v.surface : "soft";
     const glass = ["adaptive", "subtle", "balanced", "vivid"].includes(v.glass) ? v.glass : "adaptive";
     const dark = mode === "dark" ||
       (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
