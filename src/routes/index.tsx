@@ -1,3 +1,4 @@
+import "@/styles/landing-atlas.css";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LandingHeroLab, LandingExperiences } from "@/components/LandingLabV3";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
