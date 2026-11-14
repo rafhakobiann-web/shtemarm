@@ -26,6 +26,7 @@ import modernWorkspaceCss from "../modern-workspace-2026.css?url";
 import editorialFormsCss from "../editorial-forms-2026.css?url";
 import editorialLearningCss from "../editorial-learning-2026.css?url";
 import solutionsLibraryCss from "../solutions-library.css?url";
+import atlasSelectableCss from "../styles/atlas-selectable.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
@@ -159,6 +160,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: editorialFormsCss },
       { rel: "stylesheet", href: editorialLearningCss },
       { rel: "stylesheet", href: solutionsLibraryCss },
+      { rel: "stylesheet", href: atlasSelectableCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
