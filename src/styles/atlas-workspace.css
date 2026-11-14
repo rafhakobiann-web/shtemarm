@@ -1,0 +1,101 @@
+/* ATLAS / STUDENT WORKSPACE — experimental full-product visual layer.
+ * Draft PR #276. No changes to question logic, navigation, auth or persistence.
+ * Respect accessibility modes and individual appearance preferences. */
+:root:not(.user-high-contrast) {
+  --atlas-paper:#f5f1e7;
+  --atlas-ink:#202b29;
+  --atlas-olive:#dce781;
+  --atlas-coral:#b94d37;
+  --atlas-line:#a9afa3;
+}
+.dark:root:not(.user-high-contrast) {
+  --atlas-paper:#171f1e;
+  --atlas-ink:#e8e8d8;
+  --atlas-olive:#c7d968;
+  --atlas-coral:#ff9476;
+  --atlas-line:#66726c;
+}
+/* Apply only to identified product workspaces. Leave unrelated pages untouched. */
+:root:not(.user-high-contrast) :is(.sht-home-2026,.dashboard-focus,.academy-home) {
+  font-family:"Noto Sans Armenian","Noto Sans",system-ui,sans-serif;
+  --atlas-radius:5px;
+}
+:root:not(.user-high-contrast) .sht-home-2026 {
+  position:relative;
+  isolation:isolate;
+  padding-block-start:clamp(28px,4vw,60px);
+}
+:root:not(.user-high-contrast) .sht-home-2026::before {
+  content:"SHTEMARM / STUDY INDEX";
+  display:block;
+  width:fit-content;
+  padding-block-end:12px;
+  border-bottom:1px solid var(--atlas-line);
+  margin-bottom:clamp(18px,3vw,36px);
+  color:var(--muted-foreground,#65716d);
+  font:700 10px/1.4 ui-monospace,monospace;
+  letter-spacing:.2em;
+}
+:root:not(.user-high-contrast) .sht-home-2026 :is(h1,h2),
+:root:not(.user-high-contrast) .dashboard-focus :is(h1,h2) {
+  font-weight:850;
+  letter-spacing:-.045em;
+  line-height:1.17;
+  text-wrap:balance;
+}
+:root:not(.user-high-contrast) .sht-home-2026 h2 {
+  font-size:clamp(1.45rem,2.4vw,2.3rem);
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-grid {
+  gap:clamp(10px,1.6vw,22px);
+}
+:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link,.academy-bento),
+:root:not(.user-high-contrast) .dashboard-focus .academy-bento {
+  position:relative;
+  border:1px solid var(--atlas-line);
+  border-radius:var(--atlas-radius);
+  box-shadow:none;
+  background:var(--card);
+  transition:border-color .2s ease,transform .2s ease,background-color .2s ease;
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-card {
+  min-height:132px;
+  padding:clamp(16px,2vw,26px);
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-card:nth-child(3n+2) {
+  border-left:5px solid var(--atlas-coral);
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-card:nth-child(3n+1) {
+  border-top:5px solid var(--atlas-olive);
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-mark {
+  border-radius:3px;
+  background:var(--atlas-olive);
+  color:#202b29;
+  font-family:ui-monospace,monospace;
+}
+:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link):is(:hover,:focus-visible) {
+  transform:translateY(-2px);
+  border-color:var(--atlas-coral);
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-action-grid {
+  gap:12px;
+}
+:root:not(.user-high-contrast) .sht-home-2026 .sht-home-action-icon {
+  border-radius:3px;
+}
+:root:not(.user-high-contrast) .dashboard-focus .academy-bento::before,
+:root:not(.user-high-contrast) .sht-home-2026 .academy-bento::before {content:none}
+:root:not(.user-high-contrast) .sht-home-2026 :is(button,a):focus-visible,
+:root:not(.user-high-contrast) .dashboard-focus :is(button,a):focus-visible {
+  outline:3px solid var(--atlas-coral);
+  outline-offset:3px;
+}
+@media(max-width:640px){
+  :root:not(.user-high-contrast) .sht-home-2026::before {letter-spacing:.13em}
+  :root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-card {min-height:110px;padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  :root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link,.academy-bento),
+  :root:not(.user-high-contrast) .dashboard-focus .academy-bento {transition:none;transform:none}
+}
