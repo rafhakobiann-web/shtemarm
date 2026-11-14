@@ -99,3 +99,43 @@
   :root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link,.academy-bento),
   :root:not(.user-high-contrast) .dashboard-focus .academy-bento {transition:none;transform:none}
 }
+
+/* Atlas v2: enforce readable text on dark workspace surfaces. */
+:root:not(.user-high-contrast) {
+  --atlas-body:#33453f;
+  --atlas-card:#fffdf7;
+  --atlas-card-muted:#43544e;
+}
+.dark:root:not(.user-high-contrast) {
+  --atlas-paper:#111b1a;
+  --atlas-ink:#f5f7ee;
+  --atlas-card:#22302d;
+  --atlas-body:#e5eee6;
+  --atlas-card-muted:#cad9d0;
+  --atlas-line:#849b90;
+  --atlas-coral:#ffae95;
+}
+.dark:root:not(.user-high-contrast) :is(.sht-home-2026,.dashboard-focus) {
+  color:var(--atlas-body);
+}
+.dark:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link,.academy-bento),
+.dark:root:not(.user-high-contrast) .dashboard-focus .academy-bento {
+  background:var(--atlas-card);
+  color:var(--atlas-ink);
+  border-color:var(--atlas-line);
+}
+.dark:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link) :is(strong,h2,h3),
+.dark:root:not(.user-high-contrast) .dashboard-focus .academy-bento :is(h1,h2,h3) {
+  color:var(--atlas-ink);
+}
+.dark:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link) .text-muted-foreground,
+.dark:root:not(.user-high-contrast) .dashboard-focus .academy-bento .text-muted-foreground {
+  color:var(--atlas-card-muted);
+}
+.dark:root:not(.user-high-contrast) .sht-home-2026 .sht-home-subject-mark {
+  color:#172521;
+  background:#dce986;
+}
+.dark:root:not(.user-high-contrast) .sht-home-2026 :is(.sht-home-subject-card,.sht-home-quick-link):is(:hover,:focus-visible) {
+  border-color:var(--atlas-coral);
+}
