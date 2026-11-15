@@ -61,7 +61,11 @@ function offlineStudyReply(messages: Msg[], locale:StudyLanguage="hy") {
   const question = messages[messages.length - 1]?.content.trim() ?? "";
   const q = question.toLowerCase();
   if (/^(hi|hello|hey|բարև|բարեւ|ողջույն)[!.? ]*$/i.test(question)) {
-    return "Բարև։ Ես Shtemarm-ի ուսումնական օգնականն եմ։ Կարող եմ օգնել անգլերենի, մաթեմատիկայի և քննություններին պատրաստվելու հարցերում։ Գրիր կոնկրետ հարցդ։";
+    return locale === "en"
+      ? "Hello! The AI service is currently unavailable. I can point you to saved study materials, but cannot generate a new explanation right now."
+      : locale === "ru"
+        ? "Здравствуйте! Сервис ИИ сейчас недоступен. Я могу подсказать, где найти учебные материалы, но не могу создать новое объяснение."
+        : "Բարև։ AI ծառայությունն այս պահին անհասանելի է։ Կարող ես օգտվել պահպանված ուսումնական նյութերից, բայց այս ռեժիմը նոր բացատրություն չի ստեղծում։";
   }
   if (/\b(since|for)\b/.test(q) && /tense|ժամանակ|grammar|քերական/.test(q)) {
     return "Անգլերենում since-ը սովորաբար ցույց է տալիս գործողության սկզբնակետը, իսկ for-ը՝ տևողությունը։ Օրինակ՝ I have lived here since 2020 և I have lived here for three years։ Սա ընդհանուր կանոն է․ ուղարկիր ամբողջ նախադասությունը՝ համատեքստով ստուգելու համար։";

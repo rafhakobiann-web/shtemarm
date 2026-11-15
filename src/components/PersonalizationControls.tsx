@@ -17,14 +17,14 @@ const copy = {
   hy: {
     accessibility: "Մատչելիություն", settings: "Կարգավորումներ", textSize: "Տեքստի չափ", contrast: "Բարձր հակադրություն",
     motion: "Նվազեցնել անիմացիաները", dock: "Կոճակների դիրքը", left: "Ձախ", right: "Աջ", appearance: "Արտաքին տեսք",
-    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Ակադեմիական", glassStrength: "Ապակու էֆեկտ", adaptive: "Ավտոմատ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
+    language: "Լեզու", accent: "Շեշտադրման գույն", theme: "Գունային ռեժիմ", light: "Բաց", dark: "Մութ", system: "Համակարգային", themes: "Կայքի ոճը", liquid: "Liquid Glass", classic: "Դասական", soft: "Ակադեմիական", atlas: "Atlas", glassStrength: "Ապակու էֆեկտ", adaptive: "Ավտոմատ", subtle: "Մեղմ", balanced: "Հավասարակշռված", vivid: "Արտահայտիչ", blur: "Թափանցիկության մշուշում", glassHelp: "Liquid Glass-ը ստեղծում է լուսավորված, կիսաթափանցիկ մակերեսներ։ Էֆեկտը կարող ես նվազեցնել թույլ սարքերի կամ ընթերցման հարմարավետության համար։",
     username: "Իմ օգտանունը", usernameHelp: "Պահպանվում է այս սարքում։ Հանրային վարկանիշում դեռ չի հրապարակվում։", reset: "Վերականգնել լռելյայնը", close: "Փակել", subtitle: "Անհատականացրու քո ուսումնական միջավայրը",
     small: "Փոքր", normal: "Սովորական", large: "Մեծ", extraLarge: "Շատ մեծ", on: "Միացված", off: "Անջատված",
   },
   en: {
     accessibility: "Accessibility", settings: "Settings", textSize: "Text size", contrast: "High contrast",
     motion: "Reduce animations", dock: "Floating buttons position", left: "Left", right: "Right", appearance: "Appearance",
-    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Academy", glassStrength: "Glass strength", adaptive: "Adaptive", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
+    language: "Language", accent: "Accent color", theme: "Color mode", light: "Light", dark: "Dark", system: "System", themes: "Website style", liquid: "Liquid Glass", classic: "Classic", soft: "Academy", atlas: "Atlas", glassStrength: "Glass strength", adaptive: "Adaptive", subtle: "Subtle", balanced: "Balanced", vivid: "Vivid", blur: "Backdrop blur", glassHelp: "Liquid Glass uses luminous translucent surfaces. Reduce the effect for lower-powered devices or easier reading.",
     username: "My username", usernameHelp: "Saved on this device only. Not published to a public leaderboard yet.", reset: "Reset to defaults", close: "Close", subtitle: "Make your study space feel like yours",
     small: "Small", normal: "Default", large: "Large", extraLarge: "Extra large", on: "On", off: "Off",
   },
@@ -32,7 +32,7 @@ const copy = {
     accessibility: "Специальные возможности", settings: "Настройки", textSize: "Размер текста", contrast: "Высокая контрастность",
     motion: "Меньше анимаций", dock: "Положение кнопок", left: "Слева", right: "Справа", appearance: "Внешний вид",
     language: "Язык", accent: "Цветовой акцент", theme: "Цветовая тема", light: "Светлая", dark: "Тёмная",
-    system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Учебный",
+    system: "Системная", themes: "Стиль сайта", liquid: "Liquid Glass", classic: "Классика", soft: "Учебный", atlas: "Atlas",
     glassStrength: "Интенсивность стекла", adaptive: "Авто", subtle: "Низкая", balanced: "Средняя", vivid: "Высокая",
     blur: "Размытие фона", glassHelp: "Для более быстрой работы можно уменьшить эффект размытия или отключить его.",
     username: "Мой никнейм", usernameHelp: "Хранится только на устройстве. Пока не публикуется в общем рейтинге.", reset: "Сбросить настройки", close: "Закрыть", subtitle: "Настройте удобную учебную среду",
@@ -138,19 +138,19 @@ export function PersonalizationControls({ inline = false }: { inline?: boolean }
             <fieldset className="space-y-2">
               <legend className="text-sm font-semibold">{t.themes}</legend>
               <div className="grid grid-cols-3 gap-2">
-                {(["classic", "soft"] as SurfaceTheme[]).map((surface) => (
+                {(["classic", "soft", "atlas"] as SurfaceTheme[]).map((surface) => (
                   <button key={surface} type="button" aria-pressed={appearance.surface === surface}
                     onClick={() => setAppearance({ surface })}
                     className={"group rounded-2xl border-2 p-1.5 text-left transition-colors " +
                       (appearance.surface === surface ? "border-primary bg-primary/5" : "border-border hover:border-primary/50")}>
                     <span aria-hidden="true" className={"relative block h-16 overflow-hidden rounded-xl " +
-                      (surface === "classic" ? "bg-slate-100" : surface === "soft" ? "bg-amber-50" : "bg-gradient-to-br from-sky-200 via-indigo-100 to-rose-100")}>
+                      (surface === "classic" ? "bg-slate-100" : surface === "soft" ? "bg-amber-50" : "bg-[#202b29]")}>
                       <span className={"absolute left-2 right-2 top-2 h-3 rounded-lg " +
-                        (surface === "soft" ? "bg-white/95" : "bg-white")} />
+                        (surface === "atlas" ? "bg-[#dce986]" : surface === "soft" ? "bg-white/95" : "bg-white")} />
                       <span className={"absolute bottom-2 left-2 h-8 w-[45%] rounded-lg " +
-                        (surface === "classic" ? "bg-white shadow" : surface === "soft" ? "bg-white/95" : "border border-white/80 bg-white/50 shadow-md backdrop-blur")} />
+                        (surface === "atlas" ? "bg-[#f5f1e7]" : surface === "classic" ? "bg-white shadow" : "bg-white/95")} />
                       <span className={"absolute bottom-2 right-2 h-8 w-[35%] rounded-lg " +
-                        (surface === "soft" ? "bg-white/95" : "bg-white")} />
+                        (surface === "atlas" ? "bg-[#b94d37]" : surface === "soft" ? "bg-white/95" : "bg-white")} />
                     </span>
                     <span className="mt-2 flex items-center justify-center gap-1 text-xs font-bold">
                       {t[surface]}
