@@ -210,7 +210,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
   const [status,setStatus]=useState<"loading"|"signed-in"|"signed-out"|"unavailable">("loading");
   const [userId,setUserId]=useState("");
   const [onboardingVersion,setOnboardingVersion]=useState(0);
-  const pathname=location.pathname;
+  const pathname=location.pathname === "/" ? "/" : location.pathname.replace(/\/+$/, "");
   const isPublic=PUBLIC_PATHS.has(pathname);
   const isGuestTrial=GUEST_TRIAL_PATH.test(pathname);
   useEffect(()=>{
@@ -253,7 +253,7 @@ function AuthBoundary({children}:{children:ReactNode}) {
   },[status,userId,isPublic,pathname,navigate,onboardingVersion]);
   // The landing page and auth are public. All study pages fail closed while
   // the auth service is loading or unavailable. Never render protected content first.
-  if(isPublic||(isGuestTrial&&status==="signed-out"))return <>{children}</>;
+  if(isPublic||(isGuestTrial&&(status==="signed-out"||status==="unavailable")))return <>{children}</>;
   if(status==="loading"||status==="unavailable")return <div role="status" className="mx-auto max-w-lg rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
     {status==="loading"?"Ստուգվում է մուտքը…":"Մուտքի ծառայությունը ժամանակավորապես անհասանելի է։ Փորձիր կրկին ավելի ուշ։"}
   </div>;
