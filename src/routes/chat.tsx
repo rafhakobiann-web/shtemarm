@@ -46,7 +46,7 @@ function ChatPage() {
   const [personalize, setPersonalize] = useState(false);
   const [remember, setRemember] = useState(false);
   const [focusTopic, setFocusTopic] = useState("");
-  useEffect(() => { const saved = readTutorMemory(); if (saved.enabled) { setRemember(true); setPersonalize(true); setFocusTopic(saved.focusTopics[0] ?? ""); setMode(saved.preferredMode); } }, []);
+  useEffect(() => { const saved = readTutorMemory(); setMode(saved.enabled ? saved.preferredMode : readPreferredMode()); if (saved.enabled) { setRemember(true); setPersonalize(true); setFocusTopic(saved.focusTopics[0] ?? ""); } }, []);
   const changeMemory = (enabled: boolean) => {
     setRemember(enabled);
     if (enabled) { setPersonalize(true); writeTutorMemory({ enabled: true, preferredMode: mode, focusTopics: focusTopic ? [focusTopic] : [] }); }
@@ -57,7 +57,6 @@ function ChatPage() {
   const studySummary = { reviewed: answerResults.length, incorrect: answerResults.filter(value => value === 0).length };
   const [mode,setMode] = useState<StudyMode>(STUDY_MODE_DEFAULT);
   // Save only the learning preference, never conversation text or signed tokens.
-  useEffect(() => { setMode(readPreferredMode()); }, []);
   const selectMode = (next:StudyMode) => {
     setMode(next);
     try { localStorage.setItem(MODE_KEY, next); } catch { /* private browsing */ }
@@ -90,7 +89,7 @@ function ChatPage() {
         ...(personalize ? { studySummary } : {}),
         ...(remember && focusTopic ? { focusTopic } : {}),
       } });
-      if ("contextToken" in res && typeof res.contextToken === "string")
+      if (!res.error && "contextToken" in res && typeof res.contextToken === "string")
         contextTokenRef.current = res.contextToken;
       setMessages((m) => [...m, { role: "assistant", content: res.error ? tx(res.text) : res.text, failed: !!res.error, offline: !!res.offline }]);
     } catch {
