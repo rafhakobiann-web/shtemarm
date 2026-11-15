@@ -119,7 +119,7 @@ export function ExplorePage() {
   }, []);
   const [filter,setFilter] = useState<"all"|"subjects"|"exams"|"tools">("all");
   useEffect(() => {
-    const section=hash?.replace(/^#/,"");
+    const section=typeof hash === "string" ? hash.replace(/^#/,"") : "";
     if (section!=="subjects" && section!=="exams" && section!=="tools") return;
     setFilter(section);
     const frame=window.requestAnimationFrame(() => {
