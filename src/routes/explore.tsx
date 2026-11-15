@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation, type ErrorComponentProps } from "@tanstack/react-router";
+import { reportLovableError } from "@/lib/lovable-error-reporting";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight, Atom, BookOpen, BookText, Brain, Calculator, CheckCircle2,
@@ -14,7 +15,21 @@ export const Route = createFileRoute("/explore")({
     { name: "description", content: "Find Shtemarm question books, practice exams and learning tools in one searchable place." },
   ] }),
   component: ExplorePage,
+  errorComponent: ExploreError,
 });
+
+function ExploreError({ error, reset }: ErrorComponentProps) {
+  useEffect(() => { reportLovableError(error, { boundary: "explore_subjects_exams" }); }, [error]);
+  return <section role="alert" className="mx-auto max-w-xl space-y-4 rounded-2xl border bg-card p-6 text-foreground">
+    <h1 className="text-xl font-bold">Չհաջողվեց բացել առարկաներն ու թեստերը</h1>
+    <p className="text-sm text-muted-foreground">Փորձիր կրկին։ Եթե խնդիրը շարունակվի, վերադարձիր վահանակ և հաղորդիր խնդրի մասին։</p>
+    <div className="flex flex-wrap gap-3">
+      <button type="button" onClick={reset} className="rounded-lg bg-primary px-4 py-3 text-primary-foreground">Կրկին փորձել</button>
+      <Link to="/dashboard" className="rounded-lg border px-4 py-3">Վերադառնալ վահանակ</Link>
+    </div>
+  </section>;
+}
+
 
 type Language = "hy" | "en" | "ru";
 type Copy = Record<Language, string>;
