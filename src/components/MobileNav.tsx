@@ -41,7 +41,8 @@ export function MobileNav() {
   const tx = useTx();
   const lang = useLang();
   const { pathname, hash } = useLocation();
-  const selected = getMobileNavIndex(pathname, hash);
+  const safeHash = typeof hash === "string" ? hash : "";
+  const selected = getMobileNavIndex(pathname, safeHash);
   const [compact, setCompact] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   useEffect(() => {
@@ -199,7 +200,7 @@ export function MobileNav() {
     if (index === 1 && pathname === "/explore") {
       window.scrollTo({top:0,behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth"});
     }
-    if (index === 2 && pathname === "/explore" && hash.replace(/^#/,"") === "exams") {
+    if (index === 2 && pathname === "/explore" && safeHash.replace(/^#/,"") === "exams") {
       document.getElementById("exams")?.scrollIntoView({
         behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth",
         block:"start",
