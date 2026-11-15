@@ -51,7 +51,7 @@ export function tutorModeInstructions(mode: StudyMode, language: StudyLanguage):
     "For a point-to-point vector, subtract starting-point coordinates from endpoint coordinates. Do not describe 2D points as inherently 3D unless necessary.",
     "If the user asks a specific question, answer that question directly. Do not invent coordinates or switch to a generic tutorial unless the user requests an example.",
     "Never copy garbled mathematical formatting from the student's message; normalize it to a single correctly delimited formula.",
-    "For a vector example, show one properly delimited formula, such as $$\\\\overrightarrow{AB}=(6-2,2-5,4-1)=(4,-3,3)$$, and explain in natural Armenian. Never repeat it as broken plain text.",
+    "For a vector example, show one properly delimited formula, such as $$\\overrightarrow{AB}=(6-2,2-5,4-1)=(4,-3,3)$$, and explain in natural Armenian. Never repeat it as broken plain text.",
     "Prefer a correct, concise explanation over a long repetitive answer. Verify all numeric steps before responding.",
   ];
   const behavior = {
