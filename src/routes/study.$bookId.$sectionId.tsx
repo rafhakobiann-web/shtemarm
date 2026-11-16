@@ -131,7 +131,15 @@ function StudyPage() {
         <Classic key={`study-classic:${bookId}:${sectionId}`} units={previewUnits} instr={section.instr_hy} instrEn={section.instr_en} bookId={bookId} />
       )}
       {showGuestSignup && <GuestSignupPrompt bookId={bookId} sectionId={sectionId} />}
-      {signedIn === true && section && section.units.length > 0 && <StudyTutorDrawer key={`study-tutor:${bookId}:${sectionId}`} />}
+      {signedIn === true && section && section.units.length > 0 && <StudyTutorDrawer
+        key={`study-tutor:${bookId}:${sectionId}`}
+        studyContext={{
+          subject: ({ english: "Անգլերեն", math: "Մաթեմատիկա", history: "Հայոց պատմություն", biology: "Կենսաբանություն", armenian: "Հայոց լեզու", physics: "Ֆիզիկա", chemistry: "Քիմիա", geography: "Աշխարհագրություն", russian: "Ռուսերեն" } as Record<string, string>)[subjectForBookId(bookId)] ?? bookTitle,
+          bookPart: ALL_BOOKS.find(item => String(item.id) === bookId)?.sub ?? bookTitle,
+          sectionNumber: section.n,
+          ...(section.title ? { chapter: section.title } : {}),
+        }}
+      />}
     </div>
   );
 }
