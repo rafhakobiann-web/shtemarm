@@ -186,8 +186,8 @@ function PeekExplanation(props: {
     lang === "ru" ? "Посмотреть объяснение до ответа" : "Դիտել բացատրությունը՝ առանց պատասխան գրելու";
   return <div className="sht-prestudy-explanation mt-3 rounded-lg border border-primary/20 bg-card">
     <button type="button" aria-expanded={open} onClick={() => setOpen(x => !x)}
-      className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-primary">
-      <span>{label}</span><span aria-hidden="true">{open ? "−" : "+"}</span>
+      className="flex min-h-12 w-full min-w-0 items-start justify-between gap-3 rounded-lg bg-card px-4 py-3 text-left text-sm font-semibold leading-6 text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+      <span className="min-w-0 flex-1 break-words">{label}</span><span className="grid size-6 shrink-0 place-items-center rounded-md bg-muted text-foreground" aria-hidden="true">{open ? "−" : "+"}</span>
     </button>
     {open && <div className="space-y-3 border-t px-3 py-3">
       {props.explanation && <p role="note" className="text-sm leading-relaxed">{props.explanation}</p>}
@@ -389,7 +389,7 @@ export function UnitCard(props: {
             {tx("Ստուգել →")}
           </button>
         )}
-        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("shtemarm:tutor-question", { detail: { question: String(q.stem).slice(0, 1200), chosen: chosen ? String(chosen).slice(0, 100) : "" } }))} className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 text-xs font-semibold text-primary hover:bg-primary/10">{language==="hy"?"Հարցնել AI-ին այս առաջադրանքի մասին":language==="ru"?"Спросить ИИ об этом задании":"Ask AI about this question"}</button>
+        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("shtemarm:tutor-question", { detail: { question: String(q.stem).slice(0, 1200), chosen: chosen ? String(chosen).slice(0, 100) : "", number: String(q.n), unitLabel: String(u.label), unitId: String(u.id) } }))} className="mt-3 inline-flex min-h-10 items-center rounded-xl border border-primary/25 bg-primary/5 px-3 text-xs font-semibold text-primary hover:bg-primary/10">{language==="hy"?"Հարցնել AI-ին այս առաջադրանքի մասին":language==="ru"?"Спросить ИИ об этом задании":"Ask AI about this question"}</button>
         {show && chosen !== q.answer && <p role="status" className="mt-3 rounded-xl bg-muted px-3 py-3 text-sm font-semibold">
           {words.wrong} {q.answer}) {q.options[q.answer]}
         </p>}
