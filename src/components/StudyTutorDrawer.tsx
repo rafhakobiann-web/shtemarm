@@ -12,19 +12,21 @@ const copy = {
   ru: { open:"Спросить ИИ", title:"ИИ-помощник", intro:"Задай вопрос об этом разделе. Текст заданий не отправляется автоматически.", placeholder:"Напиши вопрос…", send:"Отправить", close:"Закрыть ИИ-помощника", error:"Не удалось получить ответ. Попробуй ещё раз.", note:"ИИ может ошибаться. Сверяйся с ключами сборника." },
 } as const;
 
-export function StudyTutorDrawer() {
+export type TutorStudyContext = { subject: string; bookPart: string; sectionNumber: number; chapter?: string };
+
+export function StudyTutorDrawer({ studyContext }: { studyContext?: TutorStudyContext } = {}) {
   const lang = useLang();
   const t = copy[lang];
   const katex = useKatex();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [selectedQuestion, setSelectedQuestion] = useState<{ question: string; chosen: string } | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<{ question: string; chosen: string; number?: string; unitLabel?: string; unitId?: string } | null>(null);
   const [includeQuestion, setIncludeQuestion] = useState(false);
   useEffect(() => {
     const onSelect = (event: Event) => {
-      const detail = (event as CustomEvent<{ question?: unknown; chosen?: unknown }>).detail;
+      const detail = (event as CustomEvent<{ question?: unknown; chosen?: unknown; number?: unknown; unitLabel?: unknown; unitId?: unknown }>).detail;
       if (!detail || typeof detail.question !== "string") return;
-      setSelectedQuestion({ question: detail.question.slice(0, 1200), chosen: typeof detail.chosen === "string" ? detail.chosen.slice(0, 100) : "" });
+      setSelectedQuestion({ question: detail.question.slice(0, 1200), chosen: typeof detail.chosen === "string" ? detail.chosen.slice(0, 100) : "", number: typeof detail.number === "string" ? detail.number.slice(0, 40) : undefined, unitLabel: typeof detail.unitLabel === "string" ? detail.unitLabel.slice(0, 100) : undefined, unitId: typeof detail.unitId === "string" ? detail.unitId.slice(0, 120) : undefined });
       setIncludeQuestion(false);
       setOpen(true);
     };
@@ -79,8 +81,22 @@ export function StudyTutorDrawer() {
 
   async function send() {
     const question = input.trim().slice(0, 2000);
-    const sharedContext = includeQuestion && selectedQuestion ? `Selected exercise (student-approved): ${selectedQuestion.question}${selectedQuestion.chosen ? `\\nStudent-selected option: ${selectedQuestion.chosen}` : ""}\\n\\n` : "";
-    const submittedQuestion = (sharedContext + question).slice(0, 2000);
+    // Book/section identifiers are navigation metadata, not private student answers.
+    // Exercise text and the student's selected answer require explicit consent.
+    const locationContext = studyContext ? [
+      "Current study location (verified by app navigation, not a guessed exercise):",
+      "Subject: " + studyContext.subject,
+      "Book/part: " + studyContext.bookPart,
+      ...(studyContext.chapter ? ["Chapter/section title: " + studyContext.chapter] : []),
+      "Section number: " + studyContext.sectionNumber,
+      ...(selectedQuestion?.number ? ["Printed exercise number: " + selectedQuestion.number] : []),
+      ...(selectedQuestion?.unitLabel ? ["Exercise group: " + selectedQuestion.unitLabel] : []),
+      "Do not invent the contents or answer of an exercise from its reference alone. Ask the student to select/share its text if needed.",
+    ].join("\\n") + "\\n\\n" : "";
+    const sharedContext = includeQuestion && selectedQuestion ?
+      "Student-approved exercise text: " + selectedQuestion.question +
+      (selectedQuestion.chosen ? "\\nStudent-selected option: " + selectedQuestion.chosen : "") + "\\n\\n" : "";
+    const submittedQuestion = (locationContext + sharedContext + question).slice(0, 2000);
     if (!question || loading) return;
     setMessages(previous => [...previous, { role: "user", text: question }]);
     setInput("");
@@ -102,6 +118,7 @@ export function StudyTutorDrawer() {
       <section ref={panelRef} id="study-ai-panel" role="dialog" aria-modal="true" aria-label={t.title} className="sht-tutor-workspace absolute inset-2 flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 border-primary/35 bg-background shadow-2xl sm:inset-5 sm:rounded-3xl">
         <header className="flex items-center justify-between border-b px-4 py-3"><h2 className="flex items-center gap-2 text-base font-black"><Bot className="size-5 text-primary" />{t.title}</h2><button ref={closeRef} type="button" onClick={dismiss} aria-label={t.close} className="grid size-11 place-items-center rounded-xl hover:bg-muted"><X className="size-5" /></button></header>
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
+          {studyContext && <p className="rounded-lg border bg-card px-3 py-2 text-xs leading-5 text-foreground">{studyContext.subject} · {studyContext.bookPart} · {studyContext.chapter ? studyContext.chapter + " · " : ""}{lang === "hy" ? "Բաժին" : lang === "ru" ? "Раздел" : "Section"} {studyContext.sectionNumber}{selectedQuestion?.number ? " · № " + selectedQuestion.number : ""}</p>}
           <p className="text-sm leading-6 text-muted-foreground">{t.intro}</p>
           {messages.map((message,index) => <div key={index} className={message.role==="user"?"ml-8 rounded-2xl bg-primary/10 p-3 text-sm":"mr-5 rounded-2xl border bg-card p-3 text-sm"}><RichText text={message.text} katex={katex} /></div>)}
           {loading && <p role="status"><Loader2 className="size-5 animate-spin text-primary" /></p>}
