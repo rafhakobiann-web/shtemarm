@@ -92,10 +92,10 @@ export function StudyTutorDrawer({ studyContext }: { studyContext?: TutorStudyCo
       ...(selectedQuestion?.number ? ["Printed exercise number: " + selectedQuestion.number] : []),
       ...(selectedQuestion?.unitLabel ? ["Exercise group: " + selectedQuestion.unitLabel] : []),
       "Do not invent the contents or answer of an exercise from its reference alone. Ask the student to select/share its text if needed.",
-    ].join("\\n") + "\\n\\n" : "";
+    ].join("\n") + "\n\n" : "";
     const sharedContext = includeQuestion && selectedQuestion ?
       "Student-approved exercise text: " + selectedQuestion.question +
-      (selectedQuestion.chosen ? "\\nStudent-selected option: " + selectedQuestion.chosen : "") + "\\n\\n" : "";
+      (selectedQuestion.chosen ? "\nStudent-selected option: " + selectedQuestion.chosen : "") + "\n\n" : "";
     const submittedQuestion = (locationContext + sharedContext + question).slice(0, 2000);
     if (!question || loading) return;
     setMessages(previous => [...previous, { role: "user", text: question }]);
