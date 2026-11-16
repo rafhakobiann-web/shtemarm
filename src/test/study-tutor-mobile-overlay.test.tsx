@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
+import { chatReply } from "@/lib/chat.functions";
 import { StudyTutorDrawer } from "@/components/StudyTutorDrawer";
 
 vi.mock("@/lib/lang", () => ({useLang:()=>"en"}));
@@ -47,4 +48,23 @@ describe("mobile AI assistant layer recovery",()=>{
     fireEvent.click(within(dialog).getByRole("button",{name:"Close AI assistant"}));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
+  it("passes verified source identity but keeps question text private without consent",async()=>{
+    vi.mocked(chatReply).mockResolvedValue({text:"Please share the question."} as Awaited<ReturnType<typeof chatReply>>);
+    render(<StudyTutorDrawer studyContext={{subject:"English",bookPart:"Part III",sectionNumber:8,chapter:"Grammar"}}/>);
+    fireEvent(window,new CustomEvent("shtemarm:tutor-question",{
+      detail:{question:"Private question content",number:"1",unitLabel:"Exercise group A"},
+    }));
+    const dialog=screen.getByRole("dialog");
+    expect(within(dialog).getByText(/English · Part III/)).toBeInTheDocument();
+    fireEvent.change(within(dialog).getByRole("textbox"),{target:{value:"Explain exercise 1"}});
+    fireEvent.click(within(dialog).getByRole("button",{name:"Send"}));
+    await waitFor(()=>expect(chatReply).toHaveBeenCalled());
+    const sent=vi.mocked(chatReply).mock.calls.at(-1)?.[0]?.data.question ?? "";
+    expect(sent).toContain("Subject: English");
+    expect(sent).toContain("Book/part: Part III");
+    expect(sent).toContain("Section number: 8");
+    expect(sent).toContain("Printed exercise number: 1");
+    expect(sent).not.toContain("Private question content");
+  });
+
 });
