@@ -89,6 +89,7 @@ private fun NativeShtemarm() {
     var glassBlur by remember { mutableIntStateOf(progress.glassBlur) }
     var glassClarity by remember { mutableIntStateOf(progress.glassClarity) }
     var glassReflection by remember { mutableIntStateOf(progress.glassReflection) }
+    var pendingRevisionSection by remember { mutableStateOf<String?>(null) }
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
@@ -263,7 +264,8 @@ private fun NativeShtemarm() {
             loading = false
             return@LaunchedEffect
         }
-        chapterFilter = ""
+        chapterFilter = pendingRevisionSection ?: ""
+        pendingRevisionSection = null
         progress.recordLastBook(chosenBook)
         // Mathematics uses a separate verified text/answer reader.
         if (chosenBook.subject == "Մաթեմատիկա") {
@@ -816,7 +818,8 @@ private fun NativeShtemarm() {
                                 }
                                 item { Text(NativeStudyGuide.label(studyLanguage, "Բաժիններ", "Sections", "Разделы"), fontWeight = FontWeight.Bold, fontSize = 21.sp) }
                                 val visibleSectionIndexes = data.sections.indices.filter { idx ->
-                                    BookStudyHelpers.matches(chapterFilter, data.sections[idx].title)
+                                    BookStudyHelpers.matches(chapterFilter, data.sections[idx].title) ||
+                                        (chapterFilter.trim().toIntOrNull() == idx + 1)
                                 }
                                 if (visibleSectionIndexes.isEmpty()) item {
                                     Text(NativeStudyGuide.label(studyLanguage, "Այս անունով բաժին չգտնվեց։ Փորձիր այլ բառ։", "No section found. Try another search.", "Раздел не найден. Попробуйте другой запрос."),
@@ -1174,6 +1177,7 @@ private fun NativeShtemarm() {
                                                 OutlinedButton(
                                                     onClick = {
                                                         subject = targetBook.subject
+                                                        pendingRevisionSection = chapterNumber
                                                         book = targetBook
                                                         page = Page.SECTIONS
                                                     },
