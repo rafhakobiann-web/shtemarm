@@ -1,0 +1,57 @@
+name: Android candidate checks
+
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'src/styles.css'
+      - 'src/dashboard-focus.css'
+      - '.github/workflows/android-candidate-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Validate repository and offline question assets
+        run: |
+          set -euo pipefail
+          node scripts/check-repo-secrets.mjs
+          python3 android/scripts/validate_assets.py
+          python3 android/scripts/audit_math_text.py
+      - name: Compile, run unit tests and build installable debug APK
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest assembleDebug
+      - name: Verify Android package and candidate version
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          SIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -x "$AAPT" && test -x "$SIGNER"
+          BADGING=$("$AAPT" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionCode='12'" <<< "$BADGING"
+          grep -Fq "versionName='0.3.3'" <<< "$BADGING"
+          "$SIGNER" verify --verbose "$APK"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shtemarm-033-debug-candidate
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
