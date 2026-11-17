@@ -48,7 +48,14 @@ jobs:
           heap-size: 512M
           emulator-boot-timeout: 900
           disable-animations: true
-          script: |\n            adb logcat -c\n            cd android\n            gradle --no-daemon connectedDebugAndroidTest --stacktrace --info || {\n              adb logcat -d -v threadtime > app/build/emulator-logcat.txt || true\n              adb shell dumpsys activity processes > app/build/emulator-processes.txt || true\n              exit 1\n            }
+          script: |
+            adb logcat -c
+            cd android
+            gradle --no-daemon connectedDebugAndroidTest --stacktrace --info || {
+              adb logcat -d -v threadtime > app/build/emulator-logcat.txt || true
+              adb shell dumpsys activity processes > app/build/emulator-processes.txt || true
+              exit 1
+            }
       - name: Upload instrumentation results even on failure
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,5 +63,7 @@ jobs:
           name: shtemarm-android-emulator-smoke-report
           path: |
             android/app/build/outputs/androidTest-results/**
-            android/app/build/reports/androidTests/**\n            android/app/build/emulator-logcat.txt\n            android/app/build/emulator-processes.txt
+            android/app/build/reports/androidTests/**
+            android/app/build/emulator-logcat.txt
+            android/app/build/emulator-processes.txt
           if-no-files-found: warn
