@@ -1177,7 +1177,7 @@ private fun NativeShtemarm() {
                                                 OutlinedButton(
                                                     onClick = {
                                                         subject = targetBook.subject
-                                                        pendingRevisionSection = chapterNumber
+                                                        pendingRevisionSection = if (book == targetBook) null else chapterNumber
                                                         chapterFilter = chapterNumber
                                                         book = targetBook
                                                         page = Page.SECTIONS
