@@ -23,3 +23,12 @@ The Android 0.3.3 branch currently contains release versioning and verification 
 - Signature learning feature: offline adaptive revision based on real chapter performance, with deterministic ordering and no invented AI answers.
 - Next milestone: integrate revision route into the study UI, add accessible motion/reduced-motion behavior, benchmark navigation and scrolling on low/mid-range devices, and test persistence and signed updates.
 - The code is a draft; these changes do not establish measured frame rates or a released APK.
+
+## Website design parity — required acceptance criteria
+The **existing production Academy website** (not experimental Atlas) is the design source of truth. Inspect `src/styles.css`, `src/dashboard-focus.css`, `src/routes/dashboard.tsx`, `src/routes/explore.tsx`, and the question-practice screens before editing Android counterparts.
+
+- Match visual hierarchy, Armenian-first labels, brand teal `#0B766B` (dark `#1CB4A1`), paper/card surfaces, type scale, book tiles, section chips, question cards, progress and feedback states.
+- Match screen by screen: dashboard, subjects, book selection, section selection, practice, exams, results, mistakes, progress, settings. Native bottom navigation may respect Android safe areas while maintaining website structure.
+- Preserve opaque surfaces, no Liquid Glass, and native Android Compose; do not embed the website in a WebView.
+- Compare side-by-side screenshots at equivalent phone widths, both themes and Armenian/English/Russian. Check touch targets, font scaling and dark-mode contrast.
+- Visual parity is **not yet certified**. The current branch aligns initial dark tokens only; complete UI layout parity requires implementation and screenshot regression checks.
