@@ -16,3 +16,10 @@ Do not ask students to uninstall the app as the first troubleshooting step: unin
 6. Publish only a signed, verified artifact through the approved Lovable download flow. Do not replace the public APK with a debug build.
 
 The Android 0.3.3 branch currently contains release versioning and verification improvements, **not** a proven universal update or a finished APK.
+
+## Product direction: fast, focused learning (17 Nov 2026)
+- No Liquid Glass theme in the new Android variant. Offer only opaque Classic and Academy surfaces; map saved Liquid preferences to Academy at runtime without deleting progress.
+- Disable live Haze capture for the new variant; prioritize scroll and tap responsiveness over optical effects.
+- Signature learning feature: offline adaptive revision based on real chapter performance, with deterministic ordering and no invented AI answers.
+- Next milestone: integrate revision route into the study UI, add accessible motion/reduced-motion behavior, benchmark navigation and scrolling on low/mid-range devices, and test persistence and signed updates.
+- The code is a draft; these changes do not establish measured frame rates or a released APK.
