@@ -5,12 +5,12 @@ on:
       version_name:
         description: 'Version name for signed candidate, e.g. 0.1.1-beta.1'
         required: true
-        default: '0.1.1-beta.1'
+        default: '0.3.3'
         type: string
       version_code:
         description: 'Increasing integer Android version code'
         required: true
-        default: '4'
+        default: '12'
         type: string
 permissions:
   contents: read
@@ -70,14 +70,26 @@ jobs:
           gradle --no-daemon assembleRelease bundleRelease \
             "-Pshtemarm.versionName=$VERSION_NAME" \
             "-Pshtemarm.versionCode=$VERSION_CODE"
-      - name: Verify release APK signature
+      - name: Verify release APK identity and signing certificate
+        env:
+          VERSION_NAME: ${{ inputs.version_name }}
+          VERSION_CODE: ${{ inputs.version_code }}
         run: |
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose \
-            android/app/build/outputs/apk/release/app-release.apk
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK")
+          grep -Fq "package: name='am.shtemarm.app'" <<< "$BADGING"
+          grep -Fq "versionCode='$VERSION_CODE'" <<< "$BADGING"
+          grep -Fq "versionName='$VERSION_NAME'" <<< "$BADGING"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          sha256sum "$APK" > "$RUNNER_TEMP/shtemarm-release.apk.sha256"
+          cp "$RUNNER_TEMP/shtemarm-release.apk.sha256" android/app/build/outputs/apk/release/app-release.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
           name: shtemarm-signed-android-release
           path: |
             android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/release/app-release.apk.sha256
             android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error

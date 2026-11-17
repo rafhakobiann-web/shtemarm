@@ -60,7 +60,7 @@ val AcademyPaper = Color(0xFFF9FBF5)
 val AcademyGold = Color(0xFFE3B95F)
 private val AcademyLine = Color(0xFFDDE7DF)
 
-val LocalAcademySurface = compositionLocalOf { "liquid" }
+val LocalAcademySurface = compositionLocalOf { "soft" }
 
 fun academyAccent(id: String): Color = when (id) {
     "blue" -> Color(0xFF4263EB)
@@ -601,7 +601,7 @@ fun AcademyAppearanceSettings(
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("classic" to "Դասական", "soft" to "Ակադեմիական", "liquid" to "Liquid Glass")
+                listOf("classic" to "Դասական", "soft" to "Ակադեմիական")
                     .forEach { (value, label) ->
                         FilterChip(selected = surface == value, onClick = { onSurface(value) },
                             label = { Text(label) })

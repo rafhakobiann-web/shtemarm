@@ -77,12 +77,13 @@ private fun NativeShtemarm() {
     val context = LocalContext.current.applicationContext
     val repository = remember { QuestionRepository(context) }
     val progress = remember { StudyProgress(context) }
-    val glassHazeState = remember { HazeState() }
+    // No backdrop capture in the performance-first Android variant.
+    val glassHazeState: HazeState? = null
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
-    var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle) }
+    var surfaceStyle by remember { mutableStateOf(if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle) }
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var glassBackground by remember { mutableStateOf(progress.glassBackground) }
     var glassBlur by remember { mutableIntStateOf(progress.glassBlur) }
@@ -185,7 +186,7 @@ private fun NativeShtemarm() {
                         largeText = progress.largeText
                         immediateFeedback = progress.showAnswersImmediately
                         accent = progress.accent
-                        surfaceStyle = progress.surfaceStyle
+                        surfaceStyle = if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle
                         glassIntensity = progress.glassIntensity
                         glassBackground = progress.glassBackground
                         glassBlur = progress.glassBlur
