@@ -92,7 +92,7 @@ jobs:
           old_cert=$("$SIGNER" verify --print-certs "$OLD" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
           new_cert=$("$SIGNER" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1)
           test -n "$old_cert" && test "$old_cert" = "$new_cert" || { echo "Signing certificate mismatch: update must NOT be published as in-place." >&2; exit 1; }
-          old_code=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OLD" | sed -n "s/.*versionCode='\\([^']*\\)'.*/\\1/p" | head -n 1)
+          old_code=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OLD" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" | head -n 1)
           test "$VERSION_CODE" -gt "$old_code" || { echo "Version code must increase over distributed APK." >&2; exit 1; }
           sha256sum "$APK" > "$RUNNER_TEMP/shtemarm-release.apk.sha256"
           cp "$RUNNER_TEMP/shtemarm-release.apk.sha256" android/app/build/outputs/apk/release/app-release.apk.sha256
