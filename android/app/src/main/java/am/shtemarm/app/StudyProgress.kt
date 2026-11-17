@@ -89,6 +89,18 @@ class StudyProgress(context: Context) {
         )
     }
 
+    /** Offline revision inputs, sourced only from validated local chapter results. */
+    fun revisionChapters(): List<RevisionChapter> =
+        prefs.all.keys.asSequence()
+            .filter { it.startsWith("ch_") && it.endsWith("_sessions") }
+            .map { it.removePrefix("ch_").removeSuffix("_sessions") }
+            .filter(::validChapterKey)
+            .map { key ->
+                val chapter = chapterStats(key)
+                RevisionChapter(key, chapter.answered, chapter.correct, chapter.sessions)
+            }
+            .toList()
+
     /** Return to the last opened source without storing any textbook text. */
     fun recordLastBook(book: StudyBook) {
         prefs.edit().putString("last_book_asset", book.asset)
