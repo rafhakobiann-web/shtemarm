@@ -8,6 +8,11 @@ import re
 import subprocess
 import sys
 
+# Exact known-invalid credential-shaped fixture in one historical test blob.
+KNOWN_TEST_FIXTURE_BLOB = "cde98d6648f4f3827e8b4ae31dcefe0d7e6c938f"
+KNOWN_TEST_FIXTURE_PATH = "src/test/public-auth-config.test.ts"
+KNOWN_TEST_FIXTURE_VALUE = b"sb_secret_test-only-invalid-key"
+
 PATTERNS = {
     "OpenAI key": re.compile(rb"\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{28,}"),
     "Google API key": re.compile(rb"\bAIza[0-9A-Za-z_-]{30,}"),
@@ -45,7 +50,10 @@ try:
             continue
         blobs_checked += 1
         for label, pattern in PATTERNS.items():
-            if pattern.search(content):
+            matches = list(pattern.finditer(content))
+            if label == "Supabase secret" and oid == KNOWN_TEST_FIXTURE_BLOB and path == KNOWN_TEST_FIXTURE_PATH:
+                matches = [m for m in matches if m.group(0) != KNOWN_TEST_FIXTURE_VALUE]
+            if matches:
                 violations.append((oid[:12], path, label))
                 if len(violations) >= 40:
                     break
