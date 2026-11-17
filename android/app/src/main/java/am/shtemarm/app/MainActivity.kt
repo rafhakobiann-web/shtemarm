@@ -1135,6 +1135,63 @@ private fun NativeShtemarm() {
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item { ScreenHeading("Իմ առաջընթացը", "Արդյունքները պահվում են այս սարքում։") }
+                        item {
+                            val revision = progressVersion.let {
+                                AdaptiveRevision.plan(progress.revisionChapters())
+                            }
+                            ElevatedCard(
+                                Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(18.dp)
+                            ) {
+                                Column(
+                                    Modifier.padding(18.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Text(
+                                        NativeStudyGuide.label(studyLanguage,
+                                            "Իմ կրկնության ուղին", "My revision path", "Мой план повторения"),
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        NativeStudyGuide.label(studyLanguage,
+                                            "Առաջարկությունները հիմնված են քո իրական արդյունքների վրա։",
+                                            "Recommendations are based on your actual results.",
+                                            "Рекомендации основаны на ваших результатах."),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    if (revision.isEmpty()) {
+                                        Text(NativeStudyGuide.label(studyLanguage,
+                                            "Լուծիր առաջին բաժինը՝ անհատական ուղի ստանալու համար։",
+                                            "Complete a section to unlock your personal route.",
+                                            "Пройдите раздел, чтобы получить личный план."))
+                                    } else {
+                                        revision.forEach { step ->
+                                            val asset = step.chapterKey.substringBefore('#')
+                                            val chapterNumber = step.chapterKey.substringAfter('#')
+                                            val targetBook = BookCatalog.books.firstOrNull { it.asset == asset }
+                                            if (targetBook != null) {
+                                                OutlinedButton(
+                                                    onClick = {
+                                                        subject = targetBook.subject
+                                                        book = targetBook
+                                                        page = Page.SECTIONS
+                                                    },
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    Text(
+                                                        targetBook.title + " · " +
+                                                            NativeStudyGuide.label(studyLanguage,
+                                                                "Բաժին ", "Section ", "Раздел ") + chapterNumber,
+                                                        maxLines = 2
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         items(BookCatalog.subjects, key = { it }) { s ->
                             val stats = progress.stats(s)
                             ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
