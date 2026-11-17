@@ -1178,6 +1178,7 @@ private fun NativeShtemarm() {
                                                     onClick = {
                                                         subject = targetBook.subject
                                                         pendingRevisionSection = chapterNumber
+                                                        chapterFilter = chapterNumber
                                                         book = targetBook
                                                         page = Page.SECTIONS
                                                     },
