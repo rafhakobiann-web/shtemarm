@@ -77,19 +77,20 @@ fun academyColors(dark: Boolean, accent: Color, style: String): ColorScheme =
         primary = if (accent == AcademyTeal) Color(0xFF1CB4A1) else accent,
         onPrimary = Color(0xFF092B27),
         primaryContainer = Color(0xFF204E4B),
-        background = Color(0xFF19292F),
-        surface = Color(0xFF23353B),
-        surfaceContainerHigh = Color(0xFF2C4146),
+        // Matched to the website's Academy dark tokens (src/styles.css).
+        background = Color(0xFF17272D),
+        surface = Color(0xFF22353B),
+        surfaceContainerHigh = Color(0xFF2A4145),
         onSurface = Color(0xFFF1F7F2),
-        onSurfaceVariant = Color(0xFFC2D3D1),
-        outline = Color(0xFF5A7575)
+        onSurfaceVariant = Color(0xFFB8CDCB),
+        outline = Color(0xFF526E70)
     ) else lightColorScheme(
         primary = accent,
         onPrimary = Color.White,
         primaryContainer = Color(0xFFD9F2E9),
         onPrimaryContainer = AcademyInk,
         background = if (style == "classic") Color(0xFFFFFFFF) else AcademyPaper,
-        surface = if (style == "liquid") Color(0xFFFCFFFA) else Color(0xFFFFFEFB),
+        surface = Color(0xFFFFFEFB),
         surfaceContainerHigh = Color(0xFFF0F5F1),
         onSurface = AcademyInk,
         onSurfaceVariant = Color(0xFF617471),
