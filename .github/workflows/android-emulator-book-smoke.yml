@@ -20,7 +20,7 @@ permissions:
 jobs:
   emulator-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -51,7 +51,7 @@ jobs:
           script: |
             adb logcat -c
             cd android
-            gradle --no-daemon connectedDebugAndroidTest --stacktrace --info || {
+            timeout --signal=TERM --kill-after=30s 12m gradle --no-daemon connectedDebugAndroidTest --stacktrace --info || {
               adb logcat -d -v threadtime > app/build/emulator-logcat.txt || true
               adb shell dumpsys activity processes > app/build/emulator-processes.txt || true
               exit 1
