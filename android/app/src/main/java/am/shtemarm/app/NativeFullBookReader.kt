@@ -77,7 +77,7 @@ private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> 
         for (si in 0 until sections.length()) {
             val section = sections.optJSONObject(si) ?: continue
             val sectionTitle = section.optString("title").ifBlank {
-                section.optString("label").ifBlank { "Բաժին \${si + 1}" }
+                section.optString("label").ifBlank { "Բաժին ${si + 1}" }
             }
             val units = section.optJSONArray("units") ?: continue
             for (ui in 0 until units.length()) {
@@ -91,7 +91,7 @@ private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> 
     if (tests != null) {
         for (ti in 0 until tests.length()) {
             val test = tests.optJSONObject(ti) ?: continue
-            val title = test.optString("title").ifBlank { "Թեստ \${test.optInt("id", ti + 1)}" }
+            val title = test.optString("title").ifBlank { "Թեստ ${test.optInt("id", ti + 1)}" }
             val tasks = test.optJSONArray("tasks") ?: continue
             for (ui in 0 until tasks.length()) {
                 val unit = tasks.optJSONObject(ui) ?: continue
@@ -111,7 +111,7 @@ private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> 
                 val visual = visualReference(q)
                 if (prompt.isBlank() && visual.isBlank()) continue
                 result.add(SourceExercise(
-                    "\${book.asset}:flat:$i", q.optString("section").ifBlank { "Հարց \${i + 1}" },
+                    "${book.asset}:flat:$i", q.optString("section").ifBlank { "Հարց ${i + 1}" },
                     q.optString("kind", "Հարց"), "", prompt, options, answer, visual
                 ))
             }
@@ -129,7 +129,7 @@ private fun appendUnit(
     unit: JSONObject
 ) {
     val passage = unit.optString("passage").trim()
-    val unitLabel = label.ifBlank { unit.optString("id").ifBlank { "Առաջադրանք \${unitIndex + 1}" } }
+    val unitLabel = label.ifBlank { unit.optString("id").ifBlank { "Առաջադրանք ${unitIndex + 1}" } }
     val kind = unit.optString("kind").ifBlank { "Առաջադրանք" }
     val visual = visualReference(unit)
     val questions = unit.optJSONArray("questions")
@@ -197,8 +197,8 @@ private fun parseMathSource(raw: String, part: Int): List<SourceExercise> {
                 val visual = q?.let(::visualReference).orEmpty()
                 if (prompt.isBlank() && passage.isBlank() && visual.isBlank()) continue
                 result.add(SourceExercise(
-                    "math:$bookId:$chapter:$sectionNumber:$taskNumber:\${qi + 1}",
-                    "$heading · Առաջադրանք $taskNumber · \${qi + 1}",
+                    "math:$bookId:$chapter:$sectionNumber:$taskNumber:${qi + 1}",
+                    "$heading · Առաջադրանք $taskNumber · ${qi + 1}",
                     task.optString("answer_type", "choice"), passage, prompt, options, answer, visual
                 ))
             }
@@ -223,7 +223,7 @@ private fun displayAnswer(value: Any?, optionsValue: Any?): String {
     val raw = when (value) {
         is JSONArray -> (0 until value.length()).joinToString(", ") { value.optString(it) }
         is JSONObject -> value.keys().asSequence().sorted().joinToString(", ") {
-            "$it → \${value.optString(it)}"
+            "$it → ${value.optString(it)}"
         }
         else -> value.toString()
     }.trim()
@@ -294,9 +294,9 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                 fontWeight = FontWeight.Bold)
             Text(
                 NativeStudyGuide.label(progress.studyLanguage,
-                    "Ամբողջ հասանելի հարցաշարը · \${exercises.size} առաջադրանք",
-                    "All available source questions · \${exercises.size} exercises",
-                    "Все доступные задания · \${exercises.size}"),
+                    "Ամբողջ հասանելի հարցաշարը · ${exercises.size} առաջադրանք",
+                    "All available source questions · ${exercises.size} exercises",
+                    "Все доступные задания · ${exercises.size}"),
                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp
             )
         }
@@ -339,7 +339,7 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = { textSize = ReaderTypography.decrease(textSize); progress.readingTextSize = textSize },
                             enabled = textSize > ReaderTypography.MIN_TEXT_SIZE_SP) { Text("A−") }
-                        Text("\${textSize}sp", style = MaterialTheme.typography.labelMedium)
+                        Text("${textSize}sp", style = MaterialTheme.typography.labelMedium)
                         TextButton(onClick = { textSize = ReaderTypography.increase(textSize); progress.readingTextSize = textSize },
                             enabled = textSize < ReaderTypography.MAX_TEXT_SIZE_SP) { Text("A+") }
                     }
@@ -377,16 +377,16 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                                         fontWeight = FontWeight.Medium)
                                 }
                                 exercise.options.forEachIndexed { index, option ->
-                                    Text("\${('A'.code + index).toChar()}. $option",
+                                    Text("${('A'.code + index).toChar()}. $option",
                                         fontSize = (textSize - 1).coerceAtLeast(13).sp,
                                         lineHeight = (textSize * 1.45f).sp)
                                 }
                                 if (exercise.visual.isNotBlank()) {
                                     Text(
                                         NativeStudyGuide.label(progress.studyLanguage,
-                                            "Գրքում կա պատկեր կամ գծագիր՝ \${exercise.visual}",
-                                            "The source question includes a figure: \${exercise.visual}",
-                                            "В исходном задании есть изображение: \${exercise.visual}"),
+                                            "Գրքում կա պատկեր կամ գծագիր՝ ${exercise.visual}",
+                                            "The source question includes a figure: ${exercise.visual}",
+                                            "В исходном задании есть изображение: ${exercise.visual}"),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 12.sp
                                     )
@@ -400,9 +400,9 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                                     NativeStudyGuide.label(progress.studyLanguage,
                                         "Աղբյուրում պատասխան նշված չէ։", "No answer is marked in the source.", "В источнике ответ не указан.")
                                 else NativeStudyGuide.label(progress.studyLanguage,
-                                    "Աղբյուրի պատասխան՝ \${exercise.answer}",
-                                    "Source answer: \${exercise.answer}",
-                                    "Ответ из источника: \${exercise.answer}"),
+                                    "Աղբյուրի պատասխան՝ ${exercise.answer}",
+                                    "Source answer: ${exercise.answer}",
+                                    "Ответ из источника: ${exercise.answer}"),
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.SemiBold
                             )
