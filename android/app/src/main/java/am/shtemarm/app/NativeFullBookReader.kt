@@ -23,7 +23,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.coroutineContext
 
-private data class SourceExercise(
+internal data class SourceExercise(
     val id: String,
     val heading: String,
     val kind: String,
@@ -43,7 +43,7 @@ private object SourceExerciseCache {
     fun put(key: String, value: List<SourceExercise>) { synchronized(books) { books[key] = value } }
 }
 
-private suspend fun loadSourceExercises(context: Context, book: StudyBook): List<SourceExercise> {
+internal suspend fun loadSourceExercises(context: Context, book: StudyBook): List<SourceExercise> {
     val cacheKey = listOf(book.subject, book.title, book.asset).joinToString(":")
     SourceExerciseCache.get(cacheKey)?.let { return it }
 
