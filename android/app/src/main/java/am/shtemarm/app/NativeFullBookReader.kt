@@ -87,9 +87,8 @@ private fun sourceAssetNames(book: StudyBook): List<String> {
         )
     }
     if (book.subject == "Հայոց լեզու" && book.asset == "armenian-book1.json") {
-        return listOf(book.asset) +
-            (1..8).map { "armenian-official-1-section$it.json" } +
-            "armenian-official-1-assertions.json"
+        return (1..8).map { "armenian-official-1-section$it.json" } +
+            listOf("armenian-official-1-assertions.json", book.asset)
     }
     return listOf(book.asset)
 }
