@@ -73,10 +73,11 @@ export function AppHeader() {
   const examActive = route === "/explore" && location.hash?.replace(/^#/, "") === "exams";
   const exploreActive = route === "/explore" && !examActive;
   const profileActive = route === "/profile";
+  const studyFocus = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(route) || route === "/math/play";
   const current = (yes:boolean) => yes ? "bg-primary/10 text-primary" : "";
 
   return (
-    <header className="site-header sht-explore-header sticky top-0 z-30 border-b bg-card/95">
+    <header data-study-focus={studyFocus ? "true" : undefined} className="site-header sht-explore-header sticky top-0 z-30 border-b bg-card/95">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-3 py-2.5 sm:px-5">
         <Link to="/dashboard" aria-label="Shtemarm" className="inline-flex min-h-11 min-w-0 shrink-0 items-center gap-2 rounded-xl focus-visible:outline-2 focus-visible:outline-primary">
           <img src="/shtemarm-logo.svg" alt="" aria-hidden="true" className="size-10 object-contain" />
@@ -153,3 +154,4 @@ export function AppHeader() {
     </header>
   );
 }
+

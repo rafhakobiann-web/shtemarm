@@ -7,20 +7,17 @@ import { ACCENT_SWATCHES, applyAccent, chooseAccent, normalizeAccent, readSavedA
 const read = (path: string) => readFileSync(path, "utf8");
 const css = read("src/adaptive-design-2026.css");
 
-describe("approved adaptive Liquid Glass design", () => {
+describe("matte responsive study design", () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.removeAttribute("data-accent");
     document.documentElement.style.removeProperty("--primary");
   });
 
-  it("defaults to adaptive, preserves explicit user glass settings and rejects unknown modes", () => {
-    expect(DEFAULT_APPEARANCE.surface).toBe("liquid");
-    expect(DEFAULT_APPEARANCE.glass).toBe("adaptive");
-    expect(normalizeAppearance({ glass: "subtle" }).glass).toBe("subtle");
-    expect(normalizeAppearance({ glass: "vivid" }).glass).toBe("vivid");
-    expect(normalizeAppearance({ glass: "adaptive" }).glass).toBe("adaptive");
-    expect(normalizeAppearance({ glass: "unknown" }).glass).toBe("adaptive");
+  it("defaults to a matte surface and maps legacy glass values to the safe default", () => {
+    expect(DEFAULT_APPEARANCE.surface).toBe("soft");
+    expect(normalizeAppearance({ surface: "liquid" }).surface).toBe("soft");
+    expect(normalizeAppearance({ surface: "soft" }).surface).toBe("soft");
   });
 
   it("provides a strict 6-color palette shared with the signed-in settings", () => {
@@ -43,7 +40,7 @@ describe("approved adaptive Liquid Glass design", () => {
     expect(landing).toContain("sht-palette-picker");
     expect(dashboard).toContain('createFileRoute("/dashboard")');
     expect(dashboard).toContain("sht-home-subject-grid");
-    expect(dashboard).toContain("sht-dashboard-shortcuts");
+    expect(dashboard).toContain("sht-quiet-shortcuts");
     expect(exam).toContain("sht-exam-hero");
     expect(exam).toContain("sht-exam-metric");
     expect(root).toContain("href: adaptiveDesignCss");
@@ -52,17 +49,14 @@ describe("approved adaptive Liquid Glass design", () => {
     expect(css).toContain(".sht-palette-picker");
   });
 
-  it("keeps adaptive rendering and spring feedback accessible and low-cost", () => {
-    expect(css).toContain('data-glass-quality="rich"');
-    expect(css).toContain('data-glass-quality="lite"');
-    expect(css).toContain("prefers-reduced-motion: reduce");
-    expect(css).toContain("prefers-reduced-transparency: reduce");
-    expect(css).toContain("touch-action: pan-y");
-    expect(css).toContain("transform 420ms");
-    expect(css).not.toContain("feDisplacementMap");
-    const theme = read("src/lib/theme.ts");
-    expect(theme).toContain("deviceMemory");
-    expect(theme).toContain("hardwareConcurrency");
-    expect(theme).toContain("saveData");
+  it("uses the quiet matte navigation and honors reduced motion", () => {
+    const quiet = read("src/quiet-learning-2026.css");
+    const root = read("src/routes/__root.tsx");
+    expect(quiet).toContain(".site-mobile-nav.sht-quiet-mobile-nav");
+    expect(quiet).toContain("backdrop-filter: none");
+    expect(quiet).toContain("prefers-reduced-motion: reduce");
+    expect(root).not.toContain("liquid-glass-2026.css");
+    expect(root).not.toContain("TouchGlassEffects");
   });
 });
+

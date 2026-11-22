@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ClipboardCheck, Trophy, Brain, BookOpen, Sparkles, Dna, Smartphone, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, ClipboardCheck, Trophy, Brain, BookOpen, Sparkles, Dna } from "lucide-react";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { supabase, hasSupabaseConfig } from "@/integrations/supabase/client";
@@ -301,18 +301,12 @@ function Index() {
   if (subject === "armenian") return <ArmenianSubject />;
 
   const words = {
-    hy:{heading:"Ընտրիր առարկան", hint:"Միայն մեկ ընտրություն՝ բացելու գրքերը, հարցերն ու թեստերը։",all:"Բոլոր առարկաները",
-      actions:"Արագ անցումներ",exams:"Փորձնական քննություններ",examInfo:"Ընտրիր քննությունը և սկսիր փորձնական թեստը։",
-      tools:"Ուսումնական գործիքներ",toolsInfo:"Կանոններ, AI ուսուցիչ և կրկնություն։",profile:"Իմ պրոֆիլը",profileInfo:"Նպատակներն ու ամբողջ առաջընթացը։",
-      first:"Շտեմարաններ",second:"Ընտրել առարկա",downloads:"Ներբեռնել հավելվածը",news:"Թարմացումներ"},
-    en:{heading:"Choose your subject",hint:"One tap to find its workbooks, questions, and tests.",all:"Browse all subjects",
-      actions:"Quick destinations",exams:"Practice exams",examInfo:"Find your exam and begin practice.",
-      tools:"Study tools",toolsInfo:"Rules, AI tutor, and revision.",profile:"My Profile",profileInfo:"Goals, progress, and achievements.",
-      first:"Workbooks",second:"Find a subject",downloads:"Download app",news:"What's new"},
-    ru:{heading:"Выбери предмет",hint:"Один шаг до сборников, заданий и тестов.",all:"Все предметы",
-      actions:"Быстрые переходы",exams:"Пробные экзамены",examInfo:"Найди экзамен и начни подготовку.",
-      tools:"Инструменты",toolsInfo:"Правила, ИИ-учитель и повторение.",profile:"Мой профиль",profileInfo:"Цели, прогресс и награды.",
-      first:"Сборники",second:"Выбрать предмет",downloads:"Скачать приложение",news:"Что нового"},
+    hy:{heading:"Ընտրիր առարկան", hint:"Բացիր շտեմարանը և սկսիր սովորել։", all:"Բոլոր առարկաները",
+      actions:"Ավելին", exams:"Փորձնական քննություններ", tools:"Ուսումնական գործիքներ"},
+    en:{heading:"Choose a subject", hint:"Open a workbook and start learning.", all:"Browse all subjects",
+      actions:"More ways to study", exams:"Practice exams", tools:"Study tools"},
+    ru:{heading:"Выбери предмет", hint:"Открой сборник и начни заниматься.", all:"Все предметы",
+      actions:"Ещё для учёбы", exams:"Пробные экзамены", tools:"Учебные инструменты"},
   }[lang];
   const subjects = [
     {id:"english" as const,title:{hy:"Անգլերեն",en:"English",ru:"Английский"},sub:{hy:"3 շտեմարան",en:"3 workbooks",ru:"3 сборника"},mark:"EN"},
@@ -323,7 +317,7 @@ function Index() {
   ];
 
   return (
-    <main className="sht-home-2026 mx-auto w-full max-w-6xl space-y-8 pb-10 pt-3 sm:space-y-9 sm:pt-6">
+    <main className="sht-home-2026 mx-auto w-full max-w-6xl space-y-6 pb-10 pt-2 sm:space-y-8 sm:pt-5">
       <DashboardOverview name={name} progress={progress} />
 
       <section id="subjects" className="scroll-mt-24 space-y-4" aria-label={words.heading}>
@@ -361,33 +355,20 @@ function Index() {
         </div>
       </section>
 
-      <section id="exams" className="scroll-mt-24 space-y-4" aria-label={words.actions}>
-        <h2 className="text-lg font-black text-foreground">{words.actions}</h2>
-        <nav aria-label={words.actions} className="sht-dashboard-shortcuts sht-home-action-grid grid gap-3 sm:grid-cols-3">
-          <Link to="/explore" hash="exams" className="academy-quick-action sht-home-quick-link group">
-            <span aria-hidden="true" className="sht-home-action-icon"><Trophy className="size-5"/></span>
-            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.exams}</strong>
-              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.examInfo}</span></span>
-            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
+      <section id="exams" className="scroll-mt-24 border-t pt-5" aria-label={words.actions}>
+        <h2 className="text-base font-bold text-foreground">{words.actions}</h2>
+        <nav aria-label={words.actions} className="sht-quiet-shortcuts mt-2 flex flex-col gap-1 sm:flex-row sm:gap-3">
+          <Link to="/explore" hash="exams"
+            className="inline-flex min-h-12 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">
+            <Trophy className="size-4 text-primary" aria-hidden="true" />{words.exams}<ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />
           </Link>
-          <Link to="/study-tools" className="academy-quick-action sht-home-quick-link group">
-            <span aria-hidden="true" className="sht-home-action-icon"><BookOpen className="size-5"/></span>
-            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.tools}</strong>
-              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.toolsInfo}</span></span>
-            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
-          </Link>
-          <Link to="/profile" className="academy-quick-action sht-home-quick-link group">
-            <span aria-hidden="true" className="sht-home-action-icon"><UserRound className="size-5"/></span>
-            <span className="min-w-0 flex-1"><strong className="block text-sm font-black">{words.profile}</strong>
-              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{words.profileInfo}</span></span>
-            <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden="true"/>
+          <Link to="/study-tools"
+            className="inline-flex min-h-12 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">
+            <BookOpen className="size-4 text-primary" aria-hidden="true" />{words.tools}<ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />
           </Link>
         </nav>
       </section>
-      <footer className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-5 text-xs font-bold text-muted-foreground">
-        <Link to="/download" className="inline-flex min-h-11 items-center gap-2 hover:text-primary"><Smartphone className="size-4"/>{words.downloads}</Link>
-        <Link to="/changelog" className="inline-flex min-h-11 items-center gap-2 hover:text-primary"><Sparkles className="size-4"/>{words.news}</Link>
-      </footer>
     </main>
   );
 }
+
