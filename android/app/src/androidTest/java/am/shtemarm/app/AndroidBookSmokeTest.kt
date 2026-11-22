@@ -30,31 +30,36 @@ class AndroidBookSmokeTest {
     }
 
     @Test
-    fun bundledEnglishBooksLoadAndKeepDistinctPlayableIds() = runBlocking {
+    fun everyCoreTextbookVolumeLoadsAsAnAnswerableOfflineBook() = runBlocking {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
         val repository = QuestionRepository(appContext)
-        val files = listOf("book1.json", "book2.json", "book3.json")
+        val coreBooks = BookCatalog.books.filter { it.title.startsWith("Շտեմարան ") }
+        val expectedAssets = setOf(
+            "book1.json", "book2.json", "book3.json",
+            "armenian-book1.json", "armenian-book2.json", "armenian-book3.json", "armenian-book4.json",
+            "history-book1.json", "history-book2.json", "history-book3.json",
+            "bio-book1.json", "bio-book2.json", "bio-book3.json", "bio-book4.json",
+            "physics-book1.json", "physics-book2.json"
+        )
+        assertEquals("Core book catalog size", expectedAssets.size, coreBooks.size)
+        assertEquals("Core book catalog assets", expectedAssets, coreBooks.map { it.asset }.toSet())
+
         val loadedIds = mutableSetOf<String>()
-        for (file in files) {
-            val book = withTimeout(60_000L) {
-                repository.load(StudyBook("Անգլերեն", "Ստուգում", file))
-            }
-            assertFalse("$file: no playable sections", book.sections.isEmpty())
-            assertFalse("$file: no answerable source questions", book.allQuestions.isEmpty())
-            assertTrue("$file: question IDs overlap other books",
+        for (bookInfo in coreBooks) {
+            val book = withTimeout(120_000L) { repository.load(bookInfo) }
+            assertFalse("${bookInfo.asset}: no playable sections", book.sections.isEmpty())
+            assertFalse("${bookInfo.asset}: no answerable source questions", book.allQuestions.isEmpty())
+            assertTrue("${bookInfo.asset}: question IDs overlap other books",
                 loadedIds.intersect(book.allQuestions.map { it.id }.toSet()).isEmpty())
-            assertEquals("$file: duplicate playable IDs", book.allQuestions.size,
+            assertEquals("${bookInfo.asset}: duplicate playable IDs", book.allQuestions.size,
                 book.allQuestions.map { it.id }.toSet().size)
-            assertTrue("$file: invalid answer index",
+            assertTrue("${bookInfo.asset}: invalid answer index",
                 book.allQuestions.all { it.correctIndex in it.choices.indices })
             loadedIds.addAll(book.allQuestions.map { it.id })
         }
 
-        // Switching back to a recently loaded book must retain its question IDs.
-        val firstAgain = withTimeout(60_000L) {
-            repository.load(StudyBook("Անգլերեն", "Ստուգում", files.first()))
-        }
-        assertTrue(firstAgain.allQuestions.isNotEmpty())
-        assertTrue(firstAgain.allQuestions.all { it.id in loadedIds })
+        val recentlyLoaded = withTimeout(60_000L) { repository.load(coreBooks.first()) }
+        assertTrue(recentlyLoaded.allQuestions.isNotEmpty())
+        assertTrue(recentlyLoaded.allQuestions.all { it.id in loadedIds })
     }
 }

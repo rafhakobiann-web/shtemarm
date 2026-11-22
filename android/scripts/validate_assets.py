@@ -9,9 +9,11 @@ APP_ASSETS = ROOT / "android" / "app" / "src" / "main" / "assets"
 
 BOOKS = [
     "book1.json", "book2.json", "book3.json",
-    "armenian-book1.json", "history-book1.json", "history-book2.json",
+    "armenian-book1.json", "armenian-book2.json", "armenian-book3.json",
+    "armenian-book4.json", "history-book1.json", "history-book2.json",
     "history-book3.json", "history-tests.json",
-    "bio-book1.json", "bio-book2.json", "physics-book1.json",
+    "bio-book1.json", "bio-book2.json", "bio-book3.json", "bio-book4.json",
+    "physics-book1.json",
     "physics-book2.json", "physics-original-book1.json",
     "physics-original-book2.json", "original-chemistry.json",
     "original-geography.json", "original-russian.json",

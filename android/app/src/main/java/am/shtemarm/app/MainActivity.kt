@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
@@ -49,6 +50,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -81,6 +84,7 @@ private fun NativeShtemarm() {
     val glassHazeState: HazeState? = null
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
+    var readingTextSize by remember { mutableIntStateOf(progress.readingTextSize) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
     var surfaceStyle by remember { mutableStateOf(if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle) }
@@ -184,6 +188,7 @@ private fun NativeShtemarm() {
                         progressVersion++
                         dark = progress.darkMode
                         largeText = progress.largeText
+                        readingTextSize = progress.readingTextSize
                         immediateFeedback = progress.showAnswersImmediately
                         accent = progress.accent
                         surfaceStyle = if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle
@@ -873,10 +878,44 @@ private fun NativeShtemarm() {
                                 if (q.passage.isNotBlank()) item {
                                     ElevatedCard(shape = RoundedCornerShape(15.dp)) {
                                         Column(Modifier.padding(16.dp)) {
-                                            Text("Տեքստ", fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary)
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    NativeStudyGuide.label(studyLanguage, "Ընթերցման տեսք", "Reading view", "Режим чтения"),
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                                Spacer(Modifier.weight(1f))
+                                                IconButton(
+                                                    onClick = {
+                                                        readingTextSize = ReaderTypography.decrease(readingTextSize)
+                                                        progress.readingTextSize = readingTextSize
+                                                    },
+                                                    enabled = readingTextSize > ReaderTypography.MIN_TEXT_SIZE_SP,
+                                                    modifier = Modifier.semantics {
+                                                        contentDescription = NativeStudyGuide.label(studyLanguage, "Փոքրացնել տառաչափը", "Decrease text size", "Уменьшить размер шрифта")
+                                                    }
+                                                ) { Text("A−", fontWeight = FontWeight.Bold) }
+                                                Text("${readingTextSize}sp", style = MaterialTheme.typography.labelMedium)
+                                                IconButton(
+                                                    onClick = {
+                                                        readingTextSize = ReaderTypography.increase(readingTextSize)
+                                                        progress.readingTextSize = readingTextSize
+                                                    },
+                                                    enabled = readingTextSize < ReaderTypography.MAX_TEXT_SIZE_SP,
+                                                    modifier = Modifier.semantics {
+                                                        contentDescription = NativeStudyGuide.label(studyLanguage, "Մեծացնել տառաչափը", "Increase text size", "Увеличить размер шрифта")
+                                                    }
+                                                ) { Text("A+", fontWeight = FontWeight.Bold) }
+                                            }
                                             Spacer(Modifier.height(10.dp))
-                                            Text(q.passage, fontFamily = StudyReadingFont, fontSize = 15.sp, lineHeight = 28.sp)
+                                            SelectionContainer {
+                                                Text(
+                                                    q.passage,
+                                                    fontFamily = StudyReadingFont,
+                                                    fontSize = readingTextSize.sp,
+                                                    lineHeight = (readingTextSize * 1.75f).sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
