@@ -46,7 +46,8 @@ fun AcademyGlassPanel(
     backdropBlur: Boolean = false,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val liquid = LocalAcademySurface.current == "liquid"
+    // Matte, opaque surfaces keep study screens calm and avoid blur work while scrolling.
+    val liquid = false
     val intensity = LocalGlassIntensity.current
     val ultra = liquid && intensity == "ultra"
     val blur = GlassStudioPolicy.blur(LocalGlassBlur.current)
@@ -76,7 +77,7 @@ fun AcademyGlassPanel(
                   else scheme.outline.copy(alpha = 0.68f)
     Box(
         modifier
-            .shadow(if (liquid) 12.dp else 2.dp, shape, ambientColor = scheme.primary.copy(alpha = 0.16f),
+            .shadow(if (liquid) 12.dp else 1.dp, shape, ambientColor = scheme.primary.copy(alpha = 0.16f),
                 spotColor = scheme.primary.copy(alpha = 0.19f))
             .clip(shape)
             .then(if (actualBlur && blur > 0) Modifier.hazeEffect(state = requireNotNull(hazeState)) {
@@ -169,7 +170,8 @@ fun AcademyGlassPanel(
 
 @Composable
 fun AcademyAmbientBackdrop(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
-    val liquid = LocalAcademySurface.current == "liquid"
+    // Matte, opaque surfaces keep study screens calm and avoid blur work while scrolling.
+    val liquid = false
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.red < 0.30f
     val hazeState = LocalGlassHazeState.current

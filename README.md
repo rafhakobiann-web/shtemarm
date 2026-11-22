@@ -10,9 +10,11 @@ study, themed practice, test generation and interactive learning tools.
 ## Android app
 
 - Native Jetpack Compose UI — not a WebView of the website.
-- Website-inspired Academy layout and Liquid Glass / Academic / Classic appearances.
+- Minimal, matte Android reading and study interface with dark mode, larger UI text, and adjustable passage text size.
 - Bundled, OFL-licensed Noto Sans Armenian and Noto Serif Armenian fonts.
-- Offline book question banks, practice sessions, bookmarks and local progress.
+- Offline source reader for every question dataset currently present in the repository, including the two full Mathematics text banks, Armenian Language volume I's digitized sections, all merged Biology III/IV imports, and all available English/History/Physics sources.
+- Clearly labeled author-written practice sets where complete official source-book transcription is not present; unreviewed source questions remain read-only and are not scored.
+- Reading view with adjustable text size, search, answer reveal, generous line spacing, selectable text, and saved preference.
 - Mini-games, vocabulary, English-level practice, basic mathematics reader and study tools.
 
 **First private beta release:** [Shtemarm Android v0.1.0-beta.1](https://github.com/rafhakobiann-web/shtemarm/releases/tag/v0.1.0-beta.1).

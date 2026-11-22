@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
@@ -49,6 +50,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -56,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -81,6 +84,7 @@ private fun NativeShtemarm() {
     val glassHazeState: HazeState? = null
     var dark by remember { mutableStateOf(progress.darkMode) }
     var largeText by remember { mutableStateOf(progress.largeText) }
+    var readingTextSize by remember { mutableIntStateOf(progress.readingTextSize) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
     var surfaceStyle by remember { mutableStateOf(if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle) }
@@ -184,6 +188,7 @@ private fun NativeShtemarm() {
                         progressVersion++
                         dark = progress.darkMode
                         largeText = progress.largeText
+                        readingTextSize = progress.readingTextSize
                         immediateFeedback = progress.showAnswersImmediately
                         accent = progress.accent
                         surfaceStyle = if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle
@@ -230,6 +235,7 @@ private fun NativeShtemarm() {
             Page.STUDY -> sessionOrigin
             Page.RESULT -> sessionOrigin
             Page.SECTIONS -> Page.BOOKS
+            Page.READER -> Page.SECTIONS
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
             Page.HANDBOOK -> Page.HOME
@@ -383,7 +389,7 @@ private fun NativeShtemarm() {
                     AcademyFloatingDock(
                         selected = when (page) {
                             Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
-                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
+                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.READER, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
                             Page.TOOLS, Page.POMODORO -> 4
@@ -471,6 +477,13 @@ private fun NativeShtemarm() {
                     Page.ADVANCED -> {
                         val activeBook = book
                         if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
+                    }
+                    Page.READER -> book?.let { activeBook ->
+                        Box(Modifier.fillMaxSize().padding(padding)) {
+                            NativeFullBookReader(activeBook, onBack = { page = Page.SECTIONS })
+                        }
+                    } ?: Box(Modifier.fillMaxSize().padding(padding)) {
+                        Text("Գիրքը հասանելի չէ։", Modifier.padding(20.dp))
                     }
                     Page.MATH -> Box(Modifier.fillMaxSize().padding(padding)) {
                         NativeMathPractice(
@@ -710,7 +723,7 @@ private fun NativeShtemarm() {
                             )
                         }
                         item {
-                            Text("Մաթեմատիկայի մի շարք առաջադրանքների պատասխանները դեռ հաստատված չեն։ Կենսաբանության 3-րդ և 4-րդ գրքերի ամբողջական ստուգված բանկերն առկա չեն։",
+                            Text("Մաթեմատիկայի չստուգված առաջադրանքները բացվում են ընթերցման ռեժիմով և չեն գնահատվում։ Կենսաբանության 3-րդ և 4-րդ մասերի ներմուծված նյութերը հասանելի են ամբողջական ընթերցիչում, իսկ աղբյուրի հետ ձեռքով ստուգումը դեռ շարունակվում է։",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                             Spacer(Modifier.height(10.dp))
                         }
@@ -751,8 +764,8 @@ private fun NativeShtemarm() {
                         if (subject == "Կենսաբանություն") item {
                             ElevatedCard {
                                 Text(
-                                    "3-րդ և 4-րդ մասերի ամբողջական ստուգված հարցաշարերը դեռ հասանելի չեն։ " +
-                                        "Դրանք չեն ներկայացվում որպես ավարտված գրքեր։",
+                                    "Գրքի ամբողջ հասանելի ներմուծված նյութը բացվում է «Կարդալ ամբողջ գիրքը» բաժնում։ " +
+                                        "Որոշ առաջադրանքների տեքստն ու պատասխանները դեռ ձեռքով ստուգվում են, ուստի ընթերցիչում չեն գնահատվում։",
                                     Modifier.padding(15.dp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp
@@ -767,6 +780,14 @@ private fun NativeShtemarm() {
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
+                        item {
+                            Button(onClick = { page = Page.READER }, modifier = Modifier.fillMaxWidth()) {
+                                Text(NativeStudyGuide.label(studyLanguage,
+                                    "Կարդալ ամբողջ գիրքը · բոլոր առաջադրանքները",
+                                    "Read the full book · all question types",
+                                    "Читать книгу · все типы заданий"))
+                            }
+                        }
                         item {
                             OutlinedTextField(
                                 value = chapterFilter,
@@ -873,10 +894,44 @@ private fun NativeShtemarm() {
                                 if (q.passage.isNotBlank()) item {
                                     ElevatedCard(shape = RoundedCornerShape(15.dp)) {
                                         Column(Modifier.padding(16.dp)) {
-                                            Text("Տեքստ", fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary)
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    NativeStudyGuide.label(studyLanguage, "Ընթերցման տեսք", "Reading view", "Режим чтения"),
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                                Spacer(Modifier.weight(1f))
+                                                IconButton(
+                                                    onClick = {
+                                                        readingTextSize = ReaderTypography.decrease(readingTextSize)
+                                                        progress.readingTextSize = readingTextSize
+                                                    },
+                                                    enabled = readingTextSize > ReaderTypography.MIN_TEXT_SIZE_SP,
+                                                    modifier = Modifier.semantics {
+                                                        contentDescription = NativeStudyGuide.label(studyLanguage, "Փոքրացնել տառաչափը", "Decrease text size", "Уменьшить размер шрифта")
+                                                    }
+                                                ) { Text("A−", fontWeight = FontWeight.Bold) }
+                                                Text("${readingTextSize}sp", style = MaterialTheme.typography.labelMedium)
+                                                IconButton(
+                                                    onClick = {
+                                                        readingTextSize = ReaderTypography.increase(readingTextSize)
+                                                        progress.readingTextSize = readingTextSize
+                                                    },
+                                                    enabled = readingTextSize < ReaderTypography.MAX_TEXT_SIZE_SP,
+                                                    modifier = Modifier.semantics {
+                                                        contentDescription = NativeStudyGuide.label(studyLanguage, "Մեծացնել տառաչափը", "Increase text size", "Увеличить размер шрифта")
+                                                    }
+                                                ) { Text("A+", fontWeight = FontWeight.Bold) }
+                                            }
                                             Spacer(Modifier.height(10.dp))
-                                            Text(q.passage, fontFamily = StudyReadingFont, fontSize = 15.sp, lineHeight = 28.sp)
+                                            SelectionContainer {
+                                                Text(
+                                                    q.passage,
+                                                    fontFamily = StudyReadingFont,
+                                                    fontSize = readingTextSize.sp,
+                                                    lineHeight = (readingTextSize * 1.75f).sp
+                                                )
+                                            }
                                         }
                                     }
                                 }

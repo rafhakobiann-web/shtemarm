@@ -162,6 +162,7 @@ class StudyProgress(context: Context) {
             .put("feedback", showAnswersImmediately)
             .put("language", studyLanguage)
             .put("dailyTarget", dailyQuestionTarget)
+            .put("readingTextSize", readingTextSize)
         return JSONObject()
             .put("format", "shtemarm-progress-backup")
             .put("version", 1)
@@ -237,12 +238,16 @@ class StudyProgress(context: Context) {
                 !GlassVisualPolicy.isSupported(restoredGlass)) return false
             val restoredLanguage = settings.optString("language", studyLanguage).takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
             val restoredTarget = settings.optInt("dailyTarget", 10).takeIf(StudyGoals::validTarget) ?: 10
+            val restoredReadingTextSize = ReaderTypography.normalize(
+                settings.optInt("readingTextSize", ReaderTypography.DEFAULT_TEXT_SIZE_SP)
+            )
             val restoredBackdrop = GlassStudioPolicy.background(settings.optString("glassBackground", "aurora"))
             val restoredBlur = GlassStudioPolicy.blur(settings.optInt("glassBlur", 24))
             val restoredClarity = GlassStudioPolicy.clarity(settings.optInt("glassClarity", 62))
             val restoredReflection = GlassStudioPolicy.reflection(settings.optInt("glassReflection", 72))
             val editor = prefs.edit().clear().putString("study_language", restoredLanguage)
                 .putInt("daily_question_target", restoredTarget)
+                .putInt("reading_text_size", restoredReadingTextSize)
             for ((subject, stats) in restored) {
                 val prefix = "s_" + subject + "_"
                 editor.putInt(prefix + "answered", stats.answered)
@@ -334,6 +339,10 @@ class StudyProgress(context: Context) {
     var largeText: Boolean
         get() = prefs.getBoolean("large_text", false)
         set(value) { prefs.edit().putBoolean("large_text", value).apply() }
+
+    var readingTextSize: Int
+        get() = ReaderTypography.normalize(prefs.getInt("reading_text_size", ReaderTypography.DEFAULT_TEXT_SIZE_SP))
+        set(value) { prefs.edit().putInt("reading_text_size", ReaderTypography.normalize(value)).apply() }
 
     var showAnswersImmediately: Boolean
         get() = prefs.getBoolean("immediate_feedback", true)

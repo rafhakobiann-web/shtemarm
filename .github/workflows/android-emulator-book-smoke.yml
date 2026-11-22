@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   emulator-smoke:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
@@ -37,15 +37,16 @@ jobs:
       - name: Compile the emulator tests and run JVM regressions
         working-directory: android
         run: gradle --no-daemon testDebugUnitTest assembleDebugAndroidTest --stacktrace
-      - name: Run emulator launch and English book-load smoke tests
+      - name: Run emulator launch and full source-book smoke tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
           target: google_apis
-          arch: x86_64
+          arch: arm64-v8a
           profile: pixel_6
           disk-size: 2048M
           heap-size: 512M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off
           emulator-boot-timeout: 900
           disable-animations: true
           script: cd android && gradle --no-daemon connectedDebugAndroidTest --stacktrace
