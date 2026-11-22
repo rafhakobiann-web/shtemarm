@@ -26,7 +26,7 @@ private val examCounts = mapOf(
 
 /** Sample exams built from existing MCQs. These are NOT official GTC blueprint replicas. */
 @Composable
-fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
+fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
     var selected by remember { mutableStateOf("Անգլերեն") }
     var pool by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
