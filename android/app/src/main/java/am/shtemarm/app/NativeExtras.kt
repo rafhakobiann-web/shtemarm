@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,12 +28,12 @@ private val examCounts = mapOf(
 /** Sample exams built from existing MCQs. These are NOT official GTC blueprint replicas. */
 @Composable
 fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
-    var selected by remember { mutableStateOf("Անգլերեն") }
+    var selected by rememberSaveable { mutableStateOf("Անգլերեն") }
     var pool by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
-    var count by remember { mutableIntStateOf(20) }
-    var showEnglishLevels by remember { mutableStateOf(false) }
+    var count by rememberSaveable { mutableIntStateOf(20) }
+    var showEnglishLevels by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(selected) {
         isLoading = true
         error = ""
@@ -129,13 +130,13 @@ fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart
 @Composable
 fun NativeGames(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
     var selected by remember { mutableStateOf("Անգլերեն") }
-    var mode by remember { mutableStateOf("quiz") }
-    var gameCount by remember { mutableIntStateOf(20) }
+    var mode by rememberSaveable { mutableStateOf("quiz") }
+    var gameCount by rememberSaveable { mutableIntStateOf(20) }
     var questions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var loadFailed by remember { mutableStateOf(false) }
-    var flipIndex by remember { mutableIntStateOf(0) }
-    var revealed by remember { mutableStateOf(false) }
+    var flipIndex by rememberSaveable { mutableIntStateOf(0) }
+    var revealed by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(selected) {
         loading = true
         loadFailed = false
@@ -269,12 +270,12 @@ fun NativeTools(
     language: String = "hy",
     onStart: (String, List<StudyQuestion>, Int, String) -> Unit
 ) {
-    var tool by remember { mutableStateOf("menu") }
-    var number by remember { mutableStateOf("10") }
-    var subject by remember { mutableStateOf("Անգլերեն") }
+    var tool by rememberSaveable { mutableStateOf("menu") }
+    var number by rememberSaveable { mutableStateOf("10") }
+    var subject by rememberSaveable { mutableStateOf("Անգլերեն") }
     var sections by remember { mutableStateOf<List<StudySection>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
-    var selectedSection by remember { mutableStateOf("Բոլոր բաժինները") }
+    var selectedSection by rememberSaveable { mutableStateOf("Բոլոր բաժինները") }
     var loadError by remember { mutableStateOf("") }
     var retryKey by remember { mutableIntStateOf(0) }
 
