@@ -372,7 +372,7 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                 downloadStatus = try {
                     withContext(Dispatchers.IO) {
                         context.contentResolver.openOutputStream(uri)?.use { output ->
-                            BookPdfExporter.write(output, book.subject, book.title, exercises, includeAnswerKey)
+                            BookPdfExporter.write(output, book.subject, book.title, exercises, includeAnswerKey, progress.studyLanguage)
                         } ?: error("Could not open the selected file")
                     }
                     NativeStudyGuide.label(progress.studyLanguage, "Գիրքը պահպանվեց PDF-ով։", "Book saved as a PDF.", "Книга сохранена в PDF.")
