@@ -584,25 +584,32 @@ private fun NativeShtemarm() {
                             }
                             item {
                                 val today = progressVersion.let { progress.answeredToday() }
-                                ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-                                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val remaining = StudyGoals.remaining(dailyTarget, today)
+                                Column(
+                                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                         Text(NativeStudyGuide.label(studyLanguage,
-                                            "Օրվա ուսումնական նպատակը", "Today's study goal", "Цель на сегодня"),
-                                            fontWeight = FontWeight.Bold)
-                                        Text("$today / $dailyTarget " + NativeStudyGuide.label(studyLanguage,
-                                            "հարց", "questions", "вопросов"))
-                                        LinearProgressIndicator(
-                                            progress = { StudyGoals.completion(dailyTarget, today) },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                        Text(if (StudyGoals.remaining(dailyTarget, today) == 0)
-                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
-                                                "Today's goal is complete.", "Цель на сегодня выполнена.")
-                                        else NativeStudyGuide.label(studyLanguage,
-                                            "Մնացել է", "Remaining", "Осталось") +
-                                            ": " + StudyGoals.remaining(dailyTarget, today),
-                                            fontSize = 13.sp)
+                                            "Այսօրվա նպատակը", "Today's goal", "Цель на сегодня"),
+                                            modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold)
+                                        Text("$today / $dailyTarget", color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                     }
+                                    LinearProgressIndicator(
+                                        progress = { StudyGoals.completion(dailyTarget, today) },
+                                        modifier = Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(4.dp))
+                                    )
+                                    Text(
+                                        if (remaining == 0)
+                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
+                                                "You reached today's goal.", "Цель на сегодня достигнута.")
+                                        else NativeStudyGuide.label(studyLanguage,
+                                            "Եվս " + remaining + " հարց՝ օրվա նպատակի համար։",
+                                            remaining.toString() + " more to reach today's goal.",
+                                            "Ещё " + remaining + " до цели на сегодня."),
+                                        fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                             if (lastBook != null) item {
