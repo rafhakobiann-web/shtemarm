@@ -83,7 +83,7 @@ private fun NativeShtemarm() {
     var largeText by remember { mutableStateOf(progress.largeText) }
     var immediateFeedback by remember { mutableStateOf(progress.showAnswersImmediately) }
     var accent by remember { mutableStateOf(progress.accent) }
-    var surfaceStyle by remember { mutableStateOf(if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle) }
+    var surfaceStyle by remember { mutableStateOf(progress.surfaceStyle.takeIf { it == "classic" || it == "soft" } ?: "soft") }
     var glassIntensity by remember { mutableStateOf(progress.glassIntensity) }
     var glassBackground by remember { mutableStateOf(progress.glassBackground) }
     var glassBlur by remember { mutableIntStateOf(progress.glassBlur) }
@@ -186,7 +186,8 @@ private fun NativeShtemarm() {
                         largeText = progress.largeText
                         immediateFeedback = progress.showAnswersImmediately
                         accent = progress.accent
-                        surfaceStyle = if (progress.surfaceStyle == "liquid") "soft" else progress.surfaceStyle
+                        surfaceStyle = progress.surfaceStyle.takeIf { it == "classic" || it == "soft" } ?: "soft"
+                        progress.surfaceStyle = surfaceStyle
                         glassIntensity = progress.glassIntensity
                         glassBackground = progress.glassBackground
                         glassBlur = progress.glassBlur
@@ -371,26 +372,24 @@ private fun NativeShtemarm() {
                 // Keep default text/icons legible in both light and dark mode.
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 topBar = {
-                    AcademyTopBar(
-                        points = BookCatalog.subjects.sumOf { progress.stats(it).correct } * 10,
-                        onHome = { page = Page.HOME },
+                    if (page != Page.STUDY) QuietTopBar(
+                        studyLanguage = studyLanguage,
                         onProgress = { page = Page.PROGRESS },
                         onSaved = { page = Page.SAVED },
                         onSettings = { page = Page.SETTINGS }
                     )
                 },
                 bottomBar = {
-                    AcademyFloatingDock(
+                    if (page != Page.STUDY) QuietBottomBar(
+                        studyLanguage = studyLanguage,
                         selected = when (page) {
                             Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
-                            Page.GAMES -> 3
-                            Page.TOOLS, Page.POMODORO -> 4
+                            Page.GAMES, Page.TOOLS, Page.POMODORO -> 3
                             Page.STUDY, Page.RESULT -> when (sessionOrigin) {
                                 Page.EXAMS -> 2
-                                Page.GAMES -> 3
-                                Page.TOOLS -> 4
+                                Page.GAMES, Page.TOOLS, Page.POMODORO -> 3
                                 else -> 1
                             }
                         },
@@ -399,7 +398,6 @@ private fun NativeShtemarm() {
                                 0 -> Page.HOME
                                 1 -> Page.SUBJECTS
                                 2 -> Page.EXAMS
-                                3 -> Page.GAMES
                                 else -> Page.TOOLS
                             }
                         }
@@ -502,172 +500,37 @@ private fun NativeShtemarm() {
                         NativePomodoro(studyLanguage)
                     }
                     Page.HOME -> {
-                        val stats = BookCatalog.subjects.map { progress.stats(it) }
-                        val correct = stats.sumOf { it.correct }
-                        val answered = stats.sumOf { it.answered }
+                        val today = progressVersion.let { progress.answeredToday() }
                         val lastBook = progressVersion.let { progress.lastBook() }
                         val mistakesCount = progress.mistakeIds().size
-                        LazyColumn(
-                            Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
-                        state = homeScroll,
-                            verticalArrangement = Arrangement.spacedBy(17.dp)
-                        ) {
-                            item { Spacer(Modifier.height(3.dp)) }
-                            item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
-                            item {
-                                val today = progressVersion.let { progress.answeredToday() }
-                                ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-                                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Text(NativeStudyGuide.label(studyLanguage,
-                                            "Օրվա ուսումնական նպատակը", "Today's study goal", "Цель на сегодня"),
-                                            fontWeight = FontWeight.Bold)
-                                        Text("$today / $dailyTarget " + NativeStudyGuide.label(studyLanguage,
-                                            "հարց", "questions", "вопросов"))
-                                        LinearProgressIndicator(
-                                            progress = { StudyGoals.completion(dailyTarget, today) },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                        Text(if (StudyGoals.remaining(dailyTarget, today) == 0)
-                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
-                                                "Today's goal is complete.", "Цель на сегодня выполнена.")
-                                        else NativeStudyGuide.label(studyLanguage,
-                                            "Մնացել է", "Remaining", "Осталось") +
-                                            ": " + StudyGoals.remaining(dailyTarget, today),
-                                            fontSize = 13.sp)
-                                    }
-                                }
-                            }
-                            if (lastBook != null) item {
-                                AcademyQuickAction(
-                                    Icons.Default.Book,
-                                    "Շարունակել ուսումը",
-                                    lastBook.subject + " · " + lastBook.title
-                                ) {
+                        val answered = BookCatalog.subjects.sumOf { progress.stats(it).answered }
+                        QuietHome(
+                            modifier = Modifier.fillMaxSize().padding(padding),
+                            studyLanguage = studyLanguage,
+                            today = today,
+                            target = dailyTarget,
+                            answered = answered,
+                            mistakes = mistakesCount,
+                            lastSubject = lastBook?.subject,
+                            lastTitle = lastBook?.title,
+                            subjects = BookCatalog.subjects,
+                            onContinue = {
+                                if (lastBook != null) {
                                     subject = lastBook.subject
                                     book = lastBook
                                     page = if (lastBook.subject == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
-                                }
-                            }
-                            if (mistakesCount > 0) item {
-                                val needsWork = BookCatalog.subjects.map { it to progress.stats(it) }
-                                    .filter { it.second.answered >= 5 }
-                                    .minByOrNull { it.second.accuracy }
-                                if (needsWork != null) {
-                                    AcademyQuickAction(Icons.Default.Star,
-                                        NativeStudyGuide.label(studyLanguage,
-                                            "Առաջարկվող կրկնություն", "Recommended review", "Рекомендуемое повторение"),
-                                        needsWork.first + " · " + needsWork.second.accuracy + "% · " +
-                                            NativeStudyGuide.label(studyLanguage,
-                                                "Սկսիր պահպանված սխալներից", "Start with missed questions",
-                                                "Начните с ошибок")
-                                    ) { reviewMistakes = true; page = Page.SAVED }
-                                }
-                            }
-                            if (mistakesCount > 0) item {
-                                AcademyQuickAction(
-                                    Icons.Default.Star,
-                                    "Կրկնել սխալները",
-                                    "$mistakesCount հարց՝ կրկնելու համար"
-                                ) {
-                                    reviewMistakes = true
-                                    page = Page.SAVED
-                                }
-                            }
-                            item {
-                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    AcademyQuickAction(Icons.Default.Book, "Շտեմարաններ", "Ընտրիր գիրքը") {
-                                        page = Page.SUBJECTS
-                                    }
-                                    AcademyQuickAction(Icons.Default.Star, "Թեմատիկ աշխատանք", "Ստեղծիր առաջադրանքներ") {
-                                        page = Page.TOOLS
-                                    }
-                                    AcademyQuickAction(Icons.Default.Book,
-                                        NativeStudyGuide.label(studyLanguage,"Կանոններ և բացատրություններ","Rules and explanations","Правила и объяснения"),
-                                        NativeStudyGuide.label(studyLanguage,"Անգլերեն և մաթեմատիկա · Offline","English and math · Offline","Английский и математика · Offline")) {
-                                        page = Page.HANDBOOK
-                                    }
-                                    AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ", "Կենտրոնացում և կրկնություն") {
-                                        page = Page.TOOLS
-                                    }
-                                }
-                            }
-                            item {
-                                Text(NativeStudyGuide.label(studyLanguage, "Քո ուսումնական առաջընթացը", "Your learning progress", "Ваш учебный прогресс"), fontSize = 23.sp, fontWeight = FontWeight.Black)
-                            }
-                            item {
-                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    AcademyStatCard("Քո միավորները", (correct * 10).toString() + " XP",
-                                        "Այս սարքի վարժանքներից", Icons.Default.Star)
-                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        Box(Modifier.weight(1f)) {
-                                            AcademyStatCard("Ճիշտ պատասխաններ", correct.toString(),
-                                                "Պատասխանված՝ " + answered, Icons.Default.Book)
-                                        }
-                                        Box(Modifier.weight(1f)) {
-                                            AcademyStatCard("Կրկնելու հարցեր", mistakesCount.toString(),
-                                                "Պահպանված սխալ պատասխաններ", Icons.Default.Settings)
-                                        }
-                                    }
-                                }
-                            }
-                            item {
-                                OutlinedButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onClick = { page = Page.PROGRESS },
-                                    shape = RoundedCornerShape(16.dp)
-                                ) { Text(NativeStudyGuide.label(studyLanguage, "Մանրամասն առաջընթաց", "Detailed progress", "Подробный прогресс")) }
-                            }
-                            item {
-                                AcademyEyebrow("Ուսումնական գրադարան")
-                                Spacer(Modifier.height(9.dp))
-                                AcademySectionTitle("Գտիր քո շտեմարանը")
-                                Spacer(Modifier.height(5.dp))
-                                Text(NativeStudyGuide.label(studyLanguage, "Բացիր առարկան՝ տեսնելու բոլոր գրքերն ու հարցաշարերը։", "Open a subject to see its books and question sets.", "Откройте предмет, чтобы увидеть книги и задания."),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
-                            }
-                            items(BookCatalog.subjects, key = { it }) { s ->
-                                AcademySubjectAccordion(
-                                    subject = s,
-                                    books = BookCatalog.books.filter { it.subject == s },
-                                    initiallyExpanded = s == "Անգլերեն" || s == "Մաթեմատիկա",
-                                    onOpenSubject = { subject = s; page = Page.BOOKS },
-                                    onOpenBook = { item ->
-                                        subject = s
-                                        book = item
-                                        page = if (s == "Մաթեմատիկա") Page.MATH else Page.SECTIONS
-                                    }
-                                )
-                            }
-                            item {
-                                AcademyEyebrow("Գիտելիքների ստուգում")
-                                Spacer(Modifier.height(8.dp))
-                                AcademySectionTitle("Փորձնական քննություններ")
-                                Spacer(Modifier.height(7.dp))
-                                Text(NativeStudyGuide.label(studyLanguage, "Ընտրիր առարկան և ստուգիր պատրաստվածությունդ։", "Choose a subject and test your readiness.", "Выберите предмет и проверьте свою подготовку."),
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            item {
-                                AcademyQuickAction(Icons.Default.Star, "Փորձնական քննություններ",
-                                    "Ստուգիր գիտելիքներդ") { page = Page.EXAMS }
-                            }
-                            item {
-                                AcademyQuickAction(Icons.Default.Book, "Մինի խաղեր և բառապաշար",
-                                    "Սովորիր խաղալով") { page = Page.GAMES }
-                            }
-                            item {
-                                AcademyQuickAction(Icons.Default.Settings, "Ուսումնական գործիքներ",
-                                    "Հաշվիչ, բառապաշար, թեմատիկ աշխատանք") { page = Page.TOOLS }
-                            }
-                            item {
-                                OutlinedButton(
-                                    onClick = { page = Page.SAVED },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(15.dp)
-                                ) { Text("☆ Պահպանված հարցեր · " + progress.bookmarkedIds().size) }
-                                Spacer(Modifier.height(12.dp))
-                            }
-                        }
+                                } else page = Page.SUBJECTS
+                            },
+                            onSubjects = { page = Page.SUBJECTS },
+                            onSubject = { selectedSubject ->
+                                subject = selectedSubject
+                                page = Page.BOOKS
+                            },
+                            onExams = { page = Page.EXAMS },
+                            onMistakes = { reviewMistakes = true; page = Page.SAVED },
+                            onProgress = { page = Page.PROGRESS },
+                            onGames = { page = Page.GAMES }
+                        )
                     }
                     Page.SUBJECTS -> LazyColumn(
                         Modifier.fillMaxSize().padding(padding).padding(horizontal = 15.dp),
@@ -855,10 +718,12 @@ private fun NativeShtemarm() {
                                     Text(sessionTitle, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                                     Spacer(Modifier.height(6.dp))
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text("Հարց " + (sessionIndex + 1) + " / " + session.size,
-                                            color = MaterialTheme.colorScheme.primary)
-                                        Spacer(Modifier.weight(1f))
-                                        Text("Ճիշտ՝ " + score)
+                                        Text(NativeStudyGuide.label(studyLanguage,
+                                            "Հարց ${sessionIndex + 1} / ${session.size}",
+                                            "Question ${sessionIndex + 1} of ${session.size}",
+                                            "Вопрос ${sessionIndex + 1} из ${session.size}"),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold)
                                     }
                                     val animatedProgress by animateFloatAsState(
                                         targetValue = (sessionIndex + 1).toFloat() / session.size,
@@ -873,7 +738,8 @@ private fun NativeShtemarm() {
                                 if (q.passage.isNotBlank()) item {
                                     ElevatedCard(shape = RoundedCornerShape(15.dp)) {
                                         Column(Modifier.padding(16.dp)) {
-                                            Text("Տեքստ", fontWeight = FontWeight.Bold,
+                                            Text(NativeStudyGuide.label(studyLanguage, "Տեքստ", "Reading", "Текст"),
+                                                fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.primary)
                                             Spacer(Modifier.height(10.dp))
                                             Text(q.passage, fontFamily = StudyReadingFont, fontSize = 15.sp, lineHeight = 28.sp)
@@ -1324,3 +1190,4 @@ private fun NativeShtemarm() {
         }
     }
 }
+
