@@ -34,7 +34,7 @@ const WORDS = {
     toolsDesc: "Շտեմարաններ, բառաքարտեր, բացատրություններ և առաջընթաց՝ պարզ ու կազմակերպված։",
     flashcards: "Բառաքարտեր", flashDesc: "Վարժվիր և վերադարձիր չյուրացրած բառերին։",
     mistakes: "Սխալների կրկնություն", mistakesDesc: "Սովորիր հարցերից, որոնցում դժվարացել ես։",
-    progress: "Քո առաջընթացը", progressDesc: "Տես, թե ինչ ես արդեն սովորել։",
+    progress: "Քո առաջընթացը", progressCardDesc: "Տես, թե ինչ ես արդեն սովորել։",
     games: "Ուսումնական խաղեր", gamesDesc: "Կրկնիր նյութը հետաքրքիր ձևով։",
     progressTag: "Մոտիվացիա · ցուցադրություն", progressTitle: "Ամեն օր՝ մի քայլ առաջ",
     progressDesc: "Նպատակներ, ձեռքբերումներ և հստակ առաջընթաց՝ առանց ավելորդ ճնշման։",
@@ -67,7 +67,7 @@ const WORDS = {
     toolsDesc: "Question books, flashcards, explanations and progress organized around learning.",
     flashcards: "Flashcards", flashDesc: "Practice and revisit unfamiliar vocabulary.",
     mistakes: "Mistake review", mistakesDesc: "Learn from questions you found difficult.",
-    progress: "Your progress", progressDesc: "See what you've already learned.",
+    progress: "Your progress", progressCardDesc: "See what you've already learned.",
     games: "Learning games", gamesDesc: "Refresh your knowledge through play.",
     progressTag: "Motivation · demonstration", progressTitle: "One step forward, every day",
     progressDesc: "Goals and achievements that help you see progress without pressure.",
@@ -100,7 +100,7 @@ const WORDS = {
     toolsDesc: "Сборники, карточки, объяснения и прогресс — всё для удобного обучения.",
     flashcards: "Карточки", flashDesc: "Тренируй и повторяй незнакомые слова.",
     mistakes: "Повтор ошибок", mistakesDesc: "Разбирай сложные вопросы.",
-    progress: "Твой прогресс", progressDesc: "Смотри, что уже изучено.",
+    progress: "Твой прогресс", progressCardDesc: "Смотри, что уже изучено.",
     games: "Учебные игры", gamesDesc: "Повторяй материал в игре.",
     progressTag: "Мотивация · пример", progressTitle: "Каждый день — шаг вперёд",
     progressDesc: "Цели и достижения без лишнего давления.",
@@ -290,7 +290,7 @@ export function LandingShowcase({ lang }: { lang: Lang }) {
               {[
                 { Icon: BookMarked, title: w.flashcards, desc: w.flashDesc },
                 { Icon: RotateCcw, title: w.mistakes, desc: w.mistakesDesc },
-                { Icon: Target, title: w.progress, desc: w.progressDesc },
+                { Icon: Target, title: w.progress, desc: w.progressCardDesc },
                 { Icon: Zap, title: w.games, desc: w.gamesDesc },
               ].map(({ Icon, title, desc }) => <div className="ref-tool" key={title}><Icon size={20} /><strong>{title}</strong><p>{desc}</p></div>)}
             </div>

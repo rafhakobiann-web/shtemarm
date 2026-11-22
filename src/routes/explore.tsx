@@ -253,7 +253,6 @@ export function ExplorePage() {
           {matchesTool(3) && <Link to="/english-grammar" search={{book:1,section:2,topic:undefined}} className="explore-quick-link"><Languages className="size-5 text-primary"/>{studyTools[3].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
           {matchesTool(4) && <Link to="/chat" className="explore-quick-link"><Brain className="size-5 text-primary"/>{studyTools[4].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
           {matchesTool(5) && <Link to="/flashcards" className="explore-quick-link"><BookText className="size-5 text-primary"/>{studyTools[5].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
-          {matchesTool(6) && <Link to="/mini-games" className="explore-quick-link"><Sparkles className="size-5 text-primary"/>{studyTools[6].label[lang]}<ArrowRight className="ml-auto size-4"/></Link>}
         </div>
       </section>}
 

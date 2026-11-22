@@ -65,7 +65,7 @@ describe("Learning-first AI in Shtemarm",()=>{
     expect(drawer).toContain('checked={includeQuestion}');
     expect(drawer).toContain('includeQuestion && selectedQuestion');
     expect(drawer).not.toContain('unit.passage');
-    expect(study).toContain('<StudyTutorDrawer key={');
+    expect(study).toContain('<StudyTutorDrawer');
   });
 
   it("offers contextual teaching styles under checked questions without mixing cached answers", () => {

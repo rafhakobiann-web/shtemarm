@@ -19,7 +19,7 @@ describe("App routing", () => {
     const matches = router.matchRoutes(path);
     expect(matches.length).toBeGreaterThan(1);
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
-    expect(matches.at(-1)?.pathname.replace(/\\/+$/, "") || "/").toBe(path);
+    expect(matches.at(-1)?.pathname.replace(/\/+$/, "") || "/").toBe(path);
   });
 
   it("keeps the root layout and its nested child route", () => {

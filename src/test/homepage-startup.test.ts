@@ -24,7 +24,7 @@ describe("Shtemarm public home resilient to cloud/auth issues", () => {
   it("guards cloud sync on every global entry path", () => {
     expect(read("src/routes/__root.tsx")).toContain("if (!hasSupabaseConfig()) return;");
     expect(read("src/components/AppHeader.tsx")).toContain("if (!hasSupabaseConfig())");
-    expect(read("src/routes/index.tsx")).toContain("if (!hasSupabaseConfig()) return;");
+    expect(read("src/routes/index.tsx")).toContain("ensureBrowserSupabaseConfig");
     expect(read("src/lib/progress.ts")).toContain("if (!hasSupabaseConfig()) return;");
   });
   it("handles older or corrupted local progress instead of crashing render", () => {

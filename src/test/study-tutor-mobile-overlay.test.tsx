@@ -59,7 +59,8 @@ describe("mobile AI assistant layer recovery",()=>{
     fireEvent.change(within(dialog).getByRole("textbox"),{target:{value:"Explain exercise 1"}});
     fireEvent.click(within(dialog).getByRole("button",{name:"Send"}));
     await waitFor(()=>expect(chatReply).toHaveBeenCalled());
-    const sent=vi.mocked(chatReply).mock.calls.at(-1)?.[0]?.data.question ?? "";
+    const sentCall = vi.mocked(chatReply).mock.calls.at(-1)?.[0] as { data?: { question?: string } } | undefined;
+    const sent = sentCall?.data?.question ?? "";
     expect(sent).toContain("Subject: English");
     expect(sent).toContain("Book/part: Part III");
     expect(sent).toContain("Section number: 8");
