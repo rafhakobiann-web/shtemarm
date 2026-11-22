@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -235,6 +235,7 @@ private fun NativeShtemarm() {
             Page.STUDY -> sessionOrigin
             Page.RESULT -> sessionOrigin
             Page.SECTIONS -> Page.BOOKS
+            Page.READER -> Page.SECTIONS
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
             Page.HANDBOOK -> Page.HOME
@@ -388,7 +389,7 @@ private fun NativeShtemarm() {
                     AcademyFloatingDock(
                         selected = when (page) {
                             Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
-                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
+                            Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.READER, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
                             Page.TOOLS, Page.POMODORO -> 4
@@ -476,6 +477,13 @@ private fun NativeShtemarm() {
                     Page.ADVANCED -> {
                         val activeBook = book
                         if (activeBook != null) Box(Modifier.fillMaxSize().padding(padding)) { NativeAdvancedPractice(activeBook) { page = Page.SECTIONS } }
+                    }
+                    Page.READER -> book?.let { activeBook ->
+                        Box(Modifier.fillMaxSize().padding(padding)) {
+                            NativeFullBookReader(activeBook, onBack = { page = Page.SECTIONS })
+                        }
+                    } ?: Box(Modifier.fillMaxSize().padding(padding)) {
+                        Text("Գիրքը հասանելի չէ։", Modifier.padding(20.dp))
                     }
                     Page.MATH -> Box(Modifier.fillMaxSize().padding(padding)) {
                         NativeMathPractice(
@@ -772,6 +780,14 @@ private fun NativeShtemarm() {
                         verticalArrangement = Arrangement.spacedBy(11.dp)
                     ) {
                         item { ScreenHeading(book?.title ?: "Շտեմարան", subject) }
+                        item {
+                            Button(onClick = { page = Page.READER }, modifier = Modifier.fillMaxWidth()) {
+                                Text(NativeStudyGuide.label(studyLanguage,
+                                    "Կարդալ ամբողջ գիրքը · բոլոր առաջադրանքները",
+                                    "Read the full book · all question types",
+                                    "Читать книгу · все типы заданий"))
+                            }
+                        }
                         item {
                             OutlinedTextField(
                                 value = chapterFilter,
