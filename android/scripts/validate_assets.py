@@ -111,6 +111,18 @@ assert recoverable_english_gaps >= 1000, (
 print(f"Verified {recoverable_english_gaps} English gap-fill blanks; "
       f"{unverified_blank_stems} missing stems are not invented")
 
+# Full source-reader inputs are packaged alongside the scored practice banks.
+READER_ONLY = [
+    *(f"armenian-official-1-section{section}.json" for section in range(1, 9)),
+    "armenian-official-1-assertions.json",
+    "biology-extended-book3.json", "biology-extended-book4.json",
+    "biology-pending-book3.json", "biology-pending-book4.json",
+    "biology-last61-book3.json", "biology-last61-book4.json",
+]
+for name in READER_ONLY:
+    read(WEB_DATA / name)
+print(f"Verified {len(READER_ONLY)} additional original and supplemental reader sources")
+
 dictionary = read(APP_ASSETS / "english-armenian-dictionary.json")
 assert isinstance(dictionary, dict) and len(dictionary) >= 8000, "Vocabulary asset incomplete"
 levels = read(APP_ASSETS / "english-level-practice.json").get("questions", [])
