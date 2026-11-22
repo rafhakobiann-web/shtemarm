@@ -51,7 +51,7 @@ fun AcademyGlassPanel(
         modifier
             .clip(shape)
             .background(scheme.surface)
-            .border(BorderStroke(1.dp, scheme.outline.copy(alpha = 0.55f), shape))
+            .border(BorderStroke(1.dp, scheme.outline.copy(alpha = 0.55f)), shape)
     ) {
         content()
     }
