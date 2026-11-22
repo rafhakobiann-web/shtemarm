@@ -127,7 +127,7 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
 }
 
 @Composable
-fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
+fun NativeGames(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
     var selected by remember { mutableStateOf("Անգլերեն") }
     var mode by remember { mutableStateOf("quiz") }
     var gameCount by remember { mutableIntStateOf(20) }
@@ -266,6 +266,7 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
 @Composable
 fun NativeTools(
     repository: QuestionRepository,
+    language: String = "hy",
     onStart: (String, List<StudyQuestion>, Int, String) -> Unit
 ) {
     var tool by remember { mutableStateOf("menu") }
