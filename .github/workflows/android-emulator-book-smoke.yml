@@ -46,6 +46,7 @@ jobs:
           profile: pixel_6
           disk-size: 2048M
           heap-size: 512M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off
           emulator-boot-timeout: 900
           disable-animations: true
           script: cd android && gradle --no-daemon connectedDebugAndroidTest --stacktrace
