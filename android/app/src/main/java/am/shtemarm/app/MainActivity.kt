@@ -555,6 +555,22 @@ private fun NativeShtemarm() {
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
                             item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            if (progress.studentGrade.isNotBlank()) item {
+                                val gradeLabel = when (progress.studentGrade) {
+                                    "other" -> NativeStudyGuide.label(studyLanguage, "Անհատական ծրագիր", "Self-study plan", "Самостоятельная подготовка")
+                                    else -> NativeStudyGuide.label(studyLanguage,
+                                        "${progress.studentGrade}-րդ դասարան", "Grade ${progress.studentGrade}", "${progress.studentGrade} класс")
+                                }
+                                Text(
+                                    NativeStudyGuide.label(studyLanguage,
+                                        "Անհատականացված է քեզ համար · $gradeLabel",
+                                        "Personalized for you · $gradeLabel",
+                                        "Подобрано для тебя · $gradeLabel"),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                            }
                             item {
                                 val pinnedCount = progressVersion.let { progress.offlineBookAssets.size }
                                 AcademyQuickAction(
