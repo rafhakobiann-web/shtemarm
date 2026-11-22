@@ -1,6 +1,8 @@
 package am.shtemarm.app
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +11,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +22,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.coroutineContext
@@ -356,6 +360,28 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
     var exercises by remember(book) { mutableStateOf<List<SourceExercise>>(emptyList()) }
     var loading by remember(book) { mutableStateOf(true) }
     var error by remember(book) { mutableStateOf("") }
+    var downloadStatus by remember(book) { mutableStateOf("") }
+    var includeAnswerKey by rememberSaveable(book.asset, book.title) { mutableStateOf(false) }
+    val downloadScope = rememberCoroutineScope()
+    val createPdf = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        if (uri == null) {
+            downloadStatus = NativeStudyGuide.label(progress.studyLanguage, "Ներբեռնումը չեղարկվեց։", "Download cancelled.", "Загрузка отменена.")
+        } else {
+            downloadStatus = NativeStudyGuide.label(progress.studyLanguage, "Պատրաստվում է PDF-ը…", "Preparing PDF…", "Подготовка PDF…")
+            downloadScope.launch {
+                downloadStatus = try {
+                    withContext(Dispatchers.IO) {
+                        context.contentResolver.openOutputStream(uri)?.use { output ->
+                            BookPdfExporter.write(output, book.subject, book.title, exercises, includeAnswerKey)
+                        } ?: error("Could not open the selected file")
+                    }
+                    NativeStudyGuide.label(progress.studyLanguage, "Գիրքը պահպանվեց PDF-ով։", "Book saved as a PDF.", "Книга сохранена в PDF.")
+                } catch (_: Exception) {
+                    NativeStudyGuide.label(progress.studyLanguage, "Չհաջողվեց պահպանել PDF-ը։", "Could not save the PDF.", "Не удалось сохранить PDF.")
+                }
+            }
+        }
+    }
     var query by rememberSaveable(book.asset, book.title) { mutableStateOf("") }
     var revealAnswers by rememberSaveable(book.asset, book.title) { mutableStateOf(false) }
     var textSize by rememberSaveable(book.asset, book.title) {
@@ -461,6 +487,20 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
                         Text(NativeStudyGuide.label(progress.studyLanguage, "Պատասխանները", "Answers", "Ответы"),
                             style = MaterialTheme.typography.labelMedium)
                     }
+                }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Checkbox(checked = includeAnswerKey, onCheckedChange = { includeAnswerKey = it })
+                    Text(NativeStudyGuide.label(progress.studyLanguage, "Ավելացնել պատասխանների բանալին", "Include answer key", "Добавить ответы"),
+                        modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+                    Button(
+                        onClick = { createPdf.launch("${book.title}.pdf".replace("/", "-").replace("\\\\", "-")) },
+                        enabled = !loading && exercises.isNotEmpty()
+                    ) {
+                        Text(NativeStudyGuide.label(progress.studyLanguage, "Ներբեռնել PDF", "Download PDF", "Скачать PDF"))
+                    }
+                }
+                if (downloadStatus.isNotBlank()) {
+                    Text(downloadStatus, color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
                 }
                 Text(NativeStudyGuide.label(progress.studyLanguage,
                     "Ընթերցման ռեժիմ է․ չստուգված առաջադրանքները չեն գնահատվում։",
