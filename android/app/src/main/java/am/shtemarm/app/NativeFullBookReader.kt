@@ -47,26 +47,48 @@ private suspend fun loadSourceExercises(context: Context, book: StudyBook): List
     val cacheKey = listOf(book.subject, book.title, book.asset).joinToString(":")
     SourceExerciseCache.get(cacheKey)?.let { return it }
 
-    val raw = withContext(Dispatchers.IO) {
+    val rawSources = withContext(Dispatchers.IO) {
         if (book.subject == "Մաթեմատիկա") {
             val index = context.assets.open("math-books-index.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
             val questions = context.assets.open("math-text-questions.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
-            index + "\n<<<SHTEMARM-MATH-SOURCE>>>\n" + questions
+            listOf(book.asset to (index + "\n<<<SHTEMARM-MATH-SOURCE>>>\n" + questions))
         } else {
-            context.assets.open(book.asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
+            sourceAssetNames(book).map { asset ->
+                asset to context.assets.open(asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
+            }
         }
     }
 
     val parsed = withContext(Dispatchers.Default) {
         coroutineContext.ensureActive()
         if (book.subject == "Մաթեմատիկա") {
-            parseMathSource(raw, if (book.title.contains("Մաս 2")) 2 else 1)
+            parseMathSource(rawSources.single().second, if (book.title.contains("Մաս 2")) 2 else 1)
         } else {
-            parseSourceJson(book, raw)
+            rawSources.flatMap { (asset, source) ->
+                parseSourceJson(book.copy(asset = asset), source)
+            }
         }
     }
     SourceExerciseCache.put(cacheKey, parsed)
     return parsed
+}
+
+private fun sourceAssetNames(book: StudyBook): List<String> {
+    if (book.subject == "Կենսաբանություն" && book.asset in setOf("bio-book3.json", "bio-book4.json")) {
+        val part = if (book.asset.endsWith("3.json")) 3 else 4
+        return listOf(
+            book.asset,
+            "biology-extended-book$part.json",
+            "biology-pending-book$part.json",
+            "biology-last61-book$part.json"
+        )
+    }
+    if (book.subject == "Հայոց լեզու" && book.asset == "armenian-book1.json") {
+        return listOf(book.asset) +
+            (1..8).map { "armenian-official-1-section$it.json" } +
+            "armenian-official-1-assertions.json"
+    }
+    return listOf(book.asset)
 }
 
 private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> {
@@ -100,7 +122,59 @@ private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> 
         }
     }
 
-    if (sections == null && tests == null) {
+    val officialMc = root.optJSONArray("mc")
+    if (officialMc != null) {
+        val sectionTitle = root.optString("title").ifBlank { "Բնօրինակ հարցեր" }
+        for (i in 0 until officialMc.length()) {
+            val q = officialMc.optJSONObject(i) ?: continue
+            val options = q.opt("options")
+            val answer = displayAnswer(q.opt("answer"), options)
+            val prompt = q.optString("stem").trim()
+            val page = q.optString("pdfPage").takeIf { it.isNotBlank() }?.let { " · էջ $it" }.orEmpty()
+            val review = q.optBoolean("reviewRequired")
+            if (prompt.isNotBlank()) result.add(SourceExercise(
+                "${book.asset}:official:${q.optString("n", i.toString())}",
+                "$sectionTitle · հարց ${q.optString("n", (i + 1).toString())}$page",
+                if (review) "mc · ստուգման ենթակա" else "mc · բնօրինակ",
+                "", prompt, stringOptions(options), answer, visualReference(q)
+            ))
+        }
+    }
+
+    val shortQuestions = root.optJSONArray("short")
+    if (shortQuestions != null) {
+        val sectionTitle = root.optString("title").ifBlank { "Կարճ պատասխանով հարցեր" }
+        for (i in 0 until shortQuestions.length()) {
+            val q = shortQuestions.optJSONObject(i) ?: continue
+            val prompt = q.optString("stem").trim()
+            if (prompt.isNotBlank()) result.add(SourceExercise(
+                "${book.asset}:short:${q.optString("n", i.toString())}",
+                "$sectionTitle · հարց ${q.optString("n", (i + 1).toString())}",
+                "short", "", prompt, emptyList(), q.optString("answer").trim(), ""
+            ))
+        }
+    }
+
+    val groups = root.optJSONArray("groups")
+    if (groups != null) {
+        val sectionTitle = root.optString("name").ifBlank { "Պնդումներ" }
+        for (gi in 0 until groups.length()) {
+            val group = groups.optJSONObject(gi) ?: continue
+            val rows = group.optJSONArray("questions") ?: continue
+            for (qi in 0 until rows.length()) {
+                val q = rows.optJSONObject(qi) ?: continue
+                val prompt = q.optString("stem").trim()
+                if (prompt.isNotBlank()) result.add(SourceExercise(
+                    "${book.asset}:group:${gi + 1}:$qi",
+                    "$sectionTitle · խումբ ${group.optString("n", (gi + 1).toString())} · հարց ${q.optString("n", (qi + 1).toString())}",
+                    "assertion", group.optString("instruction"), prompt,
+                    stringOptions(q.opt("options")), displayAnswer(q.opt("answer"), q.opt("options")), visualReference(q)
+                ))
+            }
+        }
+    }
+
+    if (sections == null && tests == null && officialMc == null && shortQuestions == null && groups == null) {
         val flat = root.optJSONArray("questions") ?: root.optJSONArray("items")
         if (flat != null) {
             for (i in 0 until flat.length()) {
