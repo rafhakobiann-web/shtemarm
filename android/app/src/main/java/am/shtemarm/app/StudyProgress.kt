@@ -41,6 +41,13 @@ class StudyProgress(context: Context) {
         get() = prefs.getStringSet("offline_book_assets", emptySet())
             .orEmpty().filter { asset -> BookCatalog.books.any { it.asset == asset } }.toSet()
 
+    fun setOfflineBookPinned(asset: String, pinned: Boolean) {
+        if (BookCatalog.books.none { it.asset == asset }) return
+        val current = prefs.getStringSet("offline_book_assets", emptySet()).orEmpty().toMutableSet()
+        if (pinned) current.add(asset) else current.remove(asset)
+        prefs.edit().putStringSet("offline_book_assets", current).apply()
+    }
+
     /** Store student preferences locally; no account or remote tracking is used. */
     fun saveStudentSetup(
         language: String,
