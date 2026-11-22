@@ -40,8 +40,13 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         try {
             pool = repository.practiceForSubject(selected)
             if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
-        } catch (_: Exception) { error = "Հնարավոր չեղավ բացել հարցաշարերը։" }
-        isLoading = false
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            error = "Հնարավոր չեղավ բացել հարցաշարերը։"
+        } finally {
+            isLoading = false
+        }
     }
     if (showEnglishLevels) {
         Column(Modifier.fillMaxSize()) {
