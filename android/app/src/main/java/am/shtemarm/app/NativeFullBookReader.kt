@@ -63,6 +63,9 @@ internal suspend fun loadSourceExercises(context: Context, book: StudyBook): Lis
         coroutineContext.ensureActive()
         if (book.subject == "Մաթեմատիկա") {
             parseMathSource(rawSources.single().second, if (book.title.contains("Մաս 2")) 2 else 1)
+        } else if (book.subject == "Կենսաբանություն" &&
+            book.asset in setOf("bio-book3.json", "bio-book4.json")) {
+            parseBiologySources(rawSources)
         } else {
             rawSources.flatMap { (asset, source) ->
                 parseSourceJson(book.copy(asset = asset), source)
@@ -89,6 +92,37 @@ private fun sourceAssetNames(book: StudyBook): List<String> {
             "armenian-official-1-assertions.json"
     }
     return listOf(book.asset)
+}
+
+private fun parseBiologySources(sources: List<Pair<String, String>>): List<SourceExercise> {
+    val bySection = sortedMapOf<Int, MutableList<Triple<String, String, JSONObject>>>()
+    for ((asset, raw) in sources) {
+        val sections = JSONObject(raw).optJSONArray("sections") ?: continue
+        for (si in 0 until sections.length()) {
+            val section = sections.optJSONObject(si) ?: continue
+            val number = section.optInt("n", si + 1)
+            val title = section.optString("title").ifBlank {
+                section.optString("label").ifBlank { "Բաժին $number" }
+            }
+            val units = section.optJSONArray("units") ?: continue
+            val target = bySection.getOrPut(number) { mutableListOf() }
+            for (ui in 0 until units.length()) {
+                val unit = units.optJSONObject(ui) ?: continue
+                target.add(Triple(asset, title, unit))
+            }
+        }
+    }
+
+    val output = ArrayList<SourceExercise>()
+    for ((_, rows) in bySection) {
+        // Match the website's merged book ordering: section number first,
+        // then printed task label, with original source order retained for ties.
+        rows.sortBy { it.third.optString("label").toDoubleOrNull() ?: Double.POSITIVE_INFINITY }
+        for ((index, row) in rows.withIndex()) {
+            appendUnit(output, row.first, row.second, row.third.optString("label"), index, row.third)
+        }
+    }
+    return output
 }
 
 private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> {
@@ -217,7 +251,7 @@ private fun appendUnit(
             if (prompt.isBlank() && passage.isBlank() && qVisual.isBlank()) continue
             val number = q.optString("n").ifBlank { (qi + 1).toString() }
             output.add(SourceExercise(
-                "$source:$unitIndex:$qi", "$section · $unitLabel · $number",
+                "$source:${unit.optString("id").ifBlank { unitIndex.toString() }}:$qi", "$section · $unitLabel · $number",
                 q.optString("kind").ifBlank { kind }, passage, prompt,
                 stringOptions(optionsValue), displayAnswer(answerValue, optionsValue), qVisual
             ))
@@ -229,7 +263,7 @@ private fun appendUnit(
         .map { unit.optString(it).trim() }.firstOrNull { it.isNotBlank() }.orEmpty()
     if (passage.isNotBlank() || prompt.isNotBlank() || visual.isNotBlank()) {
         output.add(SourceExercise(
-            "$source:$unitIndex", "$section · $unitLabel", kind, passage,
+            "$source:${unit.optString("id").ifBlank { unitIndex.toString() }}", "$section · $unitLabel", kind, passage,
             prompt, stringOptions(unit.opt("options")), displayAnswer(unit.opt("answer"), unit.opt("options")), visual
         ))
     }
