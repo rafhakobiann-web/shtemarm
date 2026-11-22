@@ -309,7 +309,8 @@ private fun displayAnswer(value: Any?, optionsValue: Any?): String {
 
 private fun visualReference(value: JSONObject): String {
     val keys = listOf("image", "diagram", "figure", "imageUrl", "illustration")
-    if (value.has("diagramOptions")) return "Գծապատկերի տարբերակներ կան սկզբնաղբյուրում"\n    return keys.firstNotNullOfOrNull { key ->
+    if (value.has("diagramOptions")) return "Գծապատկերի տարբերակներ կան սկզբնաղբյուրում"
+    return keys.firstNotNullOfOrNull { key ->
         if (value.has(key) && !value.isNull(key)) value.optString(key).trim().takeIf { it.isNotBlank() }
         else null
     }.orEmpty()
