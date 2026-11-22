@@ -57,7 +57,7 @@ export function useGuestTrialCount(key: string): number {
 export function useSignedIn(): boolean | null {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   useEffect(() => {
-    if (!hasSupabaseConfig) return;
+    if (!hasSupabaseConfig()) return;
     let active = true;
     try {
       // Supabase emits INITIAL_SESSION on load, with a null session when signed out.

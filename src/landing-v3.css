@@ -31,7 +31,9 @@ html[data-surface="liquid"] .sht-v3 .sht-landing-nav {
   background:var(--lg-surface-strong); border-color:var(--lg-line);
   -webkit-backdrop-filter:blur(10px) saturate(135%);backdrop-filter:blur(10px) saturate(135%);
 }
-.sht-v3 .sht-brand { letter-spacing:-.035em; font-weight:900; }
+.sht-v3 .sht-brand { letter-spacing:-.035em; font-weight:900; white-space:nowrap; flex:0 0 auto; }
+.sht-v3 .sht-nav-links { flex:1 1 auto; min-width:0; flex-wrap:nowrap; justify-content:center; gap:.15rem; }
+.sht-v3 .sht-nav-links a { white-space:nowrap; padding:.5rem .35rem; font-size:.72rem; }
 .sht-v3 .sht-nav-links a:hover { color:var(--primary);background:var(--sl-tint); }
 .sht-v3 .ref-nav-download {
   display:inline-flex;align-items:center;gap:.4rem;min-height:2.6rem;
