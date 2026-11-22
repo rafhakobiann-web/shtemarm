@@ -62,4 +62,21 @@ class AndroidBookSmokeTest {
         assertTrue(recentlyLoaded.allQuestions.isNotEmpty())
         assertTrue(recentlyLoaded.allQuestions.all { it.id in loadedIds })
     }
+
+    @Test
+    fun bothMathPartsLoadPlayableOfflineQuestions() = runBlocking {
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+        val loadedIds = mutableSetOf<String>()
+        for (part in 1..2) {
+            val book = withTimeout(120_000L) { loadScoredMath(appContext, part) }
+            assertFalse("Math part $part: no playable sections", book.sections.isEmpty())
+            assertFalse("Math part $part: no verified questions", book.allQuestions.isEmpty())
+            assertTrue("Math part $part: invalid answer index",
+                book.allQuestions.all { it.correctIndex in it.choices.indices })
+            val ids = book.allQuestions.map { it.id }.toSet()
+            assertEquals("Math part $part: duplicate question IDs", book.allQuestions.size, ids.size)
+            assertTrue("Math parts share question IDs", loadedIds.intersect(ids).isEmpty())
+            loadedIds.addAll(ids)
+        }
+    }
 }
