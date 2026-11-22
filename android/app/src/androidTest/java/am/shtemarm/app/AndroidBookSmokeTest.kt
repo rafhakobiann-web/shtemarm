@@ -33,7 +33,6 @@ class AndroidBookSmokeTest {
     fun everyCoreTextbookVolumeLoadsAsAnAnswerableOfflineBook() = runBlocking {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
         val repository = QuestionRepository(appContext)
-        val coreBooks = BookCatalog.books.filter { it.title.startsWith("Շտեմարան ") }
         val expectedAssets = setOf(
             "book1.json", "book2.json", "book3.json",
             "armenian-book1.json", "armenian-book2.json", "armenian-book3.json", "armenian-book4.json",
@@ -41,6 +40,7 @@ class AndroidBookSmokeTest {
             "bio-book1.json", "bio-book2.json", "bio-book3.json", "bio-book4.json",
             "physics-book1.json", "physics-book2.json"
         )
+        val coreBooks = BookCatalog.books.filter { it.asset in expectedAssets }
         assertEquals("Core book catalog size", expectedAssets.size, coreBooks.size)
         assertEquals("Core book catalog assets", expectedAssets, coreBooks.map { it.asset }.toSet())
 
@@ -61,6 +61,34 @@ class AndroidBookSmokeTest {
         val recentlyLoaded = withTimeout(60_000L) { repository.load(coreBooks.first()) }
         assertTrue(recentlyLoaded.allQuestions.isNotEmpty())
         assertTrue(recentlyLoaded.allQuestions.all { it.id in loadedIds })
+    }
+
+    @Test
+    fun fullReaderIncludesOfficialArmenianAndBiologySupplementSources() = runBlocking {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val armenian = BookCatalog.books.first { it.asset == "armenian-book1.json" }
+        val armenianQuestions = withTimeout(180_000L) { loadSourceExercises(context, armenian) }
+        assertTrue("Official Armenian section sources were not loaded", armenianQuestions.size > 500)
+        assertTrue("Volume 1 literature section is absent",
+            armenianQuestions.any { it.id.startsWith("armenian-official-1-section8.json:") })
+        assertTrue("Original assertion groups are absent",
+            armenianQuestions.any { it.id.startsWith("armenian-official-1-assertions.json:group:") })
+
+        for (part in 3..4) {
+            val book = BookCatalog.books.first { it.asset == "bio-book$part.json" }
+            val questions = withTimeout(180_000L) { loadSourceExercises(context, book) }
+            assertTrue("Biology part $part reader returned too few source exercises", questions.size > 1000)
+            for (source in listOf(
+                "biology-extended-book$part.json:",
+                "biology-pending-book$part.json:",
+                "biology-last61-book$part.json:"
+            )) {
+                assertTrue("Biology part $part omitted $source",
+                    questions.any { it.id.startsWith(source) })
+            }
+            assertEquals("Biology part $part has duplicate reader IDs",
+                questions.size, questions.map { it.id }.toSet().size)
+        }
     }
 
     @Test
