@@ -37,7 +37,7 @@ jobs:
       - name: Compile the emulator tests and run JVM regressions
         working-directory: android
         run: gradle --no-daemon testDebugUnitTest assembleDebugAndroidTest --stacktrace
-      - name: Run emulator launch and English book-load smoke tests
+      - name: Run emulator launch and full source-book smoke tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
