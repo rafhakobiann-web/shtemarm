@@ -135,9 +135,10 @@ fun NativeGames(repository: QuestionRepository, language: String = "hy", onStart
     var questions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var loadFailed by remember { mutableStateOf(false) }
+    var retryKey by rememberSaveable { mutableIntStateOf(0) }
     var flipIndex by rememberSaveable { mutableIntStateOf(0) }
     var revealed by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(selected) {
+    LaunchedEffect(selected, retryKey) {
         loading = true
         loadFailed = false
         questions = emptyList()
@@ -259,7 +260,12 @@ fun NativeGames(repository: QuestionRepository, language: String = "hy", onStart
                 ) { Text(if (mode == "truth") "Սկսել ճիշտ/սխալ խաղը" else "Սկսել ${gameCount.coerceAtMost(questions.size)} հարցանոց խաղը") }
             }
         } else if (!loading) {
-            item { Text(if (loadFailed) "Հարցաշարի բեռնումը ձախողվեց։ Փորձիր ընտրել առարկան կրկին։" else "Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։") }
+            item {
+                Text(if (loadFailed) "Հարցաշարի բեռնումը ձախողվեց։ Փորձիր կրկին։" else "Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։")
+                if (loadFailed) TextButton(onClick = { retryKey++ }) {
+                    Text(NativeStudyGuide.label(language, "Կրկին փորձել", "Try again", "Повторить"))
+                }
+            }
         }
     }
 }
