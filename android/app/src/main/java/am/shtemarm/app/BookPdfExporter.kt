@@ -48,9 +48,9 @@ internal object BookPdfExporter {
         fun drawParagraph(text: String, textPaint: Paint, indent: Float = 0f, gapAfter: Float = 5f) {
             val lines = wrap(text, textPaint, PAGE_WIDTH - 2f * MARGIN - indent)
             val lineHeight = textPaint.textSize * 1.42f
-            ensureRoom(lines.size * lineHeight + gapAfter)
             for (line in lines) {
-                canvas.drawText(line, MARGIN + indent, y, textPaint)
+                if (y + lineHeight > FOOTER_Y - 16f) nextPage()
+                if (line.isNotEmpty()) canvas.drawText(line, MARGIN + indent, y, textPaint)
                 y += lineHeight
             }
             y += gapAfter
@@ -86,9 +86,12 @@ internal object BookPdfExporter {
             }
         }
 
-        finishCurrentPage()
-        document.writeTo(output)
-        document.close()
+        try {
+            finishCurrentPage()
+            document.writeTo(output)
+        } finally {
+            document.close()
+        }
     }
 
     private fun newPage(document: PdfDocument, number: Int): PdfDocument.Page {
