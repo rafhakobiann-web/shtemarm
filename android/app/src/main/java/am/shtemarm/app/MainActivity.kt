@@ -521,11 +521,11 @@ private fun NativeShtemarm() {
                             begin(pool, count, name)
                         }
                     }
-                    Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository) { selectedSubject, pool, count, name ->
+                    Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository, studyLanguage) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
-                    Page.GAMES -> Box(Modifier.fillMaxSize().padding(padding)) { NativeGames(repository) { selectedSubject, pool, count, name ->
+                    Page.GAMES -> Box(Modifier.fillMaxSize().padding(padding)) { NativeGames(repository, studyLanguage) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
@@ -534,7 +534,7 @@ private fun NativeShtemarm() {
                             onClick = { page = Page.POMODORO },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
                         ) { Text(NativeStudyGuide.label(studyLanguage, "Ուսման ժամանակաչափ", "Study timer", "Таймер занятий")) }
-                        Box(Modifier.weight(1f)) { NativeTools(repository) { selectedSubject, pool, count, name ->
+                        Box(Modifier.weight(1f)) { NativeTools(repository, studyLanguage) { selectedSubject, pool, count, name ->
                             subject = selectedSubject
                             begin(pool, count, name)
                         } }
