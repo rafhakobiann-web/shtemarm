@@ -223,3 +223,57 @@ private fun subjectAccent(index: Int) = listOf(
     Color(0xFF147C70), Color(0xFF2563A6), Color(0xFF8C4BA8),
     Color(0xFFB76424), Color(0xFF3A7C3D), Color(0xFFB34455)
 )[index % 6]
+
+
+@Composable
+internal fun NativeOfflineLibrary(
+    selectedAssets: Set<String>,
+    language: String,
+    onToggle: (String, Boolean) -> Unit,
+    onOpen: (StudyBook) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item {
+            Text(NativeStudyGuide.label(language, "Իմ անցանց դարակը", "My offline shelf", "Моя офлайн-полка"),
+                style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(
+                NativeStudyGuide.label(language,
+                    "Այս գրքերը ներառված են հավելվածում և հասանելի են առանց ինտերնետի։ Նշիր կարևոր գրքերը՝ դրանք արագ գտնելու համար։",
+                    "These books are included in the app and work offline. Pin the ones you want to reach quickly.",
+                    "Эти книги входят в приложение и доступны без интернета. Закрепи нужные для быстрого доступа."),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(4.dp))
+        }
+        items(BookCatalog.books, key = { it.asset + it.title }) { book ->
+            val pinned = book.asset in selectedAssets
+            ElevatedCard(shape = RoundedCornerShape(16.dp)) {
+                Column(Modifier.fillMaxWidth().padding(14.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(book.subject, color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                            Text(book.title, fontWeight = FontWeight.SemiBold)
+                        }
+                        Checkbox(checked = pinned, onCheckedChange = { onToggle(book.asset, it) })
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            NativeStudyGuide.label(language, "Հասանելի է անցանց", "Available offline", "Доступно офлайн"),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = { onOpen(book) }) {
+                            Text(NativeStudyGuide.label(language, "Բացել", "Open", "Открыть"))
+                        }
+                    }
+                }
+            }
+        }
+        item { Spacer(Modifier.height(16.dp)) }
+    }
+}
