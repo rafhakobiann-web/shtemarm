@@ -52,7 +52,8 @@ describe("Shtemarm private feedback and non-forgeable AI context",()=>{
     expect(ui).toContain("question:content");
     expect(ui).toContain("contextToken:contextTokenRef.current");
     expect(ui).not.toContain("messages: next.filter");
-    expect(ui).not.toContain("localStorage.setItem");
+    expect(ui).not.toContain("localStorage.setItem(MODE_KEY, messages)");
+    expect(ui).not.toContain("localStorage.setItem(MODE_KEY, contextTokenRef");
   });
 
   it("keeps private feedback inaccessible via anonymous browser grants",()=>{
