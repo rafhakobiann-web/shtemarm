@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK, OFFLINE }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -96,6 +96,16 @@ private fun NativeShtemarm() {
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
+    if (!progress.onboardingComplete) {
+        MaterialTheme(colorScheme = academyColors(dark, academyAccent(accent), surfaceStyle), typography = ShtemarmTypography) {
+            NativeStudentOnboarding(progress) { language, goal ->
+                studyLanguage = language
+                dailyTarget = goal
+                progressVersion++
+            }
+        }
+        return
+    }
     var remindersEnabled by remember { mutableStateOf(StudyReminders.enabled(context)) }
     val requestNotificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -238,7 +248,7 @@ private fun NativeShtemarm() {
             Page.READER -> Page.SECTIONS
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
-            Page.HANDBOOK -> Page.HOME
+            Page.HANDBOOK, Page.OFFLINE -> Page.HOME
             Page.POMODORO -> Page.TOOLS
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
@@ -388,7 +398,7 @@ private fun NativeShtemarm() {
                 bottomBar = {
                     AcademyFloatingDock(
                         selected = when (page) {
-                            Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
+                            Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED, Page.OFFLINE -> 0
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.READER, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
@@ -430,6 +440,21 @@ private fun NativeShtemarm() {
                     label = "native screen transition"
                 ) { screen ->
                 when (screen) {
+                    Page.OFFLINE -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        NativeOfflineLibrary(
+                            selectedAssets = progress.offlineBookAssets,
+                            language = studyLanguage,
+                            onToggle = { asset, pinned ->
+                                progress.setOfflineBookPinned(asset, pinned)
+                                progressVersion++
+                            },
+                            onOpen = { selectedBook ->
+                                subject = selectedBook.subject
+                                book = selectedBook
+                                page = if (selectedBook.subject == "Մաթեմատիկա") Page.MATH else Page.READER
+                            }
+                        )
+                    }
                     Page.HANDBOOK -> Box(Modifier.fillMaxSize().padding(padding)) {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -527,6 +552,17 @@ private fun NativeShtemarm() {
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
                             item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            item {
+                                val pinnedCount = progressVersion.let { progress.offlineBookAssets.size }
+                                AcademyQuickAction(
+                                    Icons.Default.Book,
+                                    NativeStudyGuide.label(studyLanguage, "Իմ անցանց դարակը", "My offline shelf", "Моя офлайн-полка"),
+                                    NativeStudyGuide.label(studyLanguage,
+                                        "$pinnedCount պահված գիրք · հասանելի է առանց ինտերնետի",
+                                        "$pinnedCount pinned books · available offline",
+                                        "$pinnedCount книг · доступны офлайн")
+                                ) { page = Page.OFFLINE }
+                            }
                             item {
                                 val today = progressVersion.let { progress.answeredToday() }
                                 ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
@@ -709,7 +745,7 @@ private fun NativeShtemarm() {
                         }
                         items(BookCatalog.subjects.filter {
                             BookStudyHelpers.matches(subjectFilter, it)
-                        }, key = { it }) { s ->
+                        }.sortedBy { if (it in progress.focusSubjects) 0 else 1 }, key = { it }) { s ->
                             AcademySubjectAccordion(
                                 subject = s,
                                 books = BookCatalog.books.filter { it.subject == s },
