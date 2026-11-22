@@ -46,19 +46,20 @@ describe("Shtemarm app download", () => {
 });
 
 describe("smooth scrolling is accessible and avoids expensive repaints", () => {
-  it("keeps native touch scrolling and respects accessibility preferences", () => {
+  it("keeps native scrolling and respects reduced-motion preferences", () => {
     const css = source("src/styles.css");
-    expect(css).toContain("blur(9px) saturate(140%)");
-    expect(css).toContain("prefers-reduced-transparency: reduce");
-    expect(css).toContain("prefers-reduced-motion: reduce");
-    expect(css).toContain('data-glass-blur="off"');
-  });
-  it("hysteresis reduces dock jitter while preserving the five tab links", () => {
     const nav = source("src/components/MobileNav.tsx");
-    expect(nav).toContain("directionTravel");
-    expect(nav).toContain("directionTravel > 48");
-    expect(nav).toContain("window.requestAnimationFrame");
+    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(nav).toContain("pb-[env(safe-area-inset-bottom)]");
+  });
+  it("keeps four stable, accessible mobile destinations", () => {
+    const nav = source("src/components/MobileNav.tsx");
     expect(nav).toContain("MOBILE_TAB_TARGETS");
+    expect(nav).toContain("grid-cols-4");
+    expect(nav).toContain("min-h-16");
+    expect(nav).toContain('"/dashboard"');
+    expect(nav).toContain('"/explore"');
+    expect(nav).toContain('"/study-tools"');
   });
   it("uses draw-cache and stable lazy lists in the native Android app", () => {
     const glass = source("android/app/src/main/java/am/shtemarm/app/NativeLiquidGlass.kt");

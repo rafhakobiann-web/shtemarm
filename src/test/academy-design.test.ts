@@ -23,25 +23,17 @@ describe("Shtemarm Academy final design tokens",()=>{
     expect(contrast).toBeGreaterThanOrEqual(4.5);
     expect(readFileSync("public/shtemarm-logo.svg","utf8")).toContain("#0B766B");
   });
-  it("defaults to visible Liquid Glass while retaining a lighter Academy option",()=>{
-    expect(DEFAULT_APPEARANCE.surface).toBe("liquid");
-    expect(DEFAULT_APPEARANCE.glass).toBe("adaptive");
-    expect(DEFAULT_APPEARANCE.blur).toBe(true);
-    expect(normalizeAppearance({surface:"liquid",glass:"vivid",blur:true}).surface).toBe("liquid");
-    expect(preferences).toContain("DEFAULT_ACCENT");
-    expect(preferences).toContain('soft: "Ակադեմիական"');
+  it("defaults to the calm solid theme and keeps accessibility options",()=>{
+    expect(DEFAULT_APPEARANCE.surface).toBe("soft");
+    expect(normalizeAppearance({surface:"soft"}).surface).toBe("soft");
+    expect(preferences).toContain('["classic", "soft", "atlas"]');
     expect(css).toContain("prefers-reduced-motion");
     expect(css).toContain("user-high-contrast");
   });
   it("provides navigable content rather than hiding existing questions or features",()=>{
-    // / is the public landing, while existing subject/exam destinations remain on /dashboard.
-    for (const value of ["sht-hero", "sht-bento-grid", "sht-subject-grid", 'to="/auth"']) {
-      expect(home).toContain(value);
-    }
-    for (const value of ["DashboardOverview", "sht-home-2026", "sht-home-subject-grid",
-      'id="subjects"', 'id="exams"', 'to="/explore"', 'to="/study-tools"',
-      'to="/subject/$subject"', "PHYSICS_BOOKS.map", "BIO_BOOKS.filter",
-      "HISTORY_BOOKS.map", "ARMENIAN_BOOKS.map", "BOOKS.map", "MATH_BOOKS.map"]) {
+    // The public landing and signed-in dashboard have separate navigation roles.
+    expect(home).toContain('to="/auth"');
+    for (const value of ["DashboardOverview", 'id="subjects"', 'to="/explore"', 'to="/study-tools"', "BOOKS"]) {
       expect(dashboard).toContain(value);
     }
     const explore = readFileSync("src/routes/explore.tsx","utf8");
@@ -51,12 +43,12 @@ describe("Shtemarm Academy final design tokens",()=>{
     expect(header).toContain('to="/explore"');
     expect(header).toContain('to="/study-tools"');
   });
-  it("keeps the critical study destinations visible on phones with real touch targets",()=>{
-    expect(mobile).toContain("grid-cols-5");
-    expect(mobile).toContain("min-h-[3.6rem]");
+  it("keeps four stable study destinations visible on phones",()=>{
+    expect(mobile).toContain("grid-cols-4");
+    expect(mobile).toContain("min-h-16");
+    expect(mobile).toContain('to: "/dashboard"');
     expect(mobile).toContain('to: "/explore"');
     expect(mobile).toContain('hash: "exams"');
-    expect(mobile).toContain('to: "/profile"');
     expect(mobile).toContain('to: "/study-tools"');
   });
   it("localizes new study dashboard copy in English and Russian",()=>{

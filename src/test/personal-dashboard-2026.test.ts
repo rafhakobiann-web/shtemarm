@@ -21,7 +21,7 @@ describe("approved Shtemarm dashboard and tutor choices",()=>{
     const page=read("src/routes/chat.tsx");
     expect(page).toContain('const MODE_KEY = "shtemarm:tutor-mode:v1"');
     expect(page).toContain('saved === "hint" || saved === "explain" || saved === "quiz"');
-    expect(page).toContain("setMode(readPreferredMode())");
+    expect(page).toContain("setMode(saved.enabled ? saved.preferredMode : readPreferredMode())");
     expect(page).toContain("localStorage.setItem(MODE_KEY, next)");
     expect(page).not.toContain("localStorage.setItem(MODE_KEY, messages)");
     expect(page).not.toContain("localStorage.setItem(MODE_KEY, contextTokenRef");
