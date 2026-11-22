@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +29,7 @@ internal fun NativeStudentOnboarding(
     var dailyGoal by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
     var source by remember { mutableStateOf(progress.discoverySource.ifBlank { "skip" }) }
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     val titles = listOf(
         NativeStudyGuide.label(language, "Բարի գալուստ Shtemarm", "Welcome to Shtemarm", "Добро пожаловать в Shtemarm"),
@@ -171,7 +173,7 @@ internal fun NativeStudentOnboarding(
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             if (step > 0) {
-                OutlinedButton(onClick = { step--; scrollState.scrollToTopSafely() }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = { step--; scope.launch { scrollState.scrollTo(0) } }, modifier = Modifier.weight(1f)) {
                     Text(NativeStudyGuide.label(language, "Հետ", "Back", "Назад"))
                 }
             }
@@ -179,7 +181,7 @@ internal fun NativeStudentOnboarding(
                 onClick = {
                     if (step < 4) {
                         step++
-                        scrollState.scrollToTopSafely()
+                        scope.launch { scrollState.scrollTo(0) }
                     } else {
                         progress.saveStudentSetup(language, grade, focus, source, offlineBooks, dailyGoal)
                         onComplete(language, dailyGoal)
@@ -221,7 +223,3 @@ private fun subjectAccent(index: Int) = listOf(
     Color(0xFF147C70), Color(0xFF2563A6), Color(0xFF8C4BA8),
     Color(0xFFB76424), Color(0xFF3A7C3D), Color(0xFFB34455)
 )[index % 6]
-
-private suspend fun androidx.compose.foundation.ScrollState.scrollToTopSafely() {
-    scrollTo(0)
-}
