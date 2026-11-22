@@ -274,14 +274,24 @@ fun NativeTools(
     var sections by remember { mutableStateOf<List<StudySection>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var selectedSection by remember { mutableStateOf("Բոլոր բաժինները") }
+    var loadError by remember { mutableStateOf("") }
+    var retryKey by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(subject) {
+    LaunchedEffect(subject, retryKey) {
         loading = true
-        sections = try {
-            repository.sectionsForSubject(subject)
-        } catch (_: Exception) { emptyList() }
-        selectedSection = "Բոլոր բաժինները"
-        loading = false
+        loadError = ""
+        try {
+            sections = repository.sectionsForSubject(subject)
+            selectedSection = "Բոլոր բաժինները"
+            if (sections.isEmpty()) loadError = "Այս առարկայի համար բաժիններ հասանելի չեն։"
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            sections = emptyList()
+            loadError = "Հնարավոր չեղավ բեռնել բաժինները։"
+        } finally {
+            loading = false
+        }
     }
 
     if (tool == "vocab" || tool == "calc") {
@@ -341,7 +351,7 @@ fun NativeTools(
                 }
             }
             item {
-                Text("Սա ուսումնական թեստերի կազմման գործիք է։ Տպելու և PDF արտահանելու հնարավորությունները դեռ հասանելի չեն։",
+                Text("Սա ուսումնական թեստերի կազմման գործիք է։ Գրքի PDF-ը կարող ես ներբեռնել ընթերցման էջից։",
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
             }
         } else {
@@ -381,6 +391,10 @@ fun NativeTools(
                     sections.firstOrNull { it.title == selectedSection }?.questions.orEmpty()
                 } else sections.flatMap { it.questions }
                 if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+                if (loadError.isNotBlank()) {
+                    Text(loadError, color = MaterialTheme.colorScheme.error)
+                    TextButton(onClick = { retryKey++ }) { Text("Կրկին փորձել") }
+                }
                 Text("Հասանելի հարցեր՝ " + pool.size)
                 Button(
                     enabled = !loading && validCount && pool.isNotEmpty(),
