@@ -96,11 +96,15 @@ private fun NativeShtemarm() {
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
-    if (!progress.onboardingComplete) {
+    var page by remember { mutableStateOf(Page.HOME) }
+    var forcePersonalization by remember { mutableStateOf(false) }
+    if (forcePersonalization || !progress.onboardingComplete) {
         MaterialTheme(colorScheme = academyColors(dark, academyAccent(accent), surfaceStyle), typography = ShtemarmTypography) {
             NativeStudentOnboarding(progress) { language, goal ->
                 studyLanguage = language
                 dailyTarget = goal
+                forcePersonalization = false
+                page = Page.HOME
                 progressVersion++
             }
         }
@@ -121,7 +125,6 @@ private fun NativeShtemarm() {
     var handbookSubject by remember { mutableStateOf("Անգլերեն") }
     var showExplanation by remember { mutableStateOf(false) }
 
-    var page by remember { mutableStateOf(Page.HOME) }
     var sessionOrigin by remember { mutableStateOf(Page.SECTIONS) }
     var subject by remember { mutableStateOf(BookCatalog.subjects.first()) }
     var book by remember { mutableStateOf<StudyBook?>(null) }
@@ -1247,6 +1250,15 @@ private fun NativeShtemarm() {
                         }
                     }
                     Page.SETTINGS -> Column(Modifier.fillMaxSize().padding(padding)) {
+                        OutlinedButton(
+                            onClick = { forcePersonalization = true },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(NativeStudyGuide.label(studyLanguage,
+                                "Փոխել իմ ուսումնական նախընտրությունները",
+                                "Edit study preferences",
+                                "Изменить учебные предпочтения"))
+                        }
                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp),horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("hy","en","ru").forEach { language ->
                                 FilterChip(
