@@ -52,7 +52,7 @@ export function DashboardOverview({ name, progress }: Props) {
 
   const summary = progressSummary(progress);
   const destination = recent
-    ? { to: "/study/$bookId/$sectionId" as const, params: { bookId: recent.bookId, sectionId: recent.sectionId }, search: { mode: recent.mode } }
+    ? { to: "/study/$bookId/$sectionId" as const, params: { bookId: recent.bookId, sectionId: recent.sectionId }, search: { mode: recent.mode }, title: recent.title }
     : null;
 
   return (
@@ -70,7 +70,7 @@ export function DashboardOverview({ name, progress }: Props) {
             className="inline-flex min-h-12 items-center justify-between gap-4 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-w-64">
             <span className="min-w-0">
               <span className="block text-xs font-medium opacity-80">{t.last}</span>
-              <span className="block truncate">{t.next} · {recent.title}</span>
+              <span className="block truncate">{t.next} · {destination.title}</span>
             </span>
             <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
           </Link>
