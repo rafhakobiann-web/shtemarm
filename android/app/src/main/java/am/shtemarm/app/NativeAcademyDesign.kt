@@ -211,7 +211,7 @@ fun AcademyHero(onSubjects: () -> Unit, onExams: () -> Unit) {
         Text("ՔՈ ՔՆՆՈՒԹՅՈՒՆԸ։ ՔՈ ՏԵՄՊԸ։", color = palette.primary,
             fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
         Spacer(Modifier.height(12.dp))
-        Text("Սովորիր վստահ։\\nՔայլ առ քայլ։", color = palette.onSurface,
+        Text("Սովորիր վստահ։\nՔայլ առ քայլ։", color = palette.onSurface,
             fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
             fontSize = 31.sp, lineHeight = 39.sp)
         Spacer(Modifier.height(9.dp))
