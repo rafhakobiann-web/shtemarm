@@ -167,7 +167,7 @@ private fun parseSourceJson(book: StudyBook, raw: String): List<SourceExercise> 
                 if (prompt.isNotBlank()) result.add(SourceExercise(
                     "${book.asset}:group:${gi + 1}:$qi",
                     "$sectionTitle · խումբ ${group.optString("n", (gi + 1).toString())} · հարց ${q.optString("n", (qi + 1).toString())}",
-                    "assertion", group.optString("instruction"), prompt,
+                    "assertion", root.optString("instruction"), prompt,
                     stringOptions(q.opt("options")), displayAnswer(q.opt("answer"), q.opt("options")), visualReference(q)
                 ))
             }
@@ -309,7 +309,7 @@ private fun displayAnswer(value: Any?, optionsValue: Any?): String {
 
 private fun visualReference(value: JSONObject): String {
     val keys = listOf("image", "diagram", "figure", "imageUrl", "illustration")
-    return keys.firstNotNullOfOrNull { key ->
+    if (value.has("diagramOptions")) return "Գծապատկերի տարբերակներ կան սկզբնաղբյուրում"\n    return keys.firstNotNullOfOrNull { key ->
         if (value.has(key) && !value.isNull(key)) value.optString(key).trim().takeIf { it.isNotBlank() }
         else null
     }.orEmpty()
@@ -367,7 +367,12 @@ fun NativeFullBookReader(book: StudyBook, onBack: () -> Unit, showBack: Boolean 
             Text(book.title, style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold)
             Text(
-                NativeStudyGuide.label(progress.studyLanguage,
+                if (loading)
+                    NativeStudyGuide.label(progress.studyLanguage,
+                        "Բեռնվում են գրքի հարցերը…",
+                        "Loading book questions…",
+                        "Загружаются задания…")
+                else NativeStudyGuide.label(progress.studyLanguage,
                     "Ամբողջ հասանելի հարցաշարը · ${exercises.size} առաջադրանք",
                     "All available source questions · ${exercises.size} exercises",
                     "Все доступные задания · ${exercises.size}"),
