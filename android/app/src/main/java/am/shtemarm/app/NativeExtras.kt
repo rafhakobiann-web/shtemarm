@@ -32,9 +32,10 @@ fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart
     var pool by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
+    var retryKey by rememberSaveable { mutableIntStateOf(0) }
     var count by rememberSaveable { mutableIntStateOf(20) }
     var showEnglishLevels by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(selected) {
+    LaunchedEffect(selected, retryKey) {
         isLoading = true
         error = ""
         pool = emptyList()
@@ -91,15 +92,25 @@ fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart
         item {
             Text("Ընտրիր առարկան", fontWeight = FontWeight.SemiBold)
         }
-        items(BookCatalog.subjects) { s ->
-            FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+        item {
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                BookCatalog.subjects.forEach { s ->
+                    FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+                }
+            }
         }
         item {
             HorizontalDivider()
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth())
             else {
                 Text("Հասանելի հարցեր՝ " + pool.size, fontWeight = FontWeight.SemiBold)
-                if (error.isNotBlank()) Text(error, color = MaterialTheme.colorScheme.error)
+                if (error.isNotBlank()) {
+                    Text(error, color = MaterialTheme.colorScheme.error)
+                    TextButton(onClick = { retryKey++ }) {
+                        Text(NativeStudyGuide.label(language, "Կրկին փորձել", "Try again", "Повторить"))
+                    }
+                }
             }
         }
         item { Text("Հարցերի քանակը", fontWeight = FontWeight.SemiBold) }
