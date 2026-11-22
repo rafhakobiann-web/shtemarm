@@ -114,6 +114,7 @@ fun AcademyLogo() {
     }
 }
 
+
 @Composable
 fun AcademyTopBar(
     points: Int,
@@ -123,79 +124,48 @@ fun AcademyTopBar(
     onSettings: () -> Unit
 ) {
     var menuOpen by remember { mutableStateOf(false) }
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
-        backdropBlur = true
-    ) {
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
         Row(
-            Modifier.fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .height(69.dp)
-                .padding(horizontal = 14.dp),
+            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars)
+                .height(60.dp).padding(horizontal = 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(Modifier.weight(1f).clickable(onClick = onHome), verticalAlignment = Alignment.CenterVertically) {
                 AcademyLogo()
-                Spacer(Modifier.width(9.dp))
-                Text("Shtemarm", fontFamily = StudyReadingFont,
-                    fontWeight = FontWeight.SemiBold, fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSurface)
-                Spacer(Modifier.width(6.dp))
-                Box(
-                    Modifier.clip(RoundedCornerShape(6.dp))
-                        .background(AcademyGold.copy(alpha = 0.18f))
-                        .border(1.dp, AcademyGold.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
-                        .padding(horizontal = 5.dp, vertical = 3.dp)
-                ) {
-                    Text("BETA", color = Color(0xFF9C6D20), fontWeight = FontWeight.Black, fontSize = 9.sp)
-                }
+                Spacer(Modifier.width(10.dp))
+                Text("Շտեմարմ", fontFamily = StudyReadingFont, fontWeight = FontWeight.Bold,
+                    fontSize = 21.sp, color = MaterialTheme.colorScheme.onSurface)
             }
-            TextButton(onClick = onProgress) {
-                Icon(Icons.Default.Star, null, tint = Color(0xFFC39A39), modifier = Modifier.size(17.dp))
-                Spacer(Modifier.width(3.dp))
-                Text(points.toString(), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+            TextButton(onClick = onProgress, contentPadding = PaddingValues(horizontal = 8.dp)) {
+                Icon(Icons.Default.Star, null, tint = Color(0xFFAF7431), modifier = Modifier.size(17.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(points.toString(), color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold)
             }
             Box {
-                IconButton(
-                    onClick = { menuOpen = true },
-                    modifier = Modifier.clip(RoundedCornerShape(13.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                ) {
-                    Icon(Icons.Default.Menu, contentDescription = "Բացել ընտրացանկը")
+                IconButton(onClick = { menuOpen = true }) {
+                    Icon(Icons.Default.Menu, contentDescription = "Բացել ընտրացանկը",
+                        tint = MaterialTheme.colorScheme.onSurface)
                 }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                    DropdownMenuItem(
-                        text = { Text("Գլխավոր") },
-                        leadingIcon = { Icon(Icons.Default.Home, null) },
-                        onClick = { menuOpen = false; onHome() }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Իմ առաջընթացը") },
-                        leadingIcon = { Icon(Icons.Default.Star, null) },
-                        onClick = { menuOpen = false; onProgress() }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Պահպանված հարցեր") },
-                        leadingIcon = { Icon(Icons.Default.Book, null) },
-                        onClick = { menuOpen = false; onSaved() }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Կարգավորումներ") },
-                        leadingIcon = { Icon(Icons.Default.Settings, null) },
-                        onClick = { menuOpen = false; onSettings() }
-                    )
+                    DropdownMenuItem(text = { Text("Գլխավոր") }, leadingIcon = { Icon(Icons.Default.Home, null) },
+                        onClick = { menuOpen = false; onHome() })
+                    DropdownMenuItem(text = { Text("Իմ առաջընթացը") }, leadingIcon = { Icon(Icons.Default.Star, null) },
+                        onClick = { menuOpen = false; onProgress() })
+                    DropdownMenuItem(text = { Text("Պահպանված հարցեր") }, leadingIcon = { Icon(Icons.Default.Book, null) },
+                        onClick = { menuOpen = false; onSaved() })
+                    DropdownMenuItem(text = { Text("Կարգավորումներ") }, leadingIcon = { Icon(Icons.Default.Settings, null) },
+                        onClick = { menuOpen = false; onSettings() })
                 }
             }
         }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .65f))
     }
 }
 
+
 @Composable
 fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
-    val liquid = LocalAcademySurface.current == "liquid"
-    // Fluid spring motion is part of Liquid Glass itself, not Ultra-only.
-    val fluidMotion = liquid
     val tabs = listOf(
         Triple("Գլխավոր", Icons.Default.Home, 0),
         Triple("Գրքեր", Icons.Default.Book, 1),
@@ -203,171 +173,68 @@ fun AcademyFloatingDock(selected: Int, onSelect: (Int) -> Unit) {
         Triple("Խաղեր", Icons.Default.SportsEsports, 3),
         Triple("Գործիքներ", Icons.Default.Build, 4)
     )
-    Box(
-        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(start = 12.dp, end = 12.dp, bottom = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        AcademyGlassPanel(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(29.dp),
-            backdropBlur = true
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f))
+        Row(
+            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars)
+                .height(66.dp).padding(horizontal = 3.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            BoxWithConstraints(Modifier.fillMaxWidth().padding(6.dp)) {
-                val tabWidth = maxWidth / 5
-                val selectedTab = selected.coerceIn(0, 4)
-                val animatedOffset by animateDpAsState(
-                    targetValue = tabWidth * selectedTab,
-                    animationSpec = spring(
-                        dampingRatio = if (fluidMotion) Spring.DampingRatioMediumBouncy
-                            else Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    ),
-                    label = "Shtemarm dock selection"
-                )
-                val activeShape = RoundedCornerShape(21.dp)
-                val highlight = MaterialTheme.colorScheme.primary
-                Box(
-                    Modifier.offset(x = animatedOffset).width(tabWidth).height(60.dp)
-                        .clip(activeShape)
-                        .background(
-                            if (liquid) Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = if (fluidMotion) 0.62f else 0.47f),
-                                    highlight.copy(alpha = if (fluidMotion) 0.29f else 0.21f),
-                                    highlight.copy(alpha = 0.10f)
-                                )
-                            ) else Brush.verticalGradient(
-                                listOf(highlight.copy(alpha = 0.13f), highlight.copy(alpha = 0.13f))
-                            )
-                        )
-                        .border(
-                            1.dp,
-                            if (liquid) Color.White.copy(alpha = 0.72f)
-                            else highlight.copy(alpha = 0.15f),
-                            activeShape
-                        )
-                )
-                Row(Modifier.fillMaxWidth()) {
-                    tabs.forEach { (label, icon, id) ->
-                        val active = selectedTab == id
-                        val iconScale by animateFloatAsState(
-                            targetValue = if (active && fluidMotion) 1.10f else 1.0f,
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            ),
-                            label = "Liquid dock icon response"
-                        )
-                        Column(
-                            modifier = Modifier.weight(1f).clip(activeShape)
-                                .selectable(selected = active, role = Role.Tab, onClick = { onSelect(id) })
-                                .height(60.dp)
-                                .padding(top = 7.dp, bottom = 5.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Icon(icon, contentDescription = null,
-                                tint = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(23.dp).graphicsLayer {
-                                    scaleX = iconScale
-                                    scaleY = iconScale
-                                })
-                            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp,
-                                fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Medium,
-                                color = if (active) highlight else MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
+            tabs.forEach { (label, icon, id) ->
+                val active = selected.coerceIn(0, 4) == id
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxHeight()
+                        .selectable(selected = active, role = Role.Tab, onClick = { onSelect(id) })
+                        .padding(top = 5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    Icon(icon, contentDescription = null,
+                        tint = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(22.dp))
+                    Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 10.sp,
+                        fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
+                        color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                    Box(Modifier.width(18.dp).height(2.dp).clip(RoundedCornerShape(2.dp))
+                        .background(if (active) MaterialTheme.colorScheme.primary else Color.Transparent))
                 }
             }
         }
     }
 }
 
+
 @Composable
 fun AcademyHero(onSubjects: () -> Unit, onExams: () -> Unit) {
     val palette = MaterialTheme.colorScheme
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(31.dp),
-        backdropBlur = true
-    ) {
-        Column(
-            Modifier.fillMaxWidth().padding(horizontal = 23.dp, vertical = 26.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
-        ) {
-            Row(
-                Modifier.clip(RoundedCornerShape(50))
-                    .background(palette.primary.copy(alpha = .11f))
-                    .border(1.dp, palette.primary.copy(alpha = .25f), RoundedCornerShape(50))
-                    .padding(horizontal = 13.dp, vertical = 7.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Default.School, null, tint = palette.primary,
-                    modifier = Modifier.size(15.dp))
-                Spacer(Modifier.width(7.dp))
-                Text("SHTEMARM · ACADEMY", color = palette.primary,
-                    fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = .9.sp)
-            }
-            Text(
-                "Սովորիր վստահ։\nՊատրաստվիր խելացի։",
-                color = palette.onSurface,
-                fontFamily = StudyReadingFont,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 29.sp,
-                lineHeight = 40.sp
-            )
-            Text(
-                "Քո շտեմարանները, վարժությունները և փորձնական քննությունները՝ միասնական ուսումնական տարածքում։",
-                color = palette.onSurfaceVariant, fontSize = 14.sp, lineHeight = 23.sp
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Button(
-                    onClick = onSubjects,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 51.dp),
-                    shape = RoundedCornerShape(19.dp)
-                ) {
-                    Icon(Icons.Default.Book, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(9.dp))
-                    Text("Բացել շտեմարանները", fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.weight(1f))
-                    Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
-                }
-                OutlinedButton(
-                    onClick = onExams,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
-                    shape = RoundedCornerShape(19.dp),
-                    border = BorderStroke(1.dp, palette.outline.copy(alpha = .68f))
-                ) {
-                    Icon(Icons.Default.CheckCircle, null, tint = palette.primary,
-                        modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(9.dp))
-                    Text("Փորձնական քննություն", color = palette.onSurface,
-                        fontWeight = FontWeight.SemiBold)
-                }
-            }
-            HorizontalDivider(color = palette.outline.copy(alpha = .48f))
-            Text("ՔՈ ՈՒՍՈՒՄՆԱԿԱՆ ՈՒՂԻՆ", color = palette.primary,
-                fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
-            listOf(
-                "01" to ("Ընտրիր առարկան" to "Գտիր անհրաժեշտ շտեմարանը"),
-                "02" to ("Սովորիր թեմաներով" to "Վարժություններ և բացատրություններ"),
-                "03" to ("Ստուգիր գիտելիքներդ" to "Փորձնական քննություններ")
-            ).forEach { (number, line) ->
-                Row(verticalAlignment = Alignment.Top) {
-                    Text(number, color = palette.primary,
-                        fontFamily = StudyReadingFont, fontSize = 17.sp,
-                        modifier = Modifier.width(43.dp))
-                    Column {
-                        Text(line.first, color = palette.onSurface,
-                            fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                        Text(line.second, color = palette.onSurfaceVariant, fontSize = 12.sp)
-                    }
-                }
-            }
+    Column(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 8.dp)) {
+        Text("ՔՈ ՔՆՆՈՒԹՅՈՒՆԸ։ ՔՈ ՏԵՄՊԸ։", color = palette.primary,
+            fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
+        Spacer(Modifier.height(12.dp))
+        Text("Սովորիր վստահ։\\nՔայլ առ քայլ։", color = palette.onSurface,
+            fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
+            fontSize = 31.sp, lineHeight = 39.sp)
+        Spacer(Modifier.height(9.dp))
+        Text("Բացիր քո շտեմարանը, լուծիր հարցերը և տես՝ ինչն արդեն լավ գիտես։",
+            color = palette.onSurfaceVariant, fontSize = 14.sp, lineHeight = 22.sp)
+        Spacer(Modifier.height(18.dp))
+        Button(onClick = onSubjects, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+            shape = RoundedCornerShape(12.dp), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)) {
+            Icon(Icons.Default.Book, null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(9.dp))
+            Text("Ընտրել առարկան", fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.weight(1f))
+            Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
+        }
+        TextButton(onClick = onExams, modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 10.dp)) {
+            Icon(Icons.Default.CheckCircle, null, tint = palette.primary, modifier = Modifier.size(17.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Սկսել փորձնական քննություն", color = palette.onSurface, fontWeight = FontWeight.Medium)
         }
     }
 }
+
 
 @Composable
 fun AcademyQuickAction(
@@ -376,40 +243,33 @@ fun AcademyQuickAction(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(19.dp)
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            Modifier.fillMaxWidth().heightIn(min = 69.dp).padding(horizontal = 14.dp, vertical = 11.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(Modifier.size(45.dp).clip(RoundedCornerShape(13.dp))
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(23.dp))
-            }
-            Spacer(Modifier.width(13.dp))
-            Column(Modifier.weight(1f)) {
-                Text(title, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
-            }
-            Icon(Icons.Default.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(18.dp))
+        Box(Modifier.size(42.dp).clip(RoundedCornerShape(11.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = .09f)),
+            contentAlignment = Alignment.Center) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(21.dp))
         }
+        Spacer(Modifier.width(13.dp))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface)
+            Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
+        Icon(Icons.Default.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(18.dp))
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f))
 }
+
 
 @Composable
 fun AcademySectionTitle(title: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.width(5.dp).height(27.dp).clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.primary))
-        Spacer(Modifier.width(11.dp))
-        Text(title, fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
-            fontSize = 24.sp, lineHeight = 36.sp,
-            color = MaterialTheme.colorScheme.onSurface)
-    }
+    Text(title, fontFamily = StudyReadingFont, fontWeight = FontWeight.SemiBold,
+        fontSize = 23.sp, lineHeight = 31.sp, color = MaterialTheme.colorScheme.onSurface)
 }
 
 @Composable
@@ -435,6 +295,20 @@ fun AcademyStatCard(label: String, value: String, caption: String, icon: ImageVe
     }
 }
 
+
+private fun academySubjectColor(subject: String): Color = when (subject) {
+    "Մաթեմատիկա" -> Color(0xFF355C8A)
+    "Անգլերեն" -> Color(0xFF496C8C)
+    "Կենսաբանություն" -> Color(0xFF517652)
+    "Հայոց պատմություն" -> Color(0xFFB85C3C)
+    "Հայոց լեզու" -> Color(0xFF72516D)
+    "Ֆիզիկա" -> Color(0xFF47737A)
+    "Քիմիա" -> Color(0xFFAF7431)
+    "Աշխարհագրություն" -> Color(0xFF4F725D)
+    "Ռուսերեն" -> Color(0xFF9B5550)
+    else -> AcademyTeal
+}
+
 @Composable
 fun AcademySubjectAccordion(
     subject: String,
@@ -444,111 +318,96 @@ fun AcademySubjectAccordion(
     onOpenBook: (StudyBook) -> Unit
 ) {
     var expanded by rememberSaveable(subject) { mutableStateOf(initiallyExpanded) }
+    val accent = academySubjectColor(subject)
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
-        animationSpec = tween(durationMillis = 260),
+        animationSpec = tween(durationMillis = 180),
         label = "accordion chevron"
     )
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(23.dp)
-    ) {
-        Column {
-            Row(
-                Modifier.fillMaxWidth().clickable { expanded = !expanded }
-                    .padding(horizontal = 15.dp, vertical = 18.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(Modifier.size(38.dp).clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.09f)),
-                    contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Book, null, tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(21.dp))
-                }
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(subject, fontWeight = FontWeight.Black, fontSize = 17.sp)
-                    Text(books.size.toString() + " հավաքածու",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
-                }
-                Icon(
-                    Icons.Default.KeyboardArrowDown, null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp).graphicsLayer { rotationZ = chevronRotation }
-                )
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth().clickable { expanded = !expanded }
+                .padding(vertical = 15.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(Modifier.width(4.dp).height(42.dp).clip(RoundedCornerShape(3.dp)).background(accent))
+            Spacer(Modifier.width(13.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text(subject, fontWeight = FontWeight.SemiBold, fontSize = 17.sp,
+                    color = MaterialTheme.colorScheme.onSurface)
+                Text(books.size.toString() + " գիրք", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
-            AnimatedVisibility(
-                visible = expanded,
-                enter = expandVertically(animationSpec = tween(durationMillis = 260)) +
-                    fadeIn(animationSpec = tween(durationMillis = 220)),
-                exit = shrinkVertically(animationSpec = tween(durationMillis = 200)) +
-                    fadeOut(animationSpec = tween(durationMillis = 160))
-            ) {
-                Column {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .65f))
-                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
-                        books.forEach { book ->
-                            AcademyBookTile(book) { onOpenBook(book) }
+            Icon(Icons.Default.KeyboardArrowDown, null, tint = accent,
+                modifier = Modifier.size(25.dp).graphicsLayer { rotationZ = chevronRotation })
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(animationSpec = tween(durationMillis = 180)) + fadeIn(animationSpec = tween(140)),
+            exit = shrinkVertically(animationSpec = tween(durationMillis = 150)) + fadeOut(animationSpec = tween(120))
+        ) {
+            Column(Modifier.padding(start = 17.dp, bottom = 7.dp)) {
+                books.forEach { book ->
+                    Row(Modifier.fillMaxWidth().clickable { onOpenBook(book) }.padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.width(2.dp).height(34.dp).background(accent.copy(alpha = .5f)))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(book.title, fontWeight = FontWeight.Medium, fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface)
+                            Text("Բացել գիրքը", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                         }
-                        TextButton(onClick = onOpenSubject, modifier = Modifier.fillMaxWidth()) {
-                            Text("Տեսնել " + subject + " առարկայի գրքերը")
-                            Spacer(Modifier.width(6.dp))
-                            Icon(Icons.Default.ArrowForward, null, modifier = Modifier.size(17.dp))
-                        }
+                        Icon(Icons.Default.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp))
                     }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .45f))
+                }
+                TextButton(onClick = onOpenSubject, contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
+                    Text("Բոլոր գրքերը", color = accent, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.width(5.dp))
+                    Icon(Icons.Default.ArrowForward, null, tint = accent, modifier = Modifier.size(16.dp))
                 }
             }
         }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f))
     }
 }
+
 
 @Composable
 fun AcademyBookTile(book: StudyBook, onClick: () -> Unit) {
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp)
-    ) {
-        Row(Modifier.fillMaxWidth().padding(11.dp), verticalAlignment = Alignment.CenterVertically) {
-            AcademyMiniCover(book.subject, book.title)
-            Spacer(Modifier.width(13.dp))
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                Text(book.title, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
-                Text(book.subject, fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("Բացել շտեմարանը →", fontWeight = FontWeight.Bold, fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.primary)
-            }
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        AcademyMiniCover(book.subject, book.title)
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+            Text(book.title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface)
+            Text(book.subject, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Բացել շտեմարանը →", fontWeight = FontWeight.Medium, fontSize = 12.sp,
+                color = academySubjectColor(book.subject))
         }
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f))
 }
+
 
 @Composable
 fun AcademyMiniCover(subject: String, title: String) {
-    val colors = when (subject) {
-        "Մաթեմատիկա" -> listOf(Color(0xFF071A52), Color(0xFF2459D9), Color(0xFF55D9E8))
-        "Անգլերեն" -> listOf(Color(0xFF14265F), Color(0xFF3869E8), Color(0xFF7DD3FC))
-        "Կենսաբանություն" -> listOf(Color(0xFF073A35), Color(0xFF10785A), Color(0xFF28A16A))
-        "Հայոց պատմություն" -> listOf(Color(0xFF7F1D1D), Color(0xFFC2410C), Color(0xFFFBBF24))
-        "Հայոց լեզու" -> listOf(Color(0xFF1B263A), Color(0xFF303B78), Color(0xFF505EB1))
-        "Ֆիզիկա" -> listOf(Color(0xFF071F36), Color(0xFF136E9C), Color(0xFF27BBCE))
-        else -> listOf(Color(0xFF153039), Color(0xFF147C70))
-    }
+    val accent = academySubjectColor(subject)
     Column(
-        Modifier.width(81.dp).height(111.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(Brush.linearGradient(colors))
-            .padding(9.dp),
+        Modifier.width(68.dp).height(91.dp).clip(RoundedCornerShape(4.dp))
+            .background(accent).padding(start = 9.dp, top = 8.dp, end = 7.dp, bottom = 7.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("SHTEMARM", fontSize = 8.sp, fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFFE4F7F0), letterSpacing = .3.sp)
+        Text("ՇՏԵՄԱՐՄ", fontSize = 7.sp, fontWeight = FontWeight.Bold,
+            color = Color.White.copy(alpha = .84f), letterSpacing = .35.sp)
         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Icon(Icons.Default.School, null, tint = Color.White, modifier = Modifier.size(23.dp))
-            Text(subject, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Black,
-                maxLines = 3, lineHeight = 12.sp)
+            Box(Modifier.width(17.dp).height(2.dp).background(Color.White.copy(alpha = .65f)))
+            Text(subject, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold,
+                maxLines = 3, lineHeight = 12.sp, overflow = TextOverflow.Ellipsis)
         }
-        Box(Modifier.fillMaxWidth().height(3.dp).clip(RoundedCornerShape(3.dp))
-            .background(Color.White.copy(alpha = .55f)))
+        Text(title, color = Color.White.copy(alpha = .82f), fontSize = 7.sp, maxLines = 2,
+            lineHeight = 8.sp, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -752,6 +611,7 @@ private fun AcademyToggle(title: String, value: Boolean, onChange: (Boolean) -> 
     }
 }
 
+
 @Composable
 fun AcademyBookSectionCard(
     index: Int,
@@ -764,55 +624,35 @@ fun AcademyBookSectionCard(
     onClassic: () -> Unit,
     onTest: () -> Unit
 ) {
-    AcademyGlassPanel(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(21.dp)
-    ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(13.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier.size(44.dp).clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(index.toString(), color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Black, fontSize = 20.sp)
+    val palette = MaterialTheme.colorScheme
+    Column(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 15.dp), verticalAlignment = Alignment.Top) {
+            Text(index.toString().padStart(2, '0'), color = palette.primary,
+                fontFamily = StudyReadingFont, fontSize = 20.sp, fontWeight = FontWeight.Medium,
+                modifier = Modifier.width(42.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text(title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = palette.onSurface)
+                Text(count.toString() + " հարց", color = palette.onSurfaceVariant, fontSize = 12.sp)
+                if (attempts > 0 && answered > 0) {
+                    val accuracy = (correct * 100 / answered).coerceIn(0, 100)
+                    Text("Վարժանքներ՝ $attempts · Ճշտություն՝ $accuracy%",
+                        color = palette.primary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
                 }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Text(count.toString() + " հասանելի հարց",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
-                    if (attempts > 0 && answered > 0) {
-                        val accuracy = (correct * 100 / answered).coerceIn(0, 100)
-                        Spacer(Modifier.height(4.dp))
-                        Text("Վարժանքներ՝ $attempts · Ճշտություն՝ $accuracy%",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                Button(
-                    onClick = onPlay,
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Խաղալ", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-                OutlinedButton(
-                    onClick = onClassic,
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Դասական", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-                FilledTonalButton(
-                    onClick = onTest,
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 3.dp, vertical = 10.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Թեստ", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
             }
         }
+        Row(Modifier.fillMaxWidth().padding(start = 42.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+            Button(onClick = onPlay, modifier = Modifier.weight(1f).heightIn(min = 42.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(9.dp)) { Text("Խաղալ", fontSize = 11.sp) }
+            OutlinedButton(onClick = onClassic, modifier = Modifier.weight(1f).heightIn(min = 42.dp),
+                contentPadding = PaddingValues(horizontal = 3.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(9.dp)) { Text("Դասական", fontSize = 11.sp) }
+            OutlinedButton(onClick = onTest, modifier = Modifier.weight(1f).heightIn(min = 42.dp),
+                contentPadding = PaddingValues(horizontal = 3.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(9.dp)) { Text("Թեստ", fontSize = 11.sp) }
+        }
+        HorizontalDivider(color = palette.outlineVariant.copy(alpha = .7f))
     }
 }
+
