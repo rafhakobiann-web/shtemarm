@@ -54,20 +54,20 @@ import androidx.compose.ui.unit.sp
 
 // The colors and dimensions below are ported from src/styles.css, src/routes/index.tsx,
 // AppHeader.tsx, and MobileNav.tsx. These are native Compose elements, NOT a WebView.
-val AcademyTeal = Color(0xFF0B766B)
-val AcademyInk = Color(0xFF20353B)
-val AcademyPaper = Color(0xFFF9FBF5)
-val AcademyGold = Color(0xFFE3B95F)
-private val AcademyLine = Color(0xFFDDE7DF)
+val AcademyTeal = Color(0xFF205B4D)
+val AcademyInk = Color(0xFF202822)
+val AcademyPaper = Color(0xFFF6F3EA)
+val AcademyGold = Color(0xFFB85C3C)
+private val AcademyLine = Color(0xFFDAD7CC)
 
 val LocalAcademySurface = compositionLocalOf { "soft" }
 
 fun academyAccent(id: String): Color = when (id) {
-    "blue" -> Color(0xFF4263EB)
-    "violet" -> Color(0xFF7C3AED)
-    "emerald" -> Color(0xFF059669)
-    "rose" -> Color(0xFFE11D48)
-    "amber" -> Color(0xFFB7791F)
+    "blue" -> Color(0xFF355C8A)
+    "violet" -> Color(0xFF72516D)
+    "emerald" -> Color(0xFF517652)
+    "rose" -> Color(0xFFB65350)
+    "amber" -> Color(0xFFAF7431)
     else -> AcademyTeal
 }
 
@@ -76,23 +76,24 @@ fun academyColors(dark: Boolean, accent: Color, style: String): ColorScheme =
     if (dark) darkColorScheme(
         primary = if (accent == AcademyTeal) Color(0xFF1CB4A1) else accent,
         onPrimary = Color(0xFF092B27),
-        primaryContainer = Color(0xFF204E4B),
-        background = Color(0xFF19292F),
-        surface = Color(0xFF23353B),
-        surfaceContainerHigh = Color(0xFF2C4146),
-        onSurface = Color(0xFFF1F7F2),
-        onSurfaceVariant = Color(0xFFC2D3D1),
-        outline = Color(0xFF5A7575)
+        primaryContainer = Color(0xFF29463D),
+        background = Color(0xFF171D19),
+        surface = Color(0xFF222A24),
+        surfaceContainerHigh = Color(0xFF2B342D),
+        onSurface = Color(0xFFF1EEE5),
+        onSurfaceVariant = Color(0xFFB8B7AA),
+        outline = Color(0xFF4D574F)
     ) else lightColorScheme(
         primary = accent,
         onPrimary = Color.White,
-        primaryContainer = Color(0xFFD9F2E9),
+        primaryContainer = Color(0xFFE2ECE1),
         onPrimaryContainer = AcademyInk,
-        background = if (style == "classic") Color(0xFFFFFFFF) else AcademyPaper,
-        surface = if (style == "liquid") Color(0xFFFCFFFA) else Color(0xFFFFFEFB),
-        surfaceContainerHigh = Color(0xFFF0F5F1),
+        secondary = AcademyGold,
+        background = if (style == "classic") Color(0xFFFAF9F5) else AcademyPaper,
+        surface = Color(0xFFFFFEFA),
+        surfaceContainerHigh = Color(0xFFEEEAE0),
         onSurface = AcademyInk,
-        onSurfaceVariant = Color(0xFF617471),
+        onSurfaceVariant = Color(0xFF6D7066),
         outline = AcademyLine
     )
 
