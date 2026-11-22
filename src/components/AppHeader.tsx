@@ -73,7 +73,7 @@ export function AppHeader() {
   const examActive = route === "/explore" && location.hash?.replace(/^#/, "") === "exams";
   const exploreActive = route === "/explore" && !examActive;
   const profileActive = route === "/profile";
-  const studyFocus = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(route) || route === "/math/play";
+  const studyFocus = /^\/(?:study|test|exam|level-test|history|biology|physics)(?:[/.]|$)/.test(route) || route === "/math/play";
   const current = (yes:boolean) => yes ? "bg-primary/10 text-primary" : "";
 
   return (

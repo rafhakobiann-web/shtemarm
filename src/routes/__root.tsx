@@ -262,7 +262,7 @@ function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   const location=useLocation();
   const publicView=location.pathname==="/";
-  const practiceView=/^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname==="/math/play";
+  const practiceView=/^\/(?:study|test|exam|level-test|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname==="/math/play";
   useEffect(() => {
     return initAppearance();
   }, []);

@@ -42,7 +42,7 @@ export function MobileNav() {
   const lang = useLang();
   const { pathname, hash } = useLocation();
   const selected = getMobileNavIndex(pathname, typeof hash === "string" ? hash : "");
-  const studyFocus = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(pathname) || pathname === "/math/play";
+  const studyFocus = /^\/(?:study|test|exam|level-test|history|biology|physics)(?:[/.]|$)/.test(pathname) || pathname === "/math/play";
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   useEffect(() => {
