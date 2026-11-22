@@ -13,7 +13,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import liquidGlassCss from "../liquid-glass-2026.css?url";
 import adaptiveDesignCss from "../adaptive-design-2026.css?url";
 import interactionMotionCss from "../interaction-motion-2026.css?url";
 import studyComfortCss from "../study-comfort.css?url";
@@ -26,12 +25,12 @@ import modernWorkspaceCss from "../modern-workspace-2026.css?url";
 import editorialFormsCss from "../editorial-forms-2026.css?url";
 import editorialLearningCss from "../editorial-learning-2026.css?url";
 import solutionsLibraryCss from "../solutions-library.css?url";
+import quietLearningCss from "../quiet-learning-2026.css?url";
 import atlasSelectableCss from "../styles/atlas-selectable.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { RelaunchScreen } from "@/components/RelaunchScreen";
 import { MobileNav } from "@/components/MobileNav";
-import { TouchGlassEffects } from "@/components/TouchGlassEffects";
 import { PersonalizationControls } from "@/components/PersonalizationControls";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase, hasSupabaseConfig, ensureBrowserSupabaseConfig } from "@/integrations/supabase/client";
@@ -140,10 +139,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: liquidGlassCss,
-      },
-      {
-        rel: "stylesheet",
         href: adaptiveDesignCss,
       },
       {
@@ -161,6 +156,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: editorialLearningCss },
       { rel: "stylesheet", href: solutionsLibraryCss },
       { rel: "stylesheet", href: atlasSelectableCss },
+      { rel: "stylesheet", href: quietLearningCss },
       { rel: "icon", href: "/shtemarm-logo.svg", type: "image/svg+xml" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -266,7 +262,7 @@ function ActiveApp() {
   const { queryClient } = Route.useRouteContext();
   const location=useLocation();
   const publicView=location.pathname==="/";
-  const practiceView = /^\/(?:study|test|exam|level-test|subject|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname === "/math/play";
+  const practiceView=/^\/(?:study|test|exam|level-test|history|biology|physics)(?:[/.]|$)/.test(location.pathname) || location.pathname==="/math/play";
   useEffect(() => {
     return initAppearance();
   }, []);
@@ -290,10 +286,9 @@ function ActiveApp() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <TouchGlassEffects />
       {!publicView && <AppHeader />}
-      {!publicView && <PersonalizationControls inline={practiceView} />}
-      <main id="main-content" tabIndex={-1} className="mx-auto box-border w-full min-w-0 max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+      {!publicView && <PersonalizationControls inline />}
+      <main id="main-content" data-study-focus={practiceView ? "true" : undefined} tabIndex={-1} className="mx-auto box-border w-full min-w-0 max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <TranslationProvider><AuthBoundary><Outlet /></AuthBoundary></TranslationProvider>
       </main>
       {!publicView && <MobileNav />}
@@ -301,4 +296,5 @@ function ActiveApp() {
     </QueryClientProvider>
   );
 }
+
 

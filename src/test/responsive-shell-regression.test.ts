@@ -19,24 +19,21 @@ describe("Responsive Shtemarm layout and navigation regressions", () => {
     expect(header).toContain("lg:flex");
   });
 
-  it("does not capture native tab taps before horizontal drag intent", () => {
-    expect(dock).toContain("Only a proven horizontal drag takes pointer ownership");
-    expect(dock).toContain("dx > 12 && dx > dy * 1.2");
-    expect(dock).toContain("dy > 9 && dy > dx");
-    const pointerDown = dock.split("const dockDown = ")[1]!.split("const dockMove = ")[0]!;
-    expect(pointerDown).not.toContain("setPointerCapture");
-    const pointerMove = dock.split("const dockMove = ")[1]!.split("const dockEnd = ")[0]!;
-    expect(pointerMove).toContain("setPointerCapture");
-    expect(css).toContain("touch-action: pan-y");
+  it("keeps mobile navigation simple, stable, and opaque", () => {
+    expect(dock).toContain("MOBILE_TAB_TARGETS");
+    expect(dock).toContain("grid-cols-4");
+    expect(dock).toContain("sht-quiet-mobile-nav");
+    expect(dock).not.toContain("mobile-liquid-dock");
+    expect(dock).toContain("studyFocus");
   });
 
-  it("keeps appearance controls usable in classic, academic and glass themes", () => {
-    expect(css).toContain(".sht-palette-picker > summary");
-    expect(css).toContain(".sht-palette-colors button");
-    expect(css).toContain("data-glass-quality=\"lite\"");
-    expect(css).toContain('data-glass-blur="off"');
-    expect(settings).toContain("sm:grid-cols-4");
-    expect(settings).toContain('(["adaptive", "subtle", "balanced", "vivid"]');
+  it("keeps appearance and accessibility controls without a glass option", () => {
+    const quiet = source("src/quiet-learning-2026.css");
+    expect(settings).toContain('["classic", "soft", "atlas"]');
+    expect(settings).not.toContain('["adaptive", "subtle", "balanced", "vivid"]');
+    expect(settings).toContain("Larger text");
+    expect(settings).toContain("High contrast");
+    expect(quiet).toContain("backdrop-filter: none");
   });
 
   it("provides phone, tablet and desktop layouts with keyboard accessible sign-in", () => {
@@ -46,7 +43,7 @@ describe("Responsive Shtemarm layout and navigation regressions", () => {
     expect(css).toContain("@media (min-width: 1024px)");
     expect(css).toContain("safe-area-inset-bottom");
     expect(landing).toContain('aria-label={ui.signIn} className="sht-nav-login"');
-    expect(dashboard).toContain("sht-dashboard-shortcuts sht-home-action-grid");
+    expect(dashboard).toContain("sht-quiet-shortcuts");
     expect(css).toContain(".sht-dashboard-bento > :first-child");
   });
 
@@ -58,3 +55,4 @@ describe("Responsive Shtemarm layout and navigation regressions", () => {
     expect(landing).toContain("Շտեմարաններ և միասնական քննությունների պատրաստում");
   });
 });
+
