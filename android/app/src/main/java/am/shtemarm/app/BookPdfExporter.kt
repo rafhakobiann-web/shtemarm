@@ -15,7 +15,7 @@ internal object BookPdfExporter {
     private const val MARGIN = 42f
     private const val FOOTER_Y = 812f
 
-    fun write(output: OutputStream, subject: String, title: String, exercises: List<SourceExercise>, includeAnswerKey: Boolean) {
+    fun write(output: OutputStream, subject: String, title: String, exercises: List<SourceExercise>, includeAnswerKey: Boolean, language: String = "hy") {
         val document = PdfDocument()
         var pageNumber = 0
         var page = newPage(document, ++pageNumber)
@@ -60,7 +60,10 @@ internal object BookPdfExporter {
         y += 25f
         canvas.drawText(subject, MARGIN, y, subtitlePaint)
         y += 17f
-        canvas.drawText("${exercises.size} study questions · Created by Shtemarm", MARGIN, y, subtitlePaint)
+        canvas.drawText(localized(language,
+            "${exercises.size} առաջադրանք · Ստեղծված է Shtemarm-ով",
+            "${exercises.size} study items · Created by Shtemarm",
+            "${exercises.size} заданий · Создано в Shtemarm"), MARGIN, y, subtitlePaint)
         y += 25f
 
         exercises.forEachIndexed { index, exercise ->
@@ -72,16 +75,21 @@ internal object BookPdfExporter {
                 drawParagraph("${('A'.code + optionIndex).toChar()}. $option", optionPaint, indent = 12f, gapAfter = 2f)
             }
             if (exercise.visual.isNotBlank()) {
-                drawParagraph("Source includes an image or diagram: ${exercise.visual}", subtitlePaint, gapAfter = 5f)
+                drawParagraph(localized(language,
+                    "Սկզբնաղբյուրում կա պատկեր կամ գծագիր՝ ${exercise.visual}",
+                    "Source includes an image or diagram: ${exercise.visual}",
+                    "В источнике есть изображение или схема: ${exercise.visual}"), subtitlePaint, gapAfter = 5f)
             }
             y += 8f
         }
 
         if (includeAnswerKey) {
             nextPage()
-            drawParagraph("Answer key · ${title}", titlePaint, gapAfter = 18f)
+            drawParagraph(localized(language, "Պատասխանների բանալի · ${title}", "Answer key · ${title}", "Ответы · ${title}"), titlePaint, gapAfter = 18f)
             exercises.forEachIndexed { index, exercise ->
-                val answer = exercise.answer.ifBlank { "No answer listed in the source" }
+                val answer = exercise.answer.ifBlank {
+                    localized(language, "Աղբյուրում պատասխան նշված չէ", "No answer listed in the source", "В источнике нет ответа")
+                }
                 drawParagraph("${index + 1}. ${exercise.heading} — $answer", bodyPaint, gapAfter = 5f)
             }
         }
@@ -92,6 +100,13 @@ internal object BookPdfExporter {
         } finally {
             document.close()
         }
+    }
+
+
+    private fun localized(language: String, hy: String, en: String, ru: String): String = when (language.lowercase()) {
+        "en" -> en
+        "ru" -> ru
+        else -> hy
     }
 
     private fun newPage(document: PdfDocument, number: Int): PdfDocument.Page {
