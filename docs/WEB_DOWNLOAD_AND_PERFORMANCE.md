@@ -19,33 +19,31 @@ The download page offers:
 Do not add a GitHub access token or any server secret to `VITE_*`; these values
 are public in the browser.
 
-## Option: publish a test APK on the website
+## Publish a signed APK on the website
 
-The separate workflow
-[`Publish approved Android beta to Shtemarm website`](../.github/workflows/publish-android-web-download.yml)
-is **manual only** and keeps the GitHub repository private.
+Use the manual workflow
+[`Build and publish signed Shtemarm Android release`](../.github/workflows/android-signed-release.yml)
+from the `main` branch. It defaults to building version **0.4.0 (code 13)**
+as a private Actions artifact. To publish it publicly, enable **Publish to
+website** and confirm both that you have permission to redistribute all
+bundled textbook-derived content and that the replacement is approved.
 
-**Before running it**, confirm you have permission to redistribute all content
-embedded in the APK (including textbook-derived questions), and understand that
-the current beta uses a debug signature that may change between builds.
+The workflow requires the four persistent signing secrets:
+`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+`ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`. For a public update, it
+also checks that the new APK has the exact same signing certificate as the
+currently public APK, the same package name, and a higher version code. It
+stops without changing the website if any check fails.
 
-1. Open GitHub → Shtemarm → Actions → **Publish approved Android beta to Shtemarm website**.
-2. Choose **Run workflow** from `main`.
-3. Review both confirmation checkboxes. Only select them if they are true.
-4. The workflow checks tracked files and Git history for known credential formats,
-   validates bundled question data, compiles the current native Android app, and
-   writes `public/downloads/shtemarm-android.apk` and
-   `public/downloads/android-release.json` to `main`.
-5. Once the website host successfully deploys those files, the download page
-   detects the manifest and enables a same-origin APK download.
+When approved checks pass, the workflow updates
+`public/downloads/shtemarm-android.apk` and
+`public/downloads/android-release.json` on `main`. The website's
+`/download` page reads that manifest and enables its same-origin APK link
+after the site host deploys the files. This does not make the GitHub repository
+public.
 
-The workflow does **not** make the repository public, expose GitHub credentials,
-or create a production-signed Android release. Publishing the APK publicly is
-independent of making GitHub source code visible.
-
-For stable long-term app updates, configure the signed Android release pipeline
-with a dedicated persistent keystore before distributing a production version.
-See [Android beta release](ANDROID_BETA_RELEASE.md).
+Never publish a fresh CI debug-signed APK: its signature can differ between
+builds and prevent Android from updating an existing installation.
 
 ## Scroll improvements
 
