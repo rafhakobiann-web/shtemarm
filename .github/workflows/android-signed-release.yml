@@ -196,7 +196,7 @@ jobs:
             echo "No website APK changes to publish."
             exit 0
           fi
-          git commit -m "release(android): publish signed ${{ inputs.version_name }} download"
+          git commit -m "release(android): publish signed $VERSION_NAME download"
           git push origin HEAD:main
 
       - uses: actions/upload-artifact@v4
