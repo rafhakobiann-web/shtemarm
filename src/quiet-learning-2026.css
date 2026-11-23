@@ -132,3 +132,9 @@ html[data-surface="liquid"] .site-mobile-nav.sht-quiet-mobile-nav {
 @media (prefers-reduced-motion: reduce) {
   .site-mobile-nav.sht-quiet-mobile-nav a { transition: none !important; }
 }
+
+html.dark .sht-home-subject-card[data-subject="math"] { --subject-accent: #93b4dc; }
+html.dark .sht-home-subject-card[data-subject="english"] { --subject-accent: #a2c3df; }
+html.dark .sht-home-subject-card[data-subject="biology"] { --subject-accent: #a1c39e; }
+html.dark .sht-home-subject-card[data-subject="history"] { --subject-accent: #e79a7f; }
+html.dark .sht-home-subject-card[data-subject="armenian"] { --subject-accent: #c7a1c2; }
