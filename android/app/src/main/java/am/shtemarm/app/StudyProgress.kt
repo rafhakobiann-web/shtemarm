@@ -24,6 +24,59 @@ class StudyProgress(context: Context) {
             if (StudyGoals.validTarget(value)) prefs.edit().putInt("daily_question_target", value).apply()
         }
 
+    val onboardingComplete: Boolean
+        get() = prefs.getBoolean("student_setup_complete", false)
+
+    val studentGrade: String
+        get() = prefs.getString("student_grade", "") ?: ""
+
+    val focusSubjects: Set<String>
+        get() = prefs.getStringSet("focus_subjects", BookCatalog.subjects.toSet())
+            .orEmpty().filter { it in BookCatalog.subjects }.toSet()
+
+    val discoverySource: String
+        get() = prefs.getString("discovery_source", "") ?: ""
+
+    val offlineBookAssets: Set<String>
+        get() = prefs.getStringSet("offline_book_assets", emptySet())
+            .orEmpty().filter { asset -> BookCatalog.books.any { it.asset == asset } }.toSet()
+
+    fun setOfflineBookPinned(asset: String, pinned: Boolean) {
+        if (BookCatalog.books.none { it.asset == asset }) return
+        val current = prefs.getStringSet("offline_book_assets", emptySet()).orEmpty().toMutableSet()
+        if (pinned) current.add(asset) else current.remove(asset)
+        prefs.edit().putStringSet("offline_book_assets", current).apply()
+    }
+
+    /** Store student preferences locally; no account or remote tracking is used. */
+    fun saveStudentSetup(
+        language: String,
+        grade: String,
+        subjects: Set<String>,
+        source: String,
+        offlineBooks: Set<String>,
+        dailyTarget: Int
+    ) {
+        val safeLanguage = language.takeIf { it in setOf("hy", "en", "ru") } ?: "hy"
+        val safeGrade = grade.takeIf { it in setOf("9", "10", "11", "12", "other") } ?: "other"
+        val safeSubjects = subjects.filter { it in BookCatalog.subjects }.toSet()
+            .ifEmpty { BookCatalog.subjects.toSet() }
+        val safeSource = source.takeIf {
+            it in setOf("tiktok", "instagram", "youtube", "friend", "teacher", "search", "school", "other", "skip")
+        } ?: "skip"
+        val validAssets = BookCatalog.books.map { it.asset }.toSet()
+        val safeOffline = offlineBooks.filter { it in validAssets }.toSet()
+        prefs.edit()
+            .putBoolean("student_setup_complete", true)
+            .putString("study_language", safeLanguage)
+            .putString("student_grade", safeGrade)
+            .putStringSet("focus_subjects", safeSubjects)
+            .putString("discovery_source", safeSource)
+            .putStringSet("offline_book_assets", safeOffline)
+            .putInt("daily_question_target", dailyTarget.takeIf(StudyGoals::validTarget) ?: 10)
+            .apply()
+    }
+
     fun answeredToday(today: String = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())): Int =
         if (prefs.getString("daily_answered_date", "") == today)
             prefs.getInt("daily_answered_count", 0).coerceAtLeast(0) else 0

@@ -92,6 +92,28 @@ class AndroidBookSmokeTest {
     }
 
     @Test
+    fun bookPdfExportCreatesReadablePaginatedDocumentWithOptionalAnswerKey() {
+        val exercises = (1..60).map { index ->
+            SourceExercise(
+                id = "pdf:$index",
+                heading = "Բաժին 1 · Առաջադրանք $index",
+                kind = "choice",
+                passage = "Սա երկար ընթերցանության հատված է, որը պետք է ճիշտ տեղափոխվի հաջորդ էջ, երբ ավարտվի էջի ազատ տարածքը։ ".repeat(3),
+                prompt = "Հարց $index։ Ո՞ր պատասխանն է ճիշտ։",
+                options = listOf("Առաջին պատասխան", "Երկրորդ պատասխան", "Երրորդ պատասխան", "Չորրորդ պատասխան"),
+                answer = "B",
+                visual = ""
+            )
+        }
+        val output = java.io.ByteArrayOutputStream()
+        BookPdfExporter.write(output, "Հայոց լեզու", "Փորձնական գիրք", exercises, includeAnswerKey = true)
+        val pdf = output.toByteArray().toString(Charsets.ISO_8859_1)
+        assertTrue("PDF header is missing", pdf.startsWith("%PDF-"))
+        assertTrue("PDF should contain multiple pages and answer key", output.size() > 4_000)
+        assertTrue("PDF trailer is missing", pdf.contains("%%EOF"))
+    }
+
+    @Test
     fun bothMathPartsLoadPlayableOfflineQuestions() = runBlocking {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
         val loadedIds = mutableSetOf<String>()

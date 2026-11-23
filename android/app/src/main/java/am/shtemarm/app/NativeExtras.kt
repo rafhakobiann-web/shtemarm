@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,22 +27,28 @@ private val examCounts = mapOf(
 
 /** Sample exams built from existing MCQs. These are NOT official GTC blueprint replicas. */
 @Composable
-fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
-    var selected by remember { mutableStateOf("Անգլերեն") }
+fun NativeExams(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
+    var selected by rememberSaveable { mutableStateOf("Անգլերեն") }
     var pool by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
-    var count by remember { mutableIntStateOf(20) }
-    var showEnglishLevels by remember { mutableStateOf(false) }
-    LaunchedEffect(selected) {
+    var retryKey by rememberSaveable { mutableIntStateOf(0) }
+    var count by rememberSaveable { mutableIntStateOf(20) }
+    var showEnglishLevels by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(selected, retryKey) {
         isLoading = true
         error = ""
         pool = emptyList()
         try {
             pool = repository.practiceForSubject(selected)
             if (pool.isEmpty()) error = "Այս առարկայից դեռ չկան ստուգված բազմընտրանի հարցեր։"
-        } catch (_: Exception) { error = "Հնարավոր չեղավ բացել հարցաշարերը։" }
-        isLoading = false
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            error = "Հնարավոր չեղավ բացել հարցաշարերը։"
+        } finally {
+            isLoading = false
+        }
     }
     if (showEnglishLevels) {
         Column(Modifier.fillMaxSize()) {
@@ -85,15 +92,25 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
         item {
             Text("Ընտրիր առարկան", fontWeight = FontWeight.SemiBold)
         }
-        items(BookCatalog.subjects) { s ->
-            FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+        item {
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                BookCatalog.subjects.forEach { s ->
+                    FilterChip(selected = selected == s, onClick = { selected = s }, label = { Text(s) })
+                }
+            }
         }
         item {
             HorizontalDivider()
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth())
             else {
                 Text("Հասանելի հարցեր՝ " + pool.size, fontWeight = FontWeight.SemiBold)
-                if (error.isNotBlank()) Text(error, color = MaterialTheme.colorScheme.error)
+                if (error.isNotBlank()) {
+                    Text(error, color = MaterialTheme.colorScheme.error)
+                    TextButton(onClick = { retryKey++ }) {
+                        Text(NativeStudyGuide.label(language, "Կրկին փորձել", "Try again", "Повторить"))
+                    }
+                }
             }
         }
         item { Text("Հարցերի քանակը", fontWeight = FontWeight.SemiBold) }
@@ -122,16 +139,17 @@ fun NativeExams(repository: QuestionRepository, onStart: (String, List<StudyQues
 }
 
 @Composable
-fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
+fun NativeGames(repository: QuestionRepository, language: String = "hy", onStart: (String, List<StudyQuestion>, Int, String) -> Unit) {
     var selected by remember { mutableStateOf("Անգլերեն") }
-    var mode by remember { mutableStateOf("quiz") }
-    var gameCount by remember { mutableIntStateOf(20) }
+    var mode by rememberSaveable { mutableStateOf("quiz") }
+    var gameCount by rememberSaveable { mutableIntStateOf(20) }
     var questions by remember { mutableStateOf<List<StudyQuestion>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
     var loadFailed by remember { mutableStateOf(false) }
-    var flipIndex by remember { mutableIntStateOf(0) }
-    var revealed by remember { mutableStateOf(false) }
-    LaunchedEffect(selected) {
+    var retryKey by rememberSaveable { mutableIntStateOf(0) }
+    var flipIndex by rememberSaveable { mutableIntStateOf(0) }
+    var revealed by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(selected, retryKey) {
         loading = true
         loadFailed = false
         questions = emptyList()
@@ -253,7 +271,12 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
                 ) { Text(if (mode == "truth") "Սկսել ճիշտ/սխալ խաղը" else "Սկսել ${gameCount.coerceAtMost(questions.size)} հարցանոց խաղը") }
             }
         } else if (!loading) {
-            item { Text(if (loadFailed) "Հարցաշարի բեռնումը ձախողվեց։ Փորձիր ընտրել առարկան կրկին։" else "Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։") }
+            item {
+                Text(if (loadFailed) "Հարցաշարի բեռնումը ձախողվեց։ Փորձիր կրկին։" else "Այս առարկայի խաղային հարցաշարը դեռ հասանելի չէ։")
+                if (loadFailed) TextButton(onClick = { retryKey++ }) {
+                    Text(NativeStudyGuide.label(language, "Կրկին փորձել", "Try again", "Повторить"))
+                }
+            }
         }
     }
 }
@@ -261,22 +284,33 @@ fun NativeGames(repository: QuestionRepository, onStart: (String, List<StudyQues
 @Composable
 fun NativeTools(
     repository: QuestionRepository,
+    language: String = "hy",
     onStart: (String, List<StudyQuestion>, Int, String) -> Unit
 ) {
-    var tool by remember { mutableStateOf("menu") }
-    var number by remember { mutableStateOf("10") }
-    var subject by remember { mutableStateOf("Անգլերեն") }
+    var tool by rememberSaveable { mutableStateOf("menu") }
+    var number by rememberSaveable { mutableStateOf("10") }
+    var subject by rememberSaveable { mutableStateOf("Անգլերեն") }
     var sections by remember { mutableStateOf<List<StudySection>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
-    var selectedSection by remember { mutableStateOf("Բոլոր բաժինները") }
+    var selectedSection by rememberSaveable { mutableStateOf("Բոլոր բաժինները") }
+    var loadError by remember { mutableStateOf("") }
+    var retryKey by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(subject) {
+    LaunchedEffect(subject, retryKey) {
         loading = true
-        sections = try {
-            repository.sectionsForSubject(subject)
-        } catch (_: Exception) { emptyList() }
-        selectedSection = "Բոլոր բաժինները"
-        loading = false
+        loadError = ""
+        try {
+            sections = repository.sectionsForSubject(subject)
+            selectedSection = "Բոլոր բաժինները"
+            if (sections.isEmpty()) loadError = "Այս առարկայի համար բաժիններ հասանելի չեն։"
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            sections = emptyList()
+            loadError = "Հնարավոր չեղավ բեռնել բաժինները։"
+        } finally {
+            loading = false
+        }
     }
 
     if (tool == "vocab" || tool == "calc") {
@@ -336,7 +370,7 @@ fun NativeTools(
                 }
             }
             item {
-                Text("Սա ուսումնական թեստերի կազմման գործիք է։ Տպելու և PDF արտահանելու հնարավորությունները դեռ հասանելի չեն։",
+                Text("Սա ուսումնական թեստերի կազմման գործիք է։ Գրքի PDF-ը կարող ես ներբեռնել ընթերցման էջից։",
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
             }
         } else {
@@ -376,6 +410,10 @@ fun NativeTools(
                     sections.firstOrNull { it.title == selectedSection }?.questions.orEmpty()
                 } else sections.flatMap { it.questions }
                 if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+                if (loadError.isNotBlank()) {
+                    Text(loadError, color = MaterialTheme.colorScheme.error)
+                    TextButton(onClick = { retryKey++ }) { Text("Կրկին փորձել") }
+                }
                 Text("Հասանելի հարցեր՝ " + pool.size)
                 Button(
                     enabled = !loading && validCount && pool.isNotEmpty(),

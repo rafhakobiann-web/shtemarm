@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
@@ -59,7 +60,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 
 private val BrandTeal = Color(0xFF0B766B)
-private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK }
+private enum class Page { HOME, SUBJECTS, BOOKS, SECTIONS, READER, STUDY, RESULT, PROGRESS, SETTINGS, EXAMS, GAMES, TOOLS, POMODORO, MATH, ADVANCED, SAVED, HANDBOOK, OFFLINE }
 
 class MainActivity : ComponentActivity() {
     override fun onResume() {
@@ -96,6 +97,20 @@ private fun NativeShtemarm() {
     var progressVersion by remember { mutableIntStateOf(0) }
     var studyLanguage by remember { mutableStateOf(progress.studyLanguage) }
     var dailyTarget by remember { mutableIntStateOf(progress.dailyQuestionTarget) }
+    var page by remember { mutableStateOf(Page.HOME) }
+    var forcePersonalization by remember { mutableStateOf(false) }
+    if (forcePersonalization || !progress.onboardingComplete) {
+        MaterialTheme(colorScheme = academyColors(dark, academyAccent(accent), surfaceStyle), typography = ShtemarmTypography) {
+            NativeStudentOnboarding(progress) { language, goal ->
+                studyLanguage = language
+                dailyTarget = goal
+                forcePersonalization = false
+                page = Page.HOME
+                progressVersion++
+            }
+        }
+        return
+    }
     var remindersEnabled by remember { mutableStateOf(StudyReminders.enabled(context)) }
     val requestNotificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -111,7 +126,6 @@ private fun NativeShtemarm() {
     var handbookSubject by remember { mutableStateOf("Անգլերեն") }
     var showExplanation by remember { mutableStateOf(false) }
 
-    var page by remember { mutableStateOf(Page.HOME) }
     var sessionOrigin by remember { mutableStateOf(Page.SECTIONS) }
     var subject by remember { mutableStateOf(BookCatalog.subjects.first()) }
     var book by remember { mutableStateOf<StudyBook?>(null) }
@@ -238,7 +252,7 @@ private fun NativeShtemarm() {
             Page.READER -> Page.SECTIONS
             Page.MATH -> Page.BOOKS
             Page.ADVANCED -> Page.SECTIONS
-            Page.HANDBOOK -> Page.HOME
+            Page.HANDBOOK, Page.OFFLINE -> Page.HOME
             Page.POMODORO -> Page.TOOLS
             Page.BOOKS -> Page.SUBJECTS
             else -> Page.HOME
@@ -388,7 +402,7 @@ private fun NativeShtemarm() {
                 bottomBar = {
                     AcademyFloatingDock(
                         selected = when (page) {
-                            Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED -> 0
+                            Page.HOME, Page.PROGRESS, Page.SETTINGS, Page.SAVED, Page.OFFLINE -> 0
                             Page.SUBJECTS, Page.BOOKS, Page.SECTIONS, Page.READER, Page.MATH, Page.ADVANCED, Page.HANDBOOK -> 1
                             Page.EXAMS -> 2
                             Page.GAMES -> 3
@@ -430,6 +444,21 @@ private fun NativeShtemarm() {
                     label = "native screen transition"
                 ) { screen ->
                 when (screen) {
+                    Page.OFFLINE -> Box(Modifier.fillMaxSize().padding(padding)) {
+                        NativeOfflineLibrary(
+                            selectedAssets = progress.offlineBookAssets,
+                            language = studyLanguage,
+                            onToggle = { asset, pinned ->
+                                progress.setOfflineBookPinned(asset, pinned)
+                                progressVersion++
+                            },
+                            onOpen = { selectedBook ->
+                                subject = selectedBook.subject
+                                book = selectedBook
+                                page = if (selectedBook.subject == "Մաթեմատիկա") Page.MATH else Page.READER
+                            }
+                        )
+                    }
                     Page.HANDBOOK -> Box(Modifier.fillMaxSize().padding(padding)) {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -493,11 +522,11 @@ private fun NativeShtemarm() {
                             begin(pool, count, name)
                         }
                     }
-                    Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository) { selectedSubject, pool, count, name ->
+                    Page.EXAMS -> Box(Modifier.fillMaxSize().padding(padding)) { NativeExams(repository, studyLanguage) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
-                    Page.GAMES -> Box(Modifier.fillMaxSize().padding(padding)) { NativeGames(repository) { selectedSubject, pool, count, name ->
+                    Page.GAMES -> Box(Modifier.fillMaxSize().padding(padding)) { NativeGames(repository, studyLanguage) { selectedSubject, pool, count, name ->
                         subject = selectedSubject
                         begin(pool, count, name)
                     } }
@@ -506,7 +535,7 @@ private fun NativeShtemarm() {
                             onClick = { page = Page.POMODORO },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
                         ) { Text(NativeStudyGuide.label(studyLanguage, "Ուսման ժամանակաչափ", "Study timer", "Таймер занятий")) }
-                        Box(Modifier.weight(1f)) { NativeTools(repository) { selectedSubject, pool, count, name ->
+                        Box(Modifier.weight(1f)) { NativeTools(repository, studyLanguage) { selectedSubject, pool, count, name ->
                             subject = selectedSubject
                             begin(pool, count, name)
                         } }
@@ -527,27 +556,61 @@ private fun NativeShtemarm() {
                         ) {
                             item { Spacer(Modifier.height(3.dp)) }
                             item { AcademyHero(onSubjects = { page = Page.SUBJECTS }, onExams = { page = Page.EXAMS }) }
+                            if (progress.studentGrade.isNotBlank()) item {
+                                val gradeLabel = when (progress.studentGrade) {
+                                    "other" -> NativeStudyGuide.label(studyLanguage, "Անհատական ծրագիր", "Self-study plan", "Самостоятельная подготовка")
+                                    else -> NativeStudyGuide.label(studyLanguage,
+                                        "${progress.studentGrade}-րդ դասարան", "Grade ${progress.studentGrade}", "${progress.studentGrade} класс")
+                                }
+                                Text(
+                                    NativeStudyGuide.label(studyLanguage,
+                                        "Անհատականացված է քեզ համար · $gradeLabel",
+                                        "Personalized for you · $gradeLabel",
+                                        "Подобрано для тебя · $gradeLabel"),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                            }
+                            item {
+                                val pinnedCount = progressVersion.let { progress.offlineBookAssets.size }
+                                AcademyQuickAction(
+                                    Icons.Default.Book,
+                                    NativeStudyGuide.label(studyLanguage, "Իմ անցանց դարակը", "My offline shelf", "Моя офлайн-полка"),
+                                    NativeStudyGuide.label(studyLanguage,
+                                        "$pinnedCount պահված գիրք · հասանելի է առանց ինտերնետի",
+                                        "$pinnedCount pinned books · available offline",
+                                        "$pinnedCount книг · доступны офлайн")
+                                ) { page = Page.OFFLINE }
+                            }
                             item {
                                 val today = progressVersion.let { progress.answeredToday() }
-                                ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-                                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                val remaining = StudyGoals.remaining(dailyTarget, today)
+                                Column(
+                                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                         Text(NativeStudyGuide.label(studyLanguage,
-                                            "Օրվա ուսումնական նպատակը", "Today's study goal", "Цель на сегодня"),
-                                            fontWeight = FontWeight.Bold)
-                                        Text("$today / $dailyTarget " + NativeStudyGuide.label(studyLanguage,
-                                            "հարց", "questions", "вопросов"))
-                                        LinearProgressIndicator(
-                                            progress = { StudyGoals.completion(dailyTarget, today) },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                        Text(if (StudyGoals.remaining(dailyTarget, today) == 0)
-                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
-                                                "Today's goal is complete.", "Цель на сегодня выполнена.")
-                                        else NativeStudyGuide.label(studyLanguage,
-                                            "Մնացել է", "Remaining", "Осталось") +
-                                            ": " + StudyGoals.remaining(dailyTarget, today),
-                                            fontSize = 13.sp)
+                                            "Այսօրվա նպատակը", "Today's goal", "Цель на сегодня"),
+                                            modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold)
+                                        Text("$today / $dailyTarget", color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                     }
+                                    LinearProgressIndicator(
+                                        progress = { StudyGoals.completion(dailyTarget, today) },
+                                        modifier = Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(4.dp))
+                                    )
+                                    Text(
+                                        if (remaining == 0)
+                                            NativeStudyGuide.label(studyLanguage, "Այսօրվա նպատակը կատարված է։",
+                                                "You reached today's goal.", "Цель на сегодня достигнута.")
+                                        else NativeStudyGuide.label(studyLanguage,
+                                            "Եվս " + remaining + " հարց՝ օրվա նպատակի համար։",
+                                            remaining.toString() + " more to reach today's goal.",
+                                            "Ещё " + remaining + " до цели на сегодня."),
+                                        fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                             if (lastBook != null) item {
@@ -709,7 +772,7 @@ private fun NativeShtemarm() {
                         }
                         items(BookCatalog.subjects.filter {
                             BookStudyHelpers.matches(subjectFilter, it)
-                        }, key = { it }) { s ->
+                        }.sortedBy { if (it in progress.focusSubjects) 0 else 1 }, key = { it }) { s ->
                             AcademySubjectAccordion(
                                 subject = s,
                                 books = BookCatalog.books.filter { it.subject == s },
@@ -1211,6 +1274,15 @@ private fun NativeShtemarm() {
                         }
                     }
                     Page.SETTINGS -> Column(Modifier.fillMaxSize().padding(padding)) {
+                        OutlinedButton(
+                            onClick = { forcePersonalization = true },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(NativeStudyGuide.label(studyLanguage,
+                                "Փոխել իմ ուսումնական նախընտրությունները",
+                                "Edit study preferences",
+                                "Изменить учебные предпочтения"))
+                        }
                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp),horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("hy","en","ru").forEach { language ->
                                 FilterChip(
