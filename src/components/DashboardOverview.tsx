@@ -11,20 +11,20 @@ type Props = { name?: string | null; progress: Progress };
 
 const COPY = {
   hy: {
-    greeting:"Բարի վերադարձ", heading:"Սովորիր քո տեմպով։",
-    subtitle:"Շարունակիր վերջին բաժնից կամ ընտրիր առարկա՝ սկսելու համար։",
+    greeting:"Քո ուսումնական տարածքը", heading:"Քննությանը՝ քո տեմպով։",
+    subtitle:"Շարունակիր վերջին բաժնից կամ ընտրիր առարկան՝ պատրաստվել սկսելու համար։",
     start:"Ընտրել առարկա", review:"Կրկնել սխալները", answered:"լուծված հարց",
     pending:"հարց՝ կրկնելու", next:"Շարունակել ուսումը", last:"Վերջին բացված բաժինը",
   },
   en: {
-    greeting:"Welcome back", heading:"Learn at your own pace.",
-    subtitle:"Continue where you left off, or choose a subject to get started.",
+    greeting:"Your study space", heading:"Prepare at your pace.",
+    subtitle:"Pick up where you left off, or choose a subject and get started.",
     start:"Choose a subject", review:"Review mistakes", answered:"questions answered",
     pending:"questions to review", next:"Continue studying", last:"Last opened section",
   },
   ru: {
-    greeting:"С возвращением", heading:"Учись в своём темпе.",
-    subtitle:"Продолжи с последнего раздела или выбери предмет.",
+    greeting:"Твоё учебное пространство", heading:"Готовься в своём темпе.",
+    subtitle:"Продолжи с последнего раздела или выбери предмет для подготовки.",
     start:"Выбрать предмет", review:"Повторить ошибки", answered:"решено вопросов",
     pending:"вопросов для повторения", next:"Продолжить занятие", last:"Последний открытый раздел",
   },
@@ -56,11 +56,11 @@ export function DashboardOverview({ name, progress }: Props) {
     : null;
 
   return (
-    <section className="sht-quiet-overview min-w-0 rounded-3xl border bg-card p-5 sm:p-7"
+    <section className="sht-quiet-overview sht-student-home-hero min-w-0 rounded-3xl border bg-card p-5 sm:p-7"
       aria-label={t.heading}>
       <div className="max-w-2xl space-y-2">
-        <p className="text-sm font-semibold text-primary">{t.greeting}{name ? `, ${name}` : ""}</p>
-        <h1 className="text-balance text-2xl font-black leading-tight tracking-tight text-foreground sm:text-4xl">{t.heading}</h1>
+        <p className="sht-student-home-eyebrow text-sm font-semibold text-primary">{t.greeting}{name ? `, ${name}` : ""}</p>
+        <h1 className="sht-student-home-title text-balance text-2xl font-black leading-tight tracking-tight text-foreground sm:text-4xl">{t.heading}</h1>
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">{t.subtitle}</p>
       </div>
 

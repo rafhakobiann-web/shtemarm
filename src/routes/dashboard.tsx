@@ -333,7 +333,7 @@ function Index() {
 
         <div className="sht-home-subject-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {subjects.map(item => (
-            <Link key={item.id} to="/dashboard" search={{subject:item.id}}
+            <Link key={item.id} to="/dashboard" search={{subject:item.id}} data-subject={item.id}
               className="sht-home-subject-card group flex min-h-[104px] min-w-0 items-start gap-3 rounded-2xl border bg-card p-4 text-foreground focus-visible:outline-2 focus-visible:outline-primary">
               <span aria-hidden="true" className="sht-home-subject-mark grid size-12 shrink-0 place-items-center rounded-xl text-xs font-black text-primary">{item.mark}</span>
               <span className="min-w-0 flex-1">
