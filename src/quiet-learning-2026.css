@@ -62,3 +62,73 @@ html[data-surface="liquid"] .site-mobile-nav.sht-quiet-mobile-nav {
   .site-header[data-study-focus="true"] { display: none !important; }
   main[data-study-focus="true"] { padding-bottom: 1.5rem !important; }
 }
+
+
+/* Student-first editorial system: calm pages, real book covers, subject-owned color. */
+.sht-quiet-overview.sht-student-home-hero {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: clamp(.25rem, 1.5vw, .75rem) 0 !important;
+}
+.sht-student-home-eyebrow {
+  font-size: .7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.sht-student-home-title {
+  max-width: 17ch;
+  font-family: var(--font-reading), "Noto Serif Armenian", Georgia, serif;
+  font-weight: 700 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.14 !important;
+}
+.sht-home-subject-card {
+  --subject-accent: var(--primary);
+  position: relative;
+  min-height: 5.75rem !important;
+  border-radius: .7rem !important;
+  background: transparent !important;
+  padding: .9rem 1rem .9rem 1.1rem !important;
+}
+.sht-home-subject-card::before {
+  position: absolute;
+  inset-block: .85rem;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--subject-accent);
+  content: "";
+}
+.sht-home-subject-card[data-subject="math"] { --subject-accent: #355c8a; }
+.sht-home-subject-card[data-subject="english"] { --subject-accent: #496c8c; }
+.sht-home-subject-card[data-subject="biology"] { --subject-accent: #517652; }
+.sht-home-subject-card[data-subject="history"] { --subject-accent: #b85c3c; }
+.sht-home-subject-card[data-subject="armenian"] { --subject-accent: #72516d; }
+.sht-home-subject-mark {
+  border-radius: .4rem !important;
+  background: color-mix(in srgb, var(--subject-accent) 12%, var(--card)) !important;
+  color: var(--subject-accent) !important;
+}
+.site-mobile-nav.sht-quiet-mobile-nav a[aria-current="page"] {
+  position: relative;
+  font-weight: 800;
+}
+.site-mobile-nav.sht-quiet-mobile-nav a[aria-current="page"]::after {
+  position: absolute;
+  top: .25rem;
+  left: 50%;
+  width: 1.15rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  content: "";
+  transform: translateX(-50%);
+}
+@media (max-width: 767px) {
+  .sht-quiet-overview.sht-student-home-hero { padding-top: .5rem !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-mobile-nav.sht-quiet-mobile-nav a { transition: none !important; }
+}
