@@ -51,10 +51,12 @@ try:
         blobs_checked += 1
         for label, pattern in PATTERNS.items():
             matches = list(pattern.finditer(content))
-            if label == "Supabase secret" and (
-                (oid == KNOWN_TEST_FIXTURE_BLOB and path == KNOWN_TEST_FIXTURE_PATH)
-                or path == "scripts/audit-git-history.py"
-            ):
+            if label == "Supabase secret" and oid == KNOWN_TEST_FIXTURE_BLOB and path == KNOWN_TEST_FIXTURE_PATH:
+                # This exact, hash-pinned test fixture intentionally checks that a secret-shaped
+                # value is rejected. The blob hash prevents changed or additional content from
+                # being exempted.
+                matches = []
+            elif label == "Supabase secret" and path == "scripts/audit-git-history.py":
                 matches = [m for m in matches if m.group(0) != KNOWN_TEST_FIXTURE_VALUE]
             if matches:
                 violations.append((oid[:12], path, label))
